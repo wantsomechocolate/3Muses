@@ -1,0 +1,41 @@
+{{('message' in globals())}}
+{{extend 'layout.html'}}
+
+{{if len(category_rows)==0:}}
+	<div>Sorry, we are currently out of everything!</div>
+{{else:}}
+
+
+	{{for j in range(len(category_rows)):}}
+
+		{{if sqlite_tf:}}
+			{{srcattr=URL('download',category_rows[j].s3_url)}}
+		{{else:}}
+			{{srcattr='https://s3.amazonaws.com/threemusesglass/site_images/'+category_rows[j].s3_url}}
+		{{pass}}
+
+		<div class='category'>
+			<div class = 'category-header'>{{=category_rows[j].category_name}}</div>
+				
+				<div class="category-image-desc-case">
+					<div class = 'category-image'>
+
+						
+
+						{{=A(IMG(_src=srcattr, _alt="woops!"),_href=URL('display', args=[category_rows[j].id]))}}
+
+					</div>
+					<!--A(IMG(_src=URL('static','logo.png'), _alt="My Logo"), _href=URL('default','index'))-->
+				
+					<div class="category-description">
+						{{=category_rows[j].category_description}}
+					</div>
+				</div>
+
+		</div>
+
+		<br/>
+		<br/>
+
+	{{pass}}
+{{pass}}

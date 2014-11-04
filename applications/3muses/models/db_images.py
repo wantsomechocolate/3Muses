@@ -1,0 +1,193 @@
+import fs.s3fs
+import os, ast
+
+
+if db._dbname=='sqlite':
+	sqlite_tf=True
+else:
+	sqlite_tf=False
+
+try:
+
+	## see if you can acces the heroku environment variables
+	myfs = fs.s3fs.S3FS('threemusesglass','site_images',os.environ['AWS_ACCESS_KEY_ID'], os.environ['AWS_SECRET_ACCESS_KEY'])
+
+## what exception exactly?
+except KeyError:
+
+	# you aren't running on heroku
+	# this will fail if it can't find the local keys. GOOD.
+	with open('/home/wantsomechocolate/Code/API Info/api_keys.txt','r') as fh:
+		text=fh.read()
+		api_keys = ast.literal_eval(text)
+	
+	AWS_ACCESS_KEY_ID=api_keys['aws']['wantsomechocolate']['AWS_ACCESS_KEY_ID']
+	AWS_SECRET_ACCESS_KEY=api_keys['aws']['wantsomechocolate']['AWS_SECRET_ACCESS_KEY']
+
+	myfs = fs.s3fs.S3FS('threemusesglass','site_images',AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY)
+
+
+
+db.define_table('categories',
+	Field('category_name'),
+	Field('category_description','text'),
+	Field('is_active','boolean'),
+	Field('s3_url', 'upload'),
+	Field('display_order','integer'),
+	format='%(category_name)s'
+	)
+db.categories.is_active.default=True
+if sqlite_tf:
+	pass
+else:
+	db.categories.s3_url.uploadfs=myfs
+
+db.define_table('product',
+	Field('category_name', 'reference categories'),
+	Field('product_name', writable=True),
+	Field('description','text', writable=True),
+	Field('cost_USD','float'),
+	Field('qty_in_stock','integer'),
+	Field('is_active','boolean'),
+	Field('display_order','integer'),
+	Field('shipping_description'),
+	Field('weight_oz'),
+	## if purchased by is an email, non-users could potentially do bad things. 
+	#Field('purchased_by'),
+	# having a field here for purchased by doesn't work in the case of multiple inventory!
+	format='%(product_name)s'
+	)
+db.product.is_active.default=True
+#db.product.purchased_by.default=None
+
+
+## The table that will hold all the purchase records
+## except for quantity
+ # db.define_table('purchase_history',
+	# ##3Muses User Fields
+	# Field('muses_id'),
+	# Field('muses_email_address'),
+	# Field('muses_name'),
+
+	# ## Session Fields (These actually come from response not session)
+	# Field('session_id_3muses'),
+	# Field('session_db_table'),
+	# Field('session_db_record_id'),
+
+	# ## Shipping Fields
+	# Field('shipping_street_address_line_1'),
+	# Field('shipping_street_address_line_2'),
+	# Field('shipping_municipality'),
+	# Field('shipping_administrative_area'),
+	# Field('shipping_postal_code'),
+	# Field('shipping_country'),
+
+	# ## Easypost Fields?
+	# Field('easypost_shipping_method'),
+	# Field('easypost_id'),
+
+	# ## Payment Fields
+	# Field('payment_method'),
+	# Field('payment_stripe_user_id'),
+	# Field('payment_stripe_last_4'),
+	# Field('payment_stripe_brand'),
+	# Field('payment_stripe_exp_month'),
+	# Field('payment_stirpe_exp_year'),
+	# Field('payment_stripe_card_id'),
+	# Field('payment_Stripe_transaction_id'),
+
+	# ## Cart Details
+	# Field('cart_base_cost'),
+	# Field('cart_shipping_cost'),
+	# Field('cart_total_cost'),
+
+ # )
+
+
+
+
+
+
+db.define_table('image',
+	Field('category_name', 'reference categories'),
+	Field('product_name', 'reference product'),
+	Field('title'),
+	Field('s3_url', 'upload'),
+	)
+db.image.title.requires=IS_NOT_IN_DB(db,db.image.title)
+if sqlite_tf:
+	pass
+else:
+	db.image.s3_url.uploadfs=myfs
+
+
+
+db.define_table('landing_page_images',
+	Field('image_purpose'),
+	Field('s3_url', 'upload'),
+	)
+if sqlite_tf:
+	pass
+else:
+	db.landing_page_images.s3_url.uploadfs=myfs
+
+# this table can have multiple stripe tokens per user
+# when a returning user is buying something, ask the user which card they want to use
+# by showing them the last four digits of the card. 
+
+db.define_table('stripe_customers',
+	Field('muses_id', 'reference auth_user'),
+	Field('stripe_id'),
+	Field('stripeEmail'),
+	Field('stripe_next_card_id'),
+	)
+db.stripe_customers.id.readable=False
+
+db.define_table('muses_cart',
+	Field('user_id', 'reference auth_user'),
+	Field('product_id', 'reference product'),
+	Field('product_qty', requires=IS_INT_IN_RANGE(0,10))
+	)
+
+db.muses_cart.id.writable=db.muses_cart.id.readable=False
+db.muses_cart.user_id.writable=db.muses_cart.user_id.readable=False
+# the line below was for when I had the row name as a link instead of just having a seperate link
+# it needed to be called in using the fields arg or else it wasn't available
+# for the lambda function, so I had to make it hidden here. 
+#db.muses_cart.product_id.writable=db.muses_cart.product_id.readable=False
+db.muses_cart.product_id.writable=False
+
+
+# a cart will hold the amount of money to charge and the concatonated description of everything purchased?, nah, I need a plugin for this. 
+#db.define_table('cart')
+#create a view for this so that mom can add and remove images 
+
+db.define_table('addresses',
+	Field('user_id', 'reference auth_user'),
+	Field('street_address_line_1'),
+	Field('street_address_line_2'),
+	Field('municipality'),
+	Field('administrative_area'),
+	Field('postal_code'),
+	Field('country'),
+	Field('default_address', 'boolean'),
+	)
+db.addresses.id.readable=False
+db.addresses.user_id.readable=False
+db.addresses.user_id.writable=False
+db.addresses.user_id.default=auth.user_id
+
+
+
+## Keeping track of purchases:
+## Purchase table
+## Store everything about the purchase except product and qty
+## Then link the everything about the purchase table (I like this because it keeps a record
+## of what you entered at the time (in case you change data))
+## purchase info id product qty
+## Then to retreieve the information, use email address to get the id of any purchases
+## Then go to the other table and get product information about that purchase. 
+## for sessions, if they just made a purchase you can get the information,
+## but if not say that you will email them a copy of them purchase history
+## for users, you can just show them the purchase history.
+

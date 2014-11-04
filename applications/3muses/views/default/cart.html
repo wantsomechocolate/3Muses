@@ -1,0 +1,87 @@
+{{('message' in globals())}}
+{{extend 'layout.html'}}
+
+<div class="checkout-button">
+<a href="{{=URL('checkout')}}"><button>Checkout</button></a>
+</div>
+
+<br/>
+<br/>
+
+
+<div class='muses_cart'>
+<h1>What You Are Buying</h1>
+
+{{=cart_grid}}
+<br/>
+
+<form action="{{=URL('default','categories')}}">
+    <input type="submit" value="Back to Shopping">
+</form>
+
+</div>
+
+<br/>
+<br/>
+<br/>
+
+<!--
+<div class='muses_checkout_widget'>
+
+	<a class="btn btn-primary" href="{{=URL('default','checkout')}}">
+		Checkout
+	</a>
+
+	<br/>
+	<br/>
+
+	Estimated Cost: $58
+
+</div>
+-->
+
+<div class='muses_cart' id = "checkout_addresses">
+	<h1>Where You Are Shipping</h1>
+	{{=address_grid}}
+	<br/>
+	<form action="{{=URL('default','add_new_address')}}">
+	    <input type="submit" value="Add New Address">
+	</form>
+
+</div>
+
+<br/>
+<br/>
+<br/>
+
+<div class='muses_cart' id = "checkout_shipping">
+	<h1>What Kind Of Shipping?</h1>
+	<div id='shipping_target'>
+
+	{{=shipping_grid}}
+
+	</div>
+
+</div>
+
+<br/>
+<br/>
+<br/>
+
+<div class='muses_cart' id = "checkout_cards">
+	<h1>How You Are Paying</h1>
+
+	{{=card_grid}}
+	<br/>
+	<form action="{{=URL('default','add_new_card')}}">
+	    <input type="submit" value="Add New Card">
+	</form>
+
+</div>
+
+
+<br/>
+<br/>
+<div class="checkout-button">
+<a href="{{=URL('checkout')}}"><button>Checkout</button></a>
+</div>

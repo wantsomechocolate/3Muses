@@ -1,0 +1,53 @@
+commit d13249dea441890ec6923ea05beb60cbd5f6f376
+Author: wantsomechocolate <wantsomechocolate@gmail.com>
+Date:   Mon Sep 22 13:40:20 2014 -0400
+
+    cart functionality is 70% complete
+
+commit b41ffa3fb2a850adaefd288a729e8795ded44658
+Author: wantsomechocolate <wantsomechocolate@gmail.com>
+Date:   Fri Sep 12 08:11:22 2014 -0400
+
+    getting the cart ready. Working on showing all cards associated with a customer
+
+commit 93c94fa060b2e3aed3b3924b8a726d9953299c14
+Author: wantsomechocolate <wantsomechocolate@gmail.com>
+Date:   Wed Sep 3 18:21:25 2014 -0400
+
+    trying to get stripe working
+
+commit 7df5668afb1757ca42c393ca056f10dd445cecc5
+Author: wantsomechocolate <wantsomechocolate@gmail.com>
+Date:   Sun Aug 10 21:20:24 2014 -0400
+
+    second push to heroku round 3 done for now
+
+commit 15a74da1455442294b14402756a353f95294baf2
+Author: wantsomechocolate <wantsomechocolate@gmail.com>
+Date:   Sun Aug 10 21:00:01 2014 -0400
+
+    second push to heroku round 2... FIGHT
+
+commit c9c8a442405f5293f955cc9d1a9720739223b62d
+Author: wantsomechocolate <wantsomechocolate@gmail.com>
+Date:   Sun Aug 10 20:49:36 2014 -0400
+
+    second heroku push attempt1
+
+commit dd706e2d353bc67364a5ad5befc2d49153515c32
+Author: wantsomechocolate <wantsomechocolate@gmail.com>
+Date:   Fri Aug 8 20:50:17 2014 -0400
+
+    apparently massimo included custom s3 upload function like two years ago
+
+commit 53b765b2191e3a19cff90d8d3c40eac07f60d143
+Author: wantsomechocolate <wantsomechocolate@gmail.com>
+Date:   Wed Aug 6 08:07:45 2014 -0400
+
+    Working out how to send images directly to s3 with js
+
+commit e547abc29877864e8c6d65fa16d419daf7683325
+Author: wantsomechocolate <wantsomechocolate@gmail.com>
+Date:   Mon Jul 28 18:43:59 2014 -0400
+
+    initial commit

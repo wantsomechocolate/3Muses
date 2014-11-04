@@ -1,0 +1,48 @@
+{{('message' in globals())}}
+{{extend 'layout.html'}}
+
+
+<div class="checkout-button">
+<a href="{{=URL('pay')}}"><button>Pay</button></a>
+</div>
+<br/>
+
+<div id = "checkout_cart">
+	<h1>Cart Contents</h1>
+	{{=cart_grid}}
+</div>
+
+<br/>
+<br/>
+
+<div id = "checkout_addresses">
+	<h1>Shipping Address</h1>
+	{{=address_grid}}
+</div>
+
+<br/>
+<br/>
+
+<div id = "checkout_shipping">
+	<h1>Shipping Method</h1>
+	{{=shipping_grid}}
+</div>
+
+<br/>
+<br/>
+
+<div id = "checkout_card">
+	<h1>Card Information</h1>
+	{{=card_grid}}
+
+</div>
+
+<br/>
+<br/>
+
+<div id = "checkout_summary">
+	<h1>Summary Info</h1>
+	{{=summary_grid}}
+
+</div>
+

@@ -1,0 +1,52 @@
+{{('message' in globals())}}
+{{extend 'layout.html'}}
+
+Thank you for shopping at 3MusesGlass!
+
+<br/>
+<br/>
+
+You didn't actually buy anything yet, because this site is in test mode right now.
+
+<br/>
+
+Below will be your receipt, eventually, which will also be emailed to you, eventually. 
+
+
+<br/>
+<br/>
+
+Total Charge
+
+<br/>
+
+{{=float(charge['amount'])/100}}
+
+<br/>
+<br/>
+And other information
+
+<br/>
+
+What do I want to see here:
+
+Thank you for shopping at 3musesglass.com
+
+You should recieve a confirmation email shortly at email@mailservice.ext
+
+When your order has been processed and shipped, you will recieve another email letting you know when you can expect your package. 
+
+Below are the details of your order:
+
+On: Date, User
+
+Paid: Total amount
+
+Via: Card info
+
+To purchase: Cart
+
+To be shipped via: shipping method
+
+To: Shipping address
+

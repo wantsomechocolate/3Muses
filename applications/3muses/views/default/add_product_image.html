@@ -1,0 +1,14 @@
+{{('message' in globals())}}
+{{extend 'layout.html'}}
+
+<link href="{{=URL('static', 'css/dropzone.css')}}" rel="stylesheet" type="text/css" />
+<script src="{{=URL('static','js/dropzone.js')}}"></script>
+
+<form action = "/add_product_image" class="dropzone" id="my-awesome-dropzone" method='POST' enctype="multipart/form-data">
+
+<input type='text' name='bucket' value='3MusesGlass'>
+<input typc='text' name='key' value='whatever'>
+
+
+<input type="submit" value="Submit"/>
+</form>
