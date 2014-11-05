@@ -1,52 +1,41 @@
 {{('message' in globals())}}
 {{extend 'layout.html'}}
 
+
 Thank you for shopping at 3MusesGlass!
-
 <br/>
+Your card has been successfully charged for {{=total_cost_USD}}.
 <br/>
-
-You didn't actually buy anything yet, because this site is in test mode right now.
-
-<br/>
-
-Below will be your receipt, eventually, which will also be emailed to you, eventually. 
-
-
-<br/>
-<br/>
-
-Total Charge
-
-<br/>
-
-{{=float(charge['amount'])/100}}
-
-<br/>
-<br/>
-And other information
-
-<br/>
-
-What do I want to see here:
-
-Thank you for shopping at 3musesglass.com
-
 You should recieve a confirmation email shortly at email@mailservice.ext
-
-When your order has been processed and shipped, you will recieve another email letting you know when you can expect your package. 
-
+<br/>
+Please allow one day for processing. If you have any questions about your order, email orders@3usesglass.com
+<br/>
+Your order confirmation number is ....
+<br/>
 Below are the details of your order:
+<br/>
 
 On: Date, User
+<br/>
+{{=user_data}}
+<br/>
 
-Paid: Total amount
+Paid: {{=total_cost_USD}}
+<br/>
 
 Via: Card info
+<br/>
+{{=charge}}
+<br/>
 
-To purchase: Cart
+To purchase:
+<br/>
+{{=session.purchase_history_cart_info}}
+<br/>
 
 To be shipped via: shipping method
-
+<br/>
 To: Shipping address
-
+<br/>
+{{=session.purchase_history_shipping_info}}
+<br/>

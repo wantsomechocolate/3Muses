@@ -1002,6 +1002,10 @@ def cart():
 
 ## The view right before they click to get charged and stuff. 
 
+## In checkout is where I'm going to do most of the preparation for the purchase history
+## db entry. My plan is to make a giant dictionary with all of the stuff, then pass
+## it as a var or arg to pay. then try to charge the card,
+## if it works, I'll have all the info I need, if not I can decide what to do about it. 
 def checkout():
 
     if auth.is_logged_in():
@@ -1261,6 +1265,7 @@ def checkout():
             #session.card_info['card_id'],
         ]
 
+
         card_grid=table_generation(card_grid_header_list, [card_grid_row_list], 'checkout_card')
 
 
@@ -1272,6 +1277,9 @@ def checkout():
 
     shipping_grid_header_list=['Carrier', 'Service', 'Cost']
 
+    shipping_grid_row_list=[]
+    shipping_dict={}
+
     match_found=False
     shipping_cost_USD=0
     for rate in shipment.rates:
@@ -1279,6 +1287,12 @@ def checkout():
             #create grid
 
             shipping_grid_row_list=[rate.carrier, rate.service, rate.rate, ]
+            shipping_dict=dict(
+                carrier=rate.carrier,
+                service=rate.service,
+                rate=rate.rate,
+            )
+
             shipping_cost_USD=float(rate.rate)
 
             shipping_grid=table_generation(shipping_grid_header_list, [shipping_grid_row_list], 'checkout_shipping')
@@ -1302,9 +1316,36 @@ def checkout():
 #############################################################################################
 
     summary_grid_header_list=['Cart Cost','Shipping Cost', 'Total']
-    summary_grid_row_lists=[[cart_cost_USD,shipping_cost_USD,cart_cost_USD+shipping_cost_USD]]
+    summary_grid_row_lists=[cart_cost_USD,shipping_cost_USD,cart_cost_USD+shipping_cost_USD]
 
-    summary_grid=table_generation(summary_grid_header_list, summary_grid_row_lists, "summary")
+    summary_dict=dict(
+        cart_cost_USD=cart_cost_USD,
+        shipping_cost_USD=shipping_cost_USD,
+        total_cost_USD=cart_cost_USD+shipping_cost_USD,
+    )
+
+    summary_grid=table_generation(summary_grid_header_list, [summary_grid_row_lists], "summary")
+
+#############################################################################################
+###########---------------------Put Everything in Session------------------------############
+#############################################################################################
+
+
+    ## Adding all the info to the session for use in databasing purchase history inforation
+    ## list of dicts
+    session.purchase_history_cart_info=cart_for_shipping_calculations
+
+    ## dictionary of address info
+    session.purchase_history_address_info=address_dict
+
+    ## dictionary of shipping_info
+    session.purchase_history_shipping_info=shipping_dict
+
+    ## Card info is transferred via the stripe interface right now. 
+    #session.purchase_history_card_info=card_grid_row_list
+
+    ## dictionary of summary info
+    session.purchase_history_summary_info=summary_dict
 
     return locals()
 
@@ -1334,13 +1375,18 @@ def pay():
 
     ## Try to put payment through. 
     if auth.is_logged_in():
+        ## Get customer_id from stripe data in db
         customer_id=db(db.stripe_customers.muses_id==auth.user_id).select().first().stripe_id
+        
     else:
+        ## If anonymous user, get customer stripe id from session
         customer_id=session.card_info['stripe_id']
+        
 
+    ## Get total cost from session (Need to get a lot more than this I think)
     total_cost_USD=session.total_cost_USD
 
-    ## To try and charge the card with the stripe id (defualt card should already by set within stripe)
+    ## To try and charge the card with the stripe id (defualt card should already be set within stripe)
     charge=stripe.Charge.create(
         amount=int(float(total_cost_USD)*100),
         currency='usd',
@@ -1352,47 +1398,109 @@ def pay():
     if auth.is_logged_in():
 
         cart=db(db.muses_cart.user_id==auth.user_id).select()
+        
+        ## User Data
+        user_data=db(db.auth_user.id==auth.user_id).select().first()
+        #muses_id=user_data.id
+        #muses_email_address=user_data.email
+        #muses_name=user_data.first_name
 
-        for row in cart:
-            product_record=db(db.product.id==row.product_id).select().first()
-            current_qty=int(product_record.qty_in_stock)
-            qty_purchased=int(row.product_qty)
-            new_qty=current_qty-qty_purchased
-
-            db(db.muses_cart.product_id==product_record.id).delete()
+        #session_id=response.session_id
+        #session_db_table=response.session_db_table
+        #session_db_record_id=response.session_db_record_id
 
 
-            if new_qty<=0:
+        ## Shipping information, get fron db or pass from checkout?
+        address_info=session.purchase_history_address_info
 
-                product_record.update(qty_in_stock=0)
-                product_record.update_record()
-                product_record.update(is_active=False)
-                product_record.update_record()
+        #shipping_street_address_line_1=address_info['street_address_line_1']
+        #shipping_street_address_line_2=address_info['street_address_line_2']
+        #shipping_municipality=address_info['municipality']
+        #shipping_administrative_area=address_info['administrative_area']
+        #shipping_postal_code=address_info['postal_code']
+        #shipping_country=address_info['country']
 
-            else:
-                product_record.update(qty_in_stock=new_qty)
-                product_record.update_record()
+        ## Easypost info, definitely pass from checkout
+        shipping_info=session.purchase_history_shipping_info
 
-        ## delete the cart records!
+        #easypost_shipping_method=shipping_info['service']
+        #easypost_shipping_carrier=shipping_info['carrier']
+        #easypost_id=None
+
+
+        ## Stripe charge information
+        payment_method='stripe'
+        #payment_stripe_user_id=charge['card']['customer']
+        #payment_stripe_last_4=charge['card']['last4']
+        #payment_stripe_brand=charge['card']['brand']
+        #payment_stripe_exp_month=charge['card']['exp_month']
+        #payment_stripe_exp_year=charge['card']['exp_year']
+        #payment_stripe_card_id=charge['card']['id']
+        #payment_stripe_transaction_id=charge['id']
+
+        ##Cost information
+        summary_info=session.purchase_history_summary_info
+        #cart_base_cost=None
+        #cart_shipping_cost=None
+        #cart_total_cost=total_cost_USD
+
+        ##insert all items into the database.
+
+
+        ##retrieve from database, use database var in view to look at info.
+
+        
+
+        # ## For item in cart, add id from record above with product and qty, then deal with
+        # ## inventory
+        # for row in cart:
+        #     product_record=db(db.product.id==row.product_id).select().first()
+        #     current_qty=int(product_record.qty_in_stock)
+        #     qty_purchased=int(row.product_qty)
+        #     new_qty=current_qty-qty_purchased
+
+        #     ## Remove item from the cart
+        #     db(db.muses_cart.product_id==product_record.id).delete()
+
+        #     ## If you lowered the qty to 0 or less, make qty 0 and deactivate item
+        #     if new_qty<=0:
+
+        #         product_record.update(qty_in_stock=0)
+        #         product_record.update_record()
+        #         product_record.update(is_active=False)
+        #         product_record.update_record()
+
+        #     ## If not, just lower the qty
+        #     else:
+        #         product_record.update(qty_in_stock=new_qty)
+        #         product_record.update_record()
+
+
 
     else:
 
-        for product_id, qty in session.cart.iteritems():
-            product_record=db(db.product.id==product_id).select().first()
-            current_qty=int(product_record.qty_in_stock)
-            qty_purchased=int(qty)
-            new_qty=current_qty-qty_purchased
+        pass
+        # email_address=session.card_info['stripe_email']
 
-            if new_qty<=0:
-                product_record.update(qty_in_stock=0)
-                product_record.update_record()
-                product_record.update(is_active=False)
-                product_record.update_record()
-            else:
-                product_record.update(qty_in_stock=new_qty)
-                product_record.update_record()
+        # for product_id, qty in session.cart.iteritems():
+        #     product_record=db(db.product.id==product_id).select().first()
+        #     current_qty=int(product_record.qty_in_stock)
+        #     qty_purchased=int(qty)
+        #     new_qty=current_qty-qty_purchased
 
-        session.cart=None
+        #     if new_qty<=0:
+        #         product_record.update(qty_in_stock=0)
+        #         product_record.update_record()
+        #         product_record.update(is_active=False)
+        #         product_record.update_record()
+        #     else:
+        #         product_record.update(qty_in_stock=new_qty)
+        #         product_record.update_record()
+
+        # session.cart=None
+
+
+
 
     return locals()
 

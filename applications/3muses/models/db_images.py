@@ -63,47 +63,51 @@ db.product.is_active.default=True
 
 ## The table that will hold all the purchase records
 ## except for quantity
- # db.define_table('purchase_history',
-	# ##3Muses User Fields
-	# Field('muses_id'),
-	# Field('muses_email_address'),
-	# Field('muses_name'),
+db.define_table('purchase_history_data',
+	##3Muses User Fields
+	Field('muses_id'),
+	Field('muses_email_address'),
+	Field('muses_name'),
 
-	# ## Session Fields (These actually come from response not session)
-	# Field('session_id_3muses'),
-	# Field('session_db_table'),
-	# Field('session_db_record_id'),
+	## Session Fields (These actually come from response not session)
+	Field('session_id_3muses'),
+	Field('session_db_table'),
+	Field('session_db_record_id'),
 
-	# ## Shipping Fields
-	# Field('shipping_street_address_line_1'),
-	# Field('shipping_street_address_line_2'),
-	# Field('shipping_municipality'),
-	# Field('shipping_administrative_area'),
-	# Field('shipping_postal_code'),
-	# Field('shipping_country'),
+	## Shipping Fields
+	Field('shipping_street_address_line_1'),
+	Field('shipping_street_address_line_2'),
+	Field('shipping_municipality'),
+	Field('shipping_administrative_area'),
+	Field('shipping_postal_code'),
+	Field('shipping_country'),
 
-	# ## Easypost Fields?
-	# Field('easypost_shipping_method'),
-	# Field('easypost_id'),
+	## Easypost Fields?
+	Field('easypost_shipping_method'),
+	Field('easypost_id'),
 
-	# ## Payment Fields
-	# Field('payment_method'),
-	# Field('payment_stripe_user_id'),
-	# Field('payment_stripe_last_4'),
-	# Field('payment_stripe_brand'),
-	# Field('payment_stripe_exp_month'),
-	# Field('payment_stirpe_exp_year'),
-	# Field('payment_stripe_card_id'),
-	# Field('payment_Stripe_transaction_id'),
+	## Payment Fields
+	Field('payment_method'),
+	Field('payment_stripe_user_id'),
+	Field('payment_stripe_last_4'),
+	Field('payment_stripe_brand'),
+	Field('payment_stripe_exp_month'),
+	Field('payment_stripe_exp_year'),
+	Field('payment_stripe_card_id'),
+	Field('payment_stripe_transaction_id'),
 
-	# ## Cart Details
-	# Field('cart_base_cost'),
-	# Field('cart_shipping_cost'),
-	# Field('cart_total_cost'),
+	## Cart Details
+	Field('cart_base_cost'),
+	Field('cart_shipping_cost'),
+	Field('cart_total_cost'),
+)
 
- # )
 
-
+db.define_table('purchase_history_products',
+	Field('purchase_history_data_id','reference purchase_history_data'),
+	Field('product_id','reference product'),
+	Field('product_qty'),
+	)
 
 
 
