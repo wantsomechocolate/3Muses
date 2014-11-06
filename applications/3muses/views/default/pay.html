@@ -6,36 +6,15 @@ Thank you for shopping at 3MusesGlass!
 <br/>
 Your card has been successfully charged for {{=total_cost_USD}}.
 <br/>
-You should recieve a confirmation email shortly at email@mailservice.ext
+You should recieve a confirmation email shortly at {{=muses_email_address}}
 <br/>
-Please allow one day for processing. If you have any questions about your order, email orders@3usesglass.com
+Please allow one day for processing. If you have any questions about your order, email James@3musesglass.com
 <br/>
-Your order confirmation number is ....
+Your order confirmation number is {{=charge['id']}}
 <br/>
 Below are the details of your order:
 <br/>
 
-On: Date, User
-<br/>
-{{=user_data}}
-<br/>
+{{=purchase_history_dict}}
 
-Paid: {{=total_cost_USD}}
-<br/>
-
-Via: Card info
-<br/>
-{{=charge}}
-<br/>
-
-To purchase:
-<br/>
-{{=session.purchase_history_cart_info}}
-<br/>
-
-To be shipped via: shipping method
-<br/>
-To: Shipping address
-<br/>
-{{=session.purchase_history_shipping_info}}
-<br/>
+{{=purchase_history_products_LOD}}

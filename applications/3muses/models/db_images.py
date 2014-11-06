@@ -83,11 +83,15 @@ db.define_table('purchase_history_data',
 	Field('shipping_country'),
 
 	## Easypost Fields?
-	Field('easypost_shipping_method'),
-	Field('easypost_id'),
+	Field('easypost_shipping_service'),
+	Field('easypost_shipping_carrier'),
+	Field('easypost_rate_id'),
+	Field('easypost_shipment_id'),
+	Field('easypost_rate'),
 
 	## Payment Fields
 	Field('payment_method'),
+	Field('payment_stripe_name'),
 	Field('payment_stripe_user_id'),
 	Field('payment_stripe_last_4'),
 	Field('payment_stripe_brand'),
