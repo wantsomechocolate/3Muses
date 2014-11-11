@@ -66,6 +66,20 @@ except KeyError:
 
 easypost.api_key=EASYPOST_KEY
 
+try:
+    POSTMARK_API_KEY=os.environ['EASYPOST_API_KEY']
+except KeyError:
+
+    with open('/home/wantsomechocolate/Code/API Info/api_keys.txt','r') as fh:
+        text=fh.read()
+        api_keys=ast.literal_eval(text)
+
+    POSTMARK_API_KEY=api_keys['postmark']['test']['POSTMARK_API_KEY']
+
+
+
+
+
 if db._dbname=='sqlite':
 
     sqlite_tf=True
@@ -943,7 +957,7 @@ def cart():
 
                 card_grid_table_row_LOL.append(card_grid_table_row_list)
 
-            card_grid=table_generation(card_grid_header_list, card_grid_table_row_LOL, 'address')
+            card_grid=table_generation(card_grid_header_list, card_grid_table_row_LOL, 'card')
 
         except IndexError:
             #the current user does not yet have a stripe customer token
@@ -1356,17 +1370,6 @@ def pay():
     # of the info about the purchase and ultimately generate a receipt looking thing. 
     # also send an email using postmark. 
 
-
-    # from postmark import PMMail
-    # message = PMMail(api_key='',
-    #     subject="Hey Mom!",
-    #     sender="James@3musesglass.com",
-    #     to="rmcglynn01@gmail.com",
-    #     text_body="This is a test",
-    #     tag="hello")
-    # message.send()
-
-
     ## Try to put payment through. 
     if auth.is_logged_in():
         ## Get customer_id from stripe data in db
@@ -1403,7 +1406,7 @@ def pay():
         pass
     else:
         ## change to the email from charge
-        muses_email_address=None
+        muses_email_address=session.card_info['email']
 
 
     purchase_history_dict=dict(
@@ -1461,7 +1464,7 @@ def pay():
 
         cart=db(db.muses_cart.user_id==auth.user_id).select()
 
-        purchase_history_products_dict={}
+        
 
         ## For item in cart, add id from record above with product and qty, then deal with
         ## inventory
@@ -1473,6 +1476,8 @@ def pay():
 
             ## Remove item from the cart
             db(db.muses_cart.product_id==product_record.id).delete()
+
+            purchase_history_products_dict={}
 
             ## Add item to purchase history
             purchase_history_products_dict['purchase_history_data_id']=purchase_history_data_id
@@ -1499,7 +1504,7 @@ def pay():
 
     else:
 
-        purchase_history_products_dict={}
+        
         
         for product_id, qty in session.cart.iteritems():
             product_record=db(db.product.id==product_id).select().first()
@@ -1507,6 +1512,8 @@ def pay():
             qty_purchased=int(qty)
             new_qty=current_qty-qty_purchased
 
+
+            purchase_history_products_dict={}
 
             ## Add item to purchase history
             purchase_history_products_dict['purchase_history_data_id']=purchase_history_data_id
@@ -1532,18 +1539,51 @@ def pay():
 
     purchase_history_products_ids=db.purchase_history_products.bulk_insert(purchase_history_products_LOD)
 
+
+    from postmark import PMMail
+    message = PMMail(api_key=POSTMARK_API_KEY,
+        subject="Order Confirmation",
+        sender="Rebecca@3musesglass.com",
+        to=muses_email_address,
+        text_body="You just bought something!",
+        tag="confirmation")
+    message.send()
+
+
+    ## This has to be last, duh.
     redirect(URL('confirmation', args=(purchase_history_data_id)))
 
     #return locals()
 
 
 def confirmation():
+
+
+
     purchase_history_data_id=request.args[0]
+
     purchase_history_data_row=db(db.purchase_history_data.id==purchase_history_data_id).select().first()
 
-    purchase_history_products_rows=db(db.purchase_history_products.purchase_history_data_id==purchase_history_data_id).select()
-    return locals()
+    if purchase_history_data_row.muses_id==None:
+        return dict(
+            purchase_history_data_row = None,
+            purchase_history_products_rows = None,
+        )
 
+    elif int(purchase_history_data_row.muses_id)==int(auth.user_id):
+
+        purchase_history_products_rows=db(db.purchase_history_products.purchase_history_data_id==purchase_history_data_id).select()
+
+        return dict(
+            purchase_history_data_row = purchase_history_data_row,
+            purchase_history_products_rows = purchase_history_products_rows,
+        )
+
+    else:
+        return dict(
+            purchase_history_data_row = None,
+            purchase_history_products_rows = None,
+        )
 
 
 def sessions():
@@ -1604,6 +1644,34 @@ def manage_categories():
         )
 
     category_grid.element('.web2py_counter', replace=None)
+    return locals()
+
+@auth.requires_membership('admin')
+def manage_purchase_history_data():
+    purchase_history_data_grid=SQLFORM.grid(db.purchase_history_data, 
+        # fields=[
+        #     db.categories.category_name,
+        #     db.categories.category_description,
+        #     db.categories.s3_url,
+        # ],
+        maxtextlength=100,
+        )
+
+    purchase_history_data_grid.element('.web2py_counter', replace=None)
+    return locals()
+
+@auth.requires_membership('admin')
+def manage_purchase_history_products():
+    purchase_history_products_grid=SQLFORM.grid(db.purchase_history_products, 
+        # fields=[
+        #     db.categories.category_name,
+        #     db.categories.category_description,
+        #     db.categories.s3_url,
+        # ],
+        maxtextlength=100,
+        )
+
+    purchase_history_products_grid.element('.web2py_counter', replace=None)
     return locals()
 
 

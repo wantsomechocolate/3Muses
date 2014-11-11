@@ -50,6 +50,8 @@ def _():
     (T('Manage Product Images'),False,URL('manage_product_images')),
     (T('Manage Categories'),False,URL('manage_categories')),
     (T('Manage Landing Page'),False,URL('manage_landing_page_images')),
+    (T('Manage Purchase Data'),False,URL('manage_purchase_history_data')),
+    (T('Manage Purchased Products'),False,URL('manage_purchase_history_products')),
     ]
 
     response.menu += [

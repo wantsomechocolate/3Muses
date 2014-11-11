@@ -199,3 +199,10 @@ db.addresses.user_id.default=auth.user_id
 ## but if not say that you will email them a copy of them purchase history
 ## for users, you can just show them the purchase history.
 
+
+## I need a way to either copy products so my mom can resuse stuff. Or I need to include
+## product information in the history, not just qty, but also, which images, descriptions etc 
+## were used. I think I'll go the route of more purchase history information
+## I also want to try to store things as dictionaries, so the tables don't have to have
+## 1000 columns. It also helps with having seperate columns for different source of similar info. 
+## like stripe vs paypal. 
