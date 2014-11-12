@@ -1456,6 +1456,8 @@ def pay():
 
     purchase_history_data_id=db.purchase_history_data.bulk_insert([purchase_history_dict])[0]
 
+    session.session_purchase_history_data_id=purchase_history_data_id
+
 ## For every item in the cart, insert a record with the id of the purchase history, the product id and the qty.
 
     purchase_history_products_LOD=[]
@@ -1559,31 +1561,35 @@ def pay():
 def confirmation():
 
 
-
     purchase_history_data_id=request.args[0]
 
-    purchase_history_data_row=db(db.purchase_history_data.id==purchase_history_data_id).select().first()
+    try:
 
-    if purchase_history_data_row.muses_id==None:
-        return dict(
-            purchase_history_data_row = None,
-            purchase_history_products_rows = None,
-        )
+        if int(purchase_history_data_id)==int(session.session_purchase_history_data_id):
 
-    elif int(purchase_history_data_row.muses_id)==int(auth.user_id):
+            purchase_history_data_row=db(db.purchase_history_data.id==purchase_history_data_id).select().first()
 
-        purchase_history_products_rows=db(db.purchase_history_products.purchase_history_data_id==purchase_history_data_id).select()
+            purchase_history_products_rows=db(db.purchase_history_products.purchase_history_data_id==purchase_history_data_id).select()
 
-        return dict(
-            purchase_history_data_row = purchase_history_data_row,
-            purchase_history_products_rows = purchase_history_products_rows,
-        )
+            return dict(
+                purchase_history_data_row = purchase_history_data_row,
+                purchase_history_products_rows = purchase_history_products_rows,
+            )
 
-    else:
-        return dict(
-            purchase_history_data_row = None,
-            purchase_history_products_rows = None,
-        )
+        else:
+            ## This is not the place for a user to be looking around past purchases. If it's not in session
+            ## They can't see it here. 
+            return dict(
+                purchase_history_data_row = None,
+                purchase_history_products_rows = None,
+            )
+
+    except ValueError:
+            return dict(
+                purchase_history_data_row = None,
+                purchase_history_products_rows = None,
+            )
+
 
 
 def sessions():
