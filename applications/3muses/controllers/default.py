@@ -1479,12 +1479,30 @@ def pay():
             ## Remove item from the cart
             db(db.muses_cart.product_id==product_record.id).delete()
 
-            purchase_history_products_dict={}
+            #purchase_history_products_dict={}
 
             ## Add item to purchase history
-            purchase_history_products_dict['purchase_history_data_id']=purchase_history_data_id
-            purchase_history_products_dict['product_id']=product_record
-            purchase_history_products_dict['product_qty']=qty_purchased
+            #purchase_history_products_dict['purchase_history_data_id']=purchase_history_data_id
+            #purchase_history_products_dict['product_id']=product_record.id
+            #purchase_history_products_dict['product_qty']=qty_purchased
+
+            purchase_history_product_dict=dict(
+
+                purchase_history_data_id=purchase_history_data_id,
+                product_id=product_record.id,
+                product_qty=int(row.product_qty),
+
+                category_name=product_record.category_name,
+                product_name=product_record.product_name
+                description=product_record.description
+                cost_USD=product_record.cost_USD
+                qty_in_stock=product_record.new_qty
+                is_active=product_record.is_active
+                display_order=product_record.display_order
+                shipping_description=product_record.shipping_description
+                weight_oz=product_record.weight_oz
+
+            )
 
             ## Generate a list of dicts to use bulk insert
             purchase_history_products_LOD.append(purchase_history_products_dict)
@@ -1518,9 +1536,34 @@ def pay():
             purchase_history_products_dict={}
 
             ## Add item to purchase history
-            purchase_history_products_dict['purchase_history_data_id']=purchase_history_data_id
-            purchase_history_products_dict['product_id']=product_record
-            purchase_history_products_dict['product_qty']=qty_purchased
+            #purchase_history_products_dict['purchase_history_data_id']=purchase_history_data_id
+            #purchase_history_products_dict['product_id']=product_record
+            #purchase_history_products_dict['product_qty']=qty_purchased
+
+
+
+            purchase_history_product_dict=dict(
+
+                purchase_history_data_id=purchase_history_data_id,
+                product_id=product_record.id,
+                product_qty=qty_purchased,
+
+                category_name=product_record.category_name,
+                product_name=product_record.product_name
+                description=product_record.description
+                cost_USD=product_record.cost_USD
+                qty_in_stock=product_record.new_qty
+                is_active=product_record.is_active
+                display_order=product_record.display_order
+                shipping_description=product_record.shipping_description
+                weight_oz=product_record.weight_oz
+
+            )
+
+
+
+
+
 
             ## Generate a list of dicts to use bulk insert
             purchase_history_products_LOD.append(purchase_history_products_dict)
@@ -1560,22 +1603,59 @@ def pay():
 
 def confirmation():
 
-
+    #What confirmation thing are you trying to view?
     purchase_history_data_id=request.args[0]
 
     try:
-
+        #Try to convert and compare the url arg with the session arg that the user is allowed to view. 
         if int(purchase_history_data_id)==int(session.session_purchase_history_data_id):
 
+            ## if success, then get the corresponding db info
             purchase_history_data_row=db(db.purchase_history_data.id==purchase_history_data_id).select().first()
 
             purchase_history_products_rows=db(db.purchase_history_products.purchase_history_data_id==purchase_history_data_id).select()
+
+            ## product table
+            product_header_row=['Product','Total Weight (oz)','Total Cost($)']
+            product_table_row_LOL=[]
+            product_total_weight=0
+            product_total_cost=0
+
+            ## change this so that you don't have to go into the product database to get this data
+            ## It should all be available in the other purchase history tables. 
+            ## I'm doing this because the product table has all editable stuff
+            ## And I want a more permanent record of the transaction. 
+            for row in purchase_history_products_rows:
+                product_data=db(product.id==row.product_id).select().first()
+
+                product_table_row=[
+                    product_data.product_name,
+                    int(row.product_qty)*int(product_data.weight_oz),
+                    int(row.product_qty)*int(product_data.cost_USD),
+                ]
+
+                product_total_weight+=int(row.product_qty)*int(product_data.weight_oz)
+                product_total_cost+=int(row.product_qty)*int(product_data.cost_USD)
+
+                product_table_row_LOL.append(product_table_row)
+
+            product_totals_row=['Total',product_total_weight,product_total_cost,]
+
+            product_table_row_LOL.append(product_totals_row)
+
+            confirmation_product_grid=table_generation(product_header_row,product_table_row_LOL,'confirmation_product')
+
+
+
+
+
 
             return dict(
                 purchase_history_data_row = purchase_history_data_row,
                 purchase_history_products_rows = purchase_history_products_rows,
             )
 
+        ## if not, they are trying to view something they don't have access to.
         else:
             ## This is not the place for a user to be looking around past purchases. If it's not in session
             ## They can't see it here. 
@@ -1584,7 +1664,15 @@ def confirmation():
                 purchase_history_products_rows = None,
             )
 
+    ## If the url arg is not convertible to an integer, than you get this error.
+    ## just return same stuff. 
     except ValueError:
+            return dict(
+                purchase_history_data_row = None,
+                purchase_history_products_rows = None,
+            )
+
+    except TypeError:
             return dict(
                 purchase_history_data_row = None,
                 purchase_history_products_rows = None,

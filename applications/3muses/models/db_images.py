@@ -106,11 +106,26 @@ db.define_table('purchase_history_data',
 	Field('cart_total_cost'),
 )
 
-
+## This purchase history product table
+## is going to save everything about a product
+## this is becaus I want the site master to be able to reuse products
+## without having to copy a product or anything. 
+## Just upload new pictures and keep the desc, weight, etc. 
 db.define_table('purchase_history_products',
+
 	Field('purchase_history_data_id','reference purchase_history_data'),
-	Field('product_id','reference product'),
+	Field('product_id'),
 	Field('product_qty'),
+
+	Field('category_name'),
+	Field('product_name'),
+	Field('description','text'),
+	Field('cost_USD','float'),
+	Field('qty_in_stock','integer'),
+	Field('is_active','boolean'),
+	Field('display_order','integer'),
+	Field('shipping_description'),
+	Field('weight_oz'),
 	)
 
 
