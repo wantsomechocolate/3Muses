@@ -352,19 +352,26 @@ def add_new_card():
         ## and create a new card. If the logged in user doesn't have a stripe customer token yet, 
         ## it will be unable to find one and raise an index error. 
 
+        from gluon.debug import dbg
+        dbg.set_trace()
+
         #existing_stripe_id=db(db.stripe_customers.user_id==auth.user_id).select()['stripeToken']
         try:
             stripe_customer_token=db(db.stripe_customers.muses_id==auth.user_id).select()[0].stripe_id
             customer=stripe.Customer.retrieve(stripe_customer_token)
-            customer.cards.create(
-                card=dict(
-                    name=stripe_form.vars.name,
-                    number=stripe_form.vars.number,
-                    cvc=stripe_form.vars.cvc,
-                    exp_month=stripe_form.vars.exp_month,
-                    exp_year=stripe_form.vars.exp_year,     
+            ## This is failing because customer is none I think?
+            if customer==None:
+                pass
+            else:
+                customer.cards.create(
+                    card=dict(
+                        name=stripe_form.vars.name,
+                        number=stripe_form.vars.number,
+                        cvc=stripe_form.vars.cvc,
+                        exp_month=stripe_form.vars.exp_month,
+                        exp_year=stripe_form.vars.exp_year,     
+                    )
                 )
-            )
 
 
 
@@ -1402,6 +1409,7 @@ def pay():
         #description='test purchase',
     )
 
+    ## Set email address (if not logged in use stripe email)
     if auth.is_logged_in():
         pass
     else:
@@ -1409,6 +1417,8 @@ def pay():
         muses_email_address=session.card_info['email']
 
 
+    ## Populating the purchase history dict
+    ## This is used in the next view to show the user the purchase details. 
     purchase_history_dict=dict(
 
         muses_id=muses_id,
@@ -1454,22 +1464,24 @@ def pay():
 
     )
 
+    ## place data in the database. 
     purchase_history_data_id=db.purchase_history_data.bulk_insert([purchase_history_dict])[0]
 
+    ## Add id of most recent purchase to the session for viewing purposes.
     session.session_purchase_history_data_id=purchase_history_data_id
 
-## For every item in the cart, insert a record with the id of the purchase history, the product id and the qty.
 
+    ## For every item in the cart, insert a record with the id of the purchase history, the product id and the qty.
     purchase_history_products_LOD=[]
 
+    ## If logged in, get the cart information from the database
     if auth.is_logged_in():
 
         cart=db(db.muses_cart.user_id==auth.user_id).select()
 
         
-
-        ## For item in cart, add id from record above with product and qty, then deal with
-        ## inventory
+        ## For item in cart, add id from record above with product and qty and all info about the product,
+        ## then deal with inventory by removing the item from the cart.
         for row in cart:
             product_record=db(db.product.id==row.product_id).select().first()
             current_qty=int(product_record.qty_in_stock)
@@ -1479,12 +1491,6 @@ def pay():
             ## Remove item from the cart
             db(db.muses_cart.product_id==product_record.id).delete()
 
-            #purchase_history_products_dict={}
-
-            ## Add item to purchase history
-            #purchase_history_products_dict['purchase_history_data_id']=purchase_history_data_id
-            #purchase_history_products_dict['product_id']=product_record.id
-            #purchase_history_products_dict['product_qty']=qty_purchased
 
             purchase_history_product_dict=dict(
 
@@ -1493,19 +1499,19 @@ def pay():
                 product_qty=int(row.product_qty),
 
                 category_name=product_record.category_name,
-                product_name=product_record.product_name
-                description=product_record.description
-                cost_USD=product_record.cost_USD
-                qty_in_stock=product_record.new_qty
-                is_active=product_record.is_active
-                display_order=product_record.display_order
-                shipping_description=product_record.shipping_description
-                weight_oz=product_record.weight_oz
+                product_name=product_record.product_name,
+                description=product_record.description,
+                cost_USD=product_record.cost_USD,
+                qty_in_stock=new_qty,
+                is_active=product_record.is_active,
+                display_order=product_record.display_order,
+                shipping_description=product_record.shipping_description,
+                weight_oz=product_record.weight_oz,
 
             )
 
             ## Generate a list of dicts to use bulk insert
-            purchase_history_products_LOD.append(purchase_history_products_dict)
+            purchase_history_products_LOD.append(purchase_history_product_dict)
 
 
             ## If you lowered the qty to 0 or less, make qty 0 and deactivate item
@@ -1521,25 +1527,15 @@ def pay():
                 product_record.update(qty_in_stock=new_qty)
                 product_record.update_record()
 
-
+    ## If the user is not logged in, get the cart information from session. 
     else:
 
-        
-        
+
         for product_id, qty in session.cart.iteritems():
             product_record=db(db.product.id==product_id).select().first()
             current_qty=int(product_record.qty_in_stock)
             qty_purchased=int(qty)
             new_qty=current_qty-qty_purchased
-
-
-            purchase_history_products_dict={}
-
-            ## Add item to purchase history
-            #purchase_history_products_dict['purchase_history_data_id']=purchase_history_data_id
-            #purchase_history_products_dict['product_id']=product_record
-            #purchase_history_products_dict['product_qty']=qty_purchased
-
 
 
             purchase_history_product_dict=dict(
@@ -1549,24 +1545,19 @@ def pay():
                 product_qty=qty_purchased,
 
                 category_name=product_record.category_name,
-                product_name=product_record.product_name
-                description=product_record.description
-                cost_USD=product_record.cost_USD
-                qty_in_stock=product_record.new_qty
-                is_active=product_record.is_active
-                display_order=product_record.display_order
-                shipping_description=product_record.shipping_description
-                weight_oz=product_record.weight_oz
+                product_name=product_record.product_name,
+                description=product_record.description,
+                cost_USD=product_record.cost_USD,
+                qty_in_stock=new_qty,
+                is_active=product_record.is_active,
+                display_order=product_record.display_order,
+                shipping_description=product_record.shipping_description,
+                weight_oz=product_record.weight_oz,
 
             )
 
-
-
-
-
-
             ## Generate a list of dicts to use bulk insert
-            purchase_history_products_LOD.append(purchase_history_products_dict)
+            purchase_history_products_LOD.append(purchase_history_product_dict)
 
 
             if new_qty<=0:
@@ -1585,12 +1576,188 @@ def pay():
     purchase_history_products_ids=db.purchase_history_products.bulk_insert(purchase_history_products_LOD)
 
 
+
+
+####### This is where I need to make the reciept! DO IT!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#What confirmation thing are you trying to view?
+    #purchase_history_data_id=38#request.args[0]
+
+##   try:
+    #Try to convert and compare the url arg with the session arg that the user is allowed to view. 
+    if True: #int(purchase_history_data_id)==int(session.session_purchase_history_data_id):
+
+        ## if success, then get the corresponding db info
+        purchase_history_data_row=db(db.purchase_history_data.id==purchase_history_data_id).select().first()
+
+        purchase_history_products_rows=db(db.purchase_history_products.purchase_history_data_id==purchase_history_data_id).select()
+
+        ## product table
+        product_header_row=['Product','Total Weight (oz)','Total Cost($)']
+        product_table_row_LOL=[]
+        product_total_weight=0
+        product_total_cost=0
+
+        ## change this so that you don't have to go into the product database to get this data
+        ## It should all be available in the other purchase history tables. 
+        ## I'm doing this because the product table has all editable stuff
+        ## And I want a more permanent record of the transaction. 
+        for row in purchase_history_products_rows:
+            #product_data=db(db.product.id==row.product_id).select().first()
+
+            line_item_weight_oz=int(row.product_qty)*int(row.weight_oz)
+            line_item_cost_usd=int(row.product_qty)*int(row.cost_USD)
+
+            product_table_row=[
+                row.product_name,
+                line_item_weight_oz,
+                line_item_cost_usd,
+            ]
+
+            product_total_weight+=line_item_weight_oz
+            product_total_cost+=line_item_cost_usd
+
+            product_table_row_LOL.append(product_table_row)
+
+        product_totals_row=['Total',product_total_weight,product_total_cost,]
+
+        product_table_row_LOL.append(product_totals_row)
+
+        confirmation_product_grid=table_generation(product_header_row,product_table_row_LOL,'confirmation_product')
+
+
+        ##Shipping Address Table
+        address_header_row=['Street Address Info', 'Local Address Info', 'Country']
+        address_table_row_LOL=[[
+            purchase_history_data_row.shipping_street_address_line_1+" "+purchase_history_data_row.shipping_street_address_line_2,
+            purchase_history_data_row.shipping_municipality+", "+purchase_history_data_row.shipping_administrative_area+" "+purchase_history_data_row.shipping_postal_code,
+            purchase_history_data_row.shipping_country,
+        ]]
+
+        confirmation_address_grid=table_generation(address_header_row,address_table_row_LOL,"confirmation_address")
+
+
+        ##Shipping Info Table
+        shipping_header_row=['Carrier-Rate', 'Shipping Weight (Oz)', 'Estimated Shipping Cost ($)']
+        shipping_table_row_LOL=[[
+            purchase_history_data_row.easypost_shipping_carrier + " - " + purchase_history_data_row.easypost_shipping_service,
+            product_total_weight,
+            purchase_history_data_row.easypost_rate,
+        ]]
+
+        confirmation_shipping_grid=table_generation(shipping_header_row,shipping_table_row_LOL,"confirmation_shipping")
+
+
+        ##Card Table
+        card_header_row=['Name', 'Brand-Last4', 'Expiration(mm/yyyy)']
+        card_table_row_LOL=[[
+            purchase_history_data_row.payment_stripe_name,
+            purchase_history_data_row.payment_stripe_brand + " - " + purchase_history_data_row.payment_stripe_last_4,
+            purchase_history_data_row.payment_stripe_exp_month + " / " + purchase_history_data_row.payment_stripe_exp_year,
+        ]]
+
+        confirmation_card_grid=table_generation(card_header_row,card_table_row_LOL,"confirmation_card")
+
+
+        ##Summary Table
+
+        summary_header_row=['Shipping Cost ($)', 'Product Cost ($)', 'Total Cost ($)']
+        summary_table_row_LOL=[[
+            purchase_history_data_row.easypost_rate,
+            product_total_cost,
+            float(purchase_history_data_row.easypost_rate)+product_total_cost,
+        ]]
+
+        confirmation_summary_grid=table_generation(summary_header_row,summary_table_row_LOL,"confirmation_summary")
+
+        final_div=DIV()
+        final_div.append(DIV("Product Details",_class="confirmation_heading"))
+        final_div.append(confirmation_product_grid)
+        final_div.append(DIV("Address Details",_class="confirmation_heading"))
+        final_div.append(confirmation_address_grid)
+        final_div.append(DIV("Shipping Details",_class="confirmation_heading"))
+        final_div.append(confirmation_shipping_grid)
+        final_div.append(DIV("Payment Details",_class="confirmation_heading"))
+        final_div.append(confirmation_card_grid)
+        final_div.append(DIV("Summary",_class="confirmation_heading"))
+        final_div.append(confirmation_summary_grid)
+        
+
+    #     return dict(
+    #         final_div=final_div,
+    #         purchase_history_data_row = purchase_history_data_row,
+    #         purchase_history_products_rows = purchase_history_products_rows,
+    #         #confirmation_product_grid = confirmation_product_grid,
+    #     )
+
+    # ## if not, they are trying to view something they don't have access to.
+    # else:
+    #     ## This is not the place for a user to be looking around past purchases. If it's not in session
+    #     ## They can't see it here. 
+    #     return dict(
+    #         purchase_history_data_row = "SessionError",
+    #         purchase_history_products_rows = None,
+    #     )
+
+    # ## If the url arg is not convertible to an integer, than you get this error.
+    # ## just return same stuff. 
+    # except ValueError:
+    #         return dict(
+    #             purchase_history_data_row = "ValueError",
+    #             purchase_history_products_rows = None,
+    #         )
+
+    # except TypeError:
+    #         return dict(
+    #             purchase_history_data_row = "TypeError",
+    #             purchase_history_products_rows = None,
+    #         )
+
+    #final_div['styles']
+    final_div_html=final_div.html()
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
     from postmark import PMMail
     message = PMMail(api_key=POSTMARK_API_KEY,
         subject="Order Confirmation",
         sender="Rebecca@3musesglass.com",
         to=muses_email_address,
-        text_body="You just bought something!",
+        html_body=final_div_html,
         tag="confirmation")
     message.send()
 
@@ -1603,80 +1770,142 @@ def pay():
 
 def confirmation():
 
+    ## This function has a problem with deleting a user
+    ## And then someone reusing the same email when they sign up
+    ## FIX IT. 
+
     #What confirmation thing are you trying to view?
     purchase_history_data_id=request.args[0]
 
-    try:
-        #Try to convert and compare the url arg with the session arg that the user is allowed to view. 
-        if int(purchase_history_data_id)==int(session.session_purchase_history_data_id):
+##   try:
+    #Try to convert and compare the url arg with the session arg that the user is allowed to view. 
+    if int(purchase_history_data_id)==int(session.session_purchase_history_data_id):
 
-            ## if success, then get the corresponding db info
-            purchase_history_data_row=db(db.purchase_history_data.id==purchase_history_data_id).select().first()
+        ## if success, then get the corresponding db info
+        purchase_history_data_row=db(db.purchase_history_data.id==purchase_history_data_id).select().first()
 
-            purchase_history_products_rows=db(db.purchase_history_products.purchase_history_data_id==purchase_history_data_id).select()
+        purchase_history_products_rows=db(db.purchase_history_products.purchase_history_data_id==purchase_history_data_id).select()
 
-            ## product table
-            product_header_row=['Product','Total Weight (oz)','Total Cost($)']
-            product_table_row_LOL=[]
-            product_total_weight=0
-            product_total_cost=0
+        ## product table
+        product_header_row=['Product','Total Weight (oz)','Total Cost($)']
+        product_table_row_LOL=[]
+        product_total_weight=0
+        product_total_cost=0
 
-            ## change this so that you don't have to go into the product database to get this data
-            ## It should all be available in the other purchase history tables. 
-            ## I'm doing this because the product table has all editable stuff
-            ## And I want a more permanent record of the transaction. 
-            for row in purchase_history_products_rows:
-                product_data=db(product.id==row.product_id).select().first()
+        ## change this so that you don't have to go into the product database to get this data
+        ## It should all be available in the other purchase history tables. 
+        ## I'm doing this because the product table has all editable stuff
+        ## And I want a more permanent record of the transaction. 
+        for row in purchase_history_products_rows:
+            #product_data=db(db.product.id==row.product_id).select().first()
 
-                product_table_row=[
-                    product_data.product_name,
-                    int(row.product_qty)*int(product_data.weight_oz),
-                    int(row.product_qty)*int(product_data.cost_USD),
-                ]
+            line_item_weight_oz=int(row.product_qty)*int(row.weight_oz)
+            line_item_cost_usd=int(row.product_qty)*int(row.cost_USD)
 
-                product_total_weight+=int(row.product_qty)*int(product_data.weight_oz)
-                product_total_cost+=int(row.product_qty)*int(product_data.cost_USD)
+            product_table_row=[
+                row.product_name,
+                line_item_weight_oz,
+                line_item_cost_usd,
+            ]
 
-                product_table_row_LOL.append(product_table_row)
+            product_total_weight+=line_item_weight_oz
+            product_total_cost+=line_item_cost_usd
 
-            product_totals_row=['Total',product_total_weight,product_total_cost,]
+            product_table_row_LOL.append(product_table_row)
 
-            product_table_row_LOL.append(product_totals_row)
+        product_totals_row=['Total',product_total_weight,product_total_cost,]
 
-            confirmation_product_grid=table_generation(product_header_row,product_table_row_LOL,'confirmation_product')
+        product_table_row_LOL.append(product_totals_row)
 
-
-
-
+        confirmation_product_grid=table_generation(product_header_row,product_table_row_LOL,'confirmation_product')
 
 
-            return dict(
-                purchase_history_data_row = purchase_history_data_row,
-                purchase_history_products_rows = purchase_history_products_rows,
-            )
+        ##Shipping Address Table
+        address_header_row=['Street Address Info', 'Local Address Info', 'Country']
+        address_table_row_LOL=[[
+            purchase_history_data_row.shipping_street_address_line_1+" "+purchase_history_data_row.shipping_street_address_line_2,
+            purchase_history_data_row.shipping_municipality+", "+purchase_history_data_row.shipping_administrative_area+" "+purchase_history_data_row.shipping_postal_code,
+            purchase_history_data_row.shipping_country,
+        ]]
 
-        ## if not, they are trying to view something they don't have access to.
-        else:
-            ## This is not the place for a user to be looking around past purchases. If it's not in session
-            ## They can't see it here. 
-            return dict(
-                purchase_history_data_row = None,
-                purchase_history_products_rows = None,
-            )
+        confirmation_address_grid=table_generation(address_header_row,address_table_row_LOL,"confirmation_address")
 
-    ## If the url arg is not convertible to an integer, than you get this error.
-    ## just return same stuff. 
-    except ValueError:
-            return dict(
-                purchase_history_data_row = None,
-                purchase_history_products_rows = None,
-            )
 
-    except TypeError:
-            return dict(
-                purchase_history_data_row = None,
-                purchase_history_products_rows = None,
-            )
+        ##Shipping Info Table
+        shipping_header_row=['Carrier-Rate', 'Shipping Weight (Oz)', 'Estimated Shipping Cost ($)']
+        shipping_table_row_LOL=[[
+            purchase_history_data_row.easypost_shipping_carrier + " - " + purchase_history_data_row.easypost_shipping_service,
+            product_total_weight,
+            purchase_history_data_row.easypost_rate,
+        ]]
+
+        confirmation_shipping_grid=table_generation(shipping_header_row,shipping_table_row_LOL,"confirmation_shipping")
+
+
+        ##Card Table
+        card_header_row=['Name', 'Brand-Last4', 'Expiration(mm/yyyy)']
+        card_table_row_LOL=[[
+            purchase_history_data_row.payment_stripe_name,
+            purchase_history_data_row.payment_stripe_brand + " - " + purchase_history_data_row.payment_stripe_last_4,
+            purchase_history_data_row.payment_stripe_exp_month + " / " + purchase_history_data_row.payment_stripe_exp_year,
+        ]]
+
+        confirmation_card_grid=table_generation(card_header_row,card_table_row_LOL,"confirmation_card")
+
+
+        ##Summary Table
+
+        summary_header_row=['Shipping Cost ($)', 'Product Cost ($)', 'Total Cost ($)']
+        summary_table_row_LOL=[[
+            purchase_history_data_row.easypost_rate,
+            product_total_cost,
+            float(purchase_history_data_row.easypost_rate)+product_total_cost,
+        ]]
+
+        confirmation_summary_grid=table_generation(summary_header_row,summary_table_row_LOL,"confirmation_summary")
+
+        final_div=DIV()
+        final_div.append(DIV("Product Details",_class="confirmation_heading"))
+        final_div.append(confirmation_product_grid)
+        final_div.append(DIV("Address Details",_class="confirmation_heading"))
+        final_div.append(confirmation_address_grid)
+        final_div.append(DIV("Shipping Details",_class="confirmation_heading"))
+        final_div.append(confirmation_shipping_grid)
+        final_div.append(DIV("Payment Details",_class="confirmation_heading"))
+        final_div.append(confirmation_card_grid)
+        final_div.append(DIV("Summary",_class="confirmation_heading"))
+        final_div.append(confirmation_summary_grid)
+        
+
+        return dict(
+            final_div=final_div,
+            purchase_history_data_row = purchase_history_data_row,
+            purchase_history_products_rows = purchase_history_products_rows,
+            #confirmation_product_grid = confirmation_product_grid,
+        )
+
+    ## if not, they are trying to view something they don't have access to.
+    else:
+        ## This is not the place for a user to be looking around past purchases. If it's not in session
+        ## They can't see it here. 
+        return dict(
+            purchase_history_data_row = "SessionError",
+            purchase_history_products_rows = None,
+        )
+
+    # ## If the url arg is not convertible to an integer, than you get this error.
+    # ## just return same stuff. 
+    # except ValueError:
+    #         return dict(
+    #             purchase_history_data_row = "ValueError",
+    #             purchase_history_products_rows = None,
+    #         )
+
+    # except TypeError:
+    #         return dict(
+    #             purchase_history_data_row = "TypeError",
+    #             purchase_history_products_rows = None,
+    #         )
 
 
 
@@ -1778,6 +2007,28 @@ def manage_landing_page_images():
 
     landing_page_image_grid.element('.web2py_counter', replace=None)
     return locals()
+
+@auth.requires_membership('admin')
+def reset_inventory():
+
+    products=db(db.product.display_order<500).select()
+
+    for product_record in products:
+
+        product_record.update(qty_in_stock=1)
+        product_record.update_record()
+        product_record.update(is_active=True)
+        product_record.update_record()
+
+    #return dict(message="Done!")
+    redirect(URL('categories'))
+
+@auth.requires_membership('admin')
+def set_order_number():
+
+    session.session_purchase_history_data_id=request.args[0]
+
+    return dict(message="Done!")
 
 
 
@@ -2570,24 +2821,29 @@ def table_generation(grid_header_list, grid_row_lists, basename):
 
     grid['_class']=str(basename)+'_grid_container'
 
-    grid_header_row=DIV()
+    if grid_header_list!=None:
 
-    grid_header_row['_class']=str(basename)+'_grid_header_row'
+        grid_header_row=DIV()
 
-    for i in range(len(grid_header_list)):
+        grid_header_row['_class']=str(basename)+'_grid_header_row grid_header_row'
 
-        grid_header_row.append(DIV(grid_header_list[i], _class=str(basename)+"_grid_header_cell "+str(basename)+"_grid_col "+str(basename)+"_grid_col_"+str(i+1)))
-    
-    grid.append(grid_header_row)
+        for i in range(len(grid_header_list)):
 
+            grid_header_row.append(DIV(grid_header_list[i], _class=str(basename)+"_grid_header_cell grid_header_cell "+str(basename)+"_grid_col grid_col "+str(basename)+"_grid_col_"+str(i+1)))
+        
+        grid.append(grid_header_row)
+
+    else:
+
+        pass
 
     for grid_row_list in grid_row_lists:
 
-        grid_table_row=DIV(_class=str(basename)+"_grid_table_row")
+        grid_table_row=DIV(_class=str(basename)+"_grid_table_row grid_table_row")
 
         for i in range(len(grid_row_list)):
 
-            grid_table_row.append(DIV(grid_row_list[i],_class=str(basename)+"_grid_table_cell "+str(basename)+"_grid_col "+str(basename)+"_grid_col_"+str(i+1)))
+            grid_table_row.append(DIV(grid_row_list[i],_class=str(basename)+"_grid_table_cell grid_table_cell "+str(basename)+"_grid_col grid_col "+str(basename)+"_grid_col_"+str(i+1)))
 
         grid.append(grid_table_row)
 

@@ -1,2 +1,12 @@
 Write something about this app.
 Developed with web2py.
+
+12/22/14
+There is a problem with stripe and creating a new card
+I need to get that working and also paypal. 
+
+also, I'm in the middle of adding css to the email reciepts
+
+AND I'm in the middle of adding purchase history to the user profile. 
+
+This is a disaster!

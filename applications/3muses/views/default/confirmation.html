@@ -3,81 +3,29 @@
 
 
 
-{{if purchase_history_data_row==None:}}
-	This record either doesn't exist or YOU SHOULDN'T BE LOOKING AT IT.
+{{if purchase_history_data_row=="SessionError":}}
+	Please go to your purchase history or email to view purchase information
+
+{{elif purchase_history_data_row=="ValueError":}}
+	That URL does not correspond to a purchase history record (VALUE ERROR)
+
+{{elif purchase_history_data_row=="TypeError":}}
+	That URL does not correspond to a purchase history record (TYPE ERROR)
+
 {{else:}}
 
 	<h1>Thank you for shopping at 3MusesGlass!</h1>
+
 		<br/>
 		<br/>
+
 	<h3>You should recieve a confirmation email shortly at {{=purchase_history_data_row.muses_email_address}}.</h3>
 	<h3>Please allow one day for processing. Below are the details of your order:</h3>
+
 		<br/>
 
+	{{=final_div}}
 
-
-	<h2>Order Details</h2>
-
-		{{=purchase_history_products_rows}}
 		<br/>
-		Total cost of items in cart: {{=purchase_history_data_row.cart_base_cost}}
-		<br/>
-		<br/>
-
-
-
-	<h2>Shipping Details</h2>
-
-		{{=purchase_history_data_row.shipping_street_address_line_1}}
-		<br/>
-		{{if not purchase_history_data_row.shipping_street_address_line_2:}}
-		{{else:}}
-			{{=purchase_history_data_row.shipping_street_address_line_2}}
-			<br/>
-		{{pass}}
-
-		{{=purchase_history_data_row.shipping_municipality}},
-		{{=purchase_history_data_row.shipping_administrative_area}}
-		{{=purchase_history_data_row.shipping_postal_code}}
-		<br/>
-		{{=purchase_history_data_row.shipping_country}}
-		<br/>
-		<br/>
-		{{=purchase_history_data_row.easypost_shipping_carrier}}
-		<br/>
-		{{=purchase_history_data_row.easypost_shipping_service}}
-		<br/>
-		Shipping cost: {{=purchase_history_data_row.cart_shipping_cost}}
-		<br/>
-
-
-
-	<h2>Total Cost</h2>
-
-		Total cost: {{=purchase_history_data_row.cart_total_cost}}
-
-
-
-	<h2>Payment Details</h2>
-		{{if not purchase_history_data_row.payment_stripe_name:}}
-		{{else:}}
-			{{=purchase_history_data_row.payment_stripe_name}}
-			<br/>
-		{{pass}}
-		{{=purchase_history_data_row.payment_stripe_last_4}}
-		<br/>
-		{{=purchase_history_data_row.payment_stripe_brand}}
-		<br/>
-		{{=purchase_history_data_row.payment_stripe_exp_month}}
-		<br/>
-		{{=purchase_history_data_row.payment_stripe_exp_year}}
-		<br/>
-
-
-
-	<br/>
-	<br/>
-	<br/>
-	{{=purchase_history_data_row}}
 
 {{pass}}

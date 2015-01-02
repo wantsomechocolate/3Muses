@@ -52,6 +52,7 @@ def _():
     (T('Manage Landing Page'),False,URL('manage_landing_page_images')),
     (T('Manage Purchase Data'),False,URL('manage_purchase_history_data')),
     (T('Manage Purchased Products'),False,URL('manage_purchase_history_products')),
+    (T('Reset Inventory'),False,URL('reset_inventory')),
     ]
 
     response.menu += [

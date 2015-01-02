@@ -87,61 +87,71 @@
 				<div class = 'product-description'>
 					{{=product_row[j].description}}
 				</div>
-
 				<br/>
 
 				<div class = 'product-cost-cart'>
 					Cost: {{=product_row[j].cost_USD}}
 				</div>
-
 				<br/>
 
+
+
 				<div class = 'product-cost-cart'>
-				{{ if auth.is_logged_in(): }}
 
-					{{cart_row=db((db.muses_cart.product_id==product_row[j].id)&(db.muses_cart.user_id==auth.user_id)).select()}}
+				{{if product_row[j].qty_in_stock==0:}}
 
-					{{try:}}
-						{{cart_row[0]}}
-						{{="You currently have this item in your cart."}}
-						<!--="You currently have "+str(cart_row[0].product_qty)+" of this item in your cart."-->
-						{{=A('X', _href=URL('delete_item_from_cart', vars=dict(pri_key=cart_row[0].id, redirect_url=URL('product',args=product_row[j].id))), _class="btn btn-primary")}}
-						<br/>
-						{{=cart_form}}
-
-					{{except IndexError:}}
-
-						{{=cart_form}}
-					
-					{{pass}}
+					This product is sold out!
 
 				{{else:}}
 
-					{{if not session.cart:}}
+					{{ if auth.is_logged_in(): }}
 
-						{{=cart_form}}
+						{{cart_row=db((db.muses_cart.product_id==product_row[j].id)&(db.muses_cart.user_id==auth.user_id)).select()}}
+
+						{{try:}}
+							{{cart_row[0]}}
+							{{="You currently have this item in your cart."}}
+							<!--="You currently have "+str(cart_row[0].product_qty)+" of this item in your cart."-->
+							{{=A('X', _href=URL('delete_item_from_cart', vars=dict(pri_key=cart_row[0].id, redirect_url=URL('product',args=product_row[j].id))), _class="btn btn-primary")}}
+							<br/>
+							{{=cart_form}}
+
+						{{except IndexError:}}
+
+							{{=cart_form}}
+						
+						{{pass}}
 
 					{{else:}}
 
-						{{if str(product_row[j].id) in session.cart.keys():}}
+						{{if not session.cart:}}
 
-							You currently have this item in your cart.
-
-							<!--You currently have  =session.cart[str(product_row[j].id)]  of this item in your cart.-->
-
-							{{=A('X', _href=URL('delete_item_from_cart', vars=dict(pri_key=product_row[j].id, redirect_url=URL('product',args=product_row[j].id))), _class="btn btn-primary")}}
-							<br/>
 							{{=cart_form}}
 
 						{{else:}}
 
-							{{=cart_form}}
+							{{if str(product_row[j].id) in session.cart.keys():}}
 
-						{{pass}}
+								You currently have this item in your cart.
 
-					{{pass}}
+								<!--You currently have  =session.cart[str(product_row[j].id)]  of this item in your cart.-->
 
-				{{pass}}
+								{{=A('X', _href=URL('delete_item_from_cart', vars=dict(pri_key=product_row[j].id, redirect_url=URL('product',args=product_row[j].id))), _class="btn btn-primary")}}
+								<br/>
+								{{=cart_form}}
+
+							{{else:}}
+
+								{{=cart_form}}
+
+							{{pass}} <!-- End if checking for item in cart (session) -->
+
+						{{pass}} <!-- End if checking for items in the cart-->
+
+					{{pass}} <!-- -->
+
+				{{pass}} <!--End if checking for qty-->
+
 				</div>
 				
 
