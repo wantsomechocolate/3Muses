@@ -101,7 +101,12 @@ def index():
 
     right_sidebar_enabled=True
 
-    return locals()
+    #return locals()
+
+    return dict(
+        left_sidebar_enabled=left_sidebar_enabled, 
+        right_sidebar_enabled=right_sidebar_enabled,
+        )
 
 
 
@@ -113,7 +118,13 @@ def categories():
 
     right_sidebar_enabled=False
 
-    return locals()
+    #return locals()
+
+    return dict(
+        category_rows=category_rows,
+        left_sidebar_enabled=left_sidebar_enabled, 
+        right_sidebar_enabled=right_sidebar_enabled,
+        )
 
 
 
@@ -127,7 +138,14 @@ def display():
 
     right_sidebar_enabled=False
 
-    return locals()
+    #return locals()
+
+    return dict(
+        category_id=category_id,
+        product_rows=product_rows,
+        left_sidebar_enabled=left_sidebar_enabled, 
+        right_sidebar_enabled=right_sidebar_enabled,
+        )
 
 
 
@@ -181,7 +199,13 @@ def product():
 
         pass
 
-    return locals()
+    #return locals()
+
+    return dict(
+        product_id=product_id,
+        product_row=product_row,
+        cart_form=cart_form,
+        )
 
 
 
