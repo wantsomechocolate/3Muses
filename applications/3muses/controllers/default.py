@@ -9,10 +9,12 @@
 ## - call exposes all registered services (none by default)
 #########################################################################
 
-import os, ast
+import os, ast, time
 import easypost
 import stripe
 from gluon.contrib.stripe import Stripe
+
+STRIPE_SESSION_RETIRE_HOURS=26
 
 
 ## is it ok to have top level stuff here? It works so leave it until someone says its bad. 
@@ -358,7 +360,7 @@ def add_new_card():
                         _type='integer', 
                         _name='exp_year', 
                         _class='form-control', 
-                        requires=IS_INT_IN_RANGE(2014,3000)
+                        requires=IS_INT_IN_RANGE(2015,3000)
                     ),
                 ),
             ),
@@ -376,8 +378,8 @@ def add_new_card():
         ## and create a new card. If the logged in user doesn't have a stripe customer token yet, 
         ## it will be unable to find one and raise an index error. 
 
-        from gluon.debug import dbg
-        dbg.set_trace()
+        #from gluon.debug import dbg
+        #dbg.set_trace()
 
         #existing_stripe_id=db(db.stripe_customers.user_id==auth.user_id).select()['stripeToken']
         try:
@@ -1751,7 +1753,7 @@ def pay():
     #         )
 
     #final_div['styles']
-    final_div_html=final_div.html()
+    final_div_html=final_div.xml()
 
 
 
@@ -2992,3 +2994,55 @@ def create_shipment(to_address_dict, shipping_cart_LOD):
         )
 
     return shipment
+
+
+def stripe_remove_session_users():
+    
+    ## set cursor_id to get through the while loop the first time
+    cursor_id=""
+
+    ## set has_more to True to enter the while loop initially
+    has_more=True
+
+    ## While there are no more pages of users to go through
+    while has_more==True:
+
+        ## If this is the first time calling for customers...
+        if cursor_id=="":
+            ## Get the first 10 stripe customers (make the call with no args)
+            stripe_customer_list=stripe.Customer.all()
+        ## If this is not the first time
+        else:
+            ## make the call by setting starting_after to the id of the customer ending the previous call.
+            stripe_customer_list=stripe.Customer.all(starting_after=cursor_id)
+
+        ## Get the data portion of the dictionary returned.
+        stripe_customer_list_data=stripe_customer_list['data']
+
+        ## Get the id of the final customer in the list for next iteration.
+        cursor_id=stripe_customer_list_data[-1]['id']
+
+        ## Check to see if the email of the customer is in the threemuses user list. 
+        ## (I should be using stripe id not email for this)
+        for stripe_customer in stripe_customer_list_data:
+            three_muses_user=db(db.stripe_customers.stripe_id==stripe_customer['id']).select().first()
+            if not three_muses_user:
+
+                hours_since_creation=(time.time()-stripe_customer['created'])/3600
+
+                if hours_since_creation>=STRIPE_SESSION_RETIRE_HOURS:
+
+                    scu=stripe.Customer.retrieve(stripe_customer['id'])
+                    dummy=scu.delete()
+
+                else:
+                    pass
+            else:
+                pass
+
+
+        ## This will be false if no more customers to retrieve. True if there are. 
+        has_more=stripe_customer_list['has_more']
+
+    return dict(message="Done!")
+

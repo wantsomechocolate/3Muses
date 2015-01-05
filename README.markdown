@@ -7,28 +7,33 @@ I would say just use etsy but there is a specific reason why that is not being d
 
 3rd Party Services in use so far:
     Web2py      |   Web framework
+
     Heroku      |   Web hosting
+
     PostMark    |   Send transactional emails
+
     Stripe      |   Handle credit card information
+
     Postgresql  |   Database
+
     AWS(S3)     |   Image storage
 
 3rd Party services yet to be integrated:
+
     Paypal      |   Because paypal
 
 
-## To Do List:
+Notes:
 
-    To Do                               |   Date Added      |   Date Solved
-    *Add CSS to transactional emails    |   12/22/2014      |   ...
-    
-    *Fix bug with creating a card in    |   12/22/2014      |   ...
-        stripe                          |
+Procfile text that might schedule session cleanup
 
-    *Write a scheduled job to compare   |
-        stripe customers and full users |   12/22/2014      |   ...
-        of 3muses and delete appropriate|
-        stripe users after 24 hours.    |
+web: python web2py.py -a 'admin' -i 0.0.0.0 -p $PORT
+web: nohup python web2py.py -a 'admin' -i 0.0.0.0 -p $PORT -S app -M -R scripts/sessions2trash.py &
 
-    *Add purchase history to profile.   |   12/22/2014      |   ...
+This worked locally to get the session cleaner to work
+I didn't have to include the app name, probably because it is the default/main app
 
+nohup python web2py.py -a asdfasdf -M -R scripts/sessions2trash.py &
+
+But I still have no idea how to deploy this (will have to change the Procfile to something that works)
+and now I have no clue how to get this working with other scheduled tasks. 
