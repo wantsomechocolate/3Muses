@@ -22,8 +22,10 @@ pass
 	<h2>Purchase History</h2>
 	{{purchase_history=db(db.purchase_history_data.muses_id==auth.user_id).select()}}
 	{{for purchase in purchase_history:}}
+		<h3>Purchase Details</h3>
 		{{=purchase}}
-		{{purchase_history_products=db(db.purchase_history_products.purchase_history_data_id==purchase.id)}}
+		<h3>Purchase Products</h3>
+		{{purchase_history_products=db(db.purchase_history_products.purchase_history_data_id==purchase.id).select()}}
 		{{=purchase_history_products}}
 
 	{{pass}}

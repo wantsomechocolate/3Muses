@@ -37,6 +37,9 @@ def stripe_remove_session_users():
     ## set has_more to True to enter the while loop initially
     has_more=True
 
+    stripe_list_of_deleted_customers=[]
+    stripe_list_of_deleted_customers.append("Test")
+
     ## While there are no more pages of users to go through
     while has_more==True:
 
@@ -67,6 +70,7 @@ def stripe_remove_session_users():
 
                     scu=stripe.Customer.retrieve(stripe_customer['id'])
                     dummy=scu.delete()
+                    stripe_list_of_deleted_customers.append(stripe_customer)
 
                 else:
                     pass
@@ -77,7 +81,7 @@ def stripe_remove_session_users():
         ## This will be false if no more customers to retrieve. True if there are. 
         has_more=stripe_customer_list['has_more']
 
-    return dict(message="Done!")
+    return stripe_list_of_deleted_customers
 
 from gluon.scheduler import Scheduler
 Scheduler(db, dict(task1=stripe_remove_session_users))
