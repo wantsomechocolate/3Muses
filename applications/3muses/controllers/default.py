@@ -2092,6 +2092,7 @@ def handle_error():
 
 ## functions that come with the welcome app ##
 def user():
+    
     """
     exposes:
     http://..../[app]/default/user/login
@@ -2106,6 +2107,32 @@ def user():
         @auth.requires_permission('read','table name',record_id)
     to decorate functions that need access control
     """
+
+    ## This is what I had in the user.html doc to do the purchase history
+    # <h2>Purchase History</h2>
+    # {{purchase_history=db(db.purchase_history_data.muses_id==auth.user_id).select()}}
+    # {{for purchase in purchase_history:}}
+    #     <h3>Purchase Details</h3>
+    #     {{=purchase}}
+    #     <h3>Purchase Products</h3>
+    #     {{purchase_history_products=db(db.purchase_history_products.purchase_history_data_id==purchase.id).select()}}
+    #     {{=purchase_history_products}}
+
+    # {{pass}}
+
+
+    #purchase_history=db(db.purchase_history_data.muses_id==auth.user_id).select()
+    #for purchase in purchase_history:
+        #purchase_history_products=db(db.purchase_history_products.purchase_history_data_id==purchase.id).select()
+
+    ## create a table with a row for each purchase and a link to each purchases' corresponding products.
+    ## Have the ability to be able to look at all products. 
+
+    ## Use custom tables or web2py tables for this? With web2py tables user can export
+    ## filter, sort. I'm going to try using web2py tables first. 
+
+    #grid=SQLFORM.smartgrid(db.purchase_history_data, linked_tables=['purchase_history_products'])
+
     return dict(form=auth())
 
 
