@@ -48,3 +48,13 @@ application applications does not exist, create (y/n)?Traceback (most recent cal
 IOError: [Errno 9] Bad file descriptor
 /home/wantsomechocolate/Code/3Muses/env/local/lib/python2.7/site-packages/requests/packages/urllib3/connectionpool.py:730: InsecureRequestWarning: Unverified HTTPS request is being made. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.org/en/latest/security.html (This warning will only appear once by default.)
   InsecureRequestWarning)
+web2py Web Framework
+Created by Massimo Di Pierro, Copyright 2007-2015
+Version 2.9.5-stable+timestamp.2014.03.16.02.35.39
+Database drivers available: SQLite(sqlite3), MySQL(pymysql), PostgreSQL(psycopg2), PostgreSQL(pg8000), MSSQL(pyodbc), DB2(pyodbc), Teradata(pyodbc), Ingres(pyodbc), IMAP(imaplib)
+
+please visit:
+	http://127.0.0.1:8000/
+use "kill -SIGTERM 2936" to shutdown the web2py server
+
+
