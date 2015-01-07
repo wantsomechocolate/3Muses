@@ -83,5 +83,19 @@ def stripe_remove_session_users():
 
     return stripe_list_of_deleted_customers
 
+
+#def session2trash():
+
+from sessions2trash import single_loop
+def delete_sessions():
+
+    single_loop()
+
+    return "Done!"
+
+
 from gluon.scheduler import Scheduler
-Scheduler(db, dict(task1=stripe_remove_session_users))
+Scheduler(db, dict(
+    task1=stripe_remove_session_users,
+    delete_sessions=delete_sessions,
+    ))
