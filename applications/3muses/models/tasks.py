@@ -7,7 +7,7 @@ def stripe_remove_session_users():
     import stripe
 
     ## Consts
-    STRIPE_SESSION_RETIRE_HOURS=(1/10.0)
+    STRIPE_SESSION_RETIRE_HOURS=26 #(1/10.0)
 
     ## API KEY
     try:

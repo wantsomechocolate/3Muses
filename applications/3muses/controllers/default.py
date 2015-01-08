@@ -14,24 +14,21 @@ import easypost
 import stripe
 #from gluon.contrib.stripe import Stripe
 
-STRIPE_SESSION_RETIRE_HOURS=(1/20.0)
-SERVER_SESSION_RETIRE_HOURS=(1/20.0)
+STRIPE_SESSION_RETIRE_HOURS=26 #(1/20.0)
+SERVER_SESSION_RETIRE_HOURS=26 #(1/20.0)
 
 
 ## is it ok to have top level stuff here? It works so leave it until someone says its bad. 
 if response.session_id_name in response.cookies:
-
     response.cookies[response.session_id_name]['expires']=int(3600*SERVER_SESSION_RETIRE_HOURS)
 
 else:
-
     # cookie key doesn't get created until second time visiting a page for incognito chrome and probably
     # other private browsing modes. 
     pass
 
 
 try:
-
     ## see if you can acces the heroku environment variables
     STRIPE_SECRET=os.environ['STRIPE_SECRET']
     STRIPE_PUBLISHABLE=os.environ['STRIPE_PUBLISHABLE']
