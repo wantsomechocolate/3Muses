@@ -104,6 +104,9 @@ db.define_table('purchase_history_data',
 	Field('cart_base_cost'),
 	Field('cart_shipping_cost'),
 	Field('cart_total_cost'),
+
+	singular=T("Purchase History Data"),
+	plural=T("Purchase History Data"),
 )
 
 ## This purchase history product table
@@ -126,6 +129,8 @@ db.define_table('purchase_history_products',
 	Field('display_order','integer'),
 	Field('shipping_description'),
 	Field('weight_oz'),
+	singular=T("Purchase History Product"),
+	plural=T("Purchase History Products"),
 	)
 
 

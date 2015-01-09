@@ -1,0 +1,178 @@
+/*
+*Grid
+*
+* The default style for SQLFORM.grid even using jquery-iu or another ui framework
+* will look better with the declarations below
+* if needed to remove base.css consider keeping these following lines in some css file.
+*/
+/* .web2py_table {border:1px solid #ccc} */
+.web2py_paginator {}
+.web2py_grid {width:100%}
+.web2py_grid table {width:100%}
+.web2py_grid tbody td {padding:2px 5px 2px 5px; vertical-align: middle;}
+.web2py_grid .web2py_form td {vertical-align: top;}
+
+.web2py_grid thead th, .web2py_grid tfoot td {
+    background-color:#EAEAEA;
+    padding:10px 5px 10px 5px;
+}
+
+.web2py_grid thead th:last-child, .web2py_grid tbody tr td:last-child {
+    width:300px;
+}
+
+.web2py_grid tr.odd {background-color:#F9F9F9}
+.web2py_grid tr:hover {background-color:#F5F5F5}
+
+/*
+.web2py_breadcrumbs a {
+    line-height:20px; margin-right:5px; display:inline-block;
+    padding:3px 5px 3px 5px;
+    font-family:'lucida grande',tahoma,verdana,arial,sans-serif;
+    color:#3C3C3D;
+    text-shadow:1px 1px 0 #FFFFFF;
+    white-space:nowrap; overflow:visible; cursor:pointer;
+    background:#ECECEC;
+    border:1px solid #CACACA;
+    -webkit-border-radius:2px; -moz-border-radius:2px;
+    -webkit-background-clip:padding-box; border-radius:2px;
+    outline:none; position:relative; zoom:1; *display:inline;
+}
+*/
+
+.web2py_console form {
+    width: 100%;
+    display: inline;
+    vertical-align: middle;
+    margin: 0 0 0 5px;
+}
+
+.web2py_console form select {
+    margin:0;
+}
+
+.web2py_search_actions {
+    float:left;
+    text-align:left;
+}
+
+.web2py_grid .row_buttons {
+    min-height:25px;
+    vertical-align:middle;
+}
+.web2py_grid .row_buttons a {
+    margin:3px;
+}
+
+.web2py_search_actions {
+    width:100%;
+}
+
+.web2py_grid .row_buttons a,
+.web2py_paginator ul li a,
+.web2py_search_actions a,
+.web2py_console input[type=submit],
+.web2py_console input[type=button],
+.web2py_console button {
+    line-height:20px;
+    margin-right:2px; display:inline-block;
+    padding:3px 5px 3px 5px;
+}
+
+.web2py_counter {
+    margin-top:5px;
+    margin-right:2px;
+    width:35%;
+    float:right;
+    text-align:right;
+}
+
+/*Fix firefox problem*/
+.web2py_table {clear:both; display:block}
+
+.web2py_paginator {
+    padding:5px;
+    text-align:right;
+    background-color:#f2f2f2;
+
+}
+.web2py_paginator ul {
+    list-style-type:none;
+    margin:0px;
+    padding:0px;
+}
+
+.web2py_paginator ul li {
+    display:inline;
+}
+
+.web2py_paginator .current {
+    font-weight:bold;
+}
+
+.web2py_breadcrumbs ul {
+    list-style:none;
+    margin-bottom:18px;
+}
+
+li.w2p_grid_breadcrumb_elem {
+    display:inline-block;
+}
+
+.web2py_console form { vertical-align: middle; }
+.web2py_console input, .web2py_console select,
+.web2py_console a { margin: 2px; }
+
+
+#wiki_page_body {
+   width: 600px;
+   height: auto;
+   min-height: 400px;
+}
+
+/* fix some IE problems */
+
+.ie-lte7 .topbar .container {z-index:2}
+.ie-lte8 div.flash{ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endColorstr='#000000', GradientType=0 ); }
+.ie-lte8 div.flash:hover {filter:alpha(opacity=25);}
+.ie9 #w2p_query_panel {padding-bottom:2px}
+
+
+
+
+
+/*=============================================================
+                       OTHER RULES
+==============================================================*/
+
+/* Massimo Di Pierro fixed alignment in forms with list:string */
+form table tr{margin-bottom:9px;}
+td.w2p_fw ul{margin-left:0px;}
+
+/* web2py_console in grid and smartgrid */
+.hidden{visibility:visible;}
+.web2py_console input{
+  display: inline-block;
+  margin-bottom: 0;
+  vertical-align: middle;
+}
+.web2py_console input[type="submit"],
+.web2py_console input[type="button"],
+.web2py_console button{
+  padding-top:4px;
+  padding-bottom:4px;
+  margin:3px 0 0 2px;
+}
+.web2py_console a,
+.web2py_console select,
+.web2py_console input
+{
+  margin:3px 0 0 2px;
+}
+.web2py_grid form table{width:auto;}
+/* auth_user_remember checkbox extrapadding in IE fix */
+.ie-lte9 input#auth_user_remember.checkbox {padding-left:0;}
+
+div.controls .error {
+    width: auto;
+}

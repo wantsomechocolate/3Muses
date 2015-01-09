@@ -18,14 +18,8 @@ pass
 
 
 {{if request.args(0)=='profile':}}
-
-
-	{{grid=SQLFORM.smartgrid(
-        db.purchase_history_data, 
-        linked_tables=['purchase_history_products'],
-        constraints={'purchase_history_products':(db.purchase_history_data.muses_id==auth.user_id)},
-        )}}
-	{{=grid}}
+    
+    {{=A("View Purchase History",_href=URL('view_purchase_history'))}}
 
 {{pass}}
 

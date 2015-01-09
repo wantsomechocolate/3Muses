@@ -3071,3 +3071,54 @@ def stripe_remove_session_users():
 
     return dict(message="Done!")
 
+@auth.requires_login()
+def view_purchase_history():
+    query=(db.purchase_history_data.muses_id==auth.user_id)
+
+    db.purchase_history_data.id.readable=db.purchase_history_data.id.writable=False
+    db.purchase_history_data.muses_name.readable=db.purchase_history_data.muses_name.writable=False
+    db.purchase_history_data.muses_id.readable=db.purchase_history_data.muses_id.writable=False
+    db.purchase_history_data.muses_email_address.readable=db.purchase_history_data.muses_email_address.writable=False
+    db.purchase_history_data.session_id_3muses.readable=db.purchase_history_data.session_id_3muses.writable=False
+    db.purchase_history_data.session_db_table.readable=db.purchase_history_data.session_db_table.writable=False
+    db.purchase_history_data.session_db_record_id.readable=db.purchase_history_data.session_db_record_id.writable=False
+    db.purchase_history_data.easypost_rate_id.readable=db.purchase_history_data.easypost_rate_id.writable=False
+    db.purchase_history_data.easypost_shipment_id.readable=db.purchase_history_data.easypost_shipment_id.writable=False
+    db.purchase_history_data.payment_method.readable=db.purchase_history_data.payment_method.writable=False
+    db.purchase_history_data.payment_stripe_user_id.readable=db.purchase_history_data.payment_stripe_user_id.writable=False
+    db.purchase_history_data.payment_stripe_card_id.readable=db.purchase_history_data.payment_stripe_card_id.writable=False
+    db.purchase_history_data.payment_stripe_transaction_id.readable=db.purchase_history_data.payment_stripe_transaction_id.writable=False
+
+    db.purchase_history_data.writable=False
+
+
+    db.purchase_history_products.id.readable=db.purchase_history_products.id.writable=False
+    db.purchase_history_products.purchase_history_data_id.readable=db.purchase_history_products.purchase_history_data_id.writable=False
+    db.purchase_history_products.product_id.readable=db.purchase_history_products.product_id.writable=False
+    db.purchase_history_products.category_name.readable=db.purchase_history_products.category_name.writable=False
+    db.purchase_history_products.qty_in_stock.readable=db.purchase_history_products.qty_in_stock.writable=False
+    db.purchase_history_products.is_active.readable=db.purchase_history_products.is_active.writable=False
+    db.purchase_history_products.display_order.readable=db.purchase_history_products.display_order.writable=False
+    db.purchase_history_products.shipping_description.readable=db.purchase_history_products.shipping_description.writable=False
+
+
+    grid=SQLFORM.smartgrid(db.purchase_history_data, 
+        constraints=dict(purchase_history_data=query),
+        linked_tables=['purchase_history_products'],
+        searchable=False,
+        deletable=False,
+        create=False,
+        editable=False,
+        exportclasses=dict(csv_with_hidden_cols=False,
+                            tsv_with_hidden_cols=False,
+                            html=False,
+                            json=False,
+                            tsv=False,
+                            xml=False,
+                            ),
+        )
+
+
+
+    return dict(grid=grid)
+
