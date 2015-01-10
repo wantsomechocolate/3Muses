@@ -50,7 +50,8 @@ if not request.env.web2py_runtime_gae:
     db = DAL(os.environ['DATABASE_URL'], pool_size=10)
     try:
         session.connect(request, response, db, masterapp=None)
-    except psycopg2.ProgrammingError:
+    #except psycopg2.ProgrammingError:
+    except:
         pass
 
 
