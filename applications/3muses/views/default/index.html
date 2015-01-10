@@ -10,7 +10,12 @@
 <div class="polaroid_row">
 <div class="polariod_row-center">
 {{if sqlite_tf:}}
-  {{srcattr=URL('download',db(db.landing_page_images.image_purpose=="3musesLandingPage").select()[0].s3_url)}}
+  
+  {{try:}}
+    {{srcattr=URL('download',db(db.landing_page_images.image_purpose=="3musesLandingPage").select()[0].s3_url)}}
+  {{except:}}
+    {{srcattr=URL('http://i.imgur.com/e5i59Bm.jpg')}}
+
 {{else:}}
   {{srcimg=db(db.landing_page_images.image_purpose=="3musesLandingPage").select()[0].s3_url}}
   {{srcattr='https://s3.amazonaws.com/threemusesglass/site_images/'+srcimg}}
@@ -23,7 +28,12 @@
   </div>
 
 {{if sqlite_tf:}}
-  {{srcattr=URL('download',db(db.landing_page_images.image_purpose=="3Muses on Etsy").select()[0].s3_url)}}
+  
+  {{try:}}
+    {{srcattr=URL('download',db(db.landing_page_images.image_purpose=="3Muses on Etsy").select()[0].s3_url)}}
+  {{except:}}
+    {{srcattr=URL('http://i.imgur.com/e5i59Bm.jpg')}}
+
 {{else:}}
   {{srcimg=db(db.landing_page_images.image_purpose=="3Muses on Etsy").select()[0].s3_url}}
   {{srcattr='https://s3.amazonaws.com/threemusesglass/site_images/'+srcimg}}
@@ -36,7 +46,12 @@
   </div>
 
 {{if sqlite_tf:}}
-  {{srcattr=URL('download',db(db.landing_page_images.image_purpose=="MeetTheArtist").select()[0].s3_url)}}
+
+  {{try:}}
+    {{srcattr=URL('download',db(db.landing_page_images.image_purpose=="MeetTheArtist").select()[0].s3_url)}}
+  {{except:}}
+    {{srcattr=URL('http://i.imgur.com/e5i59Bm.jpg')}}
+
 {{else:}}
   {{srcimg=db(db.landing_page_images.image_purpose=="MeetTheArtist").select()[0].s3_url}}
   {{srcattr='https://s3.amazonaws.com/threemusesglass/site_images/'+srcimg}}

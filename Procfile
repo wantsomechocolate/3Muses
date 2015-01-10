@@ -1,1 +1,1 @@
-web: python web2py.py -a 'supersecretpassword' -i 0.0.0.0 -p $PORT -X -K '3muses'
+web: python web2py.py -a 'asdfasdf12341234' -i 0.0.0.0 -p $PORT -X -K '3muses'
