@@ -1,1 +1,1 @@
-web: python web2py.py -a 'admin' -i 0.0.0.0 -p $PORT -X -K '3muses'
+web: python web2py.py -a 'supersecretpassword' -i 0.0.0.0 -p $PORT -X -K '3muses'
