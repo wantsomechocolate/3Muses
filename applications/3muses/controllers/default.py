@@ -67,7 +67,7 @@ except KeyError:
 easypost.api_key=EASYPOST_KEY
 
 try:
-    POSTMARK_API_KEY=os.environ['EASYPOST_API_KEY']
+    POSTMARK_API_KEY=os.environ['POSTMARK_API_KEY']
 except KeyError:
 
     with open('/home/wantsomechocolate/Code/API Info/api_keys.txt','r') as fh:
