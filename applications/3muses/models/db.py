@@ -9,51 +9,42 @@ import os,ast
 ## be redirected to HTTPS, uncomment the line below:
 # request.requires_https()
 
-sqlite_tf=False
+sqlite_tf=True
 
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
 
     #db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
 
-    ## try connecting to the db using heroku environment variable
-    # try:
-    #     # uncomment below to have this fail faster when working locally on sqlite
-    #     #hey=dict(kii='baluu')
-    #     #hey['nonono']
-    #     db = DAL(os.environ['DATABASE_URL'], pool_size=10)
-    
-    # ## a Key error means you are not running on heroku (hopefully), so try to get the db location locally
-    # except KeyError:
-
-    #     if sqlite_tf==False:
-
-    #         ## try to access the remote database locally AND connect to it
-    #         try:
-    #             with open('/home/wantsomechocolate/Code/API Info/database_urls.txt','r') as fh:
-    #                 text=fh.read()
-    #                 database_urls = ast.literal_eval(text)
-
-    #             db = DAL(database_urls['heroku']['3muses']['DATABASE_URL'], pool_size=10)
-
-    #         ## if you aren't running on heroku AND the database url was found locally but couldn't
-    #         ## be connected to, connect using sqlite database. 
-    #         except RuntimeError:
-        
-    #             db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-
-    #     else:
-    #         db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
-
-    # session.connect(request, response, db, masterapp=None)
-
-    db = DAL(os.environ['DATABASE_URL'], pool_size=10)
+    # try connecting to the db using heroku environment variable
     try:
-        session.connect(request, response, db, masterapp=None)
-    #except psycopg2.ProgrammingError:
-    except:
-        pass
+        # uncomment below to have this fail faster when working locally on sqlite
+        dummy=1/0
+        db = DAL(os.environ['DATABASE_URL'], pool_size=10)
+    
+    ## a Key error means you are not running on heroku (hopefully), so try to get the db location locally
+    except KeyError:
 
+        if sqlite_tf==False:
+
+            ## try to access the remote database locally AND connect to it
+            try:
+                with open('/home/wantsomechocolate/Code/API Info/database_urls.txt','r') as fh:
+                    text=fh.read()
+                    database_urls = ast.literal_eval(text)
+
+                db = DAL(database_urls['heroku']['3muses']['DATABASE_URL'], pool_size=10)
+
+            ## if you aren't running on heroku AND the database url was found locally but couldn't
+            ## be connected to, connect using sqlite database. 
+            except RuntimeError:
+        
+                db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
+
+        else:
+            db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
+
+    session.connect(request, response, db, masterapp=None)
 
 
 else:
@@ -89,10 +80,8 @@ auth = Auth(db)
 crud, service, plugins = Crud(db), Service(), PluginManager()
 
 ## create all tables needed by auth if not custom tables
-try:
-    auth.define_tables(username=False, signature=False)
-except:
-    pass
+auth.define_tables(username=False, signature=False)
+
 
 ## configure email
 mail = auth.settings.mailer
