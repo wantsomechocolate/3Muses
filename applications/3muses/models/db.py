@@ -23,7 +23,7 @@ if not request.env.web2py_runtime_gae:
         db = DAL(os.environ['DATABASE_URL'], pool_size=10)
     
     ## a Key error means you are not running on heroku (hopefully), so try to get the db location locally
-    except KeyError:
+    except ZeroDivisionError:
 
         if sqlite_tf==False:
 
