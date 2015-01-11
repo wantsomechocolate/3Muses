@@ -3122,3 +3122,5 @@ def view_purchase_history():
 
     return dict(grid=grid)
 
+
+
