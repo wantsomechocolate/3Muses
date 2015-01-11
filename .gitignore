@@ -8,7 +8,7 @@ logs
 
 # for applications in web2py
 applications/*/cache
-applications/*/databases
+# applications/*/databases
 # my api keys have been showing up in the errors file
 applications/*/errors
 applications/*/sessions
