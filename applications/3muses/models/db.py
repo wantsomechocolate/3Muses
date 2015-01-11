@@ -20,7 +20,7 @@ if not request.env.web2py_runtime_gae:
     try:
         # uncomment below to have this fail faster when working locally on sqlite
         #dummy=1/0
-        db = DAL(os.environ['DATABASE_URL'], pool_size=10)
+        db = DAL(os.environ['HEROKU_POSTGRESQL_SILVER_URL'], pool_size=10)
     
     ## a Key error means you are not running on heroku (hopefully), so try to get the db location locally
     except (ZeroDivisionError, KeyError):
