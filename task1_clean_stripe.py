@@ -3,9 +3,10 @@
 ## imports
 import time
 import stripe
+import os
 
 ## Consts
-STRIPE_SESSION_RETIRE_HOURS=26 #(1/10.0)
+STRIPE_SESSION_RETIRE_HOURS=24 #(1/10.0)
 
 ## API KEY
 try:
@@ -75,6 +76,8 @@ while has_more==True:
 
     ## This will be false if no more customers to retrieve. True if there are. 
     has_more=stripe_customer_list['has_more']
+
+print "Done!"
 
 
 #def session2trash():
