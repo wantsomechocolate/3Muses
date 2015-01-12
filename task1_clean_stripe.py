@@ -4,28 +4,18 @@
 import time
 import stripe
 import os
+from gluon import DAL
+
+db = DAL(os.environ['HEROKU_POSTGRESQL_SILVER_URL'], pool_size=10)
 
 ## Consts
 STRIPE_SESSION_RETIRE_HOURS=24 #(1/10.0)
 
 ## API KEY
-try:
-    ## see if you can acces the heroku environment variables
-    STRIPE_SECRET=os.environ['STRIPE_SECRET']
-    STRIPE_PUBLISHABLE=os.environ['STRIPE_PUBLISHABLE']
-
-## what exception exactly?
-except KeyError:
-    # you aren't running on heroku
-    # this will fail if it can't find the local keys. GOOD.
-    with open('/home/wantsomechocolate/Code/API Info/api_keys.txt','r') as fh:
-        text=fh.read()
-        api_keys = ast.literal_eval(text)
-    STRIPE_SECRET=api_keys['stripe']['test']['STRIPE_SECRET']
-    STRIPE_PUBLISHABLE=api_keys['stripe']['test']['STRIPE_PUBLISHABLE']
+STRIPE_SECRET=os.environ['STRIPE_SECRET']
+STRIPE_PUBLISHABLE=os.environ['STRIPE_PUBLISHABLE']
 
 stripe.api_key = STRIPE_SECRET
-
 
 ## set cursor_id to get through the while loop the first time
 cursor_id=""
@@ -73,24 +63,7 @@ while has_more==True:
         else:
             pass
 
-
     ## This will be false if no more customers to retrieve. True if there are. 
     has_more=stripe_customer_list['has_more']
 
 print "Done!"
-
-
-#def session2trash():
-
-# from sessions2trash import single_loop
-# def delete_sessions():
-
-#     single_loop()
-
-#     return "Done!"
-
-# from gluon.scheduler import Scheduler
-# Scheduler(db, dict(
-#     task1=stripe_remove_session_users,
-#     delete_sessions=delete_sessions,
-#     ))
