@@ -7,7 +7,14 @@ import os
 from gluon import DAL
 #import psycopg2
 
-db = DAL(os.environ['HEROKU_POSTGRESQL_SILVER_URL'], pool_size=10, auto_import=True)
+cwd=os.getcwd()
+print cwd
+
+tables_folder="applications/3muses/databases"
+
+tables_folder_path=os.join(cwd,tables_folder)
+
+db = DAL(os.environ['HEROKU_POSTGRESQL_SILVER_URL'], pool_size=10, folder=tables_folder, auto_import=True)
 
 ## Consts
 STRIPE_SESSION_RETIRE_HOURS=24 #(1/10.0)
