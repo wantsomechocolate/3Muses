@@ -17,17 +17,16 @@ tables_folder_path=os.path.join(cwd,tables_folder)
 db = DAL(os.environ['HEROKU_POSTGRESQL_SILVER_URL'], pool_size=10, folder=tables_folder, auto_import=True)
 
 ## Consts
-STRIPE_SESSION_RETIRE_HOURS=24 #(1/10.0)
+STRIPE_SESSION_RETIRE_HOURS=os.environ['SESSION_EXPIRY_HOURS']
 
 ## API KEY
 STRIPE_SECRET=os.environ['STRIPE_SECRET']
 STRIPE_PUBLISHABLE=os.environ['STRIPE_PUBLISHABLE']
-
 stripe.api_key = STRIPE_SECRET
+
 
 ## set cursor_id to get through the while loop the first time
 cursor_id=""
-
 ## set has_more to True to enter the while loop initially
 has_more=True
 
