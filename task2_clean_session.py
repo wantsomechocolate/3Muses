@@ -34,7 +34,7 @@ for row in server_session_rows:
 	delta_seconds = utc_seconds - session_seconds
 	delta_hours=delta_seconds
 
-	if delta_hours>=24:
+	if delta_hours>=SERVER_SESSION_RETIRE_HOURS:
 		db(db.web2py_session_3muses.id==row.id).delete()
 
 print "Done!"
