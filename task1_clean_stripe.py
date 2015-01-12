@@ -5,8 +5,9 @@ import time
 import stripe
 import os
 from gluon import DAL
+#import psycopg2
 
-db = DAL(os.environ['HEROKU_POSTGRESQL_SILVER_URL'], pool_size=10)
+db = DAL(os.environ['HEROKU_POSTGRESQL_SILVER_URL'], pool_size=10, auto_import=True)
 
 ## Consts
 STRIPE_SESSION_RETIRE_HOURS=24 #(1/10.0)
