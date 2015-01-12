@@ -8,11 +8,11 @@ from gluon import DAL
 #import psycopg2
 
 cwd=os.getcwd()
-print cwd
+#print cwd
 
 tables_folder="applications/3muses/databases"
 
-tables_folder_path=os.join(cwd,tables_folder)
+tables_folder_path=os.path.join(cwd,tables_folder)
 
 db = DAL(os.environ['HEROKU_POSTGRESQL_SILVER_URL'], pool_size=10, folder=tables_folder, auto_import=True)
 
