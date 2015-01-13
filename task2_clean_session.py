@@ -29,7 +29,7 @@ for row in server_session_rows:
 	session_seconds=time.mktime(session_time.timetuple())
 
 	delta_seconds = utc_seconds - session_seconds
-	delta_hours=delta_seconds
+	delta_hours=delta_seconds/3600
 
 	if delta_hours>=SERVER_SESSION_RETIRE_HOURS:
 		db(db.web2py_session_3muses.id==row.id).delete()
