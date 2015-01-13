@@ -5,9 +5,6 @@ import time
 import os
 from gluon import DAL
 
-
-
-
 ## Get db
 cwd=os.getcwd()
 tables_folder="applications/3muses/databases"

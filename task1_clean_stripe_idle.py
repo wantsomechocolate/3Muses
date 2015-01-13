@@ -15,15 +15,31 @@ tables_folder="applications/3muses/databases"
 
 tables_folder_path=os.path.join(cwd,tables_folder)
 
-
-db = DAL(os.environ['HEROKU_POSTGRESQL_SILVER_URL'], pool_size=10, folder=tables_folder, auto_import=True)
+try:
+        db = DAL(os.environ['HEROKU_POSTGRESQL_SILVER_URL'], pool_size=10, folder=tables_folder, auto_import=True)
+except:
+        with open('/home/wantsomechocolate/Code/API Info/database_urls.txt','r') as fh:
+                text=fh.read()
+                database_urls = ast.literal_eval(text)
+        db = DAL(database_urls['heroku']['3muses']['DATABASE_URL'], pool_size=10, folder=tables_folder, auto_import=True)
 
 ## Consts
-STRIPE_SESSION_RETIRE_HOURS=int(os.environ['SESSION_EXPIRY_HOURS'])
+try:
+    STRIPE_SESSION_RETIRE_HOURS=int(os.environ['SESSION_EXPIRY_HOURS'])
+except:
+    STRIPE_SESSION_RETIRE_HOURS=1
 
-
-STRIPE_SECRET=os.environ['STRIPE_SECRET']
-STRIPE_PUBLISHABLE=os.environ['STRIPE_PUBLISHABLE']
+## API KEY
+try:
+    STRIPE_SECRET=os.environ['STRIPE_SECRET']
+    STRIPE_PUBLISHABLE=os.environ['STRIPE_PUBLISHABLE']
+except:
+    with open('/home/wantsomechocolate/Code/API Info/api_keys.txt','r') as fh:
+        text=fh.read()
+        api_keys = ast.literal_eval(text)
+    
+    STRIPE_SECRET=api_keys['stripe']['test']['STRIPE_SECRET']
+    STRIPE_PUBLISHABLE=api_keys['stripe']['test']['STRIPE_PUBLISHABLE']
     
 stripe.api_key = STRIPE_SECRET
 
@@ -80,5 +96,5 @@ while has_more==True:
 
 db.commit()
 
-#print "Done!"
+print "Done!"
 #print stripe_list_of_deleted_customers

@@ -6,8 +6,6 @@ import os
 from gluon import DAL
 import ast
 
-
-
 ## Get db
 cwd=os.getcwd()
 tables_folder="applications/3muses/databases"
@@ -98,4 +96,4 @@ print "Done!"
 # 38.90368854555819
 # >>> delta_seconds = utc_seconds - session_seconds
 # >>> delta_seconds/3600
-14.903688545558188
+#14.903688545558188
