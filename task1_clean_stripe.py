@@ -5,6 +5,7 @@ import time
 import stripe
 import os
 from gluon import DAL
+import ast
 #import psycopg2
 
 cwd=os.getcwd()
@@ -14,16 +15,34 @@ tables_folder="applications/3muses/databases"
 
 tables_folder_path=os.path.join(cwd,tables_folder)
 
-db = DAL(os.environ['HEROKU_POSTGRESQL_SILVER_URL'], pool_size=10, folder=tables_folder, auto_import=True)
+try:
+        db = DAL(os.environ['HEROKU_POSTGRESQL_SILVER_URL'], pool_size=10, folder=tables_folder, auto_import=True)
+except:
+        with open('/home/wantsomechocolate/Code/API Info/database_urls.txt','r') as fh:
+                text=fh.read()
+                database_urls = ast.literal_eval(text)
+        db = DAL(database_urls['heroku']['3muses']['DATABASE_URL'], pool_size=10, folder=tables_folder, auto_import=True)
 
 ## Consts
-STRIPE_SESSION_RETIRE_HOURS=os.environ['SESSION_EXPIRY_HOURS']
+#STRIPE_SESSION_RETIRE_HOURS=int(os.environ['SESSION_EXPIRY_HOURS'])
+STRIPE_SESSION_RETIRE_HOURS=1
 
 ## API KEY
-STRIPE_SECRET=os.environ['STRIPE_SECRET']
-STRIPE_PUBLISHABLE=os.environ['STRIPE_PUBLISHABLE']
+try:
+    STRIPE_SECRET=os.environ['STRIPE_SECRET']
+    STRIPE_PUBLISHABLE=os.environ['STRIPE_PUBLISHABLE']
+except:
+    with open('/home/wantsomechocolate/Code/API Info/api_keys.txt','r') as fh:
+        text=fh.read()
+        api_keys = ast.literal_eval(text)
+    
+    STRIPE_SECRET=api_keys['stripe']['test']['STRIPE_SECRET']
+    STRIPE_PUBLISHABLE=api_keys['stripe']['test']['STRIPE_PUBLISHABLE']
+    
 stripe.api_key = STRIPE_SECRET
 
+## Get utc current time
+utc_seconds=time.time()+time.timezone
 
 ## set cursor_id to get through the while loop the first time
 cursor_id=""
@@ -57,7 +76,7 @@ while has_more==True:
         three_muses_user=db(db.stripe_customers.stripe_id==stripe_customer['id']).select().first()
         if not three_muses_user:
 
-            hours_since_creation=(time.time()-stripe_customer['created'])/3600
+            hours_since_creation=(utc_seconds-stripe_customer['created'])/3600
 
             if hours_since_creation>=STRIPE_SESSION_RETIRE_HOURS:
 
@@ -73,4 +92,7 @@ while has_more==True:
     ## This will be false if no more customers to retrieve. True if there are. 
     has_more=stripe_customer_list['has_more']
 
-print "Done!"
+db.commit()
+
+#print "Done!"
+#print stripe_list_of_deleted_customers

@@ -4,7 +4,7 @@
 import time
 import os
 from gluon import DAL
-
+import ast
 
 
 
@@ -12,11 +12,18 @@ from gluon import DAL
 cwd=os.getcwd()
 tables_folder="applications/3muses/databases"
 tables_folder_path=os.path.join(cwd,tables_folder)
-db = DAL(os.environ['HEROKU_POSTGRESQL_SILVER_URL'], pool_size=10, folder=tables_folder, auto_import=True)
-
+try:
+        db = DAL(os.environ['HEROKU_POSTGRESQL_SILVER_URL'], pool_size=10, folder=tables_folder, auto_import=True)
+except:
+        with open('/home/wantsomechocolate/Code/API Info/database_urls.txt','r') as fh:
+                text=fh.read()
+                database_urls = ast.literal_eval(text)
+        db = DAL(database_urls['heroku']['3muses']['DATABASE_URL'], pool_size=10, folder=tables_folder, auto_import=True)
 ## Consts
-SERVER_SESSION_RETIRE_HOURS=int(os.environ['SESSION_EXPIRY_HOURS'])
-
+try:
+        SERVER_SESSION_RETIRE_HOURS=os.environ['SESSION_EXPIRY_HOURS']
+except:
+        SERVER_SESSION_RETIRE_HOURS=1
 
 
 ## Get the current time and the cutoff_time
@@ -37,9 +44,7 @@ for row in server_session_rows:
 	if delta_hours>=SERVER_SESSION_RETIRE_HOURS:
 		db(db.web2py_session_3muses.id==row.id).delete()
 
-db.commit()
-
-#print "Done!"
+print "Done!"
 
 
 # >>> cwd=os.getcwd()
@@ -93,4 +98,4 @@ db.commit()
 # 38.90368854555819
 # >>> delta_seconds = utc_seconds - session_seconds
 # >>> delta_seconds/3600
-#14.903688545558188
+14.903688545558188
