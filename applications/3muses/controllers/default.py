@@ -1756,26 +1756,6 @@ def pay():
 
 
 
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
     from postmark import PMMail
     message = PMMail(api_key=POSTMARK_API_KEY,
         subject="Order Confirmation",
