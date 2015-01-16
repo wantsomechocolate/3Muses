@@ -9,6 +9,7 @@ gunicorn==19.1.0
 paramiko==1.15.2
 psycopg2==2.5.4
 pycrypto==2.6.1
+python-dateutil==2.4.0
 python-postmark==0.4.4
 requests==2.4.0
 six==1.7.3
