@@ -1472,7 +1472,7 @@ def pay():
 
         ## Payment Fields
         payment_method='stripe',
-        payment_stripe_name=None,#charge['name'],
+        payment_stripe_name=charge['card']['name'],
         payment_stripe_user_id=charge['customer'],
         payment_stripe_last_4=charge['card']['last4'],
         payment_stripe_brand=charge['card']['brand'],
@@ -1769,8 +1769,13 @@ def pay():
 
     receipt_context=dict(
         email_icons=email_icons,
-        purchase_details=purchase_history_dict,
-        product_details=purchase_history_products_LOD
+        #purchase_details=purchase_history_dict,
+        #product_details=purchase_history_products_LOD,
+        product_info=product_table_row_LOL,
+        address_info=address_table_row_LOL,
+        shipping_info=shipping_table_row_LOL,
+        card_info=card_table_row_LOL,
+        summary_info=summary_table_row_LOL,
         )
 
     #receipt_message_html = response.render('receipt.html', receipt_context)
@@ -1780,7 +1785,7 @@ def pay():
     from postmark import PMMail
     message = PMMail(api_key=POSTMARK_API_KEY,
         subject="Order Confirmation",
-        sender="Rebecca@3musesglass.com",
+        sender="confirmation@threemuses.glass",
         to=muses_email_address,
         #html_body=final_div_html,
         html_body=receipt_message_html,
@@ -3134,6 +3139,8 @@ def receipt_test():
         payment_icon_url="https://s3.amazonaws.com/threemusesglass/icons/PaymentIcon.png",
         summary_icon_url="https://s3.amazonaws.com/threemusesglass/icons/SummaryIcon.png",
         )
+
+
 
     receipt_context=dict(
         email_icons=email_icons,
