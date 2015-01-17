@@ -1773,8 +1773,8 @@ def pay():
         product_details=purchase_history_products_LOD
         )
 
-    receipt_message_html = response.render('receipt.html', receipt_context)
-
+    #receipt_message_html = response.render('receipt.html', receipt_context)
+    receipt_message_html = response.render('default/receipt.html', receipt_context)
 
 
     from postmark import PMMail
@@ -3125,54 +3125,9 @@ def view_purchase_history():
     return dict(grid=grid)
 
 
-def receipt():
+def receipt_test():
 
-    purchase_history_dict=dict(
-
-        muses_id="muses_id",
-        muses_email_address="muses_email_address",
-        muses_name="muses_name",
-
-        ## Session Fields (These actually come from response not session)
-        session_id_3muses="response.session_id_3muses",
-        session_db_table="response.session_db_table",
-        session_db_record_id="response.session_db_record_id",
-
-        ## Shipping Fields
-        shipping_street_address_line_1="session.purchase_history_address_info['street_address_line_1']",
-        shipping_street_address_line_2="session.purchase_history_address_info['street_address_line_2']",
-        shipping_municipality="session.purchase_history_address_info['municipality']",
-        shipping_administrative_area=session.purchase_history_address_info['administrative_area'],
-        shipping_postal_code=session.purchase_history_address_info['postal_code'],
-        shipping_country=session.purchase_history_address_info['country'],
-
-        ## Easypost Fields?
-        easypost_shipping_service=session.purchase_history_shipping_info['service'],
-        easypost_shipping_carrier=session.purchase_history_shipping_info['carrier'],
-        easypost_shipment_id=None,#session.purchase_history_shipping_info['id'],
-        easypost_rate_id=None,#session.purchase_history_shipping_info['shipment_id'],
-        easypost_rate=session.purchase_history_shipping_info['rate'],
-
-
-        ## Payment Fields
-        payment_method='stripe',
-        payment_stripe_name=None,#charge['name'],
-        payment_stripe_user_id=charge['customer'],
-        payment_stripe_last_4=charge['card']['last4'],
-        payment_stripe_brand=charge['card']['brand'],
-        payment_stripe_exp_month=charge['card']['exp_month'],
-        payment_stripe_exp_year=charge['card']['exp_year'],
-        payment_stripe_card_id=charge['card']['id'],
-        payment_stripe_transaction_id=charge['id'],
-
-        ## Cart Details
-        cart_base_cost=session.purchase_history_summary_info['cart_cost_USD'],
-        cart_shipping_cost=session.purchase_history_summary_info['shipping_cost_USD'],
-        cart_total_cost=session.purchase_history_summary_info['total_cost_USD'],
-
-    )
-
-    context=dict(
+    email_icons=dict(
         products_icon_url="https://s3.amazonaws.com/threemusesglass/icons/ProductIcon.png",
         address_icon_url="https://s3.amazonaws.com/threemusesglass/icons/AddressIcon.png",
         shipping_icon_url="https://s3.amazonaws.com/threemusesglass/icons/ShippingIcon.png",
@@ -3180,6 +3135,68 @@ def receipt():
         summary_icon_url="https://s3.amazonaws.com/threemusesglass/icons/SummaryIcon.png",
         )
 
-    return context
+    receipt_context=dict(
+        email_icons=email_icons,
+        )
+
+    receipt_message_html = response.render('default/receipt.html', receipt_context)
+
+    return receipt_message_html
+
+    # purchase_history_dict=dict(
+
+    #     muses_id="muses_id",
+    #     muses_email_address="muses_email_address",
+    #     muses_name="muses_name",
+
+    #     ## Session Fields (These actually come from response not session)
+    #     session_id_3muses="response.session_id_3muses",
+    #     session_db_table="response.session_db_table",
+    #     session_db_record_id="response.session_db_record_id",
+
+    #     ## Shipping Fields
+    #     shipping_street_address_line_1="session.purchase_history_address_info['street_address_line_1']",
+    #     shipping_street_address_line_2="session.purchase_history_address_info['street_address_line_2']",
+    #     shipping_municipality="session.purchase_history_address_info['municipality']",
+    #     shipping_administrative_area=session.purchase_history_address_info['administrative_area'],
+    #     shipping_postal_code=session.purchase_history_address_info['postal_code'],
+    #     shipping_country=session.purchase_history_address_info['country'],
+
+    #     ## Easypost Fields?
+    #     easypost_shipping_service=session.purchase_history_shipping_info['service'],
+    #     easypost_shipping_carrier=session.purchase_history_shipping_info['carrier'],
+    #     easypost_shipment_id=None,#session.purchase_history_shipping_info['id'],
+    #     easypost_rate_id=None,#session.purchase_history_shipping_info['shipment_id'],
+    #     easypost_rate=session.purchase_history_shipping_info['rate'],
+
+
+    #     ## Payment Fields
+    #     payment_method='stripe',
+    #     payment_stripe_name=None,#charge['name'],
+    #     payment_stripe_user_id=charge['customer'],
+    #     payment_stripe_last_4=charge['card']['last4'],
+    #     payment_stripe_brand=charge['card']['brand'],
+    #     payment_stripe_exp_month=charge['card']['exp_month'],
+    #     payment_stripe_exp_year=charge['card']['exp_year'],
+    #     payment_stripe_card_id=charge['card']['id'],
+    #     payment_stripe_transaction_id=charge['id'],
+
+    #     ## Cart Details
+    #     cart_base_cost=session.purchase_history_summary_info['cart_cost_USD'],
+    #     cart_shipping_cost=session.purchase_history_summary_info['shipping_cost_USD'],
+    #     cart_total_cost=session.purchase_history_summary_info['total_cost_USD'],
+
+    # )
+
+    # context=dict(
+    #     products_icon_url="https://s3.amazonaws.com/threemusesglass/icons/ProductIcon.png",
+    #     address_icon_url="https://s3.amazonaws.com/threemusesglass/icons/AddressIcon.png",
+    #     shipping_icon_url="https://s3.amazonaws.com/threemusesglass/icons/ShippingIcon.png",
+    #     payment_icon_url="https://s3.amazonaws.com/threemusesglass/icons/PaymentIcon.png",
+    #     summary_icon_url="https://s3.amazonaws.com/threemusesglass/icons/SummaryIcon.png",
+    #     )
+
+    # return context
+
 
 
