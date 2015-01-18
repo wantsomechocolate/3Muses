@@ -2012,10 +2012,11 @@ def manage_purchase_history_data():
         )
 
     purchase_history_data_grid.element('.web2py_counter', replace=None)
-    return locals()
+    return dict(purchase_history_data_grid=purchase_history_data_grid)
 
 @auth.requires_membership('admin')
 def manage_purchase_history_products():
+    
     purchase_history_products_grid=SQLFORM.grid(db.purchase_history_products, 
         # fields=[
         #     db.categories.category_name,
@@ -2026,7 +2027,8 @@ def manage_purchase_history_products():
         )
 
     purchase_history_products_grid.element('.web2py_counter', replace=None)
-    return locals()
+
+    return dict(purchase_history_products_grid=purchase_history_products_grid)
 
 
 
