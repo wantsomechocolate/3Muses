@@ -112,6 +112,11 @@ def index():
 
 def categories():
 
+    if request.args(0) is not None:
+        redirect(URL('categories'))
+    else:
+        pass
+
     category_rows=db(db.categories.is_active==True).select(orderby=db.categories.display_order)
 
     left_sidebar_enabled=False
@@ -130,21 +135,21 @@ def categories():
 
 def display():
     
+    if request.args(0) is None:
+        redirect(URL('categories'))
+    else:
+        pass
+
     category_id=request.args[0]
 
-    product_rows=db((db.product.category_name==category_id)&(db.product.is_active==True)).select(orderby=db.product.display_order)
-
-    left_sidebar_enabled=False
-
-    right_sidebar_enabled=False
-
-    #return locals()
+    try:
+        product_rows=db((db.product.category_name==category_id)&(db.product.is_active==True)).select(orderby=db.product.display_order)
+    except IndexError:
+        redirect(URL('dne.html', vars=dict(page='display')))
 
     return dict(
         category_id=category_id,
         product_rows=product_rows,
-        left_sidebar_enabled=left_sidebar_enabled, 
-        right_sidebar_enabled=right_sidebar_enabled,
         )
 
 
@@ -632,6 +637,12 @@ def cart():
 #############################################################################################
 ###########----------------------------Cart Logic--------------------------------############
 #############################################################################################
+
+    if request.args(0) is not None:
+        redirect(URL('cart'))
+    else:
+        pass
+
 
     #cart_grid_header_list=["Cart","Item","Cost","Qty", "Delete"]
     cart_grid_header_list=["Cart","Item","Cost", "Delete"]
@@ -3209,3 +3220,14 @@ def receipt_test():
 
 
 
+def dne():
+
+    if request.vars is None:
+        redirect(URL('index'))
+    else:
+        if request.vars['page'] is 'display':
+            error_message="This line of products doesn't exist, so I don't think I would link you here"
+        else:
+            error_message="There was an error in the URL, hopefully is doesn't happen again!"
+
+    return dict(error_message=error_message)
