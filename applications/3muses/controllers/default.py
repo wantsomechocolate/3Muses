@@ -135,20 +135,24 @@ def categories():
 
 def display():
     
-    if request.args(0) is None:
-        redirect(URL('categories'))
-    else:
-        pass
+    # if request.args(0) is None:
+    #     redirect(URL('categories'))
+    # else:
+    #     pass
 
-    category_id=request.args[0]
+    category_name=request.args[0].replace("_"," ")
 
 
+    category_id=int(db(db.categories.category_name==category_name).select().first()['id'])
+
+    # category_id=request.args[0]
     product_rows=db((db.product.category_name==category_id)&(db.product.is_active==True)).select(orderby=db.product.display_order)
     
-    if len(product_rows) == 0:
-        redirect(URL('dne.html', vars=dict(page='display')))
-    else:
-        pass
+
+    # if len(product_rows) == 0:
+    #     redirect(URL('dne.html', vars=dict(page='display')))
+    # else:
+    #     pass
 
     return dict(
         category_id=category_id,

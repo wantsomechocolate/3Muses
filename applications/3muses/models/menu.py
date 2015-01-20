@@ -43,7 +43,7 @@ def _():
     category_names=[]
     category_names.append((T('All Categories'),False,URL('categories')))
     for row in categories:
-      category_names.append((T(row.category_name),False,URL('display/'+str(row.id))))
+      category_names.append((T(row.category_name),False,URL('display/'+str(row.category_name.replace(" ","_")))))
 
     admin_pages_li=[
     (T('Manage Products'),False,URL('manage_products')),

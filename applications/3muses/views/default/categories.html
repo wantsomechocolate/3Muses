@@ -22,7 +22,7 @@
 
 						
 
-						{{=A(IMG(_src=srcattr, _alt="woops!"),_href=URL('display', args=[category_rows[j].id]))}}
+						{{=A(IMG(_src=srcattr, _alt="woops!"),_href=URL('display', args=[category_rows[j].category_name.replace(" ","_")]))}}
 
 					</div>
 					<!--A(IMG(_src=URL('static','logo.png'), _alt="My Logo"), _href=URL('default','index'))-->
