@@ -1,4 +1,17 @@
-You messing with my URLs?
-{{=error_message}}
+{{extend 'layout.html'}}
 
-{{=A(Go Home, _href=URL('index'))}}
+<div>
+<h2>
+You messing with my URLs?
+</h2>
+</div>
+
+<div>
+<h4>
+{{=error_message}}
+</h4>
+</div>
+
+<div>
+{{=A("Go Home", _href=URL('index'))}}
+</div>

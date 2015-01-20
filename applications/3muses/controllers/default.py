@@ -142,10 +142,13 @@ def display():
 
     category_id=request.args[0]
 
-    try:
-        product_rows=db((db.product.category_name==category_id)&(db.product.is_active==True)).select(orderby=db.product.display_order)
-    except IndexError:
+
+    product_rows=db((db.product.category_name==category_id)&(db.product.is_active==True)).select(orderby=db.product.display_order)
+    
+    if len(product_rows) == 0:
         redirect(URL('dne.html', vars=dict(page='display')))
+    else:
+        pass
 
     return dict(
         category_id=category_id,
@@ -3225,9 +3228,11 @@ def dne():
     if request.vars is None:
         redirect(URL('index'))
     else:
-        if request.vars['page'] is 'display':
+        if request.vars['page'] == 'display':
             error_message="This line of products doesn't exist, so I don't think I would link you here"
         else:
             error_message="There was an error in the URL, hopefully is doesn't happen again!"
 
-    return dict(error_message=error_message)
+
+
+    return dict(error_message=error_message, error_url=request.vars['request_url'])

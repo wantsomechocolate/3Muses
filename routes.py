@@ -5,7 +5,7 @@ default_application='3muses'
 )
 
 routes_onerror=[
-	('cart/*', '/cart'),
+	('3muses/*', '/3muses/dne.html')
 ]
 
 
