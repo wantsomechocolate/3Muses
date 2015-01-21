@@ -2095,23 +2095,56 @@ def handle_error():
         response.status = int(code) # Assign the error status code to the current response. (Must be integer to work.)
  
     if code == '403':
-        return "Not authorized"
+
+        error_page=DIV(_class='error_page_container')
+
+        error_page.append(DIV("You are not authoized to view this page, apparently."))
+        error_page.append(DIV("That's not a challenge, though. I know you could if you really wanted to."))
+
     elif code == '404':
-        return "Not found"
+
+        error_page=DIV(_class='error_page_container')
+
+        error_url=request.env.http_host+request_url
+
+        error_page.append(DIV("On second thought, let's not go to " + 
+            error_url + ". 'Tis a silly place."))
+
+        error_page.append(DIV("This URL is currently not mapped to anything. Sorry!"))
+        #error_page.append(DIV(request.env.http_host+request_url))
+
+
+        return dict(error_page=error_page)
+
+
     elif code == '500':
         
         # Get ticket URL:
         ticket_url = "<a href='%(scheme)s://%(host)s/admin/default/ticket/%(ticket)s' target='_blank'>%(ticket)s</a>" % {'scheme':'https','host':request.env.http_host,'ticket':ticket}
- 
+        ticket_url =
+
+        error_page=DIV(_class='error_page_container')
+        if auth.has_membership('admin'):
+            error_page.append(DIV('A server error has occured, because you are an admin\
+                you can see the following link to the ticket that was raised:'))
+            error_page.append(ticket_url)
+        else:
+            error_page.append(DIV("Oh no! What did you do! Just kidding, this error is on us!\
+                a ticket is being mailed to an admin and we'll get right on this issue."))
+
+
+
         # Email a notice, etc:
        # mail.send(to=['admins@myapp.com '],
        #             subject="New Error",
        #             message="Error Ticket:  %s" % ticket_url)
         
-        return "Server error"
+        return dict(error_page=error_page)
     
     else:
-        return "Other error"
+        return dict(
+            message="Other error",
+            )
 
 
 
