@@ -2090,6 +2090,13 @@ def handle_error():
     code = request.vars.code
     request_url = request.vars.request_url
     ticket = request.vars.ticket
+
+    debug=False
+
+    if request.env.http_host[:9]=='localhost':
+        debug=True
+
+
  
     if code is not None and request_url != request.url: # Make sure error url is not current url to avoid infinite loop.
         response.status = int(code) # Assign the error status code to the current response. (Must be integer to work.)
@@ -2120,17 +2127,41 @@ def handle_error():
     elif code == '500':
         
         # Get ticket URL:
-        ticket_url = "<a href='%(scheme)s://%(host)s/admin/default/ticket/%(ticket)s' target='_blank'>%(ticket)s</a>" % {'scheme':'https','host':request.env.http_host,'ticket':ticket}
-        ticket_url =
+        #ticket_url = "<a href='%(scheme)s://%(host)s/admin/default/ticket/%(ticket)s' target='_blank'>%(ticket)s</a>" % {'scheme':'https','host':request.env.http_host,'ticket':ticket}
+
+        if debug==True:
+            ticket_url = A(_href='/admin/default/ticket/%(ticket)s' % {'ticket':ticket}, _target='_blank'
+            )
+
+        else:
+            ticket_url = A(_href='%(scheme)s://%(host)s/admin/default/ticket/%(ticket)s' % {'scheme':'https','host':request.env.http_host, 'ticket':ticket}, _target='_blank'
+            )
 
         error_page=DIV(_class='error_page_container')
         if auth.has_membership('admin'):
             error_page.append(DIV('A server error has occured, because you are an admin\
                 you can see the following link to the ticket that was raised:'))
             error_page.append(ticket_url)
+
+        elif debug==True:
+            error_page.append(DIV('A server error has occured, because you are running on local host\
+                you can see the following link to the ticket that was raised:'))
+            error_page.append(ticket_url)
+
         else:
             error_page.append(DIV("Oh no! What did you do! Just kidding, this error is on us!\
                 a ticket is being mailed to an admin and we'll get right on this issue."))
+
+            from postmark import PMMail
+            message = PMMail(api_key=POSTMARK_API_KEY,
+                subject="A ticket was raised",
+                sender="confirmation@threemuses.glass",
+                to="wantsomechocolate@gmail.com",
+                #html_body=final_div_html,
+                html_body=error_page.xml(),
+                tag="web2py_ticket")
+            message.send()
+
 
 
 
