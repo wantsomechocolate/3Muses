@@ -3291,16 +3291,44 @@ def receipt_test():
 
 
 
-def dne():
+# def dne():
 
-    if request.vars is None:
-        redirect(URL('index'))
-    else:
-        if request.vars['page'] == 'display':
-            error_message="This line of products doesn't exist, so I don't think I would link you here"
-        else:
-            error_message="There was an error in the URL, hopefully is doesn't happen again!"
+#     if request.vars is None:
+#         redirect(URL('index'))
+#     else:
+#         if request.vars['page'] == 'display':
+#             error_message="This line of products doesn't exist, so I don't think I would link you here"
+#         else:
+#             error_message="There was an error in the URL, hopefully is doesn't happen again!"
 
 
 
-    return dict(error_message=error_message, error_url=request.vars['request_url'])
+#     return dict(error_message=error_message, error_url=request.vars['request_url'])
+
+
+def paypal_test_checkout():
+    import paypalrestsdk
+
+
+    try:
+        ## see if you can acces the heroku environment variables
+        PAYPAL_CLIENT_ID=os.environ['PAYPAL_CLIENT_ID']
+        PAYPAL_CLIENT_SECRET=os.environ['PAYPAL_CLIENT_SECRET']
+
+    ## what exception exactly?
+    except KeyError:
+
+        # you aren't running on heroku
+        # this will fail if it can't find the local keys. GOOD.
+        with open('/home/wantsomechocolate/Code/API Info/api_keys.txt','r') as fh:
+            text=fh.read()
+            api_keys = ast.literal_eval(text)
+        
+        PAYPAL_CLIENT_ID=api_keys['paypal']['test']['PAYPAL_CLIENT_ID']
+        PAYPAL_CLIENT_SECRET=api_keys['paypal']['test']['PAYPAL_CLIENT_SECRET']
+
+
+    paypalrestsdk.configure({
+        "mode": "sandbox", # sandbox or live
+        "client_id": PAYPAL_CLIENT_ID,
+        "client_secret": PAYPAL_CLIENT_SECRET })
