@@ -1,0 +1,7 @@
+{{extend 'layout.html'}}
+
+{{if not session.paypal_response:}}
+{{pass}}
+{{else:}}
+{{=session.paypal_response}}
+{{pass}}

@@ -3332,3 +3332,46 @@ def paypal_test_checkout():
         "mode": "sandbox", # sandbox or live
         "client_id": PAYPAL_CLIENT_ID,
         "client_secret": PAYPAL_CLIENT_SECRET })
+
+    payment=paypalrestsdk.Payment({
+
+        "intent": "sale",
+
+        "payer": {
+            "payment_method": "paypal",
+            #"payer_info":{} Prefilled when payment method is paypal
+            },
+
+        "transactions": [
+
+                {
+                    "amount":{
+                        "currency":"USD",
+                        "total":"100.25",
+                    },
+
+                    "description":"Test transaction description",
+
+                    "invoice_number":"A3H2JK89SZ",
+
+                },
+
+            ],
+        })
+
+    status=""
+    if payment.create():
+        status="Created successfully"
+        session.paypal_response=payment
+    else:
+        status=payment.error
+
+
+
+def paypal_webhooks():
+
+    session.paypal_webhooks=True
+    session.paypal_vars=request.vars
+    session.paypal_args=request.args
+
+    return dict()
