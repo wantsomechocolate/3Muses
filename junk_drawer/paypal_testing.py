@@ -1,6 +1,7 @@
 import paypalrestsdk
 import os, ast
 
+## Get your paypal keys
 try:
     ## see if you can acces the heroku environment variables
     PAYPAL_CLIENT_ID=os.environ['PAYPAL_CLIENT_ID']
@@ -24,6 +25,16 @@ paypalrestsdk.configure({
     "client_id": PAYPAL_CLIENT_ID,
     "client_secret": PAYPAL_CLIENT_SECRET })
 
+
+
+## Get an Access token
+
+
+
+
+
+
+## Initiate a payment
 payment=paypalrestsdk.Payment({
 
     "intent": "sale",
@@ -55,7 +66,22 @@ payment=paypalrestsdk.Payment({
         }
     })
 
-payment.create()
+payment_boolean=payment.create()
+
+
+## send user to paypal to confirm payment
+
+approval_url=payment['links'][1]['href']
+print approval_url
+
+
+
+#https://threemusesglass.herokuapp.com/?paymentId=PAY-6LV41146RP9752910KTB7GTY&token=EC-9F778084G1126725T&PayerID=DANUSGV96JSPL
+
+
+## execute payment
+
+sale_boolean=payment.execute({"payer_id":"DANUSGV96JSPL"})
 
 ##    status=""
 ##    if payment.create():

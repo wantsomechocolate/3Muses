@@ -1,7 +1,18 @@
 {{extend 'layout.html'}}
 
-{{if not session.paypal_response:}}
-{{pass}}
+<p>By navigating to this page you have begun a purchase!</p>
+
+<p>We are now creating a payment with paypal</p>
+
+<p>Once that is done, A link should appear below.</p>
+
+<p>Click on it to go to paypal.com and confirm the purchase</p>
+
+
+{{=status}}
+
+{{ if not approval_url:}}
+
 {{else:}}
-{{=session.paypal_response}}
+{{=A("Confirm Purchase", _href=approval_url, _target="_blank")}}
 {{pass}}

@@ -3347,24 +3347,33 @@ def paypal_test_checkout():
                 {
                     "amount":{
                         "currency":"USD",
-                        "total":"100.25",
+                        "total":"100",
                     },
 
-                    "description":"Test transaction description",
+                    "description":"Purchase from ThreeMusesGlass",
 
-                    "invoice_number":"A3H2JK89SZ",
+                    "invoice_number":"A3H2JK8932",
 
                 },
 
             ],
+
+        "redirect_urls":{
+            "return_url":"https://threemusesglass.herokuapp.com/paypal_webhooks",
+            "cancel_url":"https://threemusesglass.herokuapp.com",
+            }
+
         })
 
-    status=""
+
     if payment.create():
         status="Created successfully"
-        session.paypal_response=payment
+        approval_url=payment['links'][1]['href']
     else:
         status=payment.error
+        approval_url="payment not created, no url for you"
+
+    return dict(status=status, approval_url=approval_url)
 
 
 

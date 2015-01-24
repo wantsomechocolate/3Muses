@@ -1,0 +1,7 @@
+{{extend 'layout.html'}}
+<p>Did this page get visited?</p>
+{{=session.paypal_webhooks}}
+<p> With what vars?</p>
+{{=session.paypal_vars=request.vars}}
+<p> With what args?</p>
+{{=session.paypal_args=request.args}}
