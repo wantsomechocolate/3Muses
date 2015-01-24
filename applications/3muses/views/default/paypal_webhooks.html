@@ -2,6 +2,12 @@
 <p>Did this page get visited?</p>
 {{=session.paypal_webhooks}}
 <p> With what vars?</p>
-{{=session.paypal_vars=request.vars}}
+{{=session.paypal_vars}}
 <p> With what args?</p>
-{{=session.paypal_args=request.args}}
+{{=session.paypal_args}}
+
+<h1>purchase status</h1>
+<p>{{=status}}</p>
+<p> Payer ID: {{=payer_id}}</p>
+<h3> Payment Object</h3>
+<p>{{=payment}}</p>

@@ -2151,6 +2151,7 @@ def handle_error():
         else:
             error_page.append(DIV("Oh no! What did you do! Just kidding, this error is on us!\
                 a ticket is being mailed to an admin and we'll get right on this issue."))
+            error_page.append(DIV(ticket_url))
 
             from postmark import PMMail
             message = PMMail(api_key=POSTMARK_API_KEY,
@@ -3369,6 +3370,8 @@ def paypal_test_checkout():
     if payment.create():
         status="Created successfully"
         approval_url=payment['links'][1]['href']
+        session.expect_paypal_webhook=True
+        session.payment=payment
     else:
         status=payment.error
         approval_url="payment not created, no url for you"
@@ -3379,8 +3382,15 @@ def paypal_test_checkout():
 
 def paypal_webhooks():
 
-    session.paypal_webhooks=True
-    session.paypal_vars=request.vars
-    session.paypal_args=request.args
+    if session.expect_paypal_webhook:
 
-    return dict()
+        session.paypal_vars=request.vars
+        payer_id=request.vars['payer_id']
+
+        if payment.execute({"payer_id":request.vars['payer_id']}):
+            status="The payment has been processed succesfully"
+
+        else:
+            status="There was a problem processing the payment"
+
+    return dict(status=status,payer_id=payer_id,payment=payment)
