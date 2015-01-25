@@ -3307,6 +3307,15 @@ def receipt_test():
 #     return dict(error_message=error_message, error_url=request.vars['request_url'])
 
 
+
+import string
+import random
+def id_generator(size=16, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
+
+
+
+
 def paypal_test_checkout():
     import paypalrestsdk
 
@@ -3334,6 +3343,9 @@ def paypal_test_checkout():
         "client_id": PAYPAL_CLIENT_ID,
         "client_secret": PAYPAL_CLIENT_SECRET })
 
+
+    invoice_number=id_generator()
+
     payment=paypalrestsdk.Payment({
 
         "intent": "sale",
@@ -3353,7 +3365,7 @@ def paypal_test_checkout():
 
                     "description":"Purchase from ThreeMusesGlass",
 
-                    "invoice_number":"A3H2JK8932",
+                    "invoice_number":invoice_number,
 
                 },
 
@@ -3371,7 +3383,7 @@ def paypal_test_checkout():
         status="Created successfully"
         approval_url=payment['links'][1]['href']
         session.expect_paypal_webhook=True
-        session.payment=payment
+        #session.payment_id=payment
     else:
         status=payment.error
         approval_url="payment not created, no url for you"
@@ -3382,15 +3394,62 @@ def paypal_test_checkout():
 
 def paypal_webhooks():
 
+    ## Get the keys! and configure to send stuff
+    import paypalrestsdk
+
+    try:
+        ## see if you can acces the heroku environment variables
+        PAYPAL_CLIENT_ID=os.environ['PAYPAL_CLIENT_ID']
+        PAYPAL_CLIENT_SECRET=os.environ['PAYPAL_CLIENT_SECRET']
+
+    ## what exception exactly?
+    except KeyError:
+
+        # you aren't running on heroku
+        # this will fail if it can't find the local keys. GOOD.
+        with open('/home/wantsomechocolate/Code/API Info/api_keys.txt','r') as fh:
+            text=fh.read()
+            api_keys = ast.literal_eval(text)
+        
+        PAYPAL_CLIENT_ID=api_keys['paypal']['test']['PAYPAL_CLIENT_ID']
+        PAYPAL_CLIENT_SECRET=api_keys['paypal']['test']['PAYPAL_CLIENT_SECRET']
+
+
+    paypalrestsdk.configure({
+        "mode": "sandbox", # sandbox or live
+        "client_id": PAYPAL_CLIENT_ID,
+        "client_secret": PAYPAL_CLIENT_SECRET })
+
+
+    ## Make sure this person recently started the purchase process
     if session.expect_paypal_webhook:
 
-        session.paypal_vars=request.vars
-        payer_id=request.vars['payer_id']
+    # session.paypal_vars=request.vars
 
-        if payment.execute({"payer_id":request.vars['payer_id']}):
-            status="The payment has been processed succesfully"
+        payer_id=request.vars['PayerID']
+        payment_id=request.vars['paymentId']
+        
+        ## Use the paymentId (with a capital I :/) to retrieve payment object
+        payment=paypalrestsdk.Payment.find(payment_id)
+
+        ## Try to execute the payment with the payer_id
+        if payment.execute({"payer_id":payer_id}):
+
+            status="success"
+            session.expect_paypal_webhook=False
 
         else:
-            status="There was a problem processing the payment"
 
-    return dict(status=status,payer_id=payer_id,payment=payment)
+            status="failure"
+            session.expect_paypal_webhook=False
+
+        return dict(status=status,payer_id=payer_id,payment_id=payment_id, payment=payment)
+
+    else:
+
+        return dict(
+            status="n/a",
+            payer_id=None, 
+            payment_id=None,
+            payment=None,)
+
