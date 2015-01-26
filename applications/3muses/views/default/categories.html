@@ -1,13 +1,19 @@
 {{extend 'layout.html'}}
 
-<div id="main" class="wrapper style4">
 
 {{if len(category_rows)==0:}}
-	<div>Sorry, we are currently out of everything!</div>
+	<div id="main" class="wrapper style4">
+		<div>Sorry, we are currently out of everything!</div>
+	</div>
 {{else:}}
 
-
 	{{for j in range(len(category_rows)):}}
+
+		{{if j%2==0:}}
+			<div id="main" class="wrapper style4">
+		{{else:}}
+			<div id="main" class="wrapper style5">
+		{{pass}}
 
 		{{if sqlite_tf:}}
 			{{srcattr=URL('download',category_rows[j].s3_url)}}
@@ -15,30 +21,39 @@
 			{{srcattr='https://s3.amazonaws.com/threemusesglass/site_images/'+category_rows[j].s3_url}}
 		{{pass}}
 
-		<div class='category'>
-			<div class = 'category-header'>{{=category_rows[j].category_name}}</div>
-				
-				<div class="category-image-desc-case">
-					<div class = 'category-image'>
+		<div id='content' class='category container'>
 
-						
+			<div class="category-image-desc-case">
 
-						{{=A(IMG(_src=srcattr, _alt="woops!"),_href=URL('display', args=[category_rows[j].category_name.replace(" ","_")]))}}
+				<div class = 'category-image'>
 
-					</div>
-					<!--A(IMG(_src=URL('static','logo.png'), _alt="My Logo"), _href=URL('default','index'))-->
-				
-					<div class="category-description">
-						{{=category_rows[j].category_description}}
-					</div>
+					{{=A(IMG(_src=srcattr, _alt="woops!"),_href=URL('display', args=[category_rows[j].category_name.replace(" ","_")]))}}
+
 				</div>
+				<!--A(IMG(_src=URL('static','logo.png'), _alt="My Logo"), _href=URL('default','index'))-->
+				<div class="category-description">
+
+					<div class = 'category-header'>{{=category_rows[j].category_name}}</div>
+					{{=category_rows[j].category_description}}
+
+				</div>
+
+			</div>
 
 		</div>
 
 		<br/>
 		<br/>
 
+		{{if j%2==0:}}
+			</div>
+		{{else:}}
+			</div>
+		{{pass}}
+
 	{{pass}}
+
 {{pass}}
 
-</div>
+
+

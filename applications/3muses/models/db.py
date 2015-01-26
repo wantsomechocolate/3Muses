@@ -42,6 +42,9 @@ if not request.env.web2py_runtime_gae:
         else:
             db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
 
+    #except:
+     #   db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
+
     #db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
     #db = DAL(os.environ['DATABASE_URL'], pool_size=10)
     session.connect(request, response, db, masterapp=None)
