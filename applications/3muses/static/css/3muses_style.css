@@ -5,9 +5,6 @@
 
 /*Category page styles*/
 
-body {
-	background-color:#FFE7FF;
-}
 
 #cart_menu_item_style:hover{
 	color:#fff;
@@ -44,6 +41,7 @@ body {
 	
 	width:90%;
 	margin:0 auto;
+
 }	
 	.category-header{
 		padding:10px;
@@ -117,6 +115,9 @@ body {
 			font-family:inherit;
 			line-height: initial;
 		}
+
+
+
 
 
 /*Display page styles*/

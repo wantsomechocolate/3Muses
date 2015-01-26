@@ -1,78 +1,285 @@
-<!--{{left_sidebar_enabled,right_sidebar_enabled=False,('message' in globals())}}-->
-{{('message' in globals())}}
-{{extend 'layout.html'}}
+<!DOCTYPE HTML>
+<!--
+  Solarize by TEMPLATED
+  templated.co @templatedco
+  Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)
+-->
+<html class="no-js" lang="{{=T.accepted_language or 'en'}}">
+  <head>
+
+    <title>ThreeMusesGlass</title>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 
 
 
-<br/>
-<br/>
-<!--Welcome to 3MusesGlass. Enjoy your stay. -->
-<div class="polaroid_row">
-<div class="polariod_row-center">
-{{if sqlite_tf:}}
-  {{try:}}
-    {{srcattr=URL('download',db(db.landing_page_images.image_purpose=="3musesLandingPage").select()[0].s3_url)}}
-  {{except:}}
-    {{srcattr='http://i.imgur.com/e5i59Bm.jpg'}}
-  {{pass}}
-{{else:}}
-  {{try:}}
-    {{srcimg=db(db.landing_page_images.image_purpose=="3musesLandingPage").select()[0].s3_url}}
-    {{srcattr='https://s3.amazonaws.com/threemusesglass/site_images/'+srcimg}}
-  {{except:}}
-    {{srcattr='http://i.imgur.com/e5i59Bm.jpg'}}
-  {{pass}}
-{{pass}}
-  <div class="polaroid rotate_left">
-    <div class="polaroid-image-case">
-    {{=A(IMG(_src=srcattr, _alt="woops!"),_href=URL('categories'))}}
+    <meta charset="utf-8" />
+    <meta name="application-name" content="{{=request.application}}" />
+    <meta name="google-site-verification" content="" />
+     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+
+
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+
+
+    
+
+
+    <!--[if lte IE 8]><script src="css/ie/html5shiv.js"></script><![endif]-->
+    <script src="{{=URL('static','template/js/jquery.min.js')}}"></script>
+    <script src="{{=URL('static','template/js/jquery.dropotron.min.js')}}"></script>
+    <script src="{{=URL('static','template/js/skel.min.js')}}"></script>
+    <script src="{{=URL('static','template/js/skel-layers.min.js')}}"></script>
+    <script src="{{=URL('static','template/js/init.js')}}"></script>
+    <script src="{{=URL('static','js/3muses.js')}}"></script>
+
+    <!--[if lte IE 8]><link rel="stylesheet" href="css/ie/v8.css" /><![endif]-->
+
+<!-- include stylesheets -->
+  {{
+
+  response.files.insert(4,URL('static','template/css/skel.css'))
+  response.files.insert(5,URL('static','template/css/style.css'))
+  response.files.insert(6,URL('static','css/3muses_style.css'))
+  }}
+
+    {{include 'web2py_ajax.html'}}
+
+
+  </head>
+  <body class="homepage">
+
+    <!-- Header Wrapper -->
+      <div class="wrapper style1">
+      
+      <!-- Header -->
+        <div id="header">
+          <div class="container">
+              
+            <!-- Logo -->
+              <h1><a href="#" id="logo">Solarize</a></h1>
+            
+            <!-- Nav -->
+
+
+              <nav id="nav">
+                <ul>
+
+                  <li class="active"><a href="{{=URL()}}">Home</a></li>
+
+                  <li><a href="#"></a></li>
+                  <li><a href="#"></a></li>
+
+                  <li>
+                    <a href="{{=URL('categories')}}">Products</a>
+                    <ul>
+                      <li><a href="#">Lorem ipsum dolor</a></li>
+                      <li><a href="#">Magna phasellus</a></li>
+                      <li><a href="#">Etiam dolore nisl</a></li>
+                      <li>
+                        <a href="">Phasellus consequat</a>
+                        <ul>
+                          <li><a href="#">Lorem ipsum dolor</a></li>
+                          <li><a href="#">Phasellus consequat</a></li>
+                          <li><a href="#">Magna phasellus</a></li>
+                          <li><a href="#">Etiam dolore nisl</a></li>
+                          <li><a href="#">Veroeros feugiat</a></li>
+                        </ul>
+                      </li>
+                      <li><a href="#">Meet The Artist</a></li>
+                    </ul>
+                  </li>
+
+                  <li><a href="#"></a></li>
+                  <li><a href="#"></a></li>                 
+
+                  <li><a href="#">Cart</a></li>
+
+                  <li><a href="#"></a></li>
+                  <li><a href="#"></a></li>
+
+                  <li><a href="#">Login</a></li>
+                </ul>
+              </nav>
+              
+  
+
+          </div>
+        </div>
+        
+      <!-- Banner -->
+        <div id="banner">
+          <section class="container">
+            <h2>ThreeMusesGlass</h2>
+            <span>Welcome! Thank You for Visiting!</span>
+            <p></p>
+          </section>
+        </div>
+
+      </div>
+    
+ <!-- Section One -->
+      <div class="wrapper style2">
+        <section class="container">
+          <div class="row double">
+            <div class="6u">
+              <header class="major">
+                <h2>Pellentesque viverra vulputate enim. Aliquam volutpat. Pellentesque tristique Risus</h2>
+                <span class="byline">In posuere eleifend odio. Quisque semper augue mattis wisi. Maecenas ligula. Pellentesque viverra vulputate enim. Donec pulvinar ullamcorper metus.</span>
+              </header>
+            </div>
+            <div class="6u">
+              <h3>Suspendisse dictum porta</h3>
+              <p>Donec leo. Vivamus fermentum nibh in augue. Praesent a lacus at urna congue rutrum. Nulla enim eros, porttitor eu, tempus id, varius non, nibh. Vestibulum imperdiet, magna nec eleifend semper augue mattis wisi maecenas ligula nunc lectus vestibulum euismod lacinia quam nisl.</p>
+              <a href="#" class="button">Nulla aluctus eleifend</a>
+            </div>
+          </div>
+        </section>
+      </div>
+
+    <!-- Section Two 
+      <div class="wrapper style3">
+        <section class="container">
+          <header class="major">
+            <h2>Cras vitae metus aliNuam</h2>
+          </header>
+          <p>Pellentesque pede. Donec pulvinar ullamcorper metus. In eu odio at lectus pulvinar mollis. Vestibulum sem magna, elementum vestibulum arcu.</p>
+          <a href="#" class="button alt">Nulla aluctus eleifend</a>
+        </section>
+      </div>
+
+      -->
+
+
+    <!-- Section Three 
+      <div class="wrapper style4">
+        <section class="container">
+          <header class="major">
+            <h2>Cras vitae metus aliNuam</h2>
+            <span class="byline">pulvinar mollis. Vestibulum sem magna, elementum vestibulum arcu.</span>
+          </header>
+          <div class="row flush">
+            <div class="4u">
+              <ul class="special-icons">
+                <li>
+                  <span class="fa fa-cogs"></span>
+                  <h3>Nulla luctus eleifend</h3>
+                  <p>In posuere eleifend odio. Quisque semper augue mattis wisi. Maecenas ligula pellentesque.</p>
+                </li>
+                <li>
+                  <span class="fa fa-wrench"></span>
+                  <h3>Etiam posuere augue</h3>
+                  <p>Maecenas ligula. Pellentesque viverra vulputate enim. Aliquam erat volutpat liguala.</p>
+                </li>
+                <li>
+                  <span class="fa fa-leaf"></span>
+                  <h3>Fusce ultrices fringilla</h3>
+                  <p>Maecenas pede nisl, elementum eu, ornare ac, malesuada at, erat. Proin gravida orci porttitor.</p>
+                </li>
+              </ul>
+            </div>
+            <div class="4u">
+              <ul class="special-icons">
+                <li>
+                  <span class="fa fa-cogs"></span>
+                  <h3>Nulla luctus eleifend</h3>
+                  <p>In posuere eleifend odio. Quisque semper augue mattis wisi. Maecenas ligula pellentesque.</p>
+                </li>
+                <li>
+                  <span class="fa fa-wrench"></span>
+                  <h3>Etiam posuere augue</h3>
+                  <p>Maecenas ligula. Pellentesque viverra vulputate enim. Aliquam erat volutpat liguala.</p>
+                </li>
+                <li>
+                  <span class="fa fa-leaf"></span>
+                  <h3>Fusce ultrices fringilla</h3>
+                  <p>Maecenas pede nisl, elementum eu, ornare ac, malesuada at, erat. Proin gravida orci porttitor.</p>
+                </li>
+              </ul>
+            </div>
+            <div class="4u">
+              <ul class="special-icons">
+                <li>
+                  <span class="fa fa-cogs"></span>
+                  <h3>Nulla luctus eleifend</h3>
+                  <p>In posuere eleifend odio. Quisque semper augue mattis wisi. Maecenas ligula pellentesque.</p>
+                </li>
+                <li>
+                  <span class="fa fa-wrench"></span>
+                  <h3>Etiam posuere augue</h3>
+                  <p>Maecenas ligula. Pellentesque viverra vulputate enim. Aliquam erat volutpat liguala.</p>
+                </li>
+                <li>
+                  <span class="fa fa-leaf"></span>
+                  <h3>Fusce ultrices fringilla</h3>
+                  <p>Maecenas pede nisl, elementum eu, ornare ac, malesuada at, erat. Proin gravida orci porttitor.</p>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </div>
+      -->
+    
+    <!-- Team -->
+      <div class="wrapper style5">
+        <section id="team" class="container">
+          <header class="major">
+            <h2>Cras vitae metus aliNuam</h2>
+            <span class="byline">pulvinar mollis. Vestibulum sem magna, elementum vestibulum arcu</span>
+          </header>
+          <div class="row">
+            <div class="3u">
+              <a href="#" class="image"><img src="images/placeholder.png" alt=""></a>
+              <h3>Molly Millions</h3>
+              <p>In posuere eleifend odio quisque semper augue wisi ligula.</p>
+            </div>
+            <div class="3u">
+              <a href="#" class="image"><img src="images/placeholder.png" alt=""></a>
+              <h3>Henry Dorsett Case</h3>
+              <p>In posuere eleifend odio quisque semper augue wisi ligula.</p>
+            </div>
+            <div class="3u">
+              <a href="#" class="image"><img src="images/placeholder.png" alt=""></a>
+              <h3>Willis Corto</h3>
+              <p>In posuere eleifend odio quisque semper augue wisi ligula.</p>
+            </div>
+            <div class="3u">
+              <a href="#" class="image"><img src="images/placeholder.png" alt=""></a>
+              <h3>Linda Lee</h3>
+              <p>In posuere eleifend odio quisque semper augue wisi ligula.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+
+
+
+
+
+  <!-- Footer -->
+    <div id="footer">
+      <section class="container">
+        <header class="major">
+          <h2>Connect with us</h2>
+          <span class="byline">Integer sit amet pede vel arcu aliquet pretium</span>
+        </header>
+        <ul class="icons">
+          <li class="active"><a href="#" class="fa fa-facebook"><span>Facebook</span></a></li>
+          <li><a href="#" class="fa fa-twitter"><span>Twitter</span></a></li>
+          <li><a href="#" class="fa fa-dribbble"><span>Pinterest</span></a></li>
+          <li><a href="#" class="fa fa-google-plus"><span>Google+</span></a></li>
+        </ul>
+        <hr />
+      </section>
+      
+      <!-- Copyright -->
+        <div id="copyright">
+          Design: <a href="http://templated.co">TEMPLATED</a> Images: <a href="http://unsplash.com">Unsplash</a> (<a href="http://unsplash.com/cc0">CC0</a>)
+        </div>      
     </div>
-    <p class="caption">Current Designs</p>
-  </div>
 
-{{if sqlite_tf:}}
-  {{try:}}
-    {{srcattr=URL('download',db(db.landing_page_images.image_purpose=="3Muses on Etsy").select()[0].s3_url)}}
-  {{except:}}
-    {{srcattr='http://i.imgur.com/e5i59Bm.jpg'}}
-  {{pass}}
-{{else:}}
-  {{try:}}
-    {{srcimg=db(db.landing_page_images.image_purpose=="3Muses on Etsy").select()[0].s3_url}}
-    {{srcattr='https://s3.amazonaws.com/threemusesglass/site_images/'+srcimg}}
-  {{except:}}
-    {{srcattr='http://i.imgur.com/e5i59Bm.jpg'}}
-  {{pass}}
-{{pass}}
-  <div class="polaroid rotate_right">
-    <div class="polaroid-image-case polariod-middle-case">
-    {{=A(IMG(_src=srcattr, _alt="woops!"),_href="http://www.3musesglass.etsy.com")}}
-    </div>
-    <p class="caption">3MusesGlass on Etsy</p>
-  </div>
-
-{{if sqlite_tf:}}
-  {{try:}}
-    {{srcattr=URL('download',db(db.landing_page_images.image_purpose=="MeetTheArtist").select()[0].s3_url)}}
-  {{except:}}
-    {{srcattr='http://i.imgur.com/e5i59Bm.jpg'}}
-  {{pass}}
-{{else:}}
-  {{try:}}
-    {{srcimg=db(db.landing_page_images.image_purpose=="MeetTheArtist").select()[0].s3_url}}
-    {{srcattr='https://s3.amazonaws.com/threemusesglass/site_images/'+srcimg}}
-  {{except:}}
-    {{srcattr='http://i.imgur.com/e5i59Bm.jpg'}}
-  {{pass}}
-{{pass}}
-  <div class="polaroid rotate_left">
-    <div class="polaroid-image-case">
-    {{=A(IMG(_src=srcattr, _alt="woops!"),_href=URL('artist'))}}
-    </div>
-    <p class="caption">Meet the Artist</p>
-  </div>
-</div>
-</div>
-
-
-
+  </body>
+</html>

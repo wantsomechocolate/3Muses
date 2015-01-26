@@ -1,0 +1,78 @@
+<!--{{left_sidebar_enabled,right_sidebar_enabled=False,('message' in globals())}}-->
+{{('message' in globals())}}
+{{extend 'layout.html'}}
+
+
+
+<br/>
+<br/>
+<!--Welcome to 3MusesGlass. Enjoy your stay. -->
+<div class="polaroid_row">
+<div class="polariod_row-center">
+{{if sqlite_tf:}}
+  {{try:}}
+    {{srcattr=URL('download',db(db.landing_page_images.image_purpose=="3musesLandingPage").select()[0].s3_url)}}
+  {{except:}}
+    {{srcattr='http://i.imgur.com/e5i59Bm.jpg'}}
+  {{pass}}
+{{else:}}
+  {{try:}}
+    {{srcimg=db(db.landing_page_images.image_purpose=="3musesLandingPage").select()[0].s3_url}}
+    {{srcattr='https://s3.amazonaws.com/threemusesglass/site_images/'+srcimg}}
+  {{except:}}
+    {{srcattr='http://i.imgur.com/e5i59Bm.jpg'}}
+  {{pass}}
+{{pass}}
+  <div class="polaroid rotate_left">
+    <div class="polaroid-image-case">
+    {{=A(IMG(_src=srcattr, _alt="woops!"),_href=URL('categories'))}}
+    </div>
+    <p class="caption">Current Designs</p>
+  </div>
+
+{{if sqlite_tf:}}
+  {{try:}}
+    {{srcattr=URL('download',db(db.landing_page_images.image_purpose=="3Muses on Etsy").select()[0].s3_url)}}
+  {{except:}}
+    {{srcattr='http://i.imgur.com/e5i59Bm.jpg'}}
+  {{pass}}
+{{else:}}
+  {{try:}}
+    {{srcimg=db(db.landing_page_images.image_purpose=="3Muses on Etsy").select()[0].s3_url}}
+    {{srcattr='https://s3.amazonaws.com/threemusesglass/site_images/'+srcimg}}
+  {{except:}}
+    {{srcattr='http://i.imgur.com/e5i59Bm.jpg'}}
+  {{pass}}
+{{pass}}
+  <div class="polaroid rotate_right">
+    <div class="polaroid-image-case polariod-middle-case">
+    {{=A(IMG(_src=srcattr, _alt="woops!"),_href="http://www.3musesglass.etsy.com")}}
+    </div>
+    <p class="caption">3MusesGlass on Etsy</p>
+  </div>
+
+{{if sqlite_tf:}}
+  {{try:}}
+    {{srcattr=URL('download',db(db.landing_page_images.image_purpose=="MeetTheArtist").select()[0].s3_url)}}
+  {{except:}}
+    {{srcattr='http://i.imgur.com/e5i59Bm.jpg'}}
+  {{pass}}
+{{else:}}
+  {{try:}}
+    {{srcimg=db(db.landing_page_images.image_purpose=="MeetTheArtist").select()[0].s3_url}}
+    {{srcattr='https://s3.amazonaws.com/threemusesglass/site_images/'+srcimg}}
+  {{except:}}
+    {{srcattr='http://i.imgur.com/e5i59Bm.jpg'}}
+  {{pass}}
+{{pass}}
+  <div class="polaroid rotate_left">
+    <div class="polaroid-image-case">
+    {{=A(IMG(_src=srcattr, _alt="woops!"),_href=URL('artist'))}}
+    </div>
+    <p class="caption">Meet the Artist</p>
+  </div>
+</div>
+</div>
+
+
+

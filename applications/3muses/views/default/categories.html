@@ -1,5 +1,6 @@
-{{('message' in globals())}}
 {{extend 'layout.html'}}
+
+<div id="main" class="wrapper style4">
 
 {{if len(category_rows)==0:}}
 	<div>Sorry, we are currently out of everything!</div>
@@ -39,3 +40,5 @@
 
 	{{pass}}
 {{pass}}
+
+</div>
