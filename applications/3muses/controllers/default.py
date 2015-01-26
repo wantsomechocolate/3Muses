@@ -97,16 +97,7 @@ S3_BUCKET_PREFIX='https://s3.amazonaws.com/threemusesglass/site_images/'
 
 def index():
 
-    left_sidebar_enabled=True
-
-    right_sidebar_enabled=True
-
-    #return locals()
-
-    return dict(
-        left_sidebar_enabled=left_sidebar_enabled, 
-        right_sidebar_enabled=right_sidebar_enabled,
-        )
+    return dict()
 
 
 
