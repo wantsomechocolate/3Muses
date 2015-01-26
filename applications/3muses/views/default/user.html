@@ -1,33 +1,39 @@
 {{extend 'layout.html'}}
 
-<h2>{{=T( request.args(0).replace('_',' ').capitalize() )}}</h2>
-<div id="web2py_user_form">
-{{
-if request.args(0)=='login':
-    if not 'register' in auth.settings.actions_disabled:
-        form.add_button(T('Register'),URL(args='register', vars={'_next': request.vars._next} if request.vars._next else None),_class='btn')
-    pass
-    if not 'request_reset_password' in auth.settings.actions_disabled:
-        form.add_button(T('Lost Password'),URL(args='request_reset_password'),_class='btn')
-    pass
+<div id="main" class="wrapper style4">
 
-pass
+	<div id='content' class='container'>
 
-=form
-}}
+		<h2>{{=T( request.args(0).replace('_',' ').capitalize() )}}</h2>
+		<div id="web2py_user_form">
+		{{
+		if request.args(0)=='login':
+		    if not 'register' in auth.settings.actions_disabled:
+		        form.add_button(T('Register'),URL(args='register', vars={'_next': request.vars._next} if request.vars._next else None),_class='btn')
+		    pass
+		    if not 'request_reset_password' in auth.settings.actions_disabled:
+		        form.add_button(T('Lost Password'),URL(args='request_reset_password'),_class='btn')
+		    pass
 
+		pass
 
-{{if request.args(0)=='profile':}}
-    
-    {{=A("View Purchase History",_href=URL('view_purchase_history'))}}
-
-{{pass}}
+		=form
+		}}
 
 
+		{{if request.args(0)=='profile':}}
+		    
+		    {{=A("View Purchase History",_href=URL('view_purchase_history'))}}
 
+		{{pass}}
 
+		</div>
 
+	</div>
+	
 </div>
+
+
 <script language="javascript"><!--
 jQuery("#web2py_user_form input:visible:enabled:first").focus();
 {{if request.args(0)=='register':}}
