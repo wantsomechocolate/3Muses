@@ -412,7 +412,7 @@ div.polaroid-image-case img{
 		display: table-cell; 
 	 	vertical-align: middle; 
 		text-align: center; 
-		margin:0 0 0 0 !important;
+		
 	}
 
 .grid_header_cell:first-child{
@@ -569,6 +569,10 @@ web2py customization
 .address_grid_header_cell{
 
 	}
+
+	.address_grid_header_cell:nth-child(5){
+			color:red;
+		}
 
 .address_grid_table_row{
 	
@@ -1036,9 +1040,7 @@ web2py customization
 }
 
 
-#logo:hover{
-
+#logo2:hover{
 	text-decoration: None;
 	color:white;
-
 	}
