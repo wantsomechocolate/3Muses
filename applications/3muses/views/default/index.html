@@ -1,40 +1,5 @@
-<!DOCTYPE HTML>
-<!--
-  Solarize by TEMPLATED
-  templated.co @templatedco
-  Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)
--->
-<html class="no-js" lang="{{=T.accepted_language or 'en'}}">
-  <head>
+{{include 'header.html'}}
 
-    <title>ThreeMusesGlass</title>
-
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-
-
-
-    <meta charset="utf-8" />
-    <meta name="application-name" content="{{=request.application}}" />
-    <meta name="google-site-verification" content="" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <meta name="description" content="" />
-    <meta name="keywords" content="" />
-
-
-    <!--[if lte IE 8]><link rel="stylesheet" href="css/ie/v8.css" /><![endif]-->
-
-<!-- include stylesheets -->
-  {{
-  response.files.insert(4,URL('static','template/css/skel.css'))
-  response.files.insert(5,URL('static','template/css/style.css'))
-  response.files.insert(6,URL('static','css/3muses_style.css'))
-  }}
-
-  {{include 'web2py_ajax.html'}}
-
-
-  </head>
   <body class="homepage">
 
     <!-- Header Wrapper -->
@@ -59,11 +24,18 @@
                   <li><a href="#"></a></li>
 
                   <li>
-                    <a href="{{=URL('categories')}}">Products</a>
+                    <a href="{{=URL('categories')}}">Shop</a>
                     <ul>
-                      <li><a href="#">Lorem ipsum dolor</a></li>
-                      <li><a href="#">Magna phasellus</a></li>
-                      <li><a href="#">Etiam dolore nisl</a></li>
+
+                  {{categories=db(db.categories.is_active==True).select(orderby=db.categories.display_order)}}
+  
+                    {{for row in categories:}}
+
+                      <li><a href="{{=URL('display/'+str(row.category_name.replace(" ","_")))}}">{{=T(row.category_name)}}</a></li>
+
+                    {{pass}}
+
+<!--
                       <li>
                         <a href="">Phasellus consequat</a>
                         <ul>
@@ -74,7 +46,8 @@
                           <li><a href="#">Veroeros feugiat</a></li>
                         </ul>
                       </li>
-                      <li><a href="#">Meet The Artist</a></li>
+-->
+
                     </ul>
                   </li>
 
@@ -86,7 +59,16 @@
                   <li><a href="#"></a></li>
                   <li><a href="#"></a></li>
 
-                  <li><a href="{{=URL('user')}}">Login</a></li>
+                {{if auth.is_logged_in():}}
+
+                  <li><a href="{{=URL('user/profile')}}">Profile</a></li>
+
+                {{else:}}
+
+                  <li><a href="{{=URL('user/login')}}">Login</a></li>
+
+                {{pass}}
+
                 </ul>
               </nav>
               
@@ -241,39 +223,7 @@
         </section>
       </div>
 
-
-
-
-
-  <!-- Footer -->
-    <div id="footer">
-      <section class="container">
-        <header class="major">
-          <h2>Connect with us</h2>
-          <span class="byline">Integer sit amet pede vel arcu aliquet pretium</span>
-        </header>
-        <ul class="icons">
-          <li class="active"><a href="#" class="fa fa-facebook"><span>Facebook</span></a></li>
-          <li><a href="#" class="fa fa-twitter"><span>Twitter</span></a></li>
-          <li><a href="#" class="fa fa-dribbble"><span>Pinterest</span></a></li>
-          <li><a href="#" class="fa fa-google-plus"><span>Google+</span></a></li>
-        </ul>
-        <hr />
-      </section>
-      
-      <!-- Copyright -->
-        <div id="copyright">
-          Design: <a href="http://templated.co">TEMPLATED</a> Images: <a href="http://unsplash.com">Unsplash</a> (<a href="http://unsplash.com/cc0">CC0</a>)
-        </div>      
-    </div>
-
-    <!--[if lte IE 8]><script src="css/ie/html5shiv.js"></script><![endif]-->
-    <script src="{{=URL('static','template/js/jquery.min.js')}}"></script>
-    <script src="{{=URL('static','template/js/jquery.dropotron.min.js')}}"></script>
-    <script src="{{=URL('static','template/js/skel.min.js')}}"></script>
-    <script src="{{=URL('static','template/js/skel-layers.min.js')}}"></script>
-    <script src="{{=URL('static','template/js/init.js')}}"></script>
-    <script src="{{=URL('static','js/3muses.js')}}"></script>
+{{include 'footer.html'}}
 
 
   </body>

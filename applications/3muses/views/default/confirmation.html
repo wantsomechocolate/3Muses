@@ -1,31 +1,37 @@
 {{('message' in globals())}}
 {{extend 'layout.html'}}
 
+<div id="main" class="wrapper style4">
 
+	<div id='content' class='container'>
 
-{{if purchase_history_data_row=="SessionError":}}
-	Please go to your purchase history or email to view purchase information
+		{{if purchase_history_data_row=="SessionError":}}
+			Please go to your purchase history or email to view purchase information
 
-{{elif purchase_history_data_row=="ValueError":}}
-	That URL does not correspond to a purchase history record (VALUE ERROR)
+		{{elif purchase_history_data_row=="ValueError":}}
+			That URL does not correspond to a purchase history record (VALUE ERROR)
 
-{{elif purchase_history_data_row=="TypeError":}}
-	That URL does not correspond to a purchase history record (TYPE ERROR)
+		{{elif purchase_history_data_row=="TypeError":}}
+			That URL does not correspond to a purchase history record (TYPE ERROR)
 
-{{else:}}
+		{{else:}}
 
-	<h1>Thank you for shopping at 3MusesGlass!</h1>
+			<h1>Thank you for shopping at 3MusesGlass!</h1>
 
-		<br/>
-		<br/>
+				<br/>
+				<br/>
 
-	<h3>You should recieve a confirmation email shortly at {{=purchase_history_data_row.muses_email_address}}.</h3>
-	<h3>Please allow one day for processing. Below are the details of your order:</h3>
+			<h3>You should recieve a confirmation email shortly at {{=purchase_history_data_row.muses_email_address}}.</h3>
+			<h3>Please allow one day for processing. Below are the details of your order:</h3>
 
-		<br/>
+				<br/>
 
-	{{=final_div}}
+			{{=final_div}}
 
-		<br/>
+				<br/>
 
-{{pass}}
+		{{pass}}
+
+	</div>
+
+</div>

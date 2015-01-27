@@ -1,18 +1,26 @@
 {{extend 'layout.html'}}
 
-<p>By navigating to this page you have begun a purchase!</p>
+<div id="main" class="wrapper style4">
 
-<p>We are now creating a payment with paypal</p>
+	<div id='content' class='container'>
 
-<p>Once that is done, A link should appear below.</p>
+		<p>By navigating to this page you have begun a purchase!</p>
 
-<p>Click on it to go to paypal.com and confirm the purchase</p>
+		<p>We are now creating a payment with paypal</p>
+
+		<p>Once that is done, A link should appear below.</p>
+
+		<p>Click on it to go to paypal.com and confirm the purchase</p>
 
 
-{{=status}}
+		{{=status}}
 
-{{ if not approval_url:}}
-No approval URL
-{{else:}}
-{{=A("Confirm Purchase", _href=approval_url, _target="_blank")}}
-{{pass}}
+		{{ if not approval_url:}}
+		No approval URL
+		{{else:}}
+		{{=A("Confirm Purchase", _href=approval_url, _target="_blank")}}
+		{{pass}}
+
+	</div>
+
+</div>

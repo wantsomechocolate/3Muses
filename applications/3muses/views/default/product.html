@@ -1,170 +1,177 @@
-{{('message' in globals())}}
+
 {{extend 'layout.html'}}
 
-<h1>
-	{{=product_row[0].product_name}}
-</h1>
+<div id="main" class="wrapper style4">
+
+	<div id='content' class='container'>
+
+		<h1>
+			{{=product_row[0].product_name}}
+		</h1>
 
 
-{{for j in range(len(product_row)):}}
+		{{for j in range(len(product_row)):}}
 
-	<div class='product'>
+			<div class='product'>
 
-		<div class = 'product-header'>
+				<div class = 'product-header'>
 
-		{{=product_row[j].product_name}}
+				{{=product_row[j].product_name}}
 
-		</div>
+				</div>
 
-		<div class='product-image-case'>
-		
-
-			<!--  Carousel - consult the Twitter Bootstrap docs at 
-			      http://twitter.github.com/bootstrap/javascript.html#carousel -->
-			<div id="product-carousel-{{=j}}" class="carousel slide product-carousel"><!-- class of slide for animation -->
-			  
-			  <!-- Indicators -->
-			  <ol class="carousel-indicators">
-
-			  	{{results=db(db.image.product_name==product_row[j].id).select()}}
-
-			  	{{for i in range(len(results)):}}
-			  	
-			  		{{if i == 0:}}
-
-						<li data-target="#product-carousel-{{=j}}" data-slide-to="{{=i}}" class="active"></li>
-
-					{{else:}}
-
-						<li data-target="#product-carousel-{{=j}}" data-slide-to="{{=i}}"></li>
-					{{pass}}
-				{{pass}}
-
-			  </ol>
-
-
-			  <div class="carousel-inner">
-
+				<div class='product-image-case'>
 				
-			  		{{for i in range(len(results)):}}
-			  	
-				  		{{if i == 0:}}
-				    		<div class="product-item item active"><!-- class of active since it's the first item -->
-				    	{{else:}}
-				    		<div class="product-item item"><!-- class of active since it's the first item -->	
-				    	{{pass}}
 
-				    	{{if sqlite_tf:}}
-						 {{srcattr=URL('download',results[i].s3_url)}}
-					    {{else:}}
-						 {{srcattr='https://s3.amazonaws.com/threemusesglass/site_images/'+results[i].s3_url}}
-					    {{pass}}
+					<!--  Carousel - consult the Twitter Bootstrap docs at 
+					      http://twitter.github.com/bootstrap/javascript.html#carousel -->
+					<div id="product-carousel-{{=j}}" class="carousel slide product-carousel"><!-- class of slide for animation -->
+					  
+					  <!-- Indicators -->
+					  <ol class="carousel-indicators">
 
-					    {{=A(IMG(_src=srcattr, _alt="woops!"))}}
-				    			
-				      			<!--<div class="carousel-caption">
-				        			<p>YO!</p>
-								=URL('download',results[i].image)
+					  	{{results=db(db.image.product_name==product_row[j].id).select()}}
 
-				      				</div>-->
-				    		</div>
-			    	{{pass}}
-			  
+					  	{{for i in range(len(results)):}}
+					  	
+					  		{{if i == 0:}}
 
-		
-
-			  </div><!-- /.carousel-inner -->
-			  		<!--  Next and Previous controls below
-			        href values must reference the id for this carousel -->
-			    <!--
-			    <a class="carousel-control left" href="#product-carousel" data-slide="prev">&lsaquo;</a>
-			    <a class="carousel-control right" href="#product-carousel" data-slide="next">&rsaquo;</a>
-				-->
-
-			</div><!-- /.carousel -->
-
-			<div class='product-info'>
-				<div class = 'product-description'>
-					{{=product_row[j].description}}
-				</div>
-				<br/>
-
-				<div class = 'product-cost-cart'>
-					Cost: {{=product_row[j].cost_USD}}
-				</div>
-				<br/>
-
-
-
-				<div class = 'product-cost-cart'>
-
-				{{if product_row[j].qty_in_stock==0:}}
-
-					This product is sold out!
-
-				{{else:}}
-
-					{{ if auth.is_logged_in(): }}
-
-						{{cart_row=db((db.muses_cart.product_id==product_row[j].id)&(db.muses_cart.user_id==auth.user_id)).select()}}
-
-						{{try:}}
-							{{cart_row[0]}}
-							{{="You currently have this item in your cart."}}
-							<!--="You currently have "+str(cart_row[0].product_qty)+" of this item in your cart."-->
-							{{=A('X', _href=URL('delete_item_from_cart', vars=dict(pri_key=cart_row[0].id, redirect_url=URL('product',args=product_row[j].id))), _class="btn btn-primary")}}
-							<br/>
-							{{=cart_form}}
-
-						{{except IndexError:}}
-
-							{{=cart_form}}
-						
-						{{pass}}
-
-					{{else:}}
-
-						{{if not session.cart:}}
-
-							{{=cart_form}}
-
-						{{else:}}
-
-							{{if str(product_row[j].id) in session.cart.keys():}}
-
-								You currently have this item in your cart.
-
-								<!--You currently have  =session.cart[str(product_row[j].id)]  of this item in your cart.-->
-
-								{{=A('X', _href=URL('delete_item_from_cart', vars=dict(pri_key=product_row[j].id, redirect_url=URL('product',args=product_row[j].id))), _class="btn btn-primary")}}
-								<br/>
-								{{=cart_form}}
+								<li data-target="#product-carousel-{{=j}}" data-slide-to="{{=i}}" class="active"></li>
 
 							{{else:}}
 
-								{{=cart_form}}
+								<li data-target="#product-carousel-{{=j}}" data-slide-to="{{=i}}"></li>
+							{{pass}}
+						{{pass}}
 
-							{{pass}} <!-- End if checking for item in cart (session) -->
+					  </ol>
 
-						{{pass}} <!-- End if checking for items in the cart-->
 
-					{{pass}} <!-- -->
+					  <div class="carousel-inner">
 
-				{{pass}} <!--End if checking for qty-->
+						
+					  		{{for i in range(len(results)):}}
+					  	
+						  		{{if i == 0:}}
+						    		<div class="product-item item active"><!-- class of active since it's the first item -->
+						    	{{else:}}
+						    		<div class="product-item item"><!-- class of active since it's the first item -->	
+						    	{{pass}}
 
-				</div>
+						    	{{if sqlite_tf:}}
+								 {{srcattr=URL('download',results[i].s3_url)}}
+							    {{else:}}
+								 {{srcattr='https://s3.amazonaws.com/threemusesglass/site_images/'+results[i].s3_url}}
+							    {{pass}}
+
+							    {{=A(IMG(_src=srcattr, _alt="woops!"))}}
+						    			
+						      			<!--<div class="carousel-caption">
+						        			<p>YO!</p>
+										=URL('download',results[i].image)
+
+						      				</div>-->
+						    		</div>
+					    	{{pass}}
+					  
+
 				
 
-			</div>
+					  </div><!-- /.carousel-inner -->
+					  		<!--  Next and Previous controls below
+					        href values must reference the id for this carousel -->
+					    <!--
+					    <a class="carousel-control left" href="#product-carousel" data-slide="prev">&lsaquo;</a>
+					    <a class="carousel-control right" href="#product-carousel" data-slide="next">&rsaquo;</a>
+						-->
 
-		</div><!--image  case-->
+					</div><!-- /.carousel -->
 
-	</div><!--product block-->
+					<div class='product-info'>
+						<div class = 'product-description'>
+							{{=product_row[j].description}}
+						</div>
+						<br/>
 
-	<br/>
-	<br/>
+						<div class = 'product-cost-cart'>
+							Cost: {{=product_row[j].cost_USD}}
+						</div>
+						<br/>
 
-{{pass}}
 
+
+						<div class = 'product-cost-cart'>
+
+						{{if product_row[j].qty_in_stock==0:}}
+
+							This product is sold out!
+
+						{{else:}}
+
+							{{ if auth.is_logged_in(): }}
+
+								{{cart_row=db((db.muses_cart.product_id==product_row[j].id)&(db.muses_cart.user_id==auth.user_id)).select()}}
+
+								{{try:}}
+									{{cart_row[0]}}
+									{{="You currently have this item in your cart."}}
+									<!--="You currently have "+str(cart_row[0].product_qty)+" of this item in your cart."-->
+									{{=A('X', _href=URL('delete_item_from_cart', vars=dict(pri_key=cart_row[0].id, redirect_url=URL('product',args=product_row[j].id))), _class="btn btn-primary")}}
+									<br/>
+									{{=cart_form}}
+
+								{{except IndexError:}}
+
+									{{=cart_form}}
+								
+								{{pass}}
+
+							{{else:}}
+
+								{{if not session.cart:}}
+
+									{{=cart_form}}
+
+								{{else:}}
+
+									{{if str(product_row[j].id) in session.cart.keys():}}
+
+										You currently have this item in your cart.
+
+										<!--You currently have  =session.cart[str(product_row[j].id)]  of this item in your cart.-->
+
+										{{=A('X', _href=URL('delete_item_from_cart', vars=dict(pri_key=product_row[j].id, redirect_url=URL('product',args=product_row[j].id))), _class="btn btn-primary")}}
+										<br/>
+										{{=cart_form}}
+
+									{{else:}}
+
+										{{=cart_form}}
+
+									{{pass}} <!-- End if checking for item in cart (session) -->
+
+								{{pass}} <!-- End if checking for items in the cart-->
+
+							{{pass}} <!-- -->
+
+						{{pass}} <!--End if checking for qty-->
+
+						</div>
+						
+
+					</div>
+
+				</div><!--image  case-->
+
+			</div><!--product block-->
+
+			<br/>
+			<br/>
+
+		{{pass}}
+
+	</div>
+
+</div>
 
 

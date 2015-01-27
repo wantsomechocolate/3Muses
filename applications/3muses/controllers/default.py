@@ -727,10 +727,10 @@ def cart():
 
     address_grid_header_list=[
         'Select One',
-        'No. & Street/ P.O. Box/ etc.', 
-        'Apt/ Suite/ Floor/ etc.', 
-        'Town/ Section/ Municipality',
-        'State/ Admin Area',
+        'Street Line 1',#'No. & Street/ P.O. Box/ etc.', 
+        'Street Line 2',#'Apt/ Suite/ Floor/ etc.', 
+        'Municipality',#'Town/ Section/ Municipality',
+        'State or Equivilent',#'State/ Admin Area',
         'Postal Code',
         'Country', 
         'Edit', 
@@ -2963,7 +2963,7 @@ def table_generation(grid_header_list, grid_row_lists, basename):
 
         for i in range(len(grid_header_list)):
 
-            grid_header_row.append(DIV(grid_header_list[i], _class=str(basename)+"_grid_header_cell grid_header_cell "+str(basename)+"_grid_col grid_col "+str(basename)+"_grid_col_"+str(i+1)))
+            grid_header_row.append(DIV(P(grid_header_list[i]), _class=str(basename)+"_grid_header_cell grid_header_cell "+str(basename)+"_grid_col grid_col "+str(basename)+"_grid_col_"+str(i+1)))
         
         grid.append(grid_header_row)
 

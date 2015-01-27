@@ -428,6 +428,15 @@
 		transition: all 0.35s ease-in-out;
 	}
 
+	input[value="Login"],
+	.button {
+		color: #555555 !important;
+		font-family: 'Open Sans', sans-serif !important;
+		font-size: 12pt !important;
+		font-weight: 300 !important;
+		line-height: 1.65em !important;
+		}
+
 		input[type="submit"]:hover,
 		input[type="reset"]:hover,
 		input[type="button"]:hover,

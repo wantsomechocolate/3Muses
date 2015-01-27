@@ -1,20 +1,28 @@
 {{extend 'layout.html'}}
 
-<h1> You have been redirected here from paypal! </h1>
+<div id="main" class="wrapper style4">
 
-{{if status=="success":}}
-<h4> Your purchase was successful and has already been executed </h4>
-<h4> Thank you for shopping with ThreeMusesGlass </h4>
+	<div id='content' class='container'>
 
-{{elif status=="failure":}}
-<h4> Something went wrong! </h4>
-<h4> Please contact jamesfrancismcglynn@gmail.com </h4>
-<h4> so we can process your purchase manually </h4>
+		<h1> You have been redirected here from paypal! </h1>
 
-{{else:}}
+		{{if status=="success":}}
+		<h4> Your purchase was successful and has already been executed </h4>
+		<h4> Thank you for shopping with ThreeMusesGlass </h4>
 
-<h4> Either we are not expecting a purchase inquiry at this time,</h4>
-<h4> or you have already made one that resulted in an error.</h4>
-<h4> Please contact jamesfrancismcglynn@gmail.com with any questions.</h4>
+		{{elif status=="failure":}}
+		<h4> Something went wrong! </h4>
+		<h4> Please contact jamesfrancismcglynn@gmail.com </h4>
+		<h4> so we can process your purchase manually </h4>
 
-{{pass}}
+		{{else:}}
+
+		<h4> Either we are not expecting a purchase inquiry at this time,</h4>
+		<h4> or you have already made one that resulted in an error.</h4>
+		<h4> Please contact jamesfrancismcglynn@gmail.com with any questions.</h4>
+
+		{{pass}}
+
+	</div>
+
+</div>

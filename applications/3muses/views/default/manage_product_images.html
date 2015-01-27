@@ -1,7 +1,15 @@
-{{left_sidebar_enabled,right_sidebar_enabled=False,('message' in globals())}}
 {{extend 'layout.html'}}
-<div>
-Image grid for images associated with each product
-Add as many images as you'd liked for each product
+
+<div id="main" class="wrapper style4">
+
+	<div id='content' class='container'>
+
+		<div>
+		Image grid for images associated with each product
+		Add as many images as you'd liked for each product
+		</div>
+		{{=image_grid}}
+
+	</div>
+
 </div>
-{{=image_grid}}
