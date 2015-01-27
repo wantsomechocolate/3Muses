@@ -18,7 +18,7 @@
 
 	<div id='content' class='container'>
 
-		<div class='muses_cart'>
+		<div class='muses_cart' id='cart_cart'>
 
 			<h1>What You Are Buying</h1>
 
@@ -34,10 +34,6 @@
 
 		</div>
 
-		<br/>
-		<br/>
-		<br/>
-
 	</div>
 
 </div>
@@ -47,7 +43,7 @@
 
 	<div id='content' class='container'>
 
-		<div class='muses_cart' id = "checkout_addresses">
+		<div class='muses_cart' id = "cart_addresses">
 
 			<h1>Where You Are Shipping</h1>
 
@@ -63,10 +59,6 @@
 
 		</div>
 
-		<br/>
-		<br/>
-		<br/>
-
 	</div>
 
 </div>
@@ -76,7 +68,7 @@
 
 	<div id='content' class='container'>
 
-		<div class='muses_cart' id = "checkout_shipping">
+		<div class='muses_cart' id = "cart_shipping">
 			<h1>What Kind Of Shipping?</h1>
 			<div id='shipping_target'>
 
@@ -86,10 +78,6 @@
 
 		</div>
 
-		<br/>
-		<br/>
-		<br/>
-
 	</div>
 
 </div>
@@ -98,7 +86,7 @@
 
 	<div id='content' class='container'>
 
-		<div class='muses_cart' id = "checkout_cards">
+		<div class='muses_cart' id = 'cart_card'>
 			<h1>How You Are Paying</h1>
 
 			{{=card_grid}}
@@ -109,18 +97,25 @@
 
 		</div>
 
-
-		<br/>
-		<br/>
-
 	</div>
 
 </div>
 
-<!--
 
-		<div class="checkout-button">
-			<a href="{{=URL('checkout')}}"><button>Checkout</button></a>
+<div id="main" class="wrapper style2">
+
+	<div id='content' class='container'>
+
+		<div class='muses_cart' id = 'cart_checkout_button_div'>
+
+			<div>
+
+				<a class="button" href="{{=URL('checkout')}}">Checkout</a>
+
+			</div>
+
 		</div>
 
--->
+	</div>
+
+</div>

@@ -960,8 +960,8 @@ def cart():
         'Name', 
         'Last 4', 
         'Card Type',
-        'Expiration Month',
-        'Expiration Year', 
+        'Exp Month',
+        'Exp Year', 
         #'Card ID', 
         'Delete'
     ]
@@ -998,6 +998,9 @@ def cart():
                 card_grid_table_row_LOL.append(card_grid_table_row_list)
 
             card_grid=table_generation(card_grid_header_list, card_grid_table_row_LOL, 'card')
+
+            card_grid.append(DIV(INPUT(_type='radio', _name='card', _value='paypal')))
+            card_grid.append(DIV("Pay with Paypal"))
 
         except IndexError:
             #the current user does not yet have a stripe customer token
@@ -1159,43 +1162,125 @@ def checkout():
 ###########----------------------------Card Logic--------------------------------############
 #############################################################################################
 
-        ## Retrieve the default card for the current customer by:
-        ## Getting the stripe customer info from db with user_id
-        stripe_customer_row=db(db.stripe_customers.muses_id==auth.user_id).select().first()
+        if not session.payment_method:
+            session.payment_method='stripe'
 
-        ## From that get the customer id and default card id
-        stripe_customer_token=stripe_customer_row.stripe_id
-        stripe_customer_card=stripe_customer_row.stripe_next_card_id
+        if session.payment_method=='stripe':
 
-        ## Use stripe API to retrieve customer and then to retrieve card from customer
-        stripe_customer=stripe.Customer.retrieve(stripe_customer_token)
-        stripe_card=stripe_customer.cards.retrieve(stripe_customer_card)
+            ## Retrieve the default card for the current customer by:
+            ## Getting the stripe customer info from db with user_id
+            stripe_customer_row=db(db.stripe_customers.muses_id==auth.user_id).select().first()
 
-        ## Generate table information
-        card_grid_header_list=[
-            'Name', 
-            'Last 4', 
-            'Card Type',
-            'Expiration Month',
-            'Expiration Year', 
-        ]
+            ## From that get the customer id and default card id
+            stripe_customer_token=stripe_customer_row.stripe_id
+            stripe_customer_card=stripe_customer_row.stripe_next_card_id
 
-        card_grid_row_list=[
-            stripe_card['name'],
-            stripe_card['last4'], 
-            stripe_card['brand'], 
-            stripe_card['exp_month'], 
-            stripe_card['exp_year'],
-        ]
+            ## Use stripe API to retrieve customer and then to retrieve card from customer
+            stripe_customer=stripe.Customer.retrieve(stripe_customer_token)
+            stripe_card=stripe_customer.cards.retrieve(stripe_customer_card)
 
-        card_grid=table_generation(card_grid_header_list, [card_grid_row_list], 'checkout_card')
+            ## Generate table information
+            card_grid_header_list=[
+                'Name', 
+                'Last 4', 
+                'Card Type',
+                'Expiration Month',
+                'Expiration Year', 
+            ]
 
-        # card_grid_table_row=DIV(_class='checkout_card_grid_table_row')
-        # for i in range(len(card_grid_table_row_list)):
-        #     card_grid_table_row.append(DIV(card_grid_table_row_list[i],_class="checkout_card_grid_table_cell checkout_card_grid_col checkout_card_grid_col_"+str(i+1)))
-        # card_grid.append(card_grid_table_row)
+            card_grid_row_list=[
+                stripe_card['name'],
+                stripe_card['last4'], 
+                stripe_card['brand'], 
+                stripe_card['exp_month'], 
+                stripe_card['exp_year'],
+            ]
+
+            card_grid=table_generation(card_grid_header_list, [card_grid_row_list], 'checkout_card')
+
+            # card_grid_table_row=DIV(_class='checkout_card_grid_table_row')
+            # for i in range(len(card_grid_table_row_list)):
+            #     card_grid_table_row.append(DIV(card_grid_table_row_list[i],_class="checkout_card_grid_table_cell checkout_card_grid_col checkout_card_grid_col_"+str(i+1)))
+            # card_grid.append(card_grid_table_row)
+
+        else:
+            import paypalrestsdk
+
+            try:
+                ## see if you can acces the heroku environment variables
+                PAYPAL_CLIENT_ID=os.environ['PAYPAL_CLIENT_ID']
+                PAYPAL_CLIENT_SECRET=os.environ['PAYPAL_CLIENT_SECRET']
+
+            ## what exception exactly?
+            except KeyError:
+
+                # you aren't running on heroku
+                # this will fail if it can't find the local keys. GOOD.
+                with open('/home/wantsomechocolate/Code/API Info/api_keys.txt','r') as fh:
+                    text=fh.read()
+                    api_keys = ast.literal_eval(text)
+                
+                PAYPAL_CLIENT_ID=api_keys['paypal']['test']['PAYPAL_CLIENT_ID']
+                PAYPAL_CLIENT_SECRET=api_keys['paypal']['test']['PAYPAL_CLIENT_SECRET']
 
 
+            paypalrestsdk.configure({
+                "mode": "sandbox", # sandbox or live
+                "client_id": PAYPAL_CLIENT_ID,
+                "client_secret": PAYPAL_CLIENT_SECRET })
+
+
+            invoice_number=id_generator()
+
+            payment=paypalrestsdk.Payment({
+
+                "intent": "sale",
+
+                "payer": {
+                    "payment_method": "paypal",
+                    #"payer_info":{} Prefilled when payment method is paypal
+                    },
+
+                "transactions": [
+
+                        {
+                            "amount":{
+                                "currency":"USD",
+                                "total":"100",
+                            },
+
+                            "description":"Purchase from ThreeMusesGlass",
+
+                            "invoice_number":invoice_number,
+
+                        },
+
+                    ],
+
+                "redirect_urls":{
+                    "return_url":"https://threemusesglass.herokuapp.com/paypal_webhooks",
+                    "cancel_url":"https://threemusesglass.herokuapp.com",
+                    }
+
+                })
+
+
+            if payment.create():
+                status="Created successfully"
+                approval_url=payment['links'][1]['href']
+                session.expect_paypal_webhook=True
+                #session.payment_id=payment
+            else:
+                status=payment.error
+                approval_url="payment not created, no url for you"
+
+            #return dict(status=status, approval_url=approval_url)
+
+            card_grid=DIV('You are using Paypal for this purchase')
+
+
+
+    ## If the user is not logged in!
     else:
 
 #############################################################################################
@@ -1716,7 +1801,7 @@ def pay():
 
         confirmation_summary_grid=table_generation(summary_header_row,summary_table_row_LOL,"confirmation_summary")
 
-        final_div=DIV()
+        final_div=DIV(_class="muses_pay")
         final_div.append(DIV("Product Details",_class="confirmation_heading"))
         final_div.append(confirmation_product_grid)
         final_div.append(DIV("Address Details",_class="confirmation_heading"))
@@ -2841,6 +2926,11 @@ def default_card():
         row.update(stripe_next_card_id=request.vars.stripe_next_card_id)
         row.update_record()
 
+    if request.vars.stripe_next_card_id=='paypal':
+        session.payment_method='paypal'
+    else:
+        session.payment_method='stripe'
+
 def one():
     ajax_test=FORM(INPUT(_name='nametest', _onkeyup="ajax('echo', ['nametest'], ':eval')"))
     return locals()
@@ -2963,7 +3053,7 @@ def table_generation(grid_header_list, grid_row_lists, basename):
 
         for i in range(len(grid_header_list)):
 
-            grid_header_row.append(DIV(P(grid_header_list[i]), _class=str(basename)+"_grid_header_cell grid_header_cell "+str(basename)+"_grid_col grid_col "+str(basename)+"_grid_col_"+str(i+1)))
+            grid_header_row.append(DIV(DIV(grid_header_list[i]), _class=str(basename)+"_grid_header_cell grid_header_cell "+str(basename)+"_grid_col grid_col "+str(basename)+"_grid_col_"+str(i+1)))
         
         grid.append(grid_header_row)
 

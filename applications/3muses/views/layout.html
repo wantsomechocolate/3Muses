@@ -49,7 +49,18 @@
                 {{if auth.has_membership('admin'):}}
 
                   <li>
-                    <a href="{{=URL('cart')}}">Admin</a>
+                    {{admin_url=""}}
+                    {{if request.env.http_host[:9]=="localhost":}}
+                      {{pass}}
+                    {{else:}}
+                      {{admin_url+=request.env.wsgi_url_scheme}}
+                    {{pass}}
+                    {{admin_url+=request.env.http_host}}
+                    {{admin_url+='/admin/site'}}
+                    
+
+                    
+                    <a href="{{=admin_url}}" target="_blank">Admin</a>
                     <ul>
                       <li><a href="{{=URL('manage_products')}}">Manage Products</a></li>
                       <li><a href="{{=URL('manage_product_images')}}">Manage Product Images</a></li>

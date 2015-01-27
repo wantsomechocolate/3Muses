@@ -1,20 +1,12 @@
 {{('message' in globals())}}
 {{extend 'layout.html'}}
 
-<!--
-		<div class="checkout-button">
-		<a href="{{=URL('pay')}}"><button>Pay</button></a>
-		</div>
-
-		<br/>
--->
-
 
 <div id="main" class="wrapper style4">
 
 	<div id='content' class='container'>
 
-		<div id = "checkout_cart">
+		<div class='muses_checkout' id = "checkout_cart">
 			<h1>Cart Contents</h1>
 			{{=cart_grid}}
 		</div>
@@ -31,7 +23,7 @@
 
 	<div id='content' class='container'>
 
-		<div id = "checkout_addresses">
+		<div class='muses_checkout' id = "checkout_addresses">
 			<h1>Shipping Address</h1>
 			{{=address_grid}}
 		</div>
@@ -48,7 +40,7 @@
 
 	<div id='content' class='container'>
 
-		<div id = "checkout_shipping">
+		<div class='muses_checkout' id = "checkout_shipping">
 			<h1>Shipping Method</h1>
 			{{=shipping_grid}}
 		</div>
@@ -65,7 +57,7 @@
 
 	<div id='content' class='container'>
 
-		<div id = "checkout_card">
+		<div class='muses_checkout' id = "checkout_card">
 			<h1>Card Information</h1>
 			{{=card_grid}}
 
@@ -83,7 +75,7 @@
 
 	<div id='content' class='container'>
 
-		<div id = "checkout_summary">
+		<div class='muses_checkout' id = "checkout_summary">
 			<h1>Summary Info</h1>
 			{{=summary_grid}}
 
@@ -93,3 +85,26 @@
 
 </div>
 
+
+
+<div id="main" class="wrapper style2">
+
+	<div id='content' class='container'>
+
+		<div class='muses_checkout' id = 'checkout_pay_button_div'>
+
+			<div>
+			{{ if session.payment_method=='stripe':}}
+				<a class="button" href="{{=URL('pay')}}">Pay</a>
+			{{else:}}
+				<a class="button" href="{{=approval_url}}">Pay with Paypal</a>
+			{{pass}}
+			
+
+			</div>
+
+		</div>
+
+	</div>
+
+</div>
