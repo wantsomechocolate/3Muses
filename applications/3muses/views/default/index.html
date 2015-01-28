@@ -3,7 +3,7 @@
   <body class="homepage">
 
     <!-- Header Wrapper -->
-      <div class="wrapper style1">
+    <div class="wrapper style1">
       
       <!-- Header -->
         <div id="header">
@@ -11,68 +11,9 @@
               
             <!-- Logo -->
               
-            
+
             <!-- Nav -->
-
-
-              <nav id="nav">
-                <ul>
-
-                  <li class="active"><a href="{{=URL('default','index')}}">Home</a></li>
-
-                  <li><a href="#"></a></li>
-                  <li><a href="#"></a></li>
-
-                  <li>
-                    <a href="{{=URL('categories')}}">Shop</a>
-                    <ul>
-
-                  {{categories=db(db.categories.is_active==True).select(orderby=db.categories.display_order)}}
-  
-                    {{for row in categories:}}
-
-                      <li><a href="{{=URL('display/'+str(row.category_name.replace(" ","_")))}}">{{=T(row.category_name)}}</a></li>
-
-                    {{pass}}
-
-<!--
-                      <li>
-                        <a href="">Phasellus consequat</a>
-                        <ul>
-                          <li><a href="#">Lorem ipsum dolor</a></li>
-                          <li><a href="#">Phasellus consequat</a></li>
-                          <li><a href="#">Magna phasellus</a></li>
-                          <li><a href="#">Etiam dolore nisl</a></li>
-                          <li><a href="#">Veroeros feugiat</a></li>
-                        </ul>
-                      </li>
--->
-
-                    </ul>
-                  </li>
-
-                  <li><a href="#"></a></li>
-                  <li><a href="#"></a></li>                 
-
-                  <li><a href="{{=URL('cart')}}">Cart</a></li>
-
-                  <li><a href="#"></a></li>
-                  <li><a href="#"></a></li>
-
-                {{if auth.is_logged_in():}}
-
-                  <li><a href="{{=URL('user/profile')}}">Profile</a></li>
-
-                {{else:}}
-
-                  <li><a href="{{=URL('user/login')}}">Login</a></li>
-
-                {{pass}}
-
-                </ul>
-              </nav>
-              
-  
+            {{include 'nav.html'}}
 
           </div>
         </div>
@@ -85,8 +26,7 @@
             <p></p>
           </section>
         </div>
-
-      </div>
+    </div>
     
  <!-- Section One -->
       <div class="wrapper style2">
@@ -119,7 +59,6 @@
       </div>
 
       -->
-
 
     <!-- Section Three 
       <div class="wrapper style4">
@@ -191,9 +130,7 @@
       </div>
       -->
     
-    <!-- Team -->
-
-<!--
+    <!--Team
       <div class="wrapper style5">
         <section id="team" class="container">
           <header class="major">
@@ -201,7 +138,6 @@
             <span class="byline">pulvinar mollis. Vestibulum sem magna, elementum vestibulum arcu</span>
           </header>
           <div class="row">
-
             <div class="3u">
               <a href="#" class="image"><img src="images/placeholder.png" alt=""></a>
               <h3>Rebecca McGlynn</h3>
@@ -217,21 +153,18 @@
               <h3>Judy <br> Chan</h3>
               <p>Site designer</p>
             </div>
--->
-
-<!--
             <div class="3u">
               <a href="#" class="image"><img src="images/placeholder.png" alt=""></a>
               <h3>Linda Lee</h3>
               <p>In posuere eleifend odio quisque semper augue wisi ligula.</p>
             </div>
--->
           </div>
         </section>
       </div>
+      -->
 
-{{include 'footer.html'}}
-
+    {{include 'footer.html'}}
 
   </body>
+
 </html>

@@ -1,0 +1,87 @@
+<!-- Nav -->
+  <nav id="nav">
+    <ul>
+      <li class="active"><a href="{{=URL('default', 'index')}}">Home</a></li>
+      <li>
+        <a href="{{=URL('categories')}}">Shop</a>
+        <ul>
+
+        {{categories=db(db.categories.is_active==True).select(orderby=db.categories.display_order)}}
+
+        {{for row in categories:}}
+
+          <li><a href="{{=URL('display/'+str(row.category_name.replace(" ","_")))}}">{{=T(row.category_name)}}</a></li>
+
+        {{pass}}
+
+        <!-- uncomment for second level dropdown
+          <li>
+            <a href="">Phasellus consequat</a>
+            <ul>
+              <li><a href="#">Lorem ipsum dolor</a></li>
+              <li><a href="#">Phasellus consequat</a></li>
+              <li><a href="#">Magna phasellus</a></li>
+              <li><a href="#">Etiam dolore nisl</a></li>
+              <li><a href="#">Veroeros feugiat</a></li>
+            </ul>
+          </li>
+          -->
+
+        </ul>
+      </li>
+
+
+    {{if auth.has_membership('admin'):}}
+
+      <li>
+        {{admin_url=""}}
+        {{if request.env.http_host[:9]=="localhost":}}
+          
+        {{else:}}
+          {{admin_url+=request.env.wsgi_url_scheme}}
+        {{pass}}
+        {{admin_url+=request.env.http_host}}
+        {{admin_url+='/admin/site'}}
+        
+
+        
+        <a href="{{=admin_url}}" target="_blank">Admin</a>
+        <ul>
+          <li><a href="{{=URL('manage_products')}}">Manage Products</a></li>
+          <li><a href="{{=URL('manage_product_images')}}">Manage Product Images</a></li>
+          <li><a href="{{=URL('manage_categories')}}">Manage Categories</a></li>
+          <li><a href="{{=URL('manage_landing_page_images')}}">Manage Landing Page Images</a></li>
+          <li><a href="{{=URL('manage_purchase_history_data')}}">Manage Purchase History</a></li>
+          <li><a href="{{=URL('manage_purchase_history_products')}}">Manage Purchased Products</a></li>
+          <li><a href="{{=URL('reset_inventory')}}">Reset Inventory</a></li>
+        </ul>
+      </li>
+
+    {{pass}}
+
+
+      <li><a href="{{=URL('cart')}}">Cart</a></li>
+
+    {{if auth.is_logged_in():}}
+
+      <li>
+        <a href="{{=URL('user/profile')}}">Profile</a>
+        <ul>
+          <li><a href="{{=URL('user/logout')}}">Logout</a></li>
+        </ul>
+      </li>
+
+    {{else:}}
+
+      <li>
+        <a href="{{=URL('user/login')}}">Login</a>
+        <ul>
+          <li><a href="{{=URL('user/register')}}">Register</a></li>
+          <li><a href="{{=URL('user/request_reset_password')}}">Lost Password</a></li>
+        </ul>
+      </li>
+
+    {{pass}}
+      
+    </ul>
+  </nav>
