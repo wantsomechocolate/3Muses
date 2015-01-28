@@ -44,9 +44,12 @@ def get_env_var(service, test_or_live, key):
 import stripe
 STRIPE_SECRET=get_env_var('stripe', PRODUCTION_STATUS , 'STRIPE_SECRET')
 STRIPE_PUBLISHABLE=get_env_var('stripe', PRODUCTION_STATUS , 'STRIPE_PUBLISHABLE')
+stripe.api_key = STRIPE_SECRET
+
 
 import easypost
 EASYPOST_KEY=get_env_var('easypost',PRODUCTION_STATUS,'EASYPOST_KEY')
+easypost.api_key=EASYPOST_KEY
 
 POSTMARK_API_KEY=get_env_var('postmark',PRODUCTION_STATUS,'POSTMARK_API_KEY')
 
@@ -537,7 +540,7 @@ def add_new_address():
 def cart():
 
 #############################################################################################
-###########----------------------------Cart Logic--------------------------------############
+###########-------------------Cart Logic (User and Non User)---------------------############
 #############################################################################################
 
     ## If someone tries to mess with the URL in the browser by going to 
@@ -629,7 +632,7 @@ def cart():
 
 
 #############################################################################################
-###########---------------------------Address Logic------------------------------############
+###########-----------------Address Logic (User and Non User)--------------------############
 #############################################################################################
 
     address_grid_header_list=[
@@ -714,7 +717,7 @@ def cart():
 
 
 #############################################################################################
-###########---------------------------Shipping Logic-----------------------------############
+###########---------------Shipping Logic (User and Non User)---------------------############
 #############################################################################################
 
     try:
@@ -890,7 +893,7 @@ def cart():
                 else:
                     radio_button=INPUT(_type='radio', _name='card', _value=stripe_cards['data'][i]['id'])
 
-                delete_button=A('X', _href=URL('delete_item_from_db_card', vars=dict(customer_id=stripe_customer_token, card_id=stripe_cards['data'][i]['id'])), _class="btn btn-primary")
+                delete_button=A('X', _href=URL('delete_item_from_db_card', vars=dict(customer_id=stripe_customer_token, card_id=stripe_cards['data'][i]['id'])), _class="btn btn-primary button")
 
                 card_grid_table_row_list=[
                     radio_button, 
@@ -940,6 +943,7 @@ def cart():
             card_grid.append(DIV(INPUT(_type='radio', _name='card', _value='paypal')))
             card_grid.append(DIV("Pay with Paypal"))
 
+    ## If user is not logged in.
     else:
 
         if not session.card_info:
@@ -950,9 +954,11 @@ def cart():
 
         else:
 
-            radio_button=FORM(INPUT(_type='radio', _name='card', _value=session.card_info['card_id'], _checked='checked'), _action="")
+            #radio_button=FORM(INPUT(_type='radio', _name='card', _value=session.card_info['card_id'], _checked='checked'), _action="")
 
-            delete_button=A('X', _href=URL('delete_item_from_session_card'), _class="btn btn-primary")
+            radio_button=INPUT(_type='radio', _name='card', _value=session.card_info['card_id'], _checked='checked')
+
+            delete_button=A('X', _href=URL('delete_item_from_session_card'), _class="btn btn-primary button")
 
             card_grid_table_row_list=[
                 radio_button,
@@ -994,7 +1000,7 @@ def checkout():
     if auth.is_logged_in():
 
 #############################################################################################
-###########----------------------------Cart Logic--------------------------------############
+###########-----------------------Cart Logic (User Only)-------------------------############
 #############################################################################################
 
         ## Retrieve cart based on user id
@@ -1048,7 +1054,7 @@ def checkout():
 
 
 #############################################################################################
-###########--------------------------Address Logic-------------------------------############
+###########-------------------Address Logic (User Only)--------------------------############
 #############################################################################################
 
         address=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select().first()
@@ -1085,7 +1091,7 @@ def checkout():
 
 
 #############################################################################################
-###########----------------------------Card Logic--------------------------------############
+###########-----------------------Card Logic (User Only)-------------------------############
 #############################################################################################
 
         if not session.payment_method:
@@ -1152,7 +1158,7 @@ def checkout():
                         {
                             "amount":{
                                 "currency":"USD",
-                                "total":cart_cost_USD,
+                                "total":'100.00',
                             },
 
                             "description":"Purchase from ThreeMusesGlass",
@@ -1177,7 +1183,7 @@ def checkout():
                 #session.payment_id=payment
             else:
                 status=payment.error
-                approval_url="payment not created, no url for you"
+                approval_url=status
 
             #return dict(status=status, approval_url=approval_url)
 
@@ -1203,7 +1209,7 @@ def checkout():
     else:
 
 #############################################################################################
-###########----------------------------Cart Logic--------------------------------############
+###########----------------------Cart Logic (Non User Only)----------------------############
 #############################################################################################
 
         cart_for_shipping_calculations=[]
@@ -1260,7 +1266,7 @@ def checkout():
 
 
 #############################################################################################
-###########--------------------------Address Logic-------------------------------############
+###########---------------------Address Logic (Non User Only)--------------------############
 #############################################################################################
 
         address_grid_header_list=[
@@ -1294,7 +1300,7 @@ def checkout():
 
 
 #############################################################################################
-###########----------------------------Card Logic--------------------------------############
+###########--------------------Card Logic (Non User Only)------------------------############
 #############################################################################################
 
         if not session.payment_method:
@@ -1349,7 +1355,7 @@ def checkout():
                         {
                             "amount":{
                                 "currency":"USD",
-                                "total":cart_cost_USD,
+                                "total":"100.00",
                             },
 
                             "description":"Purchase from ThreeMusesGlass",
@@ -1374,7 +1380,7 @@ def checkout():
                 #session.payment_id=payment
             else:
                 status=payment.error
-                approval_url="payment not created, no url for you"
+                approval_url=status
 
             #return dict(status=status, approval_url=approval_url)
 
@@ -1396,7 +1402,7 @@ def checkout():
 
 
 #############################################################################################
-###########--------------------------Shipping Logic------------------------------############
+##########------------------Shipping Logic (User and Non User)-------------------############
 #############################################################################################
 
     shipment=create_shipment(address_dict, cart_for_shipping_calculations)
@@ -1438,7 +1444,7 @@ def checkout():
 
 
 #############################################################################################
-###########--------------------------Summary Logic-------------------------------############
+###########-----------------Summary Logic (User and Non User)--------------------############
 #############################################################################################
 
     summary_grid_header_list=['Cart Cost','Shipping Cost', 'Total']
@@ -3471,24 +3477,9 @@ def paypal_webhooks():
 
     ## Get the keys! and configure to send stuff
     import paypalrestsdk
-
-    try:
-        ## see if you can acces the heroku environment variables
-        PAYPAL_CLIENT_ID=os.environ['PAYPAL_CLIENT_ID']
-        PAYPAL_CLIENT_SECRET=os.environ['PAYPAL_CLIENT_SECRET']
-
-    ## what exception exactly?
-    except KeyError:
-
-        # you aren't running on heroku
-        # this will fail if it can't find the local keys. GOOD.
-        with open('/home/wantsomechocolate/Code/API Info/api_keys.txt','r') as fh:
-            text=fh.read()
-            api_keys = ast.literal_eval(text)
-        
-        PAYPAL_CLIENT_ID=api_keys['paypal']['test']['PAYPAL_CLIENT_ID']
-        PAYPAL_CLIENT_SECRET=api_keys['paypal']['test']['PAYPAL_CLIENT_SECRET']
-
+       
+    PAYPAL_CLIENT_ID=get_env_var('paypal', PRODUCTION_STATUS,'PAYPAL_CLIENT_ID')
+    PAYPAL_CLIENT_SECRET=get_env_var('paypal', PRODUCTION_STATUS,'PAYPAL_CLIENT_SECRET')
 
     paypalrestsdk.configure({
         "mode": "sandbox", # sandbox or live
