@@ -10,87 +10,64 @@
 #########################################################################
 
 import os, ast, time
-import easypost
-import stripe
-#from gluon.contrib.stripe import Stripe
 
 STRIPE_SESSION_RETIRE_HOURS=26 #(1/20.0)
 SERVER_SESSION_RETIRE_HOURS=26 #(1/20.0)
+PRODUCTION_STATUS='test'
+S3_BUCKET_PREFIX='https://s3.amazonaws.com/threemusesglass/site_images/'
 
 
-## is it ok to have top level stuff here? It works so leave it until someone says its bad. 
+
+## Functions that should be moved to their own module
+
+def get_env_var(service, test_or_live, key):
+
+    ## Assume that you are running on herkou first
+    try:
+        KEY=os.environ[key]
+
+    ## If that fails, assume you are running locally and look for key in a text file
+    except KeyError:
+
+        with open('/home/wantsomechocolate/Code/API Info/api_keys.txt','r') as fh:
+            text=fh.read()
+            api_keys=ast.literal_eval(text)
+
+        KEY=api_keys[service][test_or_live][key]
+
+    return KEY
+
+
+
+
+
+import stripe
+STRIPE_SECRET=get_env_var('stripe', PRODUCTION_STATUS , 'STRIPE_SECRET')
+STRIPE_PUBLISHABLE=get_env_var('stripe', PRODUCTION_STATUS , 'STRIPE_PUBLISHABLE')
+
+import easypost
+EASYPOST_KEY=get_env_var('easypost',PRODUCTION_STATUS,'EASYPOST_KEY')
+
+POSTMARK_API_KEY=get_env_var('postmark',PRODUCTION_STATUS,'POSTMARK_API_KEY')
+
+
+## Set Cookies to expire at time designated by Server Session Retire Hours 
 if response.session_id_name in response.cookies:
     response.cookies[response.session_id_name]['expires']=int(3600*SERVER_SESSION_RETIRE_HOURS)
 
 else:
-    # cookie key doesn't get created until second time visiting a page for incognito chrome and probably
-    # other private browsing modes. 
+    # cookie key doesn't get created until second time visiting a page for 
+    # incognito chrome and probably other private browsing modes. 
     pass
 
 
-try:
-    ## see if you can acces the heroku environment variables
-    STRIPE_SECRET=os.environ['STRIPE_SECRET']
-    STRIPE_PUBLISHABLE=os.environ['STRIPE_PUBLISHABLE']
-
-## what exception exactly?
-except KeyError:
-
-    # you aren't running on heroku
-    # this will fail if it can't find the local keys. GOOD.
-    with open('/home/wantsomechocolate/Code/API Info/api_keys.txt','r') as fh:
-        text=fh.read()
-        api_keys = ast.literal_eval(text)
-    
-    STRIPE_SECRET=api_keys['stripe']['test']['STRIPE_SECRET']
-    STRIPE_PUBLISHABLE=api_keys['stripe']['test']['STRIPE_PUBLISHABLE']
-
-stripe.api_key = STRIPE_SECRET
-
-
-
-try:
-    ## see if you can acces the heroku environment variables
-    EASYPOST_KEY=os.environ['EASYPOST_KEY']
-
-## what exception exactly?
-except KeyError:
-
-    # you aren't running on heroku
-    # this will fail if it can't find the local keys. GOOD.
-    with open('/home/wantsomechocolate/Code/API Info/api_keys.txt','r') as fh:
-        text=fh.read()
-        api_keys = ast.literal_eval(text)
-    
-    EASYPOST_KEY=api_keys['easypost']['test']['EASYPOST_KEY']
-
-easypost.api_key=EASYPOST_KEY
-
-try:
-    POSTMARK_API_KEY=os.environ['POSTMARK_API_KEY']
-except KeyError:
-
-    with open('/home/wantsomechocolate/Code/API Info/api_keys.txt','r') as fh:
-        text=fh.read()
-        api_keys=ast.literal_eval(text)
-
-    POSTMARK_API_KEY=api_keys['postmark']['test']['POSTMARK_API_KEY']
-
-
-
-
-
+## Tell the controller what db its using
 if db._dbname=='sqlite':
-
     sqlite_tf=True
-
 else:
-
     sqlite_tf=False
 
 
-
-S3_BUCKET_PREFIX='https://s3.amazonaws.com/threemusesglass/site_images/'
 
 
 ## The static views (index, categories, display, product, meet the artist.)
@@ -104,46 +81,28 @@ def index():
 def categories():
 
     if request.args(0) is not None:
+
         redirect(URL('categories'))
+
     else:
+
         pass
 
     category_rows=db(db.categories.is_active==True).select(orderby=db.categories.display_order)
 
-    left_sidebar_enabled=False
-
-    right_sidebar_enabled=False
-
-    #return locals()
-
     return dict(
         category_rows=category_rows,
-        left_sidebar_enabled=left_sidebar_enabled, 
-        right_sidebar_enabled=right_sidebar_enabled,
         )
 
 
 
 def display():
     
-    # if request.args(0) is None:
-    #     redirect(URL('categories'))
-    # else:
-    #     pass
-
     category_name=request.args[0].replace("_"," ")
-
 
     category_id=int(db(db.categories.category_name==category_name).select().first()['id'])
 
-    # category_id=request.args[0]
     product_rows=db((db.product.category_name==category_id)&(db.product.is_active==True)).select(orderby=db.product.display_order)
-    
-
-    # if len(product_rows) == 0:
-    #     redirect(URL('dne.html', vars=dict(page='display')))
-    # else:
-    #     pass
 
     return dict(
         category_id=category_id,
@@ -168,8 +127,6 @@ def product():
         ),
 
         BR(),
-
-        
 
         INPUT(_type='submit', _class="btn btn-default", _value="Add to Cart"),
     )
@@ -202,8 +159,6 @@ def product():
 
         pass
 
-    #return locals()
-
     return dict(
         product_id=product_id,
         product_row=product_row,
@@ -214,12 +169,14 @@ def product():
 
 ## Meet the artist is under construction
 def artist():
-    return locals()
+    return dict()
 
 
 
 ## Functions for adding things to session or db. 
 
+## This needs to be shortened. Two long right now
+## Consider bringing some of this crap to the view
 def add_new_card():
 
     if auth.is_logged_in():
@@ -379,10 +336,6 @@ def add_new_card():
         ## and create a new card. If the logged in user doesn't have a stripe customer token yet, 
         ## it will be unable to find one and raise an index error. 
 
-        #from gluon.debug import dbg
-        #dbg.set_trace()
-
-        #existing_stripe_id=db(db.stripe_customers.user_id==auth.user_id).select()['stripeToken']
         try:
             stripe_customer_token=db(db.stripe_customers.muses_id==auth.user_id).select()[0].stripe_id
             customer=stripe.Customer.retrieve(stripe_customer_token)
@@ -399,7 +352,6 @@ def add_new_card():
                         exp_year=stripe_form.vars.exp_year,     
                     )
                 )
-
 
 
         # if there is no stripe customer token for the current user, the there will be an index error
@@ -582,60 +534,15 @@ def add_new_address():
         return dict(add_address_form=add_address_form)
 
 
-
-## Functions that were used for testing purposes. 
-
-def cookie_test():
-    if not session.counter:
-        session.counter=1
-    else:
-        session.counter+=1
-    counter=session.counter
-    message="Hello from MyApp"
-    
-    return locals()
-
-
-
-@auth.requires_login()
-def stripe_test():
-    stripe.api_key = STRIPE_SECRET
-    if request.env.request_method=='POST':
-        token = request.vars['stripeToken']
-
-        customer = stripe.Customer.create(card=token,description=request.vars['stripeEmail'])
-
-        # stripe.Charge.create(
-        #     amount=2000, # amount in cents, again
-        #     currency="usd",
-        #     customer=customer.id
-        #     )
-
-        db.stripe_customers.insert(
-            muses_id=auth.user_id,
-            stripe_id=customer.id,
-            stripeEmail=request.vars['stripeEmail']
-            )
-
-        message="Card info saved on Stripe"
-        return locals()
-
-        #except stripe.CardError, e:
-            # The card has been declined
-            #return locals()
-
-    else:
-        message="Save a card"
-        return locals()
-
-
-
 def cart():
 
 #############################################################################################
 ###########----------------------------Cart Logic--------------------------------############
 #############################################################################################
 
+    ## If someone tries to mess with the URL in the browser by going to 
+    ## cart/arg, currently it will load cart but keep the arg in the browser
+    ## The following reloads the page without the erroneous arg
     if request.args(0) is not None:
         redirect(URL('cart'))
     else:
@@ -776,6 +683,7 @@ def cart():
 
             address_grid=table_generation(address_grid_header_list, address_grid_table_row_LOL, 'address')
 
+    ## If user is not logged in
     else:
 
         if not session.address:
@@ -848,6 +756,7 @@ def cart():
                 country=address.country,
             )
 
+        ## If user is not logged in
         else:
 
             cart_for_shipping_calculations=[]
@@ -908,7 +817,6 @@ def cart():
         # I need to be able to sort the shipping rates based on the rate. 
         for j in range(len(shipping_rates_for_sorting)):
 
-
             for i in range(len(shipment.rates)):
 
                 if shipping_rates_for_sorting[j]==float(shipment.rates[i].rate):
@@ -952,7 +860,7 @@ def cart():
 
 
 #############################################################################################
-###########----------------------------Card Logic--------------------------------############
+###########-------------------Card Logic (User and Non User)---------------------############
 #############################################################################################
 
     card_grid_header_list=[
@@ -1009,6 +917,8 @@ def cart():
             stripe_cards=None
 
             card_grid=DIV("You do not have any cards yet.")
+            card_grid.append(DIV(INPUT(_type='radio', _name='card', _value='paypal')))
+            card_grid.append(DIV("Pay with Paypal"))
 
         except AttributeError:
             #the current user does not yet have a stripe customer token
@@ -1017,6 +927,8 @@ def cart():
             stripe_cards=None
 
             card_grid=DIV("You do not have any cards yet, or there was a problem accessing your cards.")
+            card_grid.append(DIV(INPUT(_type='radio', _name='card', _value='paypal')))
+            card_grid.append(DIV("Pay with Paypal"))
 
         except stripe.error.APIConnectionError, stripe.error.APIError:
             #No access to the internet, probably
@@ -1025,12 +937,16 @@ def cart():
             stripe_cards=None
 
             card_grid=DIV("There was a problem trying to access Stripe")
+            card_grid.append(DIV(INPUT(_type='radio', _name='card', _value='paypal')))
+            card_grid.append(DIV("Pay with Paypal"))
 
     else:
 
         if not session.card_info:
 
             card_grid=DIV("You have not entered card information yet")
+            card_grid.append(DIV(INPUT(_type='radio', _name='card', _value='paypal')))
+            card_grid.append(DIV("Pay with Paypal"))
 
         else:
 
@@ -1053,8 +969,15 @@ def cart():
 
             card_grid=table_generation(card_grid_header_list, card_grid_table_row_LOL, 'address')
 
-    return locals()
+            card_grid.append(DIV(INPUT(_type='radio', _name='card', _value='paypal')))
+            card_grid.append(DIV("Pay with Paypal"))
 
+    return dict(
+        cart_grid=cart_grid,
+        address_grid=address_grid,
+        shipping_grid=shipping_grid,
+        card_grid=card_grid,
+        )
 
 
 ## The view right before they click to get charged and stuff. 
@@ -1064,6 +987,9 @@ def cart():
 ## it as a var or arg to pay. then try to charge the card,
 ## if it works, I'll have all the info I need, if not I can decide what to do about it. 
 def checkout():
+
+## Currently checkout does, is logged in? then everything, then not logged in, and everything
+## I figured out that I like the other method better. check for login on each thing you have to do.
 
     if auth.is_logged_in():
 
@@ -1167,6 +1093,8 @@ def checkout():
 
         if session.payment_method=='stripe':
 
+            approval_url=URL('pay')
+
             ## Retrieve the default card for the current customer by:
             ## Getting the stripe customer info from db with user_id
             stripe_customer_row=db(db.stripe_customers.muses_id==auth.user_id).select().first()
@@ -1198,37 +1126,17 @@ def checkout():
 
             card_grid=table_generation(card_grid_header_list, [card_grid_row_list], 'checkout_card')
 
-            # card_grid_table_row=DIV(_class='checkout_card_grid_table_row')
-            # for i in range(len(card_grid_table_row_list)):
-            #     card_grid_table_row.append(DIV(card_grid_table_row_list[i],_class="checkout_card_grid_table_cell checkout_card_grid_col checkout_card_grid_col_"+str(i+1)))
-            # card_grid.append(card_grid_table_row)
-
+        ## If not paying with stripe, then assume they are paying with Paypal
         else:
             import paypalrestsdk
 
-            try:
-                ## see if you can acces the heroku environment variables
-                PAYPAL_CLIENT_ID=os.environ['PAYPAL_CLIENT_ID']
-                PAYPAL_CLIENT_SECRET=os.environ['PAYPAL_CLIENT_SECRET']
-
-            ## what exception exactly?
-            except KeyError:
-
-                # you aren't running on heroku
-                # this will fail if it can't find the local keys. GOOD.
-                with open('/home/wantsomechocolate/Code/API Info/api_keys.txt','r') as fh:
-                    text=fh.read()
-                    api_keys = ast.literal_eval(text)
-                
-                PAYPAL_CLIENT_ID=api_keys['paypal']['test']['PAYPAL_CLIENT_ID']
-                PAYPAL_CLIENT_SECRET=api_keys['paypal']['test']['PAYPAL_CLIENT_SECRET']
-
+            PAYPAL_CLIENT_ID=get_env_var('paypal', PRODUCTION_STATUS, 'PAYPAL_CLIENT_ID')
+            PAYPAL_CLIENT_SECRET=get_env_var('paypal', PRODUCTION_STATUS, 'PAYPAL_CLIENT_SECRET')
 
             paypalrestsdk.configure({
                 "mode": "sandbox", # sandbox or live
                 "client_id": PAYPAL_CLIENT_ID,
                 "client_secret": PAYPAL_CLIENT_SECRET })
-
 
             invoice_number=id_generator()
 
@@ -1238,21 +1146,18 @@ def checkout():
 
                 "payer": {
                     "payment_method": "paypal",
-                    #"payer_info":{} Prefilled when payment method is paypal
                     },
 
                 "transactions": [
-
                         {
                             "amount":{
                                 "currency":"USD",
-                                "total":"100",
+                                "total":cart_cost_USD,
                             },
 
                             "description":"Purchase from ThreeMusesGlass",
 
                             "invoice_number":invoice_number,
-
                         },
 
                     ],
@@ -1277,6 +1182,20 @@ def checkout():
             #return dict(status=status, approval_url=approval_url)
 
             card_grid=DIV('You are using Paypal for this purchase')
+
+            card_grid_header_list=[
+                'Name', 
+                'Email', 
+                'Payment Type',
+            ]
+
+            card_grid_row_list=[
+                'Name',
+                'Email',
+                'Paypal',
+            ]
+
+            card_grid=table_generation(card_grid_header_list, [card_grid_row_list], 'checkout_card')
 
 
 
@@ -1335,15 +1254,6 @@ def checkout():
 
             cart_grid_row_LOL.append(cart_grid_table_row_list)
 
-            #cart_grid_table_row=DIV(_class="checkout_cart_grid_table_row")
-
-            #for i in range(len(cart_grid_table_row_list)):
-
-                #cart_grid_table_row.append(DIV(cart_grid_table_row_list[i],_class="checkout_cart_grid_table_cell checkout_cart_grid_col checkout_cart_grid_col_"+str(i+1)))
-
-            #cart_grid.append(cart_grid_table_row)
-
-
         cart_grid=table_generation(cart_grid_header_list, cart_grid_row_LOL, 'checkout_cart')
 
 
@@ -1387,25 +1297,102 @@ def checkout():
 ###########----------------------------Card Logic--------------------------------############
 #############################################################################################
 
-        card_grid_header_list=[
-            'Name', 
-            'Last 4', 
-            'Card Type',
-            'Expiration Month',
-            'Expiration Year', 
-        ]
+        if not session.payment_method:
+            session.payment_method='stripe'
 
-        card_grid_row_list=[
-            session.card_info['name'],
-            session.card_info['last4'],
-            session.card_info['brand'],
-            session.card_info['exp_month'],
-            session.card_info['exp_year'],
-            #session.card_info['card_id'],
-        ]
+        if session.payment_method=='stripe':
+
+            approval_url=URL('pay')
+
+            card_grid_header_list=[
+                'Name', 
+                'Last 4', 
+                'Card Type',
+                'Expiration Month',
+                'Expiration Year', 
+            ]
+
+            card_grid_row_list=[
+                session.card_info['name'],
+                session.card_info['last4'],
+                session.card_info['brand'],
+                session.card_info['exp_month'],
+                session.card_info['exp_year'],
+                #session.card_info['card_id'],
+            ]
+
+            card_grid=table_generation(card_grid_header_list, [card_grid_row_list], 'checkout_card')
 
 
-        card_grid=table_generation(card_grid_header_list, [card_grid_row_list], 'checkout_card')
+        else:
+            import paypalrestsdk
+
+            PAYPAL_CLIENT_ID=get_env_var('paypal', PRODUCTION_STATUS, 'PAYPAL_CLIENT_ID')
+            PAYPAL_CLIENT_SECRET=get_env_var('paypal', PRODUCTION_STATUS, 'PAYPAL_CLIENT_SECRET')
+
+            paypalrestsdk.configure({
+                "mode": "sandbox", # sandbox or live
+                "client_id": PAYPAL_CLIENT_ID,
+                "client_secret": PAYPAL_CLIENT_SECRET })
+
+            invoice_number=id_generator()
+
+            payment=paypalrestsdk.Payment({
+
+                "intent": "sale",
+
+                "payer": {
+                    "payment_method": "paypal",
+                    },
+
+                "transactions": [
+                        {
+                            "amount":{
+                                "currency":"USD",
+                                "total":cart_cost_USD,
+                            },
+
+                            "description":"Purchase from ThreeMusesGlass",
+
+                            "invoice_number":invoice_number,
+                        },
+
+                    ],
+
+                "redirect_urls":{
+                    "return_url":"https://threemusesglass.herokuapp.com/paypal_webhooks",
+                    "cancel_url":"https://threemusesglass.herokuapp.com",
+                    }
+
+                })
+
+
+            if payment.create():
+                status="Created successfully"
+                approval_url=payment['links'][1]['href']
+                session.expect_paypal_webhook=True
+                #session.payment_id=payment
+            else:
+                status=payment.error
+                approval_url="payment not created, no url for you"
+
+            #return dict(status=status, approval_url=approval_url)
+
+            card_grid=DIV('You are using Paypal for this purchase')
+
+            card_grid_header_list=[
+                'Name', 
+                'Email', 
+                'Payment Type',
+            ]
+
+            card_grid_row_list=[
+                'Name',
+                'Email',
+                'Paypal',
+            ]
+
+            card_grid=table_generation(card_grid_header_list, [card_grid_row_list], 'checkout_card')
 
 
 #############################################################################################
@@ -1486,7 +1473,14 @@ def checkout():
     ## dictionary of summary info
     session.purchase_history_summary_info=summary_dict
 
-    return locals()
+    return dict(
+        cart_grid=cart_grid,
+        address_grid=address_grid,
+        shipping_grid=shipping_grid,
+        card_grid=card_grid,
+        summary_grid=summary_grid,
+        approval_url=approval_url,
+        )
 
 
 def pay():
