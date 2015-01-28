@@ -51,7 +51,7 @@
                   <li>
                     {{admin_url=""}}
                     {{if request.env.http_host[:9]=="localhost":}}
-                      {{pass}}
+                      
                     {{else:}}
                       {{admin_url+=request.env.wsgi_url_scheme}}
                     {{pass}}
