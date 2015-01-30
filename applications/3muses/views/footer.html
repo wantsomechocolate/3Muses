@@ -26,18 +26,50 @@
         </div>      
     </div>
 
+ <!-- The javascript =============================================
+       (Placed at the end of the document so the pages load faster) -->
+  
+  <!--
+  <script type="text/javascript" src="{{=URL('static','js/lodash.min.js')}}"></script>
+  <script type="text/javascript" src="{{=URL('static','js/s3upload.js')}}"></script>
+  -->
+
 
     <!--[if lte IE 8]><script src="css/ie/html5shiv.js"></script><![endif]-->
 
     <!-- remomve if this cuases problems -->
+
+
+
+
+
+    <script type="text/javascript" src="{{=URL('static','template/js/jquery.min.js')}}"></script>
+    <script type="text/javascript" src="{{=URL('static','template/js/jquery.dropotron.min.js')}}"></script>
+    <script type="text/javascript" src="{{=URL('static','template/js/skel.min.js')}}"></script>
+    <script type="text/javascript" src="{{=URL('static','template/js/skel-layers.min.js')}}"></script>
+    <script type="text/javascript" src="{{=URL('static','template/js/init.js')}}"></script>
+
+
+    <script type="text/javascript" src="{{=URL('static','js/3muses.js')}}"></script>
     <script type="text/javascript" src="{{=URL('static','js/bootstrap.min.js')}}"></script>
     <script type="text/javascript" src="{{=URL('static','js/web2py_bootstrap.js')}}"></script>
     <script type="text/javascript" src="{{=URL('static','js/jquery.js')}}"></script>
 
 
-    <script src="{{=URL('static','template/js/jquery.min.js')}}"></script>
-    <script src="{{=URL('static','template/js/jquery.dropotron.min.js')}}"></script>
-    <script src="{{=URL('static','template/js/skel.min.js')}}"></script>
-    <script src="{{=URL('static','template/js/skel-layers.min.js')}}"></script>
-    <script src="{{=URL('static','template/js/init.js')}}"></script>
-    <script src="{{=URL('static','js/3muses.js')}}"></script>
+  <!--[if lt IE 7 ]>
+      <script src="{{=URL('static','js/dd_belatedpng.js')}}"></script>
+      <script> DD_belatedPNG.fix('img, .png_bg'); //fix any <img> or .png_bg background-images </script>
+      <![endif]-->
+  
+  {{if response.google_analytics_id:}}
+  <script src="{{=URL('static','js/analytics.min.js')}}"></script>
+  <script type="text/javascript">
+  analytics.initialize({
+    'Google Analytics':{trackingId:'{{=response.google_analytics_id}}'} 
+  });</script>
+  {{pass}}
+  <script src="{{=URL('static','js/share.js',vars=dict(static=URL('static','images')))}}"></script>
+
+</body>
+
+</html>

@@ -17,28 +17,8 @@ PRODUCTION_STATUS='test'
 S3_BUCKET_PREFIX='https://s3.amazonaws.com/threemusesglass/site_images/'
 
 
-
 ## Functions that should be moved to their own module
-
-def get_env_var(service, test_or_live, key):
-
-    ## Assume that you are running on herkou first
-    try:
-        KEY=os.environ[key]
-
-    ## If that fails, assume you are running locally and look for key in a text file
-    except KeyError:
-
-        with open('/home/wantsomechocolate/Code/API Info/api_keys.txt','r') as fh:
-            text=fh.read()
-            api_keys=ast.literal_eval(text)
-
-        KEY=api_keys[service][test_or_live][key]
-
-    return KEY
-
-
-
+from aux import get_env_var
 
 
 import stripe
@@ -51,13 +31,13 @@ import easypost
 EASYPOST_KEY=get_env_var('easypost',PRODUCTION_STATUS,'EASYPOST_KEY')
 easypost.api_key=EASYPOST_KEY
 
+
 POSTMARK_API_KEY=get_env_var('postmark',PRODUCTION_STATUS,'POSTMARK_API_KEY')
 
 
 ## Set Cookies to expire at time designated by Server Session Retire Hours 
 if response.session_id_name in response.cookies:
     response.cookies[response.session_id_name]['expires']=int(3600*SERVER_SESSION_RETIRE_HOURS)
-
 else:
     # cookie key doesn't get created until second time visiting a page for 
     # incognito chrome and probably other private browsing modes. 
@@ -69,8 +49,6 @@ if db._dbname=='sqlite':
     sqlite_tf=True
 else:
     sqlite_tf=False
-
-
 
 
 ## The static views (index, categories, display, product, meet the artist.)
@@ -997,11 +975,11 @@ def checkout():
 ## Currently checkout does, is logged in? then everything, then not logged in, and everything
 ## I figured out that I like the other method better. check for login on each thing you have to do.
 
-    if auth.is_logged_in():
-
 #############################################################################################
 ###########-----------------------Cart Logic (User Only)-------------------------############
 #############################################################################################
+
+    if auth.is_logged_in():
 
         ## Retrieve cart based on user id
         cart=db(db.muses_cart.user_id==auth.user_id).select()
@@ -1053,9 +1031,75 @@ def checkout():
         session.cart_cost_USD=cart_cost_USD
 
 
+    else:
+
+#############################################################################################
+###########----------------------Cart Logic (Non User Only)----------------------############
+#############################################################################################
+
+        cart_for_shipping_calculations=[]
+
+        cart_grid_row_LOL=[]
+
+        cart_weight_oz=cart_cost_USD=0
+
+        cart_grid_header_list=["TN",'Product Name', 'Cost']
+
+        for key, value in session.cart.iteritems():
+
+            product=db(db.product.id==key).select().first()
+
+            #product_name=product.product_name
+            #product_cost=product.cost_USD
+            #product_qty=value
+
+            total_cost=float(product.cost_USD)*float(value)
+
+            #product_weight=product.weight_oz
+            #product_shipping_desc=product.shipping_description
+
+            cart_for_shipping_dict=dict(
+                product_name=product.product_name, 
+                product_cost=product.cost_USD,
+                product_qty=value,
+                product_weight=product.weight_oz,
+                product_shipping_desc=product.shipping_description,
+            )
+
+            cart_for_shipping_calculations.append(cart_for_shipping_dict)
+
+            # Value is from session 
+            cart_weight_oz+=float(product.weight_oz)*float(value)
+
+            cart_cost_USD+=float(product.cost_USD)*float(value)
+
+
+            if sqlite_tf:
+                srcattr=URL('download',db(db.image.product_name==key).select().first().s3_url)
+            else:
+                srcattr=S3_BUCKET_PREFIX+str(db(db.image.product_name==key).select().first().s3_url)
+            product_image_url=A(IMG(_src=srcattr), _href=URL('default','product',args=[key]))
+
+
+            cart_grid_table_row_list=[product_image_url, product.product_name, total_cost]
+
+            cart_grid_row_LOL.append(cart_grid_table_row_list)
+
+        cart_grid=table_generation(cart_grid_header_list, cart_grid_row_LOL, 'checkout_cart')
+
+
+
+
+
+
+
+
+
 #############################################################################################
 ###########-------------------Address Logic (User Only)--------------------------############
 #############################################################################################
+
+    if auth.is_logged_in():
 
         address=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select().first()
 
@@ -1088,11 +1132,96 @@ def checkout():
 
         address_grid=table_generation(address_grid_header_list, [address_grid_row_list], 'checkout_address')
       
+    ## If the user is not logged in!
+    else:
+
+#############################################################################################
+###########---------------------Address Logic (Non User Only)--------------------############
+#############################################################################################
+
+        address_grid_header_list=[
+            'Street Line 1', 
+            'Street Line 2', 
+            'Municipality',
+            'Administrative Area',
+            'Postal Code',
+            'Country',
+        ]
+
+        address_dict=dict(
+            street_address_line_1=session.address['street_address_line_1'],
+            street_address_line_2=session.address['street_address_line_2'],
+            municipality=session.address['municipality'],
+            administrative_area=session.address['administrative_area'],
+            postal_code=session.address['postal_code'],
+            country=session.address['country'],
+        )
+       
+        address_grid_row_list=[
+            session.address['street_address_line_1'], 
+            session.address['street_address_line_2'], 
+            session.address['municipality'], 
+            session.address['administrative_area'], 
+            session.address['postal_code'], 
+            session.address['country'],
+        ]
+
+        address_grid=table_generation(address_grid_header_list, [address_grid_row_list], 'checkout_address')
+
+
+
+
+
+
+
+#############################################################################################
+##########------------------Shipping Logic (User and Non User)-------------------############
+#############################################################################################
+
+    shipment=create_shipment(address_dict, cart_for_shipping_calculations)
+
+    shipping_grid_header_list=['Carrier', 'Service', 'Cost']
+
+    shipping_grid_row_list=[]
+    shipping_dict={}
+
+    match_found=False
+    shipping_cost_USD=0
+    for rate in shipment.rates:
+        if rate.service==session.shipping_choice:
+            #create grid
+
+            shipping_grid_row_list=[rate.carrier, rate.service, rate.rate, ]
+            shipping_dict=dict(
+                carrier=rate.carrier,
+                service=rate.service,
+                rate=rate.rate,
+            )
+
+            shipping_cost_USD=float(rate.rate)
+
+            shipping_grid=table_generation(shipping_grid_header_list, [shipping_grid_row_list], 'checkout_shipping')
+
+            match_found=True
+        else:
+            pass
+
+    if match_found==False:
+        shipping_grid=DIV("Go back to cart and select a shipping service")
+    else:
+        pass
+
+    total_cost_USD=cart_cost_USD+shipping_cost_USD
+
+    session.total_cost_USD=total_cost_USD
+
 
 
 #############################################################################################
 ###########-----------------------Card Logic (User Only)-------------------------############
 #############################################################################################
+
+    if auth.is_logged_in():
 
         if not session.payment_method:
             session.payment_method='stripe'
@@ -1158,7 +1287,7 @@ def checkout():
                         {
                             "amount":{
                                 "currency":"USD",
-                                "total":'100.00',
+                                "total":"{:.2f}".format(total_cost_USD),
                             },
 
                             "description":"Purchase from ThreeMusesGlass",
@@ -1204,100 +1333,7 @@ def checkout():
             card_grid=table_generation(card_grid_header_list, [card_grid_row_list], 'checkout_card')
 
 
-
-    ## If the user is not logged in!
     else:
-
-#############################################################################################
-###########----------------------Cart Logic (Non User Only)----------------------############
-#############################################################################################
-
-        cart_for_shipping_calculations=[]
-
-        cart_grid_row_LOL=[]
-
-        cart_weight_oz=cart_cost_USD=0
-
-        cart_grid_header_list=["TN",'Product Name', 'Cost']
-
-        for key, value in session.cart.iteritems():
-
-            product=db(db.product.id==key).select().first()
-
-            #product_name=product.product_name
-            #product_cost=product.cost_USD
-            #product_qty=value
-
-            total_cost=float(product.cost_USD)*float(value)
-
-            #product_weight=product.weight_oz
-            #product_shipping_desc=product.shipping_description
-
-            cart_for_shipping_dict=dict(
-                product_name=product.product_name, 
-                product_cost=product.cost_USD,
-                product_qty=value,
-                product_weight=product.weight_oz,
-                product_shipping_desc=product.shipping_description,
-            )
-
-            cart_for_shipping_calculations.append(cart_for_shipping_dict)
-
-            # Value is from session 
-            cart_weight_oz+=float(product.weight_oz)*float(value)
-
-            cart_cost_USD+=float(product.cost_USD)*float(value)
-
-
-            if sqlite_tf:
-                srcattr=URL('download',db(db.image.product_name==key).select().first().s3_url)
-            else:
-                srcattr=S3_BUCKET_PREFIX+str(db(db.image.product_name==key).select().first().s3_url)
-            product_image_url=A(IMG(_src=srcattr), _href=URL('default','product',args=[key]))
-
-
-            cart_grid_table_row_list=[product_image_url, product.product_name, total_cost]
-
-            cart_grid_row_LOL.append(cart_grid_table_row_list)
-
-        cart_grid=table_generation(cart_grid_header_list, cart_grid_row_LOL, 'checkout_cart')
-
-
-
-
-#############################################################################################
-###########---------------------Address Logic (Non User Only)--------------------############
-#############################################################################################
-
-        address_grid_header_list=[
-            'Street Line 1', 
-            'Street Line 2', 
-            'Municipality',
-            'Administrative Area',
-            'Postal Code',
-            'Country',
-        ]
-
-        address_dict=dict(
-            street_address_line_1=session.address['street_address_line_1'],
-            street_address_line_2=session.address['street_address_line_2'],
-            municipality=session.address['municipality'],
-            administrative_area=session.address['administrative_area'],
-            postal_code=session.address['postal_code'],
-            country=session.address['country'],
-        )
-       
-        address_grid_row_list=[
-            session.address['street_address_line_1'], 
-            session.address['street_address_line_2'], 
-            session.address['municipality'], 
-            session.address['administrative_area'], 
-            session.address['postal_code'], 
-            session.address['country'],
-        ]
-
-        address_grid=table_generation(address_grid_header_list, [address_grid_row_list], 'checkout_address')
-
 
 #############################################################################################
 ###########--------------------Card Logic (Non User Only)------------------------############
@@ -1331,6 +1367,7 @@ def checkout():
 
 
         else:
+
             import paypalrestsdk
 
             PAYPAL_CLIENT_ID=get_env_var('paypal', PRODUCTION_STATUS, 'PAYPAL_CLIENT_ID')
@@ -1352,23 +1389,39 @@ def checkout():
                     },
 
                 "transactions": [
-                        {
-                            "amount":{
-                                "currency":"USD",
-                                "total":"100.00",
+                    {
+                        "amount":{
+                            "currency":"USD",
+                            "total":"{:.2f}".format(total_cost_USD),
+                            "details":{
+                                "shipping":"{:.2f}".format(shipping_cost_USD),
+                                "subtotal":"{:.2f}".format(cart_cost_USD),
                             },
-
-                            "description":"Purchase from ThreeMusesGlass",
-
-                            "invoice_number":invoice_number,
                         },
+
+                        "description":"Purchase from ThreeMusesGlass",
+
+                        "item_list":{
+                            "items":[
+                                {
+                                    "quantity":"1",
+                                    "name":"eCig Drip Tip",
+                                    "price":"40.00",
+                                    "currency":"USD",
+                                    "description":"Description of item",
+                                },
+                            ],
+                        },
+
+                        "invoice_number":invoice_number,
+                    },
 
                     ],
 
                 "redirect_urls":{
                     "return_url":"https://threemusesglass.herokuapp.com/paypal_webhooks",
                     "cancel_url":"https://threemusesglass.herokuapp.com",
-                    }
+                    },
 
                 })
 
@@ -1401,46 +1454,6 @@ def checkout():
             card_grid=table_generation(card_grid_header_list, [card_grid_row_list], 'checkout_card')
 
 
-#############################################################################################
-##########------------------Shipping Logic (User and Non User)-------------------############
-#############################################################################################
-
-    shipment=create_shipment(address_dict, cart_for_shipping_calculations)
-
-    shipping_grid_header_list=['Carrier', 'Service', 'Cost']
-
-    shipping_grid_row_list=[]
-    shipping_dict={}
-
-    match_found=False
-    shipping_cost_USD=0
-    for rate in shipment.rates:
-        if rate.service==session.shipping_choice:
-            #create grid
-
-            shipping_grid_row_list=[rate.carrier, rate.service, rate.rate, ]
-            shipping_dict=dict(
-                carrier=rate.carrier,
-                service=rate.service,
-                rate=rate.rate,
-            )
-
-            shipping_cost_USD=float(rate.rate)
-
-            shipping_grid=table_generation(shipping_grid_header_list, [shipping_grid_row_list], 'checkout_shipping')
-
-            match_found=True
-        else:
-            pass
-
-    if match_found==False:
-        shipping_grid=DIV("Go back to cart and select a shipping service")
-    else:
-        pass
-
-    total_cost_USD=cart_cost_USD+shipping_cost_USD
-
-    session.total_cost_USD=total_cost_USD
 
 
 #############################################################################################
@@ -1890,8 +1903,6 @@ def pay():
     ## This has to be last, duh.
     redirect(URL('confirmation', args=(purchase_history_data_id)))
 
-    #return locals()
-
 
 def confirmation():
 
@@ -2034,14 +2045,61 @@ def confirmation():
 
 
 
-def sessions():
-    session_db=db(db.web2py_session_3muses).select()[0].session_data
-    return locals()
+# def sessions():
+#     session_db=db(db.web2py_session_3muses).select()[0].session_data
+#     return dict(session_db=session_db)
 
 
 
 ## Functions that require admin priveledges. These are so my mom can update products and stuff
 ## without bothering me. 
+
+# @auth.requires_membership('admin')
+# def manage():
+
+#     if not request.args:
+
+#         title="Manage Page"
+#         grid="List items for manage pages"
+
+#     elif request.args[0]=='products':
+
+#         grid=SQLFORM.grid(
+#             db.product, 
+#             maxtextlength=100,
+#             )
+#         grid.element('.web2py_counter', replace=None)
+
+#         title="Product Grid"
+
+#     elif request.args[0]=='product_images':
+
+#         grid=SQLFORM.grid(db.image,maxtextlength=100)
+#         return redirect(URL('cart'))
+
+#         grid.element('.web2py_counter', replace=None)
+
+#         title="Product Images Grid"
+
+
+#     elif request.args[0]=='test':
+#         title='test'
+#         grid='test'
+
+#     elif request.args[0]=='categories':
+
+#         grid=SQLFORM.grid(db.categories,
+#             maxtextlength=100,)
+#         grid.element('.web2py_counter', replace=None)
+
+#         title='categories'
+
+#     else:
+#         return redirect(URL('manage'))
+
+#     return dict(title=title, grid=grid)
+
+
 
 @auth.requires_membership('admin')
 def manage_products():
@@ -2057,10 +2115,7 @@ def manage_products():
 
     product_grid.element('.web2py_counter', replace=None)
 
-    left_sidebar_enabled=True
-    right_sidebar_enabled=False
-
-    return locals()
+    return dict(product_grid=product_grid)
 
 
 
@@ -2150,12 +2205,12 @@ def reset_inventory():
     #return dict(message="Done!")
     redirect(URL('categories'))
 
-@auth.requires_membership('admin')
-def set_order_number():
+# @auth.requires_membership('admin')
+# def set_order_number():
 
-    session.session_purchase_history_data_id=request.args[0]
+#     session.session_purchase_history_data_id=request.args[0]
 
-    return dict(message="Done!")
+#     return dict(message="Done!")
 
 
 
@@ -3399,6 +3454,8 @@ def id_generator(size=16, chars=string.ascii_uppercase + string.digits):
 
 def paypal_test_checkout():
     import paypalrestsdk
+    from aux import get_env_var
+    from aux import id_generator
 
 
     try:
@@ -3427,37 +3484,63 @@ def paypal_test_checkout():
 
     invoice_number=id_generator()
 
-    payment=paypalrestsdk.Payment({
+    # payment=paypalrestsdk.Payment({
 
-        "intent": "sale",
+    #     "intent": "sale",
 
-        "payer": {
-            "payment_method": "paypal",
-            #"payer_info":{} Prefilled when payment method is paypal
-            },
+    #     "payer": {
+    #         "payment_method": "paypal",
+    #         #"payer_info":{} Prefilled when payment method is paypal
+    #         },
 
-        "transactions": [
+    #     "transactions": [
 
-                {
-                    "amount":{
-                        "currency":"USD",
-                        "total":"100",
-                    },
+    #             {
+    #                 "amount":{
+    #                     "currency":"USD",
+    #                     "total":"100",
+    #                 },
 
-                    "description":"Purchase from ThreeMusesGlass",
+    #                 "description":"Purchase from ThreeMusesGlass",
 
-                    "invoice_number":invoice_number,
+    #                 "invoice_number":invoice_number,
 
-                },
+    #             },
 
-            ],
+    #         ],
 
-        "redirect_urls":{
-            "return_url":"https://threemusesglass.herokuapp.com/paypal_webhooks",
-            "cancel_url":"https://threemusesglass.herokuapp.com",
-            }
+    #     "redirect_urls":{
+    #         "return_url":"https://threemusesglass.herokuapp.com/paypal_webhooks",
+    #         "cancel_url":"https://threemusesglass.herokuapp.com",
+    #         }
 
-        })
+    #     })
+
+    items_LOD=[dict(
+        quantity="1",
+        name="eCig Drip Tip",
+        price="40.00",
+        currency="USD",
+        description="Description of item",
+        ),
+    ]
+
+
+    payment_dict=paypal_create_payment_dict(
+        intent='sale',
+        payment_method='paypal', 
+        redirect_urls=dict(
+            return_url="https://threemusesglass.herokuapp.com/paypal_webhooks",
+            cancel_url="https://threemusesglass.herokuapp.com"),
+        cost_dict=dict(
+            shipping_cost_USD=2.00, 
+            cart_cost_USD=40, 
+            total_cost_USD=42),
+        transaction_description='Purchase from ThreeMusesGlass',
+        invoice_number=invoice_number,
+        items_paypal_list_of_dicts=items_LOD,)
+
+    payment=paypalrestsdk.Payment(payment_dict)
 
 
     if payment.create():

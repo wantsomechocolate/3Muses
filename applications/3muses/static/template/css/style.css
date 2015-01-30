@@ -134,8 +134,9 @@
 /* Form */
 
 	input[type="text"],
-	input[type="password"],
+	/*input[type="password"],*/
 	input[type="email"],
+	input[type="integer"],
 	textarea {
 		-moz-appearance: none;
 		-webkit-appearance: none;
@@ -152,16 +153,37 @@
 		width: 100%;
 	}
 
+
+	input[type="password"]{
+		-moz-appearance: none;
+		-webkit-appearance: none;
+		-o-appearance: none;
+		-ms-appearance: none;
+		appearance: none;
+		background: none;
+		border: solid 1px #82b440;
+		color: inherit;
+		display: block;
+		outline: 0;
+/*		padding: 0.75em; */
+		text-decoration: none;
+		width: 100%;
+		height:2em;
+	/*	*/
+	}
+
 		input[type="text"]:focus,
 		input[type="password"]:focus,
 		input[type="email"]:focus,
+		input[type="integer"]:focus,
 		textarea:focus {
 			border-color: #82b440;
 		}
 
 	input[type="text"],
 	input[type="password"],
-	input[type="email"] {
+	input[type="email"],
+	input[type="integer"] {
 		line-height: 1em;
 	}
 

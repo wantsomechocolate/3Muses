@@ -9,7 +9,7 @@ import os,ast
 ## be redirected to HTTPS, uncomment the line below:
 # request.requires_https()
 
-sqlite_tf=False
+sqlite_tf=True
 
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
@@ -18,7 +18,10 @@ if not request.env.web2py_runtime_gae:
 
     # try connecting to the db using heroku environment variable
     try:
-        db = DAL(os.environ['HEROKU_POSTGRESQL_SILVER_URL'], pool_size=10)
+        if sqlite_tf:
+            db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
+        else:
+            db = DAL(os.environ['HEROKU_POSTGRESQL_SILVER_URL'], pool_size=10)
     
     ## a Key error means you are not running on heroku (hopefully), so try to get the db location locally
     except (KeyError):
