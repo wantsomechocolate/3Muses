@@ -3885,7 +3885,7 @@ def paypal_confirmation():
                 card_table_row_LOL=[[
                     payment['payer']['payer_info']['first_name']+payment['payer']['payer_info']['last_name'],
                     payment['payer']['payer_info']['email'],
-                    payment['transactions'][0]['invoice_number'],
+                    'invoice_number',
                 ]]
 
                 confirmation_card_grid=table_generation(card_header_row,card_table_row_LOL,"confirmation_card")
