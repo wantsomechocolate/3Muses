@@ -69,13 +69,18 @@ def paypal_create_payment_dict(
 
 	amount_dict['details']=details_dict
 
+        items_LOD=items_paypal_list_of_dicts
+
+        item_list=dict(items=items_LOD)
+
 	transactions_dict['amount']=amount_dict
-	transactions_dict['description']=transaction_discription
+	transactions_dict['description']=transaction_description
 	transactions_dict['invoice_number']=invoice_number
+	transactions_dict['item_list']=item_list
 
+        transaction_LOD=[transactions_dict]
 
-
-	item_list_dict=items_paypal_list_of_dicts
+        payment_dict['transactions']=transaction_LOD
 
 	return payment_dict
 

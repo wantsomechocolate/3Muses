@@ -6,13 +6,16 @@
 	<div id='content' class='container confirmation_container'>
 
 		{{if purchase_history_data_row=="SessionError":}}
-			Please go to your purchase history or email to view purchase information
+			Please go to your purchase history or email to view past purchase information
 
 		{{elif purchase_history_data_row=="ValueError":}}
 			That URL does not correspond to a purchase history record (VALUE ERROR)
 
 		{{elif purchase_history_data_row=="TypeError":}}
 			That URL does not correspond to a purchase history record (TYPE ERROR)
+
+		{{elif purchase_history_data_row=="IndexError":}}
+			That URL does not correspond to a purchase history record (INDEX ERROR)
 
 		{{else:}}
 

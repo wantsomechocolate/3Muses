@@ -1,0 +1,38 @@
+{{extend 'layout.html'}}
+
+<div id="main" class="wrapper style4">
+
+	<div id='content' class='container'>
+
+		<h1> You have been redirected here from paypal! </h1>
+
+		{{if status=="success":}}
+		<h4> Your purchase was successful and has already been executed </h4>
+		<h4> Thank you for shopping with ThreeMusesGlass </h4>
+
+		{{elif status=="failure":}}
+		<h4> Something went wrong! </h4>
+		<h4> Please contact jamesfrancismcglynn@gmail.com </h4>
+		<h4> so we can process your purchase manually </h4>
+
+		{{else:}}
+
+		<h4> Either we are not expecting a purchase inquiry at this time,</h4>
+		<h4> or you have already made one that resulted in an error.</h4>
+		<h4> Please contact jamesfrancismcglynn@gmail.com with any questions.</h4>
+
+		{{pass}}
+
+		<p> Expecting vars from paypal?</p>
+		{{=session.expect_paypal_webhook}}
+		<br>
+		<p> Here is the payment dict </p>
+		{{=payment}}
+		<br>
+		<p> And the error if there is one </p>
+		{{=payment.error}}
+
+
+	</div>
+
+</div>

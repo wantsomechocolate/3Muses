@@ -23,6 +23,16 @@
 
 		{{pass}}
 
+		<p> Expecting vars from paypal?</p>
+		{{=session.expect_paypal_webhook}}
+		<br>
+		<p> Here is the payment dict </p>
+		{{=payment}}
+		<br>
+		<p> And the error if there is one </p>
+		{{=payment.error}}
+
+
 	</div>
 
 </div>

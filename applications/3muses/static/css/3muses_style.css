@@ -409,9 +409,9 @@ web2py customization
 	width:100% !important;
 }
 
-#auth_user_email, #auth_user_password {
+/*#auth_user_email, #auth_user_password {
 	height:50px;
-}
+}*/
 
 #checkout_addresses{
 	display:block;

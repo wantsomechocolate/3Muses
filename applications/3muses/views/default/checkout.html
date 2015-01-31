@@ -83,7 +83,7 @@
 			{{ if session.payment_method=='stripe':}}
 				<a class="button" href="{{=URL('pay')}}">Pay</a>
 			{{else:}}
-				<a class="button" href="{{=approval_url}}">Pay with Paypal</a>
+				<a class="button" href="{{=approval_url}}" target="_blank">Pay with Paypal</a>
 			{{pass}}
 			
 
