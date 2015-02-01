@@ -515,104 +515,169 @@ def add_new_address():
         return dict(add_address_form=add_address_form)
 
 
+## For a logged in user:
+    ## Get cart information from the database
+    ## Get address information from the data base
+    ## Get shipping information from the address information
+    ## Get purchase information from user selection
+        ## If card, get details from the database and stripe
+        ## if paypal, then no details to get really
+
+## For a session user:
+    ## Get cart information from the session
+    ## Get address information from the session
+    ## Get shipping info from the address info
+    ## Get purchase selection from user
+        ## If card, get from session and stripe
+        ## if paypal, then no details to get really
+
 def cart():
 
 #############################################################################################
 ###########-------------------Cart Logic (User and Non User)---------------------############
 #############################################################################################
 
+
     ## If someone tries to mess with the URL in the browser by going to 
-    ## cart/arg, currently it will load cart but keep the arg in the browser
-    ## The following reloads the page without the erroneous arg
+    ## cart/arg, It will reload the page without the arg
     if request.args(0) is not None:
         redirect(URL('cart'))
     else:
         pass
 
-
-    #cart_grid_header_list=["Cart","Item","Cost","Qty", "Delete"]
+    ## Cart Table Headers - move to db
     cart_grid_header_list=["Cart","Item","Cost", "Delete"]
 
+    ## This list will hold the info that will be displayed in the cart table
     cart_grid_table_row_LOL=[]
 
+    ## If we are dealing with a logged in user
     if auth.is_logged_in():
 
+        ## Retrieve the current items from the users cart)
+        ## There is no check here to not include items that are sold out or no
+        ## longer active, That happens later.
         cart_db=db(db.muses_cart.user_id==auth.user_id).select()
 
+        ## If cart turns out to be empty, set cart_grid so the view can have
+        ## something to display. but now cart_grid_table_row_LOL will be empty,
+        ## which should disallow the user from pressing the checkout button. 
         if not cart_db:
 
-            cart_grid=DIV("You have not yet added anything to your cart")
+            cart_is_empty=True
+            ## art_grid=DIV("You have not yet added anything to your cart")
 
+        ## If the cart is not empty
         else:
-        
+            cart_is_empty=False
+            ## For each product in the cart
             for row in cart_db:
 
+                ## Retreive product info from the db
                 product=db(db.product.id==row.product_id).select().first()
+
+                ## If the product is not active (so it can still be sold out,
+                ## apparently). Should add another condition here for qty?
+                if product.is_active==False:
+
+                    ## Then delete it from the users cart. 
+                    db(db.muses_cart.product_id==product.id).delete()
+
+                ## If the product is active (and user is logged in)
+                else:
+
+                    ## If using a local db get the product image locally
+                    if sqlite_tf:
+                        srcattr=URL('download',db(db.image.product_name==row.product_id).select().first().s3_url)
+                    
+                    ## For the more common case, get the image from aws s3
+                    else:
+                        srcattr=S3_BUCKET_PREFIX+str(db(db.image.product_name==row.product_id).select().first().s3_url)
+
+                    ## Create the product_image_url
+                    product_image_url=A(IMG(_src=srcattr), _href=URL('default','product',args=[row.product_id]))
+
+                    ## Create a delete button for the item
+                    delete_button=A('X', _href=URL('delete_item_from_cart', vars=dict(pri_key=row.id,redirect_url=URL('cart'))), _class="btn")
+
+                    ## Populate a list with the current product info
+                    cart_grid_table_row_list=[
+                        product_image_url, 
+                        product.product_name, 
+                        product.cost_USD, 
+                        #row.product_qty, This was used when qty could be over 1,
+                        delete_button
+                    ]
+
+                    ## Append to the cart_grid so that all products in the cart get a row in the table
+                    cart_grid_table_row_LOL.append(cart_grid_table_row_list)
+
+            ## Call the table_generator to generate an ugly table with the data you just
+            ## got from the database. Table generator gets a list for header names, 
+            ## a list of lists for the rows, and a string to prepend to the html class names.
+            # cart_grid=table_generation(cart_grid_header_list, cart_grid_table_row_LOL, 'cart')
+
+
+    ## if the user is not logged in, use session cookies instead to generate the cart
+    else:
+
+        if not session.cart:
+
+            cart_is_empty=True
+            ## cart_grid=DIV("You have not yet added anything to your cart")
+
+        else:
+
+            cart_is_empty=False
+            ## For each item in the session cart
+            #for key, value in session.cart.iteritems():
+            for key in session.cart.keys():
+
+                ## Get product info from the database
+                product=db(db.product.id==key).select()[0]
+
 
                 if product.is_active==False:
 
-                    db(db.muses_cart.product_id==product.id).delete()
+                    ## Then delete it from the users cart. 
+                    ## db(db.muses_cart.product_id==product.id).delete()
+                    dummy=session.cart.pop(key)
 
                 else:
 
+                    ## Get the product image
                     if sqlite_tf:
-                        srcattr=URL('download',db(db.image.product_name==row.product_id).select().first().s3_url)
+                        srcattr=URL('download',db(db.image.product_name==key).select()[0].s3_url)
                     else:
-                        srcattr=S3_BUCKET_PREFIX+str(db(db.image.product_name==row.product_id).select().first().s3_url)
-                    product_image_url=A(IMG(_src=srcattr), _href=URL('default','product',args=[row.product_id]))
+                        srcattr='https://s3.amazonaws.com/threemusesglass/site_images/'+str(db(db.image.product_name==key).select()[0].s3_url)
+                    product_image_url=A(IMG(_src=srcattr), _href=URL('default','product',args=[key]))
 
-                    delete_button=A('X', _href=URL('delete_item_from_cart', vars=dict(pri_key=row.id,redirect_url=URL('cart'))), _class="btn btn-primary")
+                    ## Create delete button for item.
+                    delete_button=A('X', _href=URL('delete_item_from_cart', vars=dict(pri_key=key, redirect_url=URL('cart'))), _class="btn btn-primary")
 
                     cart_grid_table_row_list=[
                         product_image_url, 
                         product.product_name, 
                         product.cost_USD, 
-                        #row.product_qty, 
+                        #value, 
                         delete_button
                     ]
 
                     cart_grid_table_row_LOL.append(cart_grid_table_row_list)
 
-            cart_grid=table_generation(cart_grid_header_list, cart_grid_table_row_LOL, 'cart')
-
-    # if the user is not logged in, use session cookies instead to generate the cart
+    if cart_is_empty==True:
+        cart_grid=DIV("You have not yet added anything to your cart")
     else:
-
-        if not session.cart:
-
-            cart_grid=DIV("You have not yet added anything to your cart")
-
-        else:
-
-            for key, value in session.cart.iteritems():
-
-                product=db(db.product.id==key).select()[0]
-
-                if sqlite_tf:
-                    srcattr=URL('download',db(db.image.product_name==key).select()[0].s3_url)
-                else:
-                    srcattr='https://s3.amazonaws.com/threemusesglass/site_images/'+str(db(db.image.product_name==key).select()[0].s3_url)
-                product_image_url=A(IMG(_src=srcattr), _href=URL('default','product',args=[key]))
-
-                delete_button=A('X', _href=URL('delete_item_from_cart', vars=dict(pri_key=key, redirect_url=URL('cart'))), _class="btn btn-primary")
-
-                cart_grid_table_row_list=[
-                    product_image_url, 
-                    product.product_name, 
-                    product.cost_USD, 
-                    #value, 
-                    delete_button
-                ]
-
-                cart_grid_table_row_LOL.append(cart_grid_table_row_list)
-
-            cart_grid=table_generation(cart_grid_header_list, cart_grid_table_row_LOL, 'cart')
+        cart_grid=table_generation(cart_grid_header_list, cart_grid_table_row_LOL, 'cart')
 
 
 #############################################################################################
 ###########-----------------Address Logic (User and Non User)--------------------############
 #############################################################################################
 
+    
+    ## This is the header for the address table, soon I won't need a header,
+    ## but right now I do!
     address_grid_header_list=[
         'Select One',
         'Street Line 1',#'No. & Street/ P.O. Box/ etc.', 
@@ -633,9 +698,11 @@ def cart():
 
         if not address_list:
 
-            address_grid=DIV("You have not added any addresses yet")
+            address_list_is_empty=True
 
         else:
+
+            address_list_is_empty=False
 
             for j in range(len(address_list)):
 
@@ -662,16 +729,18 @@ def cart():
 
                 address_grid_table_row_LOL.append(address_grid_table_row_list)
 
-            address_grid=table_generation(address_grid_header_list, address_grid_table_row_LOL, 'address')
+            #address_grid=table_generation(address_grid_header_list, address_grid_table_row_LOL, 'address')
 
     ## If user is not logged in
     else:
 
         if not session.address:
 
-            address_grid=DIV("You have not added an address yet")
+            address_list_is_empty=True
 
         else:
+
+            address_list_is_empty=False
 
             radio_button=FORM(INPUT(_type='radio', _name='address', _value='address', _checked='checked'), _action="")
             edit_button=A('<-', _href=URL('edit_session_address'), _class="btn btn-primary")
@@ -691,7 +760,10 @@ def cart():
 
             address_grid_table_row_LOL.append(address_grid_table_row_list)
 
-            address_grid=table_generation(address_grid_header_list, address_grid_table_row_LOL, 'address')
+    if address_list_is_empty==True:
+        address_grid=DIV("Please add an address to continue with your purchase")
+    else:
+        address_grid=table_generation(address_grid_header_list, address_grid_table_row_LOL, 'address')
 
 
 #############################################################################################
