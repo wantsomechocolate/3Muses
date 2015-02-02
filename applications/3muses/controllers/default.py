@@ -537,7 +537,6 @@ def cart():
 ###########-------------------Cart Logic (User and Non User)---------------------############
 #############################################################################################
 
-
     ## If someone tries to mess with the URL in the browser by going to 
     ## cart/arg, It will reload the page without the arg
     if request.args(0) is not None:
@@ -708,6 +707,7 @@ def cart():
 
                 if address_list[j].default_address==True:
                     radio_button=INPUT(_type='radio', _name='address', _value=address_list[j].id, _checked='checked')
+                    session.default_address_id=address_list[j].id
                 else:
                     radio_button=INPUT(_type='radio', _name='address', _value=address_list[j].id)
 
@@ -2840,249 +2840,265 @@ def default_address_2():
 
 def default_address():
 
-    try:
-        import easypost
+    #try:
+    import easypost
 
-        from_address=easypost.Address.create(
-            company='threemusesglass',
-            street1='308 Clearcreek Rd',
-            city='Myrtle Beach',
-            state='SC',
-            zip='29572',
+    session.default_address_id=request.vars.default_address_id
+
+
+    from_address=easypost.Address.create(
+        company='threemusesglass',
+        street1='308 Clearcreek Rd',
+        city='Myrtle Beach',
+        state='SC',
+        zip='29572',
+    )
+
+    ## If you are logged in!
+    if auth.is_logged_in():
+
+        ## Get all the addresses associated with the current user that are set 
+        ## to be the default (should only be one, but who knows)
+        addresses=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select()
+
+        ## Set the default address flag of every address to False
+        for address_row in addresses:
+            address_row.update(default_address=False)
+            address_row.update_record()
+
+        ## Make a brand new request to the db? but this time only select the 
+        ## address targeted to be the default.
+        address = db(db.addresses.id==request.vars.default_address_id).select().first()
+        ## address=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select().first()
+        address.update(default_address=True)
+        address.update_record()
+
+        ## Prepare an address dict
+        address_info=dict(
+            street_address_line_1=address.street_address_line_1, 
+            street_address_line_2=address.street_address_line_2, 
+            municipality=address.municipality, 
+            administrative_area=address.administrative_area, 
+            postal_code=address.postal_code, 
+            country=address.country,
         )
 
+        ## Now get all the items in the current user's cart.
+        cart=db(db.muses_cart.user_id==auth.user_id).select()
+        cart_for_shipping_calculations=[]
+        cart_weight_oz=0
+        cart_cost_USD=0
 
-        if auth.is_logged_in():
-            addresses=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select()
-            for address_row in addresses:
-                address_row.update(default_address=False)
-                address_row.update_record()
+        for row in cart:
+            product=db(db.product.id==row.product_id).select().first()
+            cart_weight_oz+=float(product.weight_oz)*float(row.product_qty)
+            cart_cost_USD+=float(product.cost_USD)*float(row.product_qty)
 
-            address = db(db.addresses.id==request.vars.default_address_id).select().first()
-            #address = db(db.addresses.id==8).select().first()
-            address.update(default_address=True)
-            address.update_record()
-        
-
-            cart=db(db.muses_cart.user_id==auth.user_id).select()
-            cart_for_shipping_calculations=[]
-            cart_weight_oz=0
-            cart_cost_USD=0
-            for row in cart:
-                product=db(db.product.id==row.product_id).select().first()
-                cart_weight_oz+=float(product.weight_oz)*float(row.product_qty)
-                cart_cost_USD+=float(product.cost_USD)*float(row.product_qty)
-
-                cart_for_shipping_calculations.append(dict(
-                    product_name=product.product_name,
-                    product_cost=product.cost_USD,
-                    product_qty=row.product_qty,
-                    product_weight=product.weight_oz,
-                    product_shipping_desc=product.shipping_description,
-                    ))
-                
-
-            ## address logic
-            #address=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select().first()
-
-            address_info=dict(
-                street_address_line_1=address.street_address_line_1, 
-                street_address_line_2=address.street_address_line_2, 
-                municipality=address.municipality, 
-                administrative_area=address.administrative_area, 
-                postal_code=address.postal_code, 
-                country=address.country,
-            )
-
-        else:
-            ## Cart logic
-
-            cart_for_shipping_calculations=[]
-            cart_weight_lbs=0
-
-            for key, value in session.cart.iteritems():
-                product=db(db.product.id==key).select().first()
-                product_name=product.product_name
-                product_cost=product.cost_USD
-                product_qty=value
-                total_cost=float(product_cost)*float(product_qty)
-
-                product_weight=product.weight_oz
-                product_shipping_desc=product.shipping_description
-
-                cart_weight_lbs+=product_weight
-
-                cart_for_shipping_dict=dict(
-                    product_name=product_name, 
-                    product_cost=product_cost,
-                    product_qty=product_qty,
-                    product_weight=product_weight,
-                    product_shipping_desc=product_shipping_desc,
-                )
-
-                cart_for_shipping_calculations.append(cart_for_shipping_dict)
-
-
-            ## Address logic    
-            address_info=dict(
-            street_address_line_1=session.address['street_address_line_1'],
-            street_address_line_2=session.address['street_address_line_2'],
-            municipality=session.address['municipality'],
-            administrative_area=session.address['administrative_area'],
-            postal_code=session.address['postal_code'],
-            country=session.address['country'],
-            )
-
-        # now logged in or not we have the address that was chosen, the address info for the address that was chosen
-        # and the cart info, and the combined weight of our package. 
-
-
-        parcel=easypost.Parcel.create(
-            length=8,
-            width=8,
-            height=4,
-            weight=cart_weight_oz,
-        )
-
-        if address_info['country']=='United States':
-
-            to_address=easypost.Address.create(
-                #name=address_info['card_name'],
-                street1=address_info['street_address_line_1'],
-                street2=address_info['street_address_line_2'],
-                city=address_info['municipality'],
-                state=address_info['administrative_area'],
-                zip=address_info['postal_code'],
-            )
-
-            shipment=easypost.Shipment.create(
-                to_address = to_address,
-                from_address = from_address,
-                parcel=parcel,
-            )
-
-        else:
-
-            to_address=easypost.Address.create(
-                #name=address_info['card_name'],
-                street1=address_info['street_address_line_1'],
-                street2=address_info['street_address_line_2'],
-                city=address_info['municipality'],
-                state=address_info['administrative_area'],
-                zip=address_info['postal_code'],
-                country=address_info['country'],
-            )
-
-            customs_items=[]
-            for item in cart_for_shipping_calculations:
-                customs_item=easypost.CustomsItem.create(
-                    description=item['product_shipping_desc'],
-                    quantity=item['product_qty'],
-                    value=item['product_cost'],
-                    #weight in oz converted to pounds
-                    weight=(float(item['product_weight'])/16),
-                    hs_tariff_number=700100,
-                    origin_country='US',
-                )
-                customs_items.append(customs_item)
-
-            if address_info['country']=='Canada':
-
-                customs_info=easypost.CustomsInfo.create(
-                    customs_items=customs_items,
-                    contents_type='merchandise',
-                    #contents_explanation=None,
-                    restriction_type='none',
-                    #restriction_comments=None,
-                    customs_certify=True,
-                    customs_signer='James McGlynn',
-                    non_delivery_option='return',
-                    eel_pfc='NOEEI 30.36',
-                )
-
-            else:
-
-                customs_info=easypost.CustomsInfo.create(
-                    customs_items=customs_items,
-                    contents_type='merchandise',
-                    #contents_explanation=None,
-                    restriction_type='none',
-                    #restriction_comments=None,
-                    customs_certify=True,
-                    customs_signer='James McGlynn',
-                    non_delivery_option='return',
-                    eel_pfc='NOEEI 30.37(a).',
-                )
-
-            shipment=easypost.Shipment.create(
-                to_address=to_address,
-                from_address=from_address,
-                parcel=parcel,
-                customs_info=customs_info,
-            )
-
-            #session.shipping_rates=shipment.rates
-            shipping_rates_for_session={}
-            for rate in shipment.rates:
-                shipping_rates_for_session[rate.id]="test"
-            session.shipping_rates=shipping_rates_for_session
-
-        
-
-        ## Hey this is new!
-        ## Trying to get sorting to work for the ajax call
-        shipping_rates_for_sorting=[]
-        for i in range(len(shipment.rates)):
-            shipping_rates_for_sorting.append(float(shipment.rates[i].rate))
-        shipping_rates_for_sorting.sort()
-
-
-
-        shipping_grid_container=DIV(_class='shipping_grid_container')
-        shipping_grid_header_row=DIV(_class='shipping_grid_header_row')
-
-        shipping_grid_header_list=['Radio', 'Carrier', 'Service', 'Cost']
-
-        for i in range(len(shipping_grid_header_list)):
-            shipping_grid_header_row.append(DIV(shipping_grid_header_list[i],_class="shipping_grid_header_cell shipping_grid_table_col_"+str(i+1)))
-        shipping_grid_container.append(shipping_grid_header_row)
-
-
-        #for j in range(len(shipping_rates_for_sorting)):
-
-        for i in range(len(shipment.rates)):
-
-            #if shipping_rates_for_sorting[j]==float(shipment.rates[i].rate):
-
-            shipping_grid_table_row=DIV(_class='shipping_grid_table_row')
-
-            shipping_grid_table_row.append(DIV(INPUT(_type='radio', _name='shipping', _value=shipment.rates[i].service),_class="shipping_grid_table_cell shipping_grid_table_col_1"))
-            shipping_grid_table_row.append(DIV(shipment.rates[i].carrier,_class="shipping_grid_table_cell shipping_grid_table_col_2"))
-            shipping_grid_table_row.append(DIV(shipment.rates[i].service,_class="shipping_grid_table_cell shipping_grid_table_col_3"))
-            shipping_grid_table_row.append(DIV(shipment.rates[i].rate,_class="shipping_grid_table_cell shipping_grid_table_col_4"))
+            cart_for_shipping_calculations.append(dict(
+                product_name=product.product_name,
+                product_cost=product.cost_USD,
+                product_qty=row.product_qty,
+                product_weight=product.weight_oz,
+                product_shipping_desc=product.shipping_description,
+                ))
             
+    ## If user is not logged in
+    else:
 
-            shipping_grid_container.append(shipping_grid_table_row)
+        ## Cart logic
+        cart_for_shipping_calculations=[]
+        cart_weight_oz=0
+        cart_cost_USD=0
 
-            #else:
-                #pass
+        ## For every product in the session cart, add the cost and the weight
+        ## key is the product id and value is the product qty
+        for key, value in session.cart.iteritems():
 
-        return shipping_grid_container
+            ## Get the product info
+            product=db(db.product.id==key).select().first()
+
+            cart_cost_USD+=float(product.cost_USD)*float(value)
+            cart_weight_oz+=float(product.weight_oz)*float(value)
+
+            cart_for_shipping_dict=dict(
+                product_name=product.product_name, 
+                product_cost=float(product.cost_USD),
+                product_qty=int(value),
+                product_weight=float(product.weight_oz),
+                product_shipping_desc=product.shipping_description,
+            )
+
+            cart_for_shipping_calculations.append(cart_for_shipping_dict)
+
+
+        ## Address logic    
+        address_info=dict(
+        street_address_line_1=session.address['street_address_line_1'],
+        street_address_line_2=session.address['street_address_line_2'],
+        municipality=session.address['municipality'],
+        administrative_area=session.address['administrative_area'],
+        postal_code=session.address['postal_code'],
+        country=session.address['country'],
+        )
+
+
+    # now logged in or not we have the address that was chosen, the address info for the address that was chosen
+    # and the cart info, and the combined weight of our package. 
+
+    parcel=easypost.Parcel.create(
+        length=8,
+        width=8,
+        height=4,
+        weight=cart_weight_oz,
+    )
+
+    if address_info['country']=='United States':
+
+        to_address=easypost.Address.create(
+            #name=address_info['card_name'],
+            street1=address_info['street_address_line_1'],
+            street2=address_info['street_address_line_2'],
+            city=address_info['municipality'],
+            state=address_info['administrative_area'],
+            zip=address_info['postal_code'],
+        )
+
+        shipment=easypost.Shipment.create(
+            to_address = to_address,
+            from_address = from_address,
+            parcel=parcel,
+        )
+
+    else:
+
+        to_address=easypost.Address.create(
+            #name=address_info['card_name'],
+            street1=address_info['street_address_line_1'],
+            street2=address_info['street_address_line_2'],
+            city=address_info['municipality'],
+            state=address_info['administrative_area'],
+            zip=address_info['postal_code'],
+            country=address_info['country'],
+        )
+
+        customs_items=[]
+        for item in cart_for_shipping_calculations:
+            customs_item=easypost.CustomsItem.create(
+                description=item['product_shipping_desc'],
+                quantity=item['product_qty'],
+                value=item['product_cost'],
+                #weight in oz converted to pounds
+                weight=(float(item['product_weight'])/16),
+                hs_tariff_number=700100,
+                origin_country='US',
+            )
+            customs_items.append(customs_item)
+
+        if address_info['country']=='Canada':
+
+            customs_info=easypost.CustomsInfo.create(
+                customs_items=customs_items,
+                contents_type='merchandise',
+                #contents_explanation=None,
+                restriction_type='none',
+                #restriction_comments=None,
+                customs_certify=True,
+                customs_signer='James McGlynn',
+                non_delivery_option='return',
+                eel_pfc='NOEEI 30.36',
+            )
+
+        else:
+
+            customs_info=easypost.CustomsInfo.create(
+                customs_items=customs_items,
+                contents_type='merchandise',
+                #contents_explanation=None,
+                restriction_type='none',
+                #restriction_comments=None,
+                customs_certify=True,
+                customs_signer='James McGlynn',
+                non_delivery_option='return',
+                eel_pfc='NOEEI 30.37(a).',
+            )
+
+        shipment=easypost.Shipment.create(
+            to_address=to_address,
+            from_address=from_address,
+            parcel=parcel,
+            customs_info=customs_info,
+        )
+
+        #session.shipping_rates=shipment.rates
+        shipping_rates_for_session={}
+        for rate in shipment.rates:
+            shipping_rates_for_session[rate.id]="test"
+        session.shipping_rates=shipping_rates_for_session
+
+    
+
+    # Generate list of sorted rates
+    shipping_rates_for_sorting=[]
+    for i in range(len(shipment.rates)):
+        shipping_rates_for_sorting.append(float(shipment.rates[i].rate))
+    shipping_rates_for_sorting.sort()
+
+
+    shipping_grid_header_list=[':)', 'Carrier', 'Service', 'Cost']
+    shipping_grid_table_row_LOL=[]
+
+    # Build the shipping grid
+    # I need to be able to sort the shipping rates based on the rate. 
+    for j in range(len(shipping_rates_for_sorting)):
+
+        for i in range(len(shipment.rates)):
+
+            if shipping_rates_for_sorting[j]==float(shipment.rates[i].rate):
+
+                if shipment.rates[i].service==session.shipping_choice:
+
+                #radio_button=INPUT(_type='radio', _name='shipping', _value=shipment.rates[i].service)
+
+                    radio_button=INPUT(_type='radio', _name='shipping', _checked='checked', _value=shipment.rates[i].service)
+
+                else:
+
+                    radio_button=INPUT(_type='radio', _name='shipping', _value=shipment.rates[i].service)
+
+                shipping_grid_table_row_list=[
+                    radio_button,
+                    shipment.rates[i].carrier,
+                    shipment.rates[i].service,
+                    shipment.rates[i].rate,
+                ]
+
+                shipping_grid_table_row_LOL.append(shipping_grid_table_row_list)
+            else:
+                pass
+
+        
+        
+        shipping_grid=table_generation(shipping_grid_header_list, shipping_grid_table_row_LOL, 'shipping')
+
+
+    shipping_grid_container=shipping_grid
+    return shipping_grid_container
+
         #return "test"
         #return dict(rate_list=rate_list)
         #return dict(rate_list=rate_list)
 
-    except easypost.Error:
-        shipping_grid_container=DIV('There was a problem generating the shipping costs')
-        return shipping_grid_container
+    # except easypost.Error:
+    #     shipping_grid_container=DIV('There was a problem generating the shipping costs')
+    #     return shipping_grid_container
 
-    except AttributeError:
-        shipping_grid_container=DIV('There is nothing in your cart to ship')
-        return shipping_grid_container
+    # except AttributeError:
+    #     shipping_grid_container=DIV('There is nothing in your cart to ship')
+    #     return shipping_grid_container
 
-    except TypeError:
-        shipping_grid_container=DIV('There is no address to ship to')
-        return shipping_grid_container
+    # except TypeError:
+    #     shipping_grid_container=DIV('There is no address to ship to')
+    #     return shipping_grid_container
 
 
 

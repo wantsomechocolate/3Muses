@@ -6,45 +6,53 @@ $(document).ready(function(){
 });
 */
 
-
+//Let's get ready to rumble
 $(document).ready(function(){
 
     //alert("1");
+
 
     $("input[name='address']").click(function(){
 
         //alert("Clicked");
 
         default_address_id=$(this).attr('value');
-        $('#shipping_target').html( "Preparing to generate shipping costs." );
 
-        $.ajax({
+        var original_default_address_id="{{=session.default_address_id}}"
 
-          type: "POST",
-          url: "loading_data.html",
-          data: { waiting_for: "easypost" },
-
-        }).done(function( msg ) {
-            
-            //alert( msg );
-
-            $('#shipping_target').html( msg );
-
-            //alert(default_address_id);
+        if (default_address_id!=Number(original_default_address_id)){
+        
+            $('#shipping_target').html( "Preparing to generate shipping costs." );
 
             $.ajax({
 
-                type: "POST",
-                url: "default_address.html",
-                data: { default_address_id: default_address_id},
+              type: "POST",
+              url: "loading_data.html",
+              data: { waiting_for: "easypost" },
 
-            }).done(function( shipping_grid ) {
+            }).done(function( msg ) {
+                
+                //alert( msg );
 
-                    $('#shipping_target').html( shipping_grid );
+                $('#shipping_target').html( msg );
+
+                //alert(default_address_id);
+
+                $.ajax({
+
+                    type: "POST",
+                    url: "default_address.html",
+                    data: { default_address_id: default_address_id},
+
+                }).done(function( shipping_grid ) {
+
+                        $('#shipping_target').html( shipping_grid );
+
+                });
 
             });
 
-        });
+        };
 
     });
 
