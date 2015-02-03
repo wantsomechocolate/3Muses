@@ -1,10 +1,3 @@
-/*
-$(document).ready(function(){
-  $("input[name='address']").click(function(){
-    alert("clicked");
-  });
-});
-*/
 
 //Let's get ready to rumble
 $(document).ready(function(){
@@ -14,68 +7,65 @@ $(document).ready(function(){
 
     $("input[name='address']").click(function(){
 
-        //alert("Clicked");
 
+        // This is the id of the address that is to become the default
+        // if it isn't a number, than don't do anything (not implemented yet)
         default_address_id=$(this).attr('value');
 
-        var original_default_address_id="{{=session.default_address_id}}"
+        // first ajax call is to get the value of the old default address id
+        // from the session
+        $.ajax({
+            type:"POST",
+            url:"get_current_default_address_id.html",
+            data:{dummy_var: "dummy_var"}
+        }).done(function( msg_daid ){
+            // msg_daid should be the value of the old default address id
+            // check to see if they are not the same
+            // because if they are you don't do anything
+            if (default_address_id!=msg_daid){
+            
+                // if they aren't let the user know we are preparing to generate the costs
+                $('#shipping_target').html( "Preparing to generate shipping costs." );
 
-        if (default_address_id!=Number(original_default_address_id)){
-        
-            $('#shipping_target').html( "Preparing to generate shipping costs." );
-
-            $.ajax({
-
-              type: "POST",
-              url: "loading_data.html",
-              data: { waiting_for: "easypost" },
-
-            }).done(function( msg ) {
-                
-                //alert( msg );
-
-                $('#shipping_target').html( msg );
-
-                //alert(default_address_id);
-
+                // start another ajax call to generate a more specific waiting message
                 $.ajax({
 
-                    type: "POST",
-                    url: "default_address.html",
-                    data: { default_address_id: default_address_id},
+                  type: "POST",
+                  url: "loading_data.html",
+                  data: { waiting_for: "easypost" },
 
-                }).done(function( shipping_grid ) {
+                }).done(function( msg ) {
+                    
+                    // message will be generating shipping costs please wait
 
-                        $('#shipping_target').html( shipping_grid );
-
-                });
-
-            });
-
-        };
-
-    });
+                    $('#shipping_target').html( msg );
 
 
-    /*
+                    // now that all those other checks are out of the way
+                    // make a final ajax call that actually gets the shipping costs
+                    $.ajax({
 
-        $("input[name='address']").click(function(){
-        //alert($(this).attr('value'));
+                        type: "POST",
+                        url: "default_address.html",
+                        data: { default_address_id: default_address_id},
 
-        $.ajax({
-          type: "POST",
-          url: "default_address.html",
-          data: { default_address_id: $(this).attr('value')}
-        })
-          .done(function( shipping_grid ) {
-            //alert( shipping_grid );
-            $('#shipping_target').html( shipping_grid );
-          });
+                    }).done(function( shipping_grid ) {
 
-    });
+                            $('#shipping_target').html( shipping_grid );
 
-*/
+                    }); // end function on third ajax call
 
+                }); // end function on second ajax call
+
+            }; // end the if statement
+
+        }); //End first function on first ajax call
+
+    }); // End function on the onclick event
+
+
+    // I need to add to this function to grey out the checkout button
+    // until this is finished running
     $("input[name='shipping']").click(function(){
        
         shipping_choice=$(this).attr('value');
@@ -129,11 +119,6 @@ $(document).ready(function(){
     $('.w2p_export_menu a').addClass('btn-primary');
 
     // alert("5");
-
-
-
-
-
 
 
 

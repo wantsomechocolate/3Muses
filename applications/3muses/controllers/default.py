@@ -652,7 +652,7 @@ def cart():
                     product_image_url=A(IMG(_src=srcattr), _href=URL('default','product',args=[key]))
 
                     ## Create delete button for item.
-                    delete_button=A('X', _href=URL('delete_item_from_cart', vars=dict(pri_key=key, redirect_url=URL('cart'))), _class="btn btn-primary")
+                    delete_button=A('X', _href=URL('delete_item_from_cart', vars=dict(pri_key=key, redirect_url=URL('cart'))), _class="btn")
 
                     cart_grid_table_row_list=[
                         product_image_url, 
@@ -711,9 +711,9 @@ def cart():
                 else:
                     radio_button=INPUT(_type='radio', _name='address', _value=address_list[j].id)
 
-                edit_button=A('<-', _href=URL('edit_db_address', vars=dict(pri_key=address_list[j].id)), _class="btn btn-primary")
+                edit_button=A('<-', _href=URL('edit_db_address', vars=dict(pri_key=address_list[j].id)), _class="btn")
                 
-                delete_button=A('X', _href=URL('delete_address', vars=dict(pri_key=address_list[j].id, redirect_url=URL('cart'))), _class="btn btn-primary")
+                delete_button=A('X', _href=URL('delete_address', vars=dict(pri_key=address_list[j].id, redirect_url=URL('cart'))), _class="btn")
 
                 address_grid_table_row_list=[
                     radio_button, 
@@ -743,6 +743,7 @@ def cart():
             address_list_is_empty=False
 
             radio_button=FORM(INPUT(_type='radio', _name='address', _value='address', _checked='checked'), _action="")
+            session.default_address_id='address'
             edit_button=A('<-', _href=URL('edit_session_address'), _class="btn btn-primary")
             delete_button=A('X', _href=URL('delete_address', vars=dict(redirect_url=URL('cart'))), _class="btn btn-primary")
 
@@ -916,6 +917,9 @@ def cart():
 ###########-------------------Card Logic (User and Non User)---------------------############
 #############################################################################################
 
+
+    ## The headers for the table that I won't need for very much longer
+    ## only applies to cards anyway. 
     card_grid_header_list=[
         'Select One', 
         'Name', 
@@ -927,13 +931,23 @@ def cart():
         'Delete'
     ]
 
+    ## a grid to fill up and give to table generater, but I might put more of the design in the view. 
     card_grid_table_row_LOL=[]
 
+    ## If the user is logged in. 
     if auth.is_logged_in():
 
+        ## See if the user has any card information on stripe. 
         try:
+            ## get stripe id from the db
             stripe_customer_token=db(db.stripe_customers.muses_id==auth.user_id).select()[0].stripe_id
+
+            ## get stripe info using stripe api
             stripe_customer=stripe.Customer.retrieve(stripe_customer_token)
+
+            ## put all stripe card info into a variable
+            ## this will only hold the first 10 cards a person has. If they have more cards
+            ## then they need help. 
             stripe_cards=stripe_customer.cards.all()
 
             for i in range(len(stripe_cards['data'])):
@@ -943,7 +957,7 @@ def cart():
                 else:
                     radio_button=INPUT(_type='radio', _name='card', _value=stripe_cards['data'][i]['id'])
 
-                delete_button=A('X', _href=URL('delete_item_from_db_card', vars=dict(customer_id=stripe_customer_token, card_id=stripe_cards['data'][i]['id'])), _class="btn btn-primary button")
+                delete_button=A('X', _href=URL('delete_item_from_db_card', vars=dict(customer_id=stripe_customer_token, card_id=stripe_cards['data'][i]['id'])), _class="btn")
 
                 card_grid_table_row_list=[
                     radio_button, 
@@ -969,9 +983,10 @@ def cart():
             stripe_customer=None
             stripe_cards=None
 
-            card_grid=DIV("You do not have any cards yet.")
-            card_grid.append(DIV(INPUT(_type='radio', _name='card', _value='paypal')))
-            card_grid.append(DIV("Pay with Paypal"))
+            #card_grid=DIV("You do not have any cards yet.")
+            #card_grid.append(DIV(INPUT(_type='radio', _name='card', _value='paypal')))
+            #card_grid.append(DIV("Pay with Paypal"))
+            card_grid=DIV("Pay with Paypal")
 
         except AttributeError:
             #the current user does not yet have a stripe customer token
@@ -1035,6 +1050,12 @@ def cart():
         card_grid=card_grid,
         )
 
+    # return dict(
+    #     cart_grid=cart_grid_table_row_LOL,
+    #     address_grid=address_grid_table_row_LOL,
+    #     shipping_grid=shipping_grid_table_row_LOL,
+    #     card_grid=card_grid_table_row_LOL)
+
 
 ## The view right before they click to get charged and stuff. 
 
@@ -1048,12 +1069,15 @@ def checkout():
 ## I figured out that I like the other method better. check for login on each thing you have to do.
 
 #############################################################################################
-###########-----------------------Cart Logic (User Only)-------------------------############
+###########-----------------------Cart Logic -----------------------############
 #############################################################################################
 
+    ## If the user is logged in and ready to checkout
     if auth.is_logged_in():
 
         ## Retrieve cart based on user id
+        ## I should probably be checking again to make sure that the products are still available. 
+        ## maybe implement that timer crap. 
         cart=db(db.muses_cart.user_id==auth.user_id).select()
 
         ## Initialize some vars
@@ -1062,15 +1086,20 @@ def checkout():
         cart_grid_row_LOL=[]
         cart_grid_header_list=["TN",'Product Name', 'Cost']
 
+        ## If the payment method is paypal, I need to create the payment link so that
+        ## when the users presses pay they are sent to paypal. This is the beginning of that
         cart_for_paypal_LOD=[]
 
         ## for every item the user has in their cart
+        ## logic placed at the cart level should ensure they have something in their cart,
+        ## but you never now, I should have a backup plan here. 
         for row in cart:
 
-            ## Retrieve the product from the db
+            ## Retrieve the product info from the db
             product=db(db.product.id==row.product_id).select().first()
 
             ## Generate a dictionary for shipping information of the current product
+            ## I believe this is only used for shipping internationally
             cart_for_shipping_dict=dict(
                 product_name=product.product_name, 
                 product_cost=product.cost_USD,
@@ -1079,6 +1108,7 @@ def checkout():
                 product_shipping_desc=product.shipping_description,
             )
 
+            ## Generate a dictionary for the paypal item. 
             cart_for_paypal_dict=dict(
                 quantity=str(int(row.product_qty)),
                 name=product.product_name,
@@ -1087,12 +1117,13 @@ def checkout():
                 description=product.shipping_description,
                 )
 
+            ## Append the product dict to the list of dicts for paypal
             cart_for_paypal_LOD.append(cart_for_paypal_dict)
 
             ## Append to list shipping info for all product in cart
             cart_for_shipping_calculations.append(cart_for_shipping_dict)
 
-            ## Keeping track of cost and weight
+            ## Keeping track of cost and weight for presentation/display purposes.
             cart_weight_oz+=float(product.weight_oz)*float(row.product_qty)
             cart_cost_USD+=float(product.cost_USD)*float(row.product_qty)
             row_cost_USD=float(product.cost_USD)*float(row.product_qty)
@@ -1115,11 +1146,8 @@ def checkout():
         session.cart_cost_USD=cart_cost_USD
 
 
+    ## If the user is not logged in but ready to checkout. 
     else:
-
-#############################################################################################
-###########----------------------Cart Logic (Non User Only)----------------------############
-#############################################################################################
 
         cart_for_shipping_calculations=[]
 
@@ -1219,10 +1247,6 @@ def checkout():
     ## If the user is not logged in!
     else:
 
-#############################################################################################
-###########---------------------Address Logic (Non User Only)--------------------############
-#############################################################################################
-
         address_grid_header_list=[
             'Street Line 1', 
             'Street Line 2', 
@@ -1251,6 +1275,7 @@ def checkout():
         ]
 
         address_grid=table_generation(address_grid_header_list, [address_grid_row_list], 'checkout_address')
+
 
 
 
@@ -1431,11 +1456,8 @@ def checkout():
             card_grid=table_generation(card_grid_header_list, [card_grid_row_list], 'checkout_card')
 
 
+    ## Card logic for non logged in user. 
     else:
-
-#############################################################################################
-###########--------------------Card Logic (Non User Only)------------------------############
-#############################################################################################
 
         if not session.payment_method:
             session.payment_method='stripe'
@@ -1598,6 +1620,9 @@ def checkout():
         summary_grid=summary_grid,
         approval_url=approval_url,
         )
+
+
+
 
 
 def pay():
@@ -2242,7 +2267,7 @@ def manage_product_images():
         maxtextlength=100)
 
     image_grid.element('.web2py_counter', replace=None)
-    return locals()
+    return dict(grid=image_grid)
 
 
 
@@ -2258,7 +2283,7 @@ def manage_categories():
         )
 
     category_grid.element('.web2py_counter', replace=None)
-    return locals()
+    return dict(grid=category_grid)
 
 @auth.requires_membership('admin')
 def manage_purchase_history_data():
@@ -4066,3 +4091,6 @@ def paypal_confirmation():
             payment_id=None,
             payment=None,)
 
+
+def get_current_default_address_id():
+    return session.default_address_id
