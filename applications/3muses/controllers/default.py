@@ -3774,6 +3774,15 @@ def paypal_confirmation():
                 #payment_paypal_id=,
                 #payment_paypal_etc=,
 
+                # payment_paypal_intent=payment['intent'],
+
+
+
+                # payment_paypal_transaction_id=payment['id'],
+                # payment_paypal_create_time=payment['create_time'],
+                # payment_paypal_state=payment['state'],
+
+
                 ## Cart Details
                 cart_base_cost=session.purchase_history_summary_info['cart_cost_USD'],
                 cart_shipping_cost=session.purchase_history_summary_info['shipping_cost_USD'],
@@ -4032,7 +4041,13 @@ def paypal_confirmation():
                 #html_body=final_div_html,
                 html_body=receipt_message_html,
                 tag="confirmation")
+
+            ## try:
             message.send()
+
+            ## except postmark.core.PMMailUnprocessableEntityException:
+            ## tell the user that the email I tried to send the receipt to failed
+            ## and that they need to choose a different one if they want a reciept!
 
 
             ## This has to be last, duh.
