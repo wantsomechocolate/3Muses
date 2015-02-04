@@ -14,6 +14,7 @@ import os, ast, time
 STRIPE_SESSION_RETIRE_HOURS=26 #(1/20.0)
 SERVER_SESSION_RETIRE_HOURS=26 #(1/20.0)
 PRODUCTION_STATUS='test'
+PAYPAL_MODE='sandbox' #sandbox or live
 S3_BUCKET_PREFIX='https://s3.amazonaws.com/threemusesglass/site_images/'
 
 
@@ -796,10 +797,6 @@ def cart():
                     product_weight=product.weight_oz,
                     product_shipping_desc=product.shipping_description,
                 ))
-                
-
-            ## address logic
-            #address=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select().first()
 
             address_info=dict(
                 street_address_line_1=address.street_address_line_1, 
@@ -856,6 +853,9 @@ def cart():
         # and the cart info, and the combined weight of our package. 
 
         shipment=create_shipment(address_info, cart_for_shipping_calculations)
+
+        ## Put shipment info in the session to get it later!
+        session.shipment_info_from_easypost=shipment
 
         # Generate list of sorted rates
         shipping_rates_for_sorting=[]
@@ -1072,6 +1072,16 @@ def checkout():
 ###########-----------------------Cart Logic -----------------------############
 #############################################################################################
 
+
+    cart_for_shipping_calculations=[]
+    cart_weight_oz=cart_cost_USD=0
+    cart_grid_row_LOL=[]
+    cart_grid_header_list=["TN",'Product Name', 'Cost']
+
+    ## If the payment method is paypal, I need to create the payment link so that
+    ## when the users presses pay they are sent to paypal. This is the beginning of that
+    cart_for_paypal_LOD=[]
+
     ## If the user is logged in and ready to checkout
     if auth.is_logged_in():
 
@@ -1079,17 +1089,7 @@ def checkout():
         ## I should probably be checking again to make sure that the products are still available. 
         ## maybe implement that timer crap. 
         cart=db(db.muses_cart.user_id==auth.user_id).select()
-
-        ## Initialize some vars
-        cart_for_shipping_calculations=[]
-        cart_weight_oz=cart_cost_USD=0
-        cart_grid_row_LOL=[]
-        cart_grid_header_list=["TN",'Product Name', 'Cost']
-
-        ## If the payment method is paypal, I need to create the payment link so that
-        ## when the users presses pay they are sent to paypal. This is the beginning of that
-        cart_for_paypal_LOD=[]
-
+      
         ## for every item the user has in their cart
         ## logic placed at the cart level should ensure they have something in their cart,
         ## but you never now, I should have a backup plan here. 
@@ -1108,6 +1108,9 @@ def checkout():
                 product_shipping_desc=product.shipping_description,
             )
 
+            ## Append to list shipping info for all product in cart
+            cart_for_shipping_calculations.append(cart_for_shipping_dict)
+
             ## Generate a dictionary for the paypal item. 
             cart_for_paypal_dict=dict(
                 quantity=str(int(row.product_qty)),
@@ -1120,8 +1123,6 @@ def checkout():
             ## Append the product dict to the list of dicts for paypal
             cart_for_paypal_LOD.append(cart_for_paypal_dict)
 
-            ## Append to list shipping info for all product in cart
-            cart_for_shipping_calculations.append(cart_for_shipping_dict)
 
             ## Keeping track of cost and weight for presentation/display purposes.
             cart_weight_oz+=float(product.weight_oz)*float(row.product_qty)
@@ -1139,36 +1140,13 @@ def checkout():
             cart_grid_table_row_list=[product_image_url, product.product_name, row_cost_USD]
             cart_grid_row_LOL.append(cart_grid_table_row_list)
 
-        ## Generate the table, takes header info, row info, and then css class prefix
-        cart_grid=table_generation(cart_grid_header_list, cart_grid_row_LOL, 'checkout_cart')
-
-        ## Add total cart cost to the session for receipt info testing
-        session.cart_cost_USD=cart_cost_USD
-
 
     ## If the user is not logged in but ready to checkout. 
     else:
 
-        cart_for_shipping_calculations=[]
-
-        cart_grid_row_LOL=[]
-
-        cart_weight_oz=cart_cost_USD=0
-
-        cart_grid_header_list=["TN",'Product Name', 'Cost']
-
         for key, value in session.cart.iteritems():
 
             product=db(db.product.id==key).select().first()
-
-            #product_name=product.product_name
-            #product_cost=product.cost_USD
-            #product_qty=value
-
-            total_cost=float(product.cost_USD)*float(value)
-
-            #product_weight=product.weight_oz
-            #product_shipping_desc=product.shipping_description
 
             cart_for_shipping_dict=dict(
                 product_name=product.product_name, 
@@ -1180,11 +1158,21 @@ def checkout():
 
             cart_for_shipping_calculations.append(cart_for_shipping_dict)
 
+            cart_for_paypal_dict=dict(
+                quantity=str(int(value)),
+                name=product.product_name,
+                price='{:.2f}'.format(product.cost_USD),
+                currency='USD',
+                description=product.shipping_description,
+                )
+
+            ## Append the product dict to the list of dicts for paypal
+            cart_for_paypal_LOD.append(cart_for_paypal_dict)
+
             # Value is from session 
             cart_weight_oz+=float(product.weight_oz)*float(value)
-
             cart_cost_USD+=float(product.cost_USD)*float(value)
-
+            row_cost_USD=float(product.cost_USD)*float(value)
 
             if sqlite_tf:
                 srcattr=URL('download',db(db.image.product_name==key).select().first().s3_url)
@@ -1192,37 +1180,35 @@ def checkout():
                 srcattr=S3_BUCKET_PREFIX+str(db(db.image.product_name==key).select().first().s3_url)
             product_image_url=A(IMG(_src=srcattr), _href=URL('default','product',args=[key]))
 
-
-            cart_grid_table_row_list=[product_image_url, product.product_name, total_cost]
-
+            cart_grid_table_row_list=[product_image_url, product.product_name, row_cost_USD]
             cart_grid_row_LOL.append(cart_grid_table_row_list)
 
-        cart_grid=table_generation(cart_grid_header_list, cart_grid_row_LOL, 'checkout_cart')
 
+    ## Generate the table, takes header info, row info, and then css class prefix
+    cart_grid=table_generation(cart_grid_header_list, cart_grid_row_LOL, 'checkout_cart')
 
-
-
-
-
-
+    ## Add total cart cost to the session for receipt info testing
+    session.cart_cost_USD=cart_cost_USD
 
 
 #############################################################################################
-###########-------------------Address Logic (User Only)--------------------------############
+###########--------------------------Address Logic ------------------------------############
 #############################################################################################
 
+    address_grid_header_list=[
+        'Street Line 1', 
+        'Street Line 2', 
+        'Municipality',
+        'State or Equivilent',
+        'Postal Code',
+        'Country',
+    ]
+
+    ## If the user is logged in and ready to checkout
     if auth.is_logged_in():
 
+        ## Get the address that they have as their default address
         address=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select().first()
-
-        address_grid_header_list=[
-            'Street Line 1', 
-            'Street Line 2', 
-            'Municipality',
-            'Administrative Area',
-            'Postal Code',
-            'Country',
-        ]
 
         address_dict=dict(
             street_address_line_1=address.street_address_line_1, 
@@ -1241,21 +1227,11 @@ def checkout():
             address.postal_code, 
             address.country,
         ]
-
-        address_grid=table_generation(address_grid_header_list, [address_grid_row_list], 'checkout_address')
       
-    ## If the user is not logged in!
+    ## If the user is not logged in but ready to checkout out
     else:
 
-        address_grid_header_list=[
-            'Street Line 1', 
-            'Street Line 2', 
-            'Municipality',
-            'Administrative Area',
-            'Postal Code',
-            'Country',
-        ]
-
+        ## You can get everything you need from the session. 
         address_dict=dict(
             street_address_line_1=session.address['street_address_line_1'],
             street_address_line_2=session.address['street_address_line_2'],
@@ -1274,20 +1250,22 @@ def checkout():
             session.address['country'],
         ]
 
-        address_grid=table_generation(address_grid_header_list, [address_grid_row_list], 'checkout_address')
 
-
-
-
+    address_grid=table_generation(address_grid_header_list, [address_grid_row_list], 'checkout_address')
 
 
 
 
 #############################################################################################
-##########------------------Shipping Logic (User and Non User)-------------------############
+##########----------------------------Shipping Logic ----------------------------############
 #############################################################################################
 
-    shipment=create_shipment(address_dict, cart_for_shipping_calculations)
+    ## Instead of using the shipping cost from the selected radio button,
+    ## This is actually making another api call to easypost. That's super dumb.
+    ## I have to change that right now. 
+    # shipment=create_shipment(address_dict, cart_for_shipping_calculations)
+
+    shipment=session.shipment_info_from_easypost
 
     shipping_grid_header_list=['Carrier', 'Service', 'Cost']
 
@@ -1327,16 +1305,28 @@ def checkout():
 
 
 #############################################################################################
-###########-----------------------Card Logic (User Only)-------------------------############
+###########------------------------------Card Logic -----------------------------############
 #############################################################################################
+
+    card_grid_header_list=[
+        'Name', 
+        'Last 4', 
+        'Card Type',
+        'Expiration Month',
+        'Expiration Year', 
+    ]
+
 
     if auth.is_logged_in():
 
-        if not session.payment_method:
-            session.payment_method='stripe'
+        ## If for some reason the payment method wasn't set, set an assumption?
+        #if not session.payment_method:
+        #    session.payment_method='stripe'
 
         if session.payment_method=='stripe':
 
+            ## This is the url attached tothe pay button
+            ## for paypal it will be more complicated. 
             approval_url=URL('pay')
 
             ## Retrieve the default card for the current customer by:
@@ -1352,14 +1342,6 @@ def checkout():
             stripe_card=stripe_customer.cards.retrieve(stripe_customer_card)
 
             ## Generate table information
-            card_grid_header_list=[
-                'Name', 
-                'Last 4', 
-                'Card Type',
-                'Expiration Month',
-                'Expiration Year', 
-            ]
-
             card_grid_row_list=[
                 stripe_card['name'],
                 stripe_card['last4'], 
@@ -1368,50 +1350,52 @@ def checkout():
                 stripe_card['exp_year'],
             ]
 
-            card_grid=table_generation(card_grid_header_list, [card_grid_row_list], 'checkout_card')
 
         ## If not paying with stripe, then assume they are paying with Paypal
+        ## For a logged in user and a non logged in user, the functionality
+        ## right now is identical
         else:
 
-
+            ## import all the helper stuff
             import paypalrestsdk
             from aux import get_env_var
             from aux import id_generator
             from aux import paypal_create_payment_dict
 
-
+            ## Get the paypal keys
             PAYPAL_CLIENT_ID=get_env_var('paypal',PRODUCTION_STATUS,'PAYPAL_CLIENT_ID')
             PAYPAL_CLIENT_SECRET=get_env_var('paypal',PRODUCTION_STATUS,'PAYPAL_CLIENT_SECRET')
 
-
+            ## configure paypal api with keys
             paypalrestsdk.configure({
-                "mode": "sandbox", # sandbox or live
+                "mode": PAYPAL_MODE, # sandbox or live
                 "client_id": PAYPAL_CLIENT_ID,
                 "client_secret": PAYPAL_CLIENT_SECRET })
 
 
             invoice_number=id_generator()
 
-            items_LOD=[
+            # items_LOD=[
 
-            dict(
-                quantity="1",
-                name="eCig Drip Tip",
-                price="20.00",
-                currency="USD",
-                description="Description of item",
-                ),
+            # dict(
+            #     quantity="1",
+            #     name="eCig Drip Tip",
+            #     price="20.00",
+            #     currency="USD",
+            #     description="Description of item",
+            #     ),
 
-            dict(
-                quantity="1",
-                name="eCig Drip Tip Black",
-                price="20.00",
-                currency="USD",
-                description="Black eCig Drip Tip",
-                ),
+            # dict(
+            #     quantity="1",
+            #     name="eCig Drip Tip Black",
+            #     price="20.00",cart_for_paypal_LOD
+            #     currency="USD",
+            #     description="Black eCig Drip Tip",
+            #     ),
 
-            ]
+            # ]
 
+            ## cart_for_paypal_LOD is from the cart logic section
             payment_dict=paypal_create_payment_dict(
                 intent='sale',
                 payment_method='paypal', 
@@ -1453,26 +1437,19 @@ def checkout():
                 'Paypal',
             ]
 
-            card_grid=table_generation(card_grid_header_list, [card_grid_row_list], 'checkout_card')
+            #card_grid=table_generation(card_grid_header_list, [card_grid_row_list], 'checkout_card')
 
 
     ## Card logic for non logged in user. 
     else:
 
-        if not session.payment_method:
-            session.payment_method='stripe'
+        ## The default choice thing?
+        # if not session.payment_method:
+        #    session.payment_method='stripe'
 
         if session.payment_method=='stripe':
 
             approval_url=URL('pay')
-
-            card_grid_header_list=[
-                'Name', 
-                'Last 4', 
-                'Card Type',
-                'Expiration Month',
-                'Expiration Year', 
-            ]
 
             card_grid_row_list=[
                 session.card_info['name'],
@@ -1489,62 +1466,36 @@ def checkout():
         else:
 
             import paypalrestsdk
+            from aux import get_env_var
+            from aux import id_generator
+            from aux import paypal_create_payment_dict
 
             PAYPAL_CLIENT_ID=get_env_var('paypal', PRODUCTION_STATUS, 'PAYPAL_CLIENT_ID')
             PAYPAL_CLIENT_SECRET=get_env_var('paypal', PRODUCTION_STATUS, 'PAYPAL_CLIENT_SECRET')
 
             paypalrestsdk.configure({
-                "mode": "sandbox", # sandbox or live
+                "mode": PAYPAL_MODE, # sandbox or live
                 "client_id": PAYPAL_CLIENT_ID,
                 "client_secret": PAYPAL_CLIENT_SECRET })
 
             invoice_number=id_generator()
 
-            payment=paypalrestsdk.Payment({
+            payment_dict=paypal_create_payment_dict(
+                intent='sale',
+                payment_method='paypal', 
+                redirect_urls=dict(
+                    return_url="https://threemusesglass.herokuapp.com/paypal_confirmation",
+                    cancel_url="https://threemusesglass.herokuapp.com"),
+                cost_dict=dict(
+                    shipping_cost_USD=shipping_cost_USD, 
+                    cart_cost_USD=cart_cost_USD, 
+                    total_cost_USD=total_cost_USD),
+                transaction_description='Purchase from ThreeMusesGlass',
+                invoice_number=invoice_number,
+                items_paypal_list_of_dicts=cart_for_paypal_LOD,)
 
-                "intent": "sale",
 
-                "payer": {
-                    "payment_method": "paypal",
-                    },
-
-                "transactions": [
-                    {
-                        "amount":{
-                            "currency":"USD",
-                            "total":"{:.2f}".format(total_cost_USD),
-                            "details":{
-                                "shipping":"{:.2f}".format(shipping_cost_USD),
-                                "subtotal":"{:.2f}".format(cart_cost_USD),
-                            },
-                        },
-
-                        "description":"Purchase from ThreeMusesGlass",
-
-                        "item_list":{
-                            "items":[
-                                {
-                                    "quantity":"1",
-                                    "name":"eCig Drip Tip",
-                                    "price":"40.00",
-                                    "currency":"USD",
-                                    "description":"Description of item",
-                                },
-                            ],
-                        },
-
-                        "invoice_number":invoice_number,
-                    },
-
-                    ],
-
-                "redirect_urls":{
-                    "return_url":"https://threemusesglass.herokuapp.com/paypal_webhooks",
-                    "cancel_url":"https://threemusesglass.herokuapp.com",
-                    },
-
-                })
-
+            payment=paypalrestsdk.Payment(payment_dict)
 
             if payment.create():
                 status="Created successfully"
@@ -1571,7 +1522,9 @@ def checkout():
                 'Paypal',
             ]
 
-            card_grid=table_generation(card_grid_header_list, [card_grid_row_list], 'checkout_card')
+            #card_grid=table_generation(card_grid_header_list, [card_grid_row_list], 'checkout_card')
+
+    card_grid=table_generation(card_grid_header_list, [card_grid_row_list], 'checkout_card')
 
 
 
@@ -2109,12 +2062,19 @@ def confirmation():
 
 
             ##Card Table
-            card_header_row=['Name', 'Brand-Last4', 'Expiration(mm/yyyy)']
-            card_table_row_LOL=[[
-                purchase_history_data_row.payment_stripe_name,
-                purchase_history_data_row.payment_stripe_brand + " - " + purchase_history_data_row.payment_stripe_last_4,
-                purchase_history_data_row.payment_stripe_exp_month + " / " + purchase_history_data_row.payment_stripe_exp_year,
-            ]]
+            if purchase_history_data_row.payment_method=='stripe':
+                card_header_row=['Name', 'Brand-Last4', 'Expiration(mm/yyyy)']
+                card_table_row_LOL=[[
+                    purchase_history_data_row.payment_stripe_name,
+                    purchase_history_data_row.payment_stripe_brand + " - " + purchase_history_data_row.payment_stripe_last_4,
+                    purchase_history_data_row.payment_stripe_exp_month + " / " + purchase_history_data_row.payment_stripe_exp_year,
+                ]]
+
+            elif purchase_history_data_row.payment_method=='paypal':
+                card_header_row=['Name', 'Paypal Email', 'Something Else']
+                card_table_row_LOL=[[
+                    'Name', 'Email', 'Else'
+                ]]
 
             confirmation_card_grid=table_generation(card_header_row,card_table_row_LOL,"confirmation_card")
 
@@ -2968,99 +2928,103 @@ def default_address():
 
 
     # now logged in or not we have the address that was chosen, the address info for the address that was chosen
-    # and the cart info, and the combined weight of our package. 
+    # and the cart info, and the combined weight of our package.
+    shipment=create_shipment(address_info, cart_for_shipping_calculations)
 
-    parcel=easypost.Parcel.create(
-        length=8,
-        width=8,
-        height=4,
-        weight=cart_weight_oz,
-    )
 
-    if address_info['country']=='United States':
+    # parcel=easypost.Parcel.create(
+    #     length=8,
+    #     width=8,
+    #     height=4,
+    #     weight=cart_weight_oz,
+    # )
 
-        to_address=easypost.Address.create(
-            #name=address_info['card_name'],
-            street1=address_info['street_address_line_1'],
-            street2=address_info['street_address_line_2'],
-            city=address_info['municipality'],
-            state=address_info['administrative_area'],
-            zip=address_info['postal_code'],
-        )
+    # if address_info['country']=='United States':
 
-        shipment=easypost.Shipment.create(
-            to_address = to_address,
-            from_address = from_address,
-            parcel=parcel,
-        )
+    #     to_address=easypost.Address.create(
+    #         #name=address_info['card_name'],
+    #         street1=address_info['street_address_line_1'],
+    #         street2=address_info['street_address_line_2'],
+    #         city=address_info['municipality'],
+    #         state=address_info['administrative_area'],
+    #         zip=address_info['postal_code'],
+    #     )
 
-    else:
+    #     shipment=easypost.Shipment.create(
+    #         to_address = to_address,
+    #         from_address = from_address,
+    #         parcel=parcel,
+    #     )
 
-        to_address=easypost.Address.create(
-            #name=address_info['card_name'],
-            street1=address_info['street_address_line_1'],
-            street2=address_info['street_address_line_2'],
-            city=address_info['municipality'],
-            state=address_info['administrative_area'],
-            zip=address_info['postal_code'],
-            country=address_info['country'],
-        )
+    # else:
 
-        customs_items=[]
-        for item in cart_for_shipping_calculations:
-            customs_item=easypost.CustomsItem.create(
-                description=item['product_shipping_desc'],
-                quantity=item['product_qty'],
-                value=item['product_cost'],
-                #weight in oz converted to pounds
-                weight=(float(item['product_weight'])/16),
-                hs_tariff_number=700100,
-                origin_country='US',
-            )
-            customs_items.append(customs_item)
+    #     to_address=easypost.Address.create(
+    #         #name=address_info['card_name'],
+    #         street1=address_info['street_address_line_1'],
+    #         street2=address_info['street_address_line_2'],
+    #         city=address_info['municipality'],
+    #         state=address_info['administrative_area'],
+    #         zip=address_info['postal_code'],
+    #         country=address_info['country'],
+    #     )
 
-        if address_info['country']=='Canada':
+    #     customs_items=[]
+    #     for item in cart_for_shipping_calculations:
+    #         customs_item=easypost.CustomsItem.create(
+    #             description=item['product_shipping_desc'],
+    #             quantity=item['product_qty'],
+    #             value=item['product_cost'],
+    #             #weight in oz converted to pounds
+    #             weight=(float(item['product_weight'])/16),
+    #             hs_tariff_number=700100,
+    #             origin_country='US',
+    #         )
+    #         customs_items.append(customs_item)
 
-            customs_info=easypost.CustomsInfo.create(
-                customs_items=customs_items,
-                contents_type='merchandise',
-                #contents_explanation=None,
-                restriction_type='none',
-                #restriction_comments=None,
-                customs_certify=True,
-                customs_signer='James McGlynn',
-                non_delivery_option='return',
-                eel_pfc='NOEEI 30.36',
-            )
+    #     if address_info['country']=='Canada':
 
-        else:
+    #         customs_info=easypost.CustomsInfo.create(
+    #             customs_items=customs_items,
+    #             contents_type='merchandise',
+    #             #contents_explanation=None,
+    #             restriction_type='none',
+    #             #restriction_comments=None,
+    #             customs_certify=True,
+    #             customs_signer='James McGlynn',
+    #             non_delivery_option='return',
+    #             eel_pfc='NOEEI 30.36',
+    #         )
 
-            customs_info=easypost.CustomsInfo.create(
-                customs_items=customs_items,
-                contents_type='merchandise',
-                #contents_explanation=None,
-                restriction_type='none',
-                #restriction_comments=None,
-                customs_certify=True,
-                customs_signer='James McGlynn',
-                non_delivery_option='return',
-                eel_pfc='NOEEI 30.37(a).',
-            )
+    #     else:
 
-        shipment=easypost.Shipment.create(
-            to_address=to_address,
-            from_address=from_address,
-            parcel=parcel,
-            customs_info=customs_info,
-        )
+    #         customs_info=easypost.CustomsInfo.create(
+    #             customs_items=customs_items,
+    #             contents_type='merchandise',
+    #             #contents_explanation=None,
+    #             restriction_type='none',
+    #             #restriction_comments=None,
+    #             customs_certify=True,
+    #             customs_signer='James McGlynn',
+    #             non_delivery_option='return',
+    #             eel_pfc='NOEEI 30.37(a).',
+    #         )
+
+    #     shipment=easypost.Shipment.create(
+    #         to_address=to_address,
+    #         from_address=from_address,
+    #         parcel=parcel,
+    #         customs_info=customs_info,
+    #     )
 
         #session.shipping_rates=shipment.rates
-        shipping_rates_for_session={}
-        for rate in shipment.rates:
-            shipping_rates_for_session[rate.id]="test"
-        session.shipping_rates=shipping_rates_for_session
+        # shipping_rates_for_session={}
+        # for rate in shipment.rates:
+        #     shipping_rates_for_session[rate.id]="test"
+        # session.shipping_rates=shipping_rates_for_session
 
-    
+
+    ## Put shipment info in the session to get it later!
+    session.shipment_info_from_easypost=shipment
 
     # Generate list of sorted rates
     shipping_rates_for_sorting=[]
@@ -3100,16 +3064,12 @@ def default_address():
                 shipping_grid_table_row_LOL.append(shipping_grid_table_row_list)
             else:
                 pass
-
-        
         
         shipping_grid=table_generation(shipping_grid_header_list, shipping_grid_table_row_LOL, 'shipping')
-
 
     shipping_grid_container=shipping_grid
     return shipping_grid_container
 
-        #return "test"
         #return dict(rate_list=rate_list)
         #return dict(rate_list=rate_list)
 
@@ -3616,7 +3576,7 @@ def paypal_test_checkout():
 
 
     paypalrestsdk.configure({
-        "mode": "sandbox", # sandbox or live
+        "mode": PAYPAL_MODE, # sandbox or live
         "client_id": PAYPAL_CLIENT_ID,
         "client_secret": PAYPAL_CLIENT_SECRET })
 
@@ -3683,7 +3643,7 @@ def paypal_webhooks():
     PAYPAL_CLIENT_SECRET=get_env_var('paypal', PRODUCTION_STATUS,'PAYPAL_CLIENT_SECRET')
 
     paypalrestsdk.configure({
-        "mode": "sandbox", # sandbox or live
+        "mode": PAYPAL_MODE, # sandbox or live
         "client_id": PAYPAL_CLIENT_ID,
         "client_secret": PAYPAL_CLIENT_SECRET })
 
@@ -3730,7 +3690,7 @@ def paypal_confirmation():
     PAYPAL_CLIENT_SECRET=get_env_var('paypal', PRODUCTION_STATUS,'PAYPAL_CLIENT_SECRET')
 
     paypalrestsdk.configure({
-        "mode": "sandbox", # sandbox or live
+        "mode": PAYPAL_MODE, # sandbox or live
         "client_id": PAYPAL_CLIENT_ID,
         "client_secret": PAYPAL_CLIENT_SECRET })
 
@@ -3766,7 +3726,8 @@ def paypal_confirmation():
                 ## If anonymous user,
                 muses_id=None
                 muses_name=None
-                muses_email_address=session.card_info['email']
+                muses_email_address=payment['payer']['payer_info']['email']
+
 
 
             ## Populating the purchase history dict
@@ -3808,6 +3769,10 @@ def paypal_confirmation():
                 payment_stripe_exp_year=None,
                 payment_stripe_card_id=None,
                 payment_stripe_transaction_id=None,
+
+                #payment_paypal_name=,
+                #payment_paypal_id=,
+                #payment_paypal_etc=,
 
                 ## Cart Details
                 cart_base_cost=session.purchase_history_summary_info['cart_cost_USD'],
