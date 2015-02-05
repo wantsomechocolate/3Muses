@@ -1654,6 +1654,11 @@ def pay():
 
 
         ## Payment Fields
+        payment_service='stripe'
+        payment_confirmation_dictionary=json.dumps(charge)
+
+
+        ## Legacy Fields
         payment_method='stripe',
         payment_stripe_name=charge['card']['name'],
         payment_stripe_user_id=charge['customer'],
@@ -1790,7 +1795,8 @@ def pay():
 
 
 
-
+## This is a scary place in the code 
+## if True, lol
 
 
 

@@ -1,0 +1,89 @@
+## OK NEW PLAN!
+## I will store the entire dictionary for either payment method as serialzed dictionaries. 
+## That way I have all the data I could ever want!
+## I will pull out only those fields to store seperately that I consider to be important, or that I need often?
+## And I will have helper functions for getting the desired data out of each dictionary for whatever application
+## (emails, confimation screens, etc?)
+
+
+## Fields for if the user is logged in
+## None if that are not logged in. 
+	Field('muses_id'),
+	Field('muses_email_address'),
+	Field('muses_name'),
+
+
+## Session Fields (These actually come from response not session)
+## These will be available for all users!
+	Field('session_id_3muses'),
+	Field('session_db_table'),
+	Field('session_db_record_id'),
+
+## Address for Shipping Fields, required for all users
+	Field('shipping_name_first')
+	Field('shipping_name_last')
+	Field('shipping_street_address_line_1'),
+	Field('shipping_street_address_line_2'),
+	Field('shipping_municipality'),
+	Field('shipping_administrative_area'),
+	Field('shipping_postal_code'),
+	Field('shipping_country'),
+
+## Easypost Fields? Can I get address info from easypost?
+## Can I get timestamps from easypost
+## Should I serialize the easypost stuff as well?
+	Field('easypost_shipping_service'),
+	Field('easypost_shipping_carrier'),
+	Field('easypost_rate_id'),
+	Field('easypost_shipment_id'),
+	Field('easypost_rate'),
+
+## Payment Fields
+	## Right now the payment methods are stripe vs paypal
+	Field('payment_service'),
+
+	## This field will be a serialized json object of the api response that confirms payment. 
+	## That way I don't have to pick what I collect and I can alter what I do with the data at any time. 
+	## I may want to store some other common data at a higher level, but I can choose to do that
+	## at any time as long as I have this field. 
+	Field('payment_dictionary'),
+
+	## I'll keep a couple of the following fields for legacy purposes so shit doesn't break while I am 
+	## converting over to the serialized version.
+		
+			# ## can be credit_card or paypal if paypal
+			# ## can be credit_card if stripe, unless stripe unleashes it's paypal potential
+			# Field('payment_method'),
+
+			# ## name field used for payment, does not need to match user name or shipping name
+			# Field('payment_name'),
+			
+			# ## This field exists for both stripe and paypal
+			# Field('payment_payer_id'),
+				
+			# ## Both, but will usually be blank for paypal(not using a card)
+			# Field('payment_credit_card_last_4'),
+			# Field('payment_credit_card_brand'),
+			# Field('payment_credit_card_exp_month'),
+			# Field('payment_credit_card_exp_year'),
+
+			# Field('payment_stripe_card_id'),
+			# Field('payment_stripe_transaction_id'),
+
+
+## Billing address information
+	Field('billing_first_name'),
+	Field('billing_last_name'),
+	Field('billing_street_line_1'),
+	Field('billing_street_line_2'),
+	Field('billing_municipality'),
+	Field('billing_administrative_area'),
+	Field('billing_postal_code'),
+	Field('billing_country_code'),
+
+
+
+	## Purchase Summary Details
+	Field('cart_base_cost'),
+	Field('cart_shipping_cost'),
+	Field('cart_total_cost'),

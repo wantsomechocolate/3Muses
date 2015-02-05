@@ -15452,3 +15452,28 @@ success!
 success!
 success!
 success!
+timestamp: 2015-02-04T20:10:58.112660
+ALTER TABLE purchase_history_data ADD billing_street_line_2 VARCHAR(512);
+timestamp: 2015-02-04T20:10:58.240655
+ALTER TABLE purchase_history_data ADD billing_street_line_1 VARCHAR(512);
+timestamp: 2015-02-04T20:10:58.331981
+ALTER TABLE purchase_history_data ADD billing_last_name VARCHAR(512);
+timestamp: 2015-02-04T20:10:58.416545
+ALTER TABLE purchase_history_data ADD billing_municipality VARCHAR(512);
+timestamp: 2015-02-04T20:10:58.500714
+ALTER TABLE purchase_history_data ADD billing_country_code VARCHAR(512);
+timestamp: 2015-02-04T20:10:58.576614
+ALTER TABLE purchase_history_data ADD billing_first_name VARCHAR(512);
+timestamp: 2015-02-04T20:10:58.660322
+ALTER TABLE purchase_history_data ADD shipping_name_first VARCHAR(512);
+timestamp: 2015-02-04T20:10:58.760742
+ALTER TABLE purchase_history_data ADD billing_administrative_area VARCHAR(512);
+timestamp: 2015-02-04T20:10:58.840332
+ALTER TABLE purchase_history_data ADD billing_postal_code VARCHAR(512);
+timestamp: 2015-02-04T20:10:58.933006
+ALTER TABLE purchase_history_data ADD payment_service VARCHAR(512);
+timestamp: 2015-02-04T20:10:59.016364
+ALTER TABLE purchase_history_data ADD payment_confirmation_dictionary VARCHAR(512);
+timestamp: 2015-02-04T20:10:59.101762
+ALTER TABLE purchase_history_data ADD shipping_name_last VARCHAR(512);
+success!
