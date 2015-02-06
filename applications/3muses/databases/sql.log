@@ -15477,3 +15477,268 @@ ALTER TABLE purchase_history_data ADD payment_confirmation_dictionary VARCHAR(51
 timestamp: 2015-02-04T20:10:59.101762
 ALTER TABLE purchase_history_data ADD shipping_name_last VARCHAR(512);
 success!
+success!
+success!
+timestamp: 2015-02-05T08:18:28.559410
+ALTER TABLE purchase_history_data ADD billing_street_line_2 CHAR(512);
+timestamp: 2015-02-05T08:18:28.754578
+ALTER TABLE purchase_history_data ADD billing_street_line_1 CHAR(512);
+timestamp: 2015-02-05T08:18:28.891152
+ALTER TABLE purchase_history_data ADD billing_last_name CHAR(512);
+timestamp: 2015-02-05T08:18:29.039532
+ALTER TABLE purchase_history_data ADD billing_municipality CHAR(512);
+timestamp: 2015-02-05T08:18:29.186653
+ALTER TABLE purchase_history_data ADD billing_country_code CHAR(512);
+timestamp: 2015-02-05T08:18:29.332892
+ALTER TABLE purchase_history_data ADD billing_first_name CHAR(512);
+timestamp: 2015-02-05T08:18:29.478525
+ALTER TABLE purchase_history_data ADD shipping_name_first CHAR(512);
+timestamp: 2015-02-05T08:18:29.644277
+ALTER TABLE purchase_history_data ADD billing_administrative_area CHAR(512);
+timestamp: 2015-02-05T08:18:29.820140
+ALTER TABLE purchase_history_data ADD billing_postal_code CHAR(512);
+timestamp: 2015-02-05T08:18:29.978458
+ALTER TABLE purchase_history_data ADD payment_service CHAR(512);
+timestamp: 2015-02-05T08:18:30.121707
+ALTER TABLE purchase_history_data ADD payment_confirmation_dictionary CHAR(512);
+timestamp: 2015-02-05T08:18:30.275274
+ALTER TABLE purchase_history_data ADD shipping_name_last CHAR(512);
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!

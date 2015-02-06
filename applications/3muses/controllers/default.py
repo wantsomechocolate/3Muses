@@ -546,6 +546,8 @@ def cart():
         pass
 
     ## Cart Table Headers - move to db
+    ## this checks to see if the cart is empty initially, but then 
+    ## potentially removes some items and doesn't check again, bad. 
     cart_grid_header_list=["Cart","Item","Cost", "Delete"]
 
     ## This list will hold the info that will be displayed in the cart table
@@ -570,6 +572,7 @@ def cart():
         ## If the cart is not empty
         else:
             cart_is_empty=False
+            
             ## For each product in the cart
             for row in cart_db:
 
@@ -1375,25 +1378,6 @@ def checkout():
 
             invoice_number=id_generator()
 
-            # items_LOD=[
-
-            # dict(
-            #     quantity="1",
-            #     name="eCig Drip Tip",
-            #     price="20.00",
-            #     currency="USD",
-            #     description="Description of item",
-            #     ),
-
-            # dict(
-            #     quantity="1",
-            #     name="eCig Drip Tip Black",
-            #     price="20.00",cart_for_paypal_LOD
-            #     currency="USD",
-            #     description="Black eCig Drip Tip",
-            #     ),
-
-            # ]
 
             ## cart_for_paypal_LOD is from the cart logic section
             payment_dict=paypal_create_payment_dict(
@@ -1580,6 +1564,8 @@ def checkout():
 
 def pay():
 
+    import json
+
     #The purpose of this function is to populate the database table purchase history with all 
     # of the info about the purchase and ultimately generate a receipt looking thing. 
     # also send an email using postmark. 
@@ -1654,8 +1640,8 @@ def pay():
 
 
         ## Payment Fields
-        payment_service='stripe'
-        payment_confirmation_dictionary=json.dumps(charge)
+        payment_service='stripe',
+        payment_confirmation_dictionary=json.dumps(charge),
 
 
         ## Legacy Fields
@@ -3691,6 +3677,7 @@ def paypal_confirmation():
 
     ## Get the keys! and set configuration
     import paypalrestsdk
+    import json
        
     PAYPAL_CLIENT_ID=get_env_var('paypal', PRODUCTION_STATUS,'PAYPAL_CLIENT_ID')
     PAYPAL_CLIENT_SECRET=get_env_var('paypal', PRODUCTION_STATUS,'PAYPAL_CLIENT_SECRET')
@@ -3765,7 +3752,10 @@ def paypal_confirmation():
                 easypost_rate=session.purchase_history_shipping_info['rate'],
 
 
-                ## Payment Fields
+                payment_service='paypal',
+                payment_confirmation_dictionary=json.dumps(payment),
+
+                ## Legacy Fields
                 payment_method='paypal',
                 payment_stripe_name=None,
                 payment_stripe_user_id=None,
