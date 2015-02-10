@@ -527,6 +527,36 @@ web2py customization
 }
 
 
+.cart_item_removed{
+	width:450px;
+}
+
+
+.cart_address_container{
+	/*border:2px solid black;*/
+	width:400px;
+	margin:0 auto;
+}
+
+.cart_address_container:hover{
+	background-color:rgba(231, 231, 231, 1);
+}
+
+.cart_address_info{
+	border:2px solid black;
+	display:inline-block;
+	height:200px;
+}
+
+.cart_address_controls{
+	border:2px solid black;
+	display: inline-block;
+	height:200px;
+}
+
+
+
+
 /*Address Cart Styles*/
 .address_grid_col{
 	width:100px;

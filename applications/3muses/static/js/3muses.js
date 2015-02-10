@@ -5,6 +5,9 @@ $(document).ready(function(){
     //alert("1");
 
 
+    $(".cart_grid_table_cell:contains(is no longer available)").addClass("cart_item_removed")
+
+
     $("input[name='address']").click(function(){
 
 

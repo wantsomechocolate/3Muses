@@ -409,6 +409,31 @@ def add_new_address():
     #http://codepen.io/Angelfire/pen/dJhyr
 
     add_address_form=FORM(
+
+        DIV( 
+            LABEL( 'First Name',),
+            
+            DIV(
+                INPUT(
+                    _type='text', 
+                    _name='first_name', 
+                    _class='form-control', 
+                ),
+            ),
+        ),
+
+        DIV( 
+            LABEL( 'Last Name',),
+            
+            DIV(
+                INPUT(
+                    _type='text', 
+                    _name='last_name', 
+                    _class='form-control', 
+                ),
+            ),
+        ),
+
         DIV( 
             LABEL( 'Street Address/ PO Box/ Etc.',),
             
@@ -491,6 +516,8 @@ def add_new_address():
         if auth.is_logged_in():
             db.addresses.insert(
                 user_id=auth.user_id,
+                first_name=add_address_form.vars.first_name,
+                last_name=add_address_form.vars.last_name,
                 street_address_line_1=add_address_form.vars.street_address_line_1,
                 street_address_line_2=add_address_form.vars.street_address_line_2,
                 municipality=add_address_form.vars.municipality,
@@ -501,6 +528,8 @@ def add_new_address():
 
         else:
             session.address=dict(
+                first_name=add_address_form.vars.first_name,
+                last_name=add_address_form.vars.last_name,
                 street_address_line_1=add_address_form.vars.street_address_line_1,
                 street_address_line_2=add_address_form.vars.street_address_line_2,
                 municipality=add_address_form.vars.municipality,
@@ -566,12 +595,12 @@ def cart():
         ## which should disallow the user from pressing the checkout button. 
         if not cart_db:
 
-            cart_is_empty=True
+            cart_is_empty="empty"
             ## art_grid=DIV("You have not yet added anything to your cart")
 
         ## If the cart is not empty
         else:
-            cart_is_empty=False
+            cart_is_empty="not_empty"
             
             ## For each product in the cart
             for row in cart_db:
@@ -615,6 +644,9 @@ def cart():
                     ## Append to the cart_grid so that all products in the cart get a row in the table
                     cart_grid_table_row_LOL.append(cart_grid_table_row_list)
 
+            if len(cart_grid_table_row_LOL)==0:
+                cart_is_empty="became_empty"
+
             ## Call the table_generator to generate an ugly table with the data you just
             ## got from the database. Table generator gets a list for header names, 
             ## a list of lists for the rows, and a string to prepend to the html class names.
@@ -626,12 +658,12 @@ def cart():
 
         if not session.cart:
 
-            cart_is_empty=True
+            cart_is_empty="empty"
             ## cart_grid=DIV("You have not yet added anything to your cart")
 
         else:
 
-            cart_is_empty=False
+            cart_is_empty="not_empty"
             ## For each item in the session cart
             #for key, value in session.cart.iteritems():
             for key in session.cart.keys():
@@ -645,6 +677,19 @@ def cart():
                     ## Then delete it from the users cart. 
                     ## db(db.muses_cart.product_id==product.id).delete()
                     dummy=session.cart.pop(key)
+
+                    if sqlite_tf:
+                        srcattr=URL('download',db(db.image.product_name==key).select()[0].s3_url)
+                    else:
+                        srcattr='https://s3.amazonaws.com/threemusesglass/site_images/'+str(db(db.image.product_name==key).select()[0].s3_url)
+                    product_image_url=A(IMG(_src=srcattr), _href=URL('default','product',args=[key]))
+
+                    cart_grid_table_row_list=[
+                        product_image_url,
+                        str(product.product_name)+" is no longer available"
+                    ]
+
+                    cart_grid_table_row_LOL.append(cart_grid_table_row_list)
 
                 else:
 
@@ -668,8 +713,13 @@ def cart():
 
                     cart_grid_table_row_LOL.append(cart_grid_table_row_list)
 
-    if cart_is_empty==True:
+            if len(cart_grid_table_row_LOL)==0:
+                cart_is_empty="became_empty"
+
+    if cart_is_empty=="empty":
         cart_grid=DIV("You have not yet added anything to your cart")
+    elif cart_is_empty=="became_empty":
+        cart_grid=DIV("The items you had in your cart are no longer available")
     else:
         cart_grid=table_generation(cart_grid_header_list, cart_grid_table_row_LOL, 'cart')
 
@@ -741,6 +791,7 @@ def cart():
         if not session.address:
 
             address_list_is_empty=True
+            address_information_LOD=[]
 
         else:
 
@@ -753,6 +804,8 @@ def cart():
 
             address_grid_table_row_list=[
                 radio_button, 
+                session.address['first_name'],
+                session.address['last_name'],
                 session.address['street_address_line_1'], 
                 session.address['street_address_line_2'], 
                 session.address['municipality'], 
@@ -764,6 +817,17 @@ def cart():
             ]
 
             address_grid_table_row_LOL.append(address_grid_table_row_list)
+
+            address_information_LOD=[dict(
+                first_name=session.address['first_name'],
+                last_name=session.address['last_name'],
+                street_address_line_1=session.address['street_address_line_1'], 
+                street_address_line_2=session.address['street_address_line_2'], 
+                municipality=session.address['municipality'], 
+                administrative_area=session.address['administrative_area'], 
+                postal_code=session.address['postal_code'], 
+                country=session.address['country'], 
+            )]
 
     if address_list_is_empty==True:
         address_grid=DIV("Please add an address to continue with your purchase")
@@ -1049,6 +1113,7 @@ def cart():
     return dict(
         cart_grid=cart_grid,
         address_grid=address_grid,
+        address_information_LOD=address_information_LOD,
         shipping_grid=shipping_grid,
         card_grid=card_grid,
         )
@@ -1637,11 +1702,12 @@ def pay():
         easypost_shipment_id=None,#session.purchase_history_shipping_info['id'],
         easypost_rate_id=None,#session.purchase_history_shipping_info['shipment_id'],
         easypost_rate=session.purchase_history_shipping_info['rate'],
+        easypost_api_response=session.shipping_json,
 
 
         ## Payment Fields
         payment_service='stripe',
-        payment_confirmation_dictionary=json.dumps(charge),
+        payment_confirmation_dictionary=json.dumps(charge, default=lambda x: None),
 
 
         ## Legacy Fields
@@ -2568,6 +2634,33 @@ def delete_item_from_session_card():
 def edit_session_address():
 
     edit_address_form=FORM(
+
+        DIV( 
+            LABEL( 'First Name',),
+            
+            DIV(
+                INPUT(
+                    _type='text', 
+                    _name='first_name', 
+                    _class='form-control',
+                    _value=session.address['first_name'],
+                ),
+            ),
+        ),
+
+        DIV( 
+            LABEL( 'Last Name',),
+            
+            DIV(
+                INPUT(
+                    _type='text', 
+                    _name='last_name', 
+                    _class='form-control',
+                    _value=session.address['last_name'],
+                ),
+            ),
+        ),
+
         DIV( 
             LABEL( 'Street Address/ PO Box/ Etc.',),
             
@@ -2667,6 +2760,8 @@ def edit_session_address():
 
         else:
             session.address=dict(
+                first_name=edit_address_form.vars.first_name,
+                last_name=edit_address_form.vars.last_name,
                 street_address_line_1=edit_address_form.vars.street_address_line_1,
                 street_address_line_2=edit_address_form.vars.street_address_line_2,
                 municipality=edit_address_form.vars.municipality,
@@ -3242,7 +3337,7 @@ def add_shipping_choice_to_session():
         shipping_choice=session.shipping_choice, 
     )
     
-    shipping_json=json.dumps(shipping_dict)
+    shipping_json=json.dumps(shipping_dict, default=lambda x: None)
 
     return shipping_json
 
@@ -3688,8 +3783,9 @@ def paypal_confirmation():
         "client_secret": PAYPAL_CLIENT_SECRET })
 
 
+    skip=False
     ## Make sure this person recently started the purchase process
-    if session.expect_paypal_webhook:
+    if session.expect_paypal_webhook or skip:
     #if True:
     # session.paypal_vars=request.vars
 
@@ -3698,9 +3794,10 @@ def paypal_confirmation():
         
         ## Use the paymentId to retrieve payment object
         payment=paypalrestsdk.Payment.find(payment_id)
+        
 
         ## Try to execute the payment with the payer_id
-        if payment.execute({"payer_id":payer_id}):
+        if payment.execute({"payer_id":payer_id}) or skip:
         #if True:
             status="success"
             session.expect_paypal_webhook=False
@@ -3750,10 +3847,11 @@ def paypal_confirmation():
                 easypost_shipment_id=None,#session.purchase_history_shipping_info['id'],
                 easypost_rate_id=None,#session.purchase_history_shipping_info['shipment_id'],
                 easypost_rate=session.purchase_history_shipping_info['rate'],
+                easypost_api_response=session.shipping_json,
 
 
                 payment_service='paypal',
-                payment_confirmation_dictionary=json.dumps(payment),
+                payment_confirmation_dictionary=json.dumps(payment.to_dict(), default=lambda x: None),
 
                 ## Legacy Fields
                 payment_method='paypal',

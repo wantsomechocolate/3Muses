@@ -15742,3 +15742,19 @@ success!
 success!
 success!
 success!
+timestamp: 2015-02-07T12:27:49.161542
+ALTER TABLE purchase_history_data ADD payment_confirmation_dictionary__tmp TEXT;
+UPDATE purchase_history_data SET payment_confirmation_dictionary__tmp=payment_confirmation_dictionary;
+ALTER TABLE purchase_history_data DROP COLUMN payment_confirmation_dictionary;
+ALTER TABLE purchase_history_data ADD payment_confirmation_dictionary TEXT;
+UPDATE purchase_history_data SET payment_confirmation_dictionary=payment_confirmation_dictionary__tmp;
+ALTER TABLE purchase_history_data DROP COLUMN payment_confirmation_dictionary__tmp;
+success!
+timestamp: 2015-02-07T14:11:37.501018
+ALTER TABLE purchase_history_data ADD easypost_api_response TEXT;
+success!
+timestamp: 2015-02-10T08:15:04.657916
+ALTER TABLE addresses ADD first_name VARCHAR(512);
+timestamp: 2015-02-10T08:15:04.856251
+ALTER TABLE addresses ADD last_name VARCHAR(512);
+success!

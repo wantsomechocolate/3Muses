@@ -12,8 +12,6 @@
 -->
 
 
-
-
 <div id="main" class="wrapper style2">
 
 	<div id='content' class='container'>
@@ -47,9 +45,40 @@
 
 			<h1>Where You Are Shipping</h1>
 
-			{{=address_grid}}
+			{{ for address in address_information_LOD: }}
 
-			<br/>
+				<div class="cart_address_container">
+
+					<div class="cart_address_info">
+			          	{{ =FORM(INPUT(_type='radio', _name='address', _value='address', _checked='checked'), _action="") }}
+			            
+			          	{{ =address['first_name'] }}
+			          	{{ =address['last_name'] }}
+			          	<br/>
+			          	{{ =address['street_address_line_1'] }}
+			          	{{ =address['street_address_line_2'] }}
+			          	<br/>
+			          	{{ =address['municipality'] }},
+			          	{{ =address['administrative_area'] }}
+			          	{{ =address['postal_code'] }}
+			          	<br/>
+			          	{{ =address['country'] }}
+			        </div>
+
+			        <div class="cart_address_controls">
+			            {{ =A('Edit', _href=URL('edit_session_address'), _class="btn button") }}
+			            
+			            <br/>
+
+			            {{ =A('Delete', _href=URL('delete_address', vars=dict(redirect_url=URL('cart'))), _class="btn button") }}
+			        </div>
+
+	            </div>
+				
+				<br/>
+
+			{{pass}}
+
 
 			<form action="{{=URL('default','add_new_address')}}">
 

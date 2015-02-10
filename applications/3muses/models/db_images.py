@@ -100,6 +100,8 @@ db.define_table('purchase_history_data',
 	Field('easypost_rate_id'),
 	Field('easypost_shipment_id'),
 	Field('easypost_rate'),
+	Field('easypost_api_response', 'text'),
+
 
 
 
@@ -111,7 +113,7 @@ db.define_table('purchase_history_data',
 
 	## 
 	Field('payment_service'),
-	Field('payment_confirmation_dictionary'),
+	Field('payment_confirmation_dictionary', 'text'),
 
 
 	## Legacy Fields - Might keep some high level stuff 
@@ -231,6 +233,8 @@ db.muses_cart.product_id.writable=False
 
 db.define_table('addresses',
 	Field('user_id', 'reference auth_user'),
+	Field('first_name'),
+	Field('last_name'),
 	Field('street_address_line_1'),
 	Field('street_address_line_2'),
 	Field('municipality'),
@@ -238,6 +242,9 @@ db.define_table('addresses',
 	Field('postal_code'),
 	Field('country'),
 	Field('default_address', 'boolean'),
+	#Field('last_modified', 'datetime'),
+	#Field('easypost_api_response', 'text'),
+	#Field('easypost_api_datetime', 'datetime'),
 	)
 db.addresses.id.readable=False
 db.addresses.user_id.readable=False
