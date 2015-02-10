@@ -534,8 +534,9 @@ web2py customization
 
 .cart_address_container{
 	/*border:2px solid black;*/
-	width:400px;
+	
 	margin:0 auto;
+
 }
 
 .cart_address_container:hover{
@@ -543,15 +544,31 @@ web2py customization
 }
 
 .cart_address_info{
-	border:2px solid black;
+	
 	display:inline-block;
-	height:200px;
+	vertical-align: top;
+	line-height: 32px;
 }
 
 .cart_address_controls{
-	border:2px solid black;
+	
 	display: inline-block;
-	height:200px;
+	vertical-align: top;
+}
+
+.cart_address_controls .button{
+	width:100px;
+	float:right;
+
+}
+
+.cart_address_controls .button:first-child{
+	margin-bottom:2px;
+	margin-top:5px;
+}
+
+.cart_address_info input[type="radio"]{
+	display:none;
 }
 
 
