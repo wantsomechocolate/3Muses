@@ -20,6 +20,8 @@ S3_BUCKET_PREFIX='https://s3.amazonaws.com/threemusesglass/site_images/'
 
 ## Functions that should be moved to their own module
 from aux import get_env_var
+from aux import splitSymbol
+from aux import camelcaseToUnderscore
 
 
 import stripe
@@ -933,6 +935,8 @@ def cart():
 
         shipping_grid_header_list=[':)', 'Carrier', 'Service', 'Cost']
         shipping_grid_table_row_LOL=[]
+        shipping_options_LOD=[]
+
 
         # Build the shipping grid
         # I need to be able to sort the shipping rates based on the rate. 
@@ -955,11 +959,21 @@ def cart():
                     shipping_grid_table_row_list=[
                         radio_button,
                         shipment.rates[i].carrier,
-                        shipment.rates[i].service,
+                        camelcaseToUnderscore(shipment.rates[i].service),
                         shipment.rates[i].rate,
                     ]
 
+                    shipping_option_dict=dict(
+                            carrier=shipment.rates[i].carrier,
+                            service=camelcaseToUnderscore(shipment.rates[i].service),
+                            rate=shipment.rates[i].rate,
+                            rate_id=shipment.rates[i].id,
+                            shipment_id=shipment.rates[i].shipment_id,
+                            delivery_days=shipment.rates[i].delivery_days,
+                        )
+
                     shipping_grid_table_row_LOL.append(shipping_grid_table_row_list)
+                    shipping_options_LOD.append(shipping_option_dict)
                 else:
                     pass
 
@@ -1115,6 +1129,9 @@ def cart():
         address_grid=address_grid,
         address_information_LOD=address_information_LOD,
         shipping_grid=shipping_grid,
+
+        shipping_options_LOD=shipping_options_LOD,
+
         card_grid=card_grid,
         )
 

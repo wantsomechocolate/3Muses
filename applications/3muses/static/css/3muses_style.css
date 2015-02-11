@@ -581,11 +581,40 @@ web2py customization
 
 
 /*Shipping Cart Styles*/
-.shipping_grid_col_2,
-.shipping_grid_col_3,
-.shipping_grid_col_4{
-	width:200px;
+
+
+
+.cart_shipping_options{
+	border:2px solid black;
 }
+
+.cart_shipping_options input[type="radio"]{
+	display:none;
+}
+
+.cart_shipping_options{
+	text-align: center;
+}
+
+.cart_shipping_class_info{
+	border:2px solid black;
+	display:inline-block;
+}
+
+.cart_shipping_time_info{
+	border:2px solid black;
+	display:inline-block;
+}
+
+.cart_shipping_rate_info{
+	border:2px solid black;
+	display:inline-block;
+}
+
+.cart_shipping_options:hover{
+	background-color:rgba(231, 231, 231, 1);
+}
+
 
 /*Card Cart Styles*/
 .card_grid_col_2{
