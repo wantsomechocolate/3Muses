@@ -585,18 +585,49 @@ web2py customization
 
 
 .cart_shipping_options{
-	border:2px solid black;
+	/*border:2px solid black;*/
+	vertical-align: top;
+	text-align: center;
+	width: 400px;
+	margin: 0 auto;
+	position: relative;
+	height: 94px;
+
+}
+
+.cart_shipping_options:hover{
+	background-color:rgba(231, 231, 231, 1);
 }
 
 .cart_shipping_options input[type="radio"]{
 	display:none;
 }
 
-.cart_shipping_options{
-	text-align: center;
+.cart_shipping_inside_truck{
+	/*border:2px solid black;*/
+	display:inline-block;
+	line-height: 30px;
+	padding-left:10px;
+	padding-right:10px;
+	vertical-align: top;
+	position: absolute;
+	left: 0px;
 }
 
-.cart_shipping_class_info{
+
+.cart_shipping_rate_info{
+	/*border:2px solid black;*/
+	display:inline-block;
+	height:94px;
+	width:94px;
+	line-height: 94px;
+	vertical-align: top;
+	position: absolute;
+	right: 0px;
+}
+
+
+/*.cart_shipping_class_info{
 	border:2px solid black;
 	display:inline-block;
 }
@@ -605,15 +636,7 @@ web2py customization
 	border:2px solid black;
 	display:inline-block;
 }
-
-.cart_shipping_rate_info{
-	border:2px solid black;
-	display:inline-block;
-}
-
-.cart_shipping_options:hover{
-	background-color:rgba(231, 231, 231, 1);
-}
+*/
 
 
 /*Card Cart Styles*/

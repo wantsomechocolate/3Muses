@@ -109,16 +109,14 @@
 
 						{{ =INPUT(_type='radio', _name='shipping', _value=shipping_option['service']) }}
 
-						<div class="cart_shipping_class_info">
+						<div class="cart_shipping_inside_truck">
 							{{ =shipping_option['carrier'] }}
-							<br/>
+							-
 							{{ =shipping_option['service'] }}
-						</div>
-
-						<div class="cart_shipping_time_info">
+							<br/>
 							Est Del Date: 
 							<br/>
-							{{ =shipping_option['delivery_days'] }}
+							01/15/2015 (Wednesday) {{ =shipping_option['delivery_days'] }}
 						</div>
 
 						<div class="cart_shipping_rate_info">
