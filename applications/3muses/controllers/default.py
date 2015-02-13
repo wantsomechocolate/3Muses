@@ -4185,3 +4185,6 @@ def paypal_confirmation():
 
 def get_current_default_address_id():
     return session.default_address_id
+
+
+## A Change
