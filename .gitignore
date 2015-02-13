@@ -7,8 +7,8 @@ site-packages
 logs
 
 #Top level files
-Procfile
-Procfile~
+#Procfile
+#Procfile~
 
 # for applications in web2py
 applications/*/cache
