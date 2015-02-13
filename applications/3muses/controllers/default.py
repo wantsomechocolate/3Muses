@@ -843,6 +843,9 @@ def cart():
 
     try:
 
+        shipping_options_LOD=[]
+        shipping_information=dict(error=False,error_message=None,shipping_options_LOD=shipping_options_LOD)
+
         if auth.is_logged_in():
 
             #get default_address and make a dict out of it
@@ -866,6 +869,7 @@ def cart():
                     product_weight=product.weight_oz,
                     product_shipping_desc=product.shipping_description,
                 ))
+
 
             address_info=dict(
                 street_address_line_1=address.street_address_line_1, 
@@ -935,7 +939,7 @@ def cart():
 
         shipping_grid_header_list=[':)', 'Carrier', 'Service', 'Cost']
         shipping_grid_table_row_LOL=[]
-        shipping_options_LOD=[]
+        
 
 
         # Build the shipping grid
@@ -983,15 +987,28 @@ def cart():
 
     except easypost.Error:
 
-        shipping_grid=DIV('There was a problem generating the shipping costs.')
+        shipping_grid=DIV('There was a problem generating the shipping costs')
+        error=True,
+        error_message='There was a problem generating the shipping costs'
+        #shipping_options_LOD.append(dict(error=error, error_message=error_message))
 
     except AttributeError:
 
         shipping_grid=DIV('There is nothing in your cart to ship')
 
+        error=True,
+        error_message='There is nothing in your cart to ship'
+        #shipping_options_LOD.append(dict(error=error, error_message=error_message))
+        
+
     except TypeError:
 
         shipping_grid=DIV('There is no address to ship to')
+
+        error=True,
+        error_message='There is no address to ship to'
+        #shipping_options_LOD.append(dict(error=error, error_message=error_message))
+
 
 
 #############################################################################################
