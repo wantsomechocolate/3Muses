@@ -730,7 +730,8 @@ def cart():
 ###########-----------------Address Logic (User and Non User)--------------------############
 #############################################################################################
 
-    
+    address_information_LOD=[]
+    address_information=dict(error=False,error_message=None,address_information_LOD=address_information_LOD)
     ## This is the header for the address table, soon I won't need a header,
     ## but right now I do!
     address_grid_header_list=[
@@ -783,6 +784,19 @@ def cart():
                     delete_button
                 ]
 
+                address_information_LOD.append(dict(
+                    first_name=address_list[j].first_name,
+                    last_name=address_list[j].last_name,
+                    street_address_line_1=address_list[j].street_address_line_1, 
+                    street_address_line_2=address_list[j].street_address_line_2, 
+                    municipality=address_list[j].municipality, 
+                    administrative_area=address_list[j].administrative_area, 
+                    postal_code=address_list[j].postal_code, 
+                    country=address_list[j].country,
+                    id=address_list[j].id,
+                    default_address=address_list[j].default_address,
+                ))
+
                 address_grid_table_row_LOL.append(address_grid_table_row_list)
 
             #address_grid=table_generation(address_grid_header_list, address_grid_table_row_LOL, 'address')
@@ -833,8 +847,15 @@ def cart():
 
     if address_list_is_empty==True:
         address_grid=DIV("Please add an address to continue with your purchase")
+
+        address_information['error']=True
+        address_information['error_message']="Please add an address to continue with your purchase"
+
     else:
         address_grid=table_generation(address_grid_header_list, address_grid_table_row_LOL, 'address')
+        address_information['error']=False
+        address_information['error_message']=None
+        
 
 
 #############################################################################################
@@ -988,16 +1009,16 @@ def cart():
     except easypost.Error:
 
         shipping_grid=DIV('There was a problem generating the shipping costs')
-        error=True,
-        error_message='There was a problem generating the shipping costs'
+        shipping_information['error']=True,
+        shipping_information['error_message']='There was a problem generating the shipping costs'
         #shipping_options_LOD.append(dict(error=error, error_message=error_message))
 
     except AttributeError:
 
         shipping_grid=DIV('There is nothing in your cart to ship')
 
-        error=True,
-        error_message='There is nothing in your cart to ship'
+        shipping_information['error']=True,
+        shipping_information['error_message']='There is nothing in your cart to ship'
         #shipping_options_LOD.append(dict(error=error, error_message=error_message))
         
 
@@ -1005,8 +1026,8 @@ def cart():
 
         shipping_grid=DIV('There is no address to ship to')
 
-        error=True,
-        error_message='There is no address to ship to'
+        shipping_information['error']=True,
+        shipping_information['error_message']='There is no address to ship to'
         #shipping_options_LOD.append(dict(error=error, error_message=error_message))
 
 
@@ -1015,6 +1036,9 @@ def cart():
 ###########-------------------Card Logic (User and Non User)---------------------############
 #############################################################################################
 
+
+    payment_options_LOD=[]
+    payment_information=dict(error=False,error_message=None,payment_options_LOD=payment_options_LOD)
 
     ## The headers for the table that I won't need for very much longer
     ## only applies to cards anyway. 
@@ -1143,11 +1167,16 @@ def cart():
 
     return dict(
         cart_grid=cart_grid,
-        address_grid=address_grid,
-        address_information_LOD=address_information_LOD,
-        shipping_grid=shipping_grid,
 
+        address_grid=address_grid,
+
+        address_information_LOD=address_information_LOD,
+        address_information=address_information,
+
+
+        shipping_grid=shipping_grid,
         shipping_options_LOD=shipping_options_LOD,
+        shipping_information=shipping_information,
 
         card_grid=card_grid,
         )
@@ -2815,6 +2844,8 @@ def edit_session_address():
 
 def edit_db_address():
 
+    #if auth.is_logged_in:
+
     address_row=db(db.addresses.id==request.vars['pri_key']).select()[0]
 
     edit_address_form=FORM(
@@ -2930,6 +2961,161 @@ def edit_db_address():
     else:
         
         return dict(edit_address_form=edit_address_form)
+
+
+
+
+def edit_address():
+
+
+    if auth.is_logged_in:
+        address_pre_changes_dict=db(db.addresses.id==request.vars['pri_key']).select()[0]
+        #address_row['street_address_line_1'],
+
+    else:
+        address_pre_changes_dict=session.address
+        #session.address['first_name']
+
+    edit_address_form=FORM(
+
+        DIV( 
+            LABEL( 'First Name',),
+            
+            DIV(
+                INPUT(
+                    _type='text', 
+                    _name='first_name', 
+                    _class='form-control',
+                    _value=address_pre_changes_dict['first_name'],
+                ),
+            ),
+        ),
+
+        DIV( 
+            LABEL( 'Last Name',),
+            
+            DIV(
+                INPUT(
+                    _type='text', 
+                    _name='last_name', 
+                    _class='form-control',
+                    _value=address_pre_changes_dict['last_name'],
+                ),
+            ),
+        ),
+
+        DIV( 
+            LABEL( 'Street Address/ PO Box/ Etc.',),
+            
+            DIV(
+                INPUT(
+                    _type='text', 
+                    _name='street_address_line_1', 
+                    _class='form-control',
+                    _value=address_pre_changes_dict['street_address_line_1'],
+                ),
+            ),
+        ),
+
+        DIV( 
+            LABEL( 'Floor/ Suite/ Apt/ Etc.',),
+            
+            DIV(
+                INPUT(
+                    _type='text', 
+                    _name='street_address_line_2', 
+                    _class='form-control', 
+                    _value=address_pre_changes_dict['street_address_line_2'],
+                ),
+            ),
+        ),
+
+        DIV(
+            LABEL('Municipality',),
+            
+            DIV(
+                INPUT(
+                    _type='text', 
+                    _name='municipality', 
+                    _class='form-control', 
+                    _value=address_pre_changes_dict['municipality'],
+                ),
+            ),
+        ),
+
+        DIV(
+            LABEL('Administrative Area',),
+            
+            DIV(
+                INPUT(
+                    _type='text', 
+                    _name='administrative_area', 
+                    _class='form-control', 
+                    _value=address_pre_changes_dict['administrative_area'],
+                ),
+            ),
+        ),
+
+        DIV(
+            LABEL('Postal Code',),
+            
+            DIV(
+                INPUT(
+                    _type='text', 
+                    _name='postal_code', 
+                    _class='form-control', 
+                    _value=address_pre_changes_dict['postal_code'],
+                ),
+            ),
+        ),
+
+        DIV(
+            LABEL('Country',),
+            
+            DIV(
+                INPUT(
+                    _type='text', 
+                    _name='country', 
+                    _class='form-control', 
+                    _value=address_pre_changes_dict['country'],
+                ),
+            ),
+        ),
+   
+        INPUT(_type='submit', _class="btn btn-default"),
+            
+    _class='form-horizontal',
+    _role='form').process()
+
+    if edit_address_form.accepted:
+
+        address_post_changes_dict=dict(
+                first_name=edit_address_form.vars.first_name,
+                last_name=edit_address_form.vars.last_name,
+                street_address_line_1=edit_address_form.vars.street_address_line_1,
+                street_address_line_2=edit_address_form.vars.street_address_line_2,
+                municipality=edit_address_form.vars.municipality,
+                administrative_area=edit_address_form.vars.administrative_area,
+                postal_code=edit_address_form.vars.postal_code,
+                country=edit_address_form.vars.country,
+                )
+
+        if auth.is_logged_in():
+            db.addresses[request.vars['pri_key']]=address_post_changes_dict
+
+        else:
+            session.address=address_post_changes_dict
+
+        redirect(URL('cart'))
+
+    else:
+        
+        return dict(edit_address_form=edit_address_form)
+
+
+
+
+
 
 
 def default_address_2():
@@ -4205,3 +4391,16 @@ def get_current_default_address_id():
 
 
 ## A Change
+
+
+def update_default_address():
+
+    session.default_address_id=request.vars['default_address_id']
+
+    if auth.is_logged_in:
+
+        address_row=db(db.addresses.id==request.vars['default_address_id']).select()[0]
+        address_row.update(default_address=True)
+
+    else:
+        pass

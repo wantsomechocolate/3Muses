@@ -381,6 +381,7 @@ div.polaroid-image-case img{
 
 .muses_cart{
 	min-width:400px;
+	text-align: center;
 }
 
 
@@ -533,10 +534,15 @@ web2py customization
 
 
 .cart_address_container{
-	/*border:2px solid black;*/
+	border:2px solid black;
 	
 	margin:0 auto;
-
+	width:600px;
+	display: inline-block;
+	padding-left: 40px;
+	padding-right: 40px;
+	padding-top: 20px;
+	padding-bottom: 20px;
 }
 
 .cart_address_container:hover{
@@ -548,6 +554,7 @@ web2py customization
 	display:inline-block;
 	vertical-align: top;
 	line-height: 32px;
+	border:2px solid black;
 }
 
 .cart_address_controls{
@@ -568,7 +575,7 @@ web2py customization
 }
 
 .cart_address_info input[type="radio"]{
-	display:none;
+	/*display:none;*/
 }
 
 
@@ -733,3 +740,5 @@ web2py customization
 	text-decoration: None;
 	color:white;
 	}
+
+
