@@ -7,8 +7,8 @@ $(document).ready(function(){
 
     $(".cart_grid_table_cell:contains(is no longer available)").addClass("cart_item_removed")
 
-
-    $("input[name='address']").click(function(){
+// removed because redundancy
+    /*$("input[name='address']").click(function(){
         // This is the id of the address that is to become the default
         // if it isn't a number, than don't do anything (not implemented yet)
         default_address_id=$(this).attr('value');
@@ -62,8 +62,51 @@ $(document).ready(function(){
 
         }); //End first function on first ajax call
     }); // End function on the onclick event
+*/
+
+/*
+    $(".cart_address_container").click(function(){
+        alert("clicked");
+        var radButton = $(this).find('input[type=radio]');
+        $(radButton).prop("checked", true);
+        default_address_id=$(radButton).attr('value');
+        alert(default_address_id);
+
+        $.ajax({
+            type:"POST",
+            url:"get_current_default_address_id.html",
+            data:{dummy_var: "dummy_var"}
+        }).done(function( msg_daid ) {
+
+            alert(default_address_id);
+            alert(msg_daid);
 
 
+            if (default_address_id!=msg_daid){
+            
+                // if they aren't let the user know we are preparing to generate the costs
+                $('#shipping_target').html( "Preparing to generate shipping costs." );
+
+
+                $.ajax({
+                    type:"POST",
+                    url:"update_default_address.html",
+                    data:{default_address_id:default_address_id},
+                }).done(function( yay ) {
+
+                    alert(yay);
+
+                }); // second ajax call
+
+            }; // end if
+
+        }); // first ajax call
+
+    }); // address container click
+*/
+
+
+  
 
     $(".cart_address_container").click(function(){
 
@@ -100,10 +143,11 @@ $(document).ready(function(){
                 $.ajax({
                     type:"POST",
                     url:"update_default_address.html",
-                    data:{default_address_id=default_address_id},
+                    data:{default_address_id:default_address_id},
                 }).done(function( yay ) {
 
 
+                    alert(yay);
                     // start another ajax call to generate a more specific waiting message
                     $.ajax({
 
@@ -147,10 +191,10 @@ $(document).ready(function(){
 
 
 
-
     // I need to add to this function to grey out the checkout button
     // until this is finished running
     $("input[name='shipping']").click(function(){
+        alert('clicked');
         shipping_choice=$(this).attr('value');
         //alert(shipping_choice);
 

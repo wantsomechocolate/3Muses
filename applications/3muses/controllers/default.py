@@ -3239,97 +3239,6 @@ def default_address():
     shipment=create_shipment(address_info, cart_for_shipping_calculations)
 
 
-    # parcel=easypost.Parcel.create(
-    #     length=8,
-    #     width=8,
-    #     height=4,
-    #     weight=cart_weight_oz,
-    # )
-
-    # if address_info['country']=='United States':
-
-    #     to_address=easypost.Address.create(
-    #         #name=address_info['card_name'],
-    #         street1=address_info['street_address_line_1'],
-    #         street2=address_info['street_address_line_2'],
-    #         city=address_info['municipality'],
-    #         state=address_info['administrative_area'],
-    #         zip=address_info['postal_code'],
-    #     )
-
-    #     shipment=easypost.Shipment.create(
-    #         to_address = to_address,
-    #         from_address = from_address,
-    #         parcel=parcel,
-    #     )
-
-    # else:
-
-    #     to_address=easypost.Address.create(
-    #         #name=address_info['card_name'],
-    #         street1=address_info['street_address_line_1'],
-    #         street2=address_info['street_address_line_2'],
-    #         city=address_info['municipality'],
-    #         state=address_info['administrative_area'],
-    #         zip=address_info['postal_code'],
-    #         country=address_info['country'],
-    #     )
-
-    #     customs_items=[]
-    #     for item in cart_for_shipping_calculations:
-    #         customs_item=easypost.CustomsItem.create(
-    #             description=item['product_shipping_desc'],
-    #             quantity=item['product_qty'],
-    #             value=item['product_cost'],
-    #             #weight in oz converted to pounds
-    #             weight=(float(item['product_weight'])/16),
-    #             hs_tariff_number=700100,
-    #             origin_country='US',
-    #         )
-    #         customs_items.append(customs_item)
-
-    #     if address_info['country']=='Canada':
-
-    #         customs_info=easypost.CustomsInfo.create(
-    #             customs_items=customs_items,
-    #             contents_type='merchandise',
-    #             #contents_explanation=None,
-    #             restriction_type='none',
-    #             #restriction_comments=None,
-    #             customs_certify=True,
-    #             customs_signer='James McGlynn',
-    #             non_delivery_option='return',
-    #             eel_pfc='NOEEI 30.36',
-    #         )
-
-    #     else:
-
-    #         customs_info=easypost.CustomsInfo.create(
-    #             customs_items=customs_items,
-    #             contents_type='merchandise',
-    #             #contents_explanation=None,
-    #             restriction_type='none',
-    #             #restriction_comments=None,
-    #             customs_certify=True,
-    #             customs_signer='James McGlynn',
-    #             non_delivery_option='return',
-    #             eel_pfc='NOEEI 30.37(a).',
-    #         )
-
-    #     shipment=easypost.Shipment.create(
-    #         to_address=to_address,
-    #         from_address=from_address,
-    #         parcel=parcel,
-    #         customs_info=customs_info,
-    #     )
-
-        #session.shipping_rates=shipment.rates
-        # shipping_rates_for_session={}
-        # for rate in shipment.rates:
-        #     shipping_rates_for_session[rate.id]="test"
-        # session.shipping_rates=shipping_rates_for_session
-
-
     ## Put shipment info in the session to get it later!
     session.shipment_info_from_easypost=shipment
 
@@ -4387,7 +4296,10 @@ def paypal_confirmation():
 
 
 def get_current_default_address_id():
-    return session.default_address_id
+    if not session.default_address_id:
+        session.default_address_id=10
+    else:
+        return session.default_address_id
 
 
 ## A Change
@@ -4404,3 +4316,5 @@ def update_default_address():
 
     else:
         pass
+
+    return "dummy"
