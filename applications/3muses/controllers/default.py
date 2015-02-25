@@ -507,6 +507,20 @@ def add_new_address():
                 ),
             ),
         ),
+
+        DIV(
+            
+            LABEL('Default Address'),
+
+            DIV(
+                INPUT(
+                    _type='hidden', 
+                    _name='default_address', 
+                    _class='form-control',
+                    _value='True',
+                ),
+            ),
+        ),
    
         INPUT(_type='submit', _class="btn btn-default"),
             
@@ -3278,13 +3292,30 @@ def default_address():
                 ]
 
                 shipping_grid_table_row_LOL.append(shipping_grid_table_row_list)
+
+                shipping_option_dict=dict(
+                        carrier=shipment.rates[i].carrier,
+                        service=camelcaseToUnderscore(shipment.rates[i].service),
+                        rate=shipment.rates[i].rate,
+                        rate_id=shipment.rates[i].id,
+                        shipment_id=shipment.rates[i].shipment_id,
+                        delivery_days=shipment.rates[i].delivery_days,
+                    )
+
+                shipping_options_LOD.append(shipping_option_dict)
+
             else:
+
                 pass
         
         shipping_grid=table_generation(shipping_grid_header_list, shipping_grid_table_row_LOL, 'shipping')
 
     shipping_grid_container=shipping_grid
-    return shipping_grid_container
+
+    return shipping_options_LOD
+    #return shipping_grid_container
+
+                    
 
         #return dict(rate_list=rate_list)
         #return dict(rate_list=rate_list)
