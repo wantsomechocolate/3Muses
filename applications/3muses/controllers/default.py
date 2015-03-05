@@ -112,7 +112,7 @@ def product():
 
         BR(),
 
-        INPUT(_type='submit', _class="btn btn-default", _value="Add to Cart"),
+        INPUT(_type='submit', _class="btn", _value="Add to Cart"),
     )
 
     if cart_form.accepts(request, session):
@@ -507,20 +507,6 @@ def add_new_address():
                 ),
             ),
         ),
-
-        DIV(
-            
-            LABEL('Default Address'),
-
-            DIV(
-                INPUT(
-                    _type='hidden', 
-                    _name='default_address', 
-                    _class='form-control',
-                    _value='True',
-                ),
-            ),
-        ),
    
         INPUT(_type='submit', _class="btn btn-default"),
             
@@ -540,6 +526,7 @@ def add_new_address():
                 administrative_area=add_address_form.vars.administrative_area,
                 postal_code=add_address_form.vars.postal_code,
                 country=add_address_form.vars.country,
+                default_address=True,
             )
 
         else:
@@ -552,6 +539,7 @@ def add_new_address():
                 administrative_area=add_address_form.vars.administrative_area,
                 postal_code=add_address_form.vars.postal_code,
                 country=add_address_form.vars.country,
+                default_address=True,
             )
 
         redirect(URL('cart'))
@@ -582,6 +570,10 @@ def cart():
 #############################################################################################
 ###########-------------------Cart Logic (User and Non User)---------------------############
 #############################################################################################
+    
+
+
+
 
     ## If someone tries to mess with the URL in the browser by going to 
     ## cart/arg, It will reload the page without the arg
@@ -589,6 +581,13 @@ def cart():
         redirect(URL('cart'))
     else:
         pass
+
+    ## If you try to visit this page while you are not logged in, you get logged in as a handicapped user. 
+    if auth.is_logged_in():
+        pass
+    else:
+        create_gimp_user()
+
 
     ## Cart Table Headers - move to db
     ## this checks to see if the cart is empty initially, but then 
@@ -857,6 +856,8 @@ def cart():
                 administrative_area=session.address['administrative_area'], 
                 postal_code=session.address['postal_code'], 
                 country=session.address['country'], 
+                id=1,
+                default_address=session.address['default_address'],
             )]
 
     if address_list_is_empty==True:
@@ -2982,7 +2983,7 @@ def edit_db_address():
 def edit_address():
 
 
-    if auth.is_logged_in:
+    if auth.is_logged_in():
         address_pre_changes_dict=db(db.addresses.id==request.vars['pri_key']).select()[0]
         #address_row['street_address_line_1'],
 
@@ -3112,6 +3113,7 @@ def edit_address():
                 administrative_area=edit_address_form.vars.administrative_area,
                 postal_code=edit_address_form.vars.postal_code,
                 country=edit_address_form.vars.country,
+                default_address=True,
                 )
 
         if auth.is_logged_in():
@@ -4349,3 +4351,58 @@ def update_default_address():
         pass
 
     return "dummy"
+
+
+def add_to_cart():
+    return "dummy"
+
+def scratch():
+    
+    return dict()
+
+def scratch_ajax():
+
+    import json
+    new_choice=request.vars['new_choice']
+    if session.current_choice:
+
+        ## If the new choice is the same as the current choice, don't mark down that there was no change
+        if session.current_choice==request.vars['new_choice']:
+            return json.dumps(dict(current_choice=session.current_choice,previous_choice=session.previous_choice,change=False))
+        
+        ## Otherwise, set old choice to current choice and current choice to new choice. 
+        else:
+            session.previous_choice=session.current_choice
+            session.current_choice=request.vars['new_choice']
+            return json.dumps(dict(current_choice=session.current_choice,previous_choice=session.previous_choice,change=True))
+
+    ## If there was no current choice, then just make current choice new choice and previous choice None
+    else:
+        session.current_choice=request.vars['new_choice']
+        session.previous_choice=None
+        return json.dumps(dict(current_choice=session.current_choice,previous_choice=session.previous_choice,change=True))
+
+
+
+def get_session_var():
+    key=request.vars['session_var']
+    return session[key]
+
+
+def create_gimp_user():
+    from aux import id_generator
+    from time import time
+    if auth.is_logged_in():
+        return dict()
+    else:
+        temp_password=str(id_generator())+str(time())
+
+        temp_email=str(time())+'@'+str(id_generator())+'.com'
+
+        user_id=db.auth_user.insert(first_name="Session", last_name="User", email=temp_email, password=db.auth_user.password.requires[0](temp_password)[0])
+        
+        auth.add_membership('gimp',db.auth_user(user_id))
+
+        auth.login_bare(temp_email,temp_password)
+        
+        return dict()

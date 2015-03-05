@@ -37,6 +37,7 @@ db.define_table('categories',
 	format='%(category_name)s'
 	)
 db.categories.is_active.default=True
+
 if sqlite_tf:
 	pass
 else:

@@ -62,7 +62,7 @@
 
       <li><a href="{{=URL('cart')}}">Cart</a></li>
 
-    {{if auth.is_logged_in():}}
+    {{if auth.is_logged_in() and not auth.has_membership('gimp'):}}
 
       <li>
         <a href="{{=URL('user/profile')}}">Profile</a>

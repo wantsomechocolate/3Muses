@@ -2,21 +2,8 @@ import string
 import random
 
 def get_env_var(service, test_or_live, key):
-	import os, ast
-
-	## Assume that you are running on herkou first
-	try:
-		KEY=os.environ[key]
-
-	## If that fails, assume you are running locally and look for key in a text file
-	except KeyError:
-		with open('/home/wantsomechocolate/Code/API Info/api_keys.txt','r') as fh:
-			text=fh.read()
-			api_keys=ast.literal_eval(text)
-
-		KEY=api_keys[service][test_or_live][key]
-
-	return KEY
+	import os
+	return os.environ[key]
 
 
 
@@ -146,3 +133,4 @@ def splitSymbol(s):
 
 def camelcaseToUnderscore(s):
     return ' '.join(splitSymbol(s))
+
