@@ -103,45 +103,36 @@ def product():
 
     cart_form=FORM(
 
-        INPUT(_type="hidden",
+        INPUT(
+            _type="hidden",
             _name="qty",
             _value=1,
             #_placeholder="Enter Quantity",
             #requires=IS_INT_IN_RANGE(1,2),
-        ),
-
-        BR(),
+        ),BR(),
 
         INPUT(_type='submit', _class="btn", _value="Add to Cart"),
     )
 
     if cart_form.accepts(request, session):
 
+        ## If the form is accepted, you must be logged in to add item to cart, so make sure
         if auth.is_logged_in():
-
-            try:
-                existing_cart_entry=db((db.muses_cart.product_id==product_id)&(db.muses_cart.user_id==auth.user_id)).select()[0]
-                db.muses_cart[existing_cart_entry.id]=dict(product_qty=cart_form.vars.qty)
-
-            except IndexError:
-
-                db.muses_cart.insert(
-                    user_id=auth.user_id,
-                    product_id=product_id,
-                    product_qty=cart_form.vars.qty,
-                )
-
+            pass
         else:
+            create_gimp_user()
 
-            if not session.cart:
+        try:
+            existing_cart_entry=db((db.muses_cart.product_id==product_id)&(db.muses_cart.user_id==auth.user_id)).select()[0]
+            db.muses_cart[existing_cart_entry.id]=dict(product_qty=cart_form.vars.qty)
 
-                session.cart={}
+        except IndexError:
 
-            session.cart[product_id]=cart_form.vars.qty
-
-    else:
-
-        pass
+            db.muses_cart.insert(
+                user_id=auth.user_id,
+                product_id=product_id,
+                product_qty=cart_form.vars.qty,
+            )
 
     return dict(
         product_id=product_id,
@@ -237,36 +228,6 @@ def add_new_card():
             ## if there was a problem connecting to the stripe api
             except stripe.error.APIConnectionError:
                 customer=None
-
-            #If the user isn't logged in, add the info to session. 
-            # else:
-            #     try:
-            #         customer = stripe.Customer.create(
-            #             email=stripe_form.vars.email,
-            #             card=dict(
-            #                 name=stripe_form.vars.name,
-            #                 number=stripe_form.vars.number,
-            #                 cvc=stripe_form.vars.cvc,
-            #                 exp_month=stripe_form.vars.exp_month,
-            #                 exp_year=stripe_form.vars.exp_year,     
-            #             )
-            #         )
-
-            #         session_card=customer.cards.all()
-
-            #         #add the fact the current user has card info now to session
-            #         session.card_info=dict(
-            #             stripe_id=customer.id,
-            #             email=customer.email,
-            #             name=session_card['data'][0]['name'],
-            #             last4=session_card['data'][0]['last4'],
-            #             brand=session_card['data'][0]['brand'],
-            #             exp_month=session_card['data'][0]['exp_month'],
-            #             exp_year=session_card['data'][0]['exp_year'],
-            #             card_id=session_card['data'][0]['id'],
-            #             )
-            #     except stripe.error.APIConnectionError:
-            #         customer=None
 
         redirect(URL('cart'))
 
@@ -483,81 +444,40 @@ def cart():
         shipping_options_LOD=[]
         shipping_information=dict(error=False,error_message=None,shipping_options_LOD=shipping_options_LOD)
 
-        if auth.is_logged_in():
 
-            #get default_address and make a dict out of it
-            address=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select().first()
-
-            cart=db(db.muses_cart.user_id==auth.user_id).select()
-            cart_for_shipping_calculations=[]
-            cart_weight_oz=0
-            cart_cost_USD=0
-
-            for row in cart:
-
-                product=db(db.product.id==row.product_id).select().first()
-                cart_weight_oz+=float(product.weight_oz)*float(row.product_qty)
-                cart_cost_USD+=float(product.cost_USD)*float(row.product_qty)
-
-                cart_for_shipping_calculations.append(dict(
-                    product_name=product.product_name,
-                    product_cost=product.cost_USD,
-                    product_qty=row.product_qty,
-                    product_weight=product.weight_oz,
-                    product_shipping_desc=product.shipping_description,
-                ))
+        #get default_address and make a dict out of it
+        address=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select().first()
 
 
-            address_info=dict(
-                street_address_line_1=address.street_address_line_1, 
-                street_address_line_2=address.street_address_line_2, 
-                municipality=address.municipality, 
-                administrative_area=address.administrative_area, 
-                postal_code=address.postal_code, 
-                country=address.country,
-            )
+        cart=db(db.muses_cart.user_id==auth.user_id).select()
+        cart_for_shipping_calculations=[]
+        cart_weight_oz=0
+        cart_cost_USD=0
 
-        ## If user is not logged in
-        else:
+        for row in cart:
 
-            cart_for_shipping_calculations=[]
-            cart_weight_oz=0
-            cart_cost_USD=0
+            product=db(db.product.id==row.product_id).select().first()
+            cart_weight_oz+=float(product.weight_oz)*float(row.product_qty)
+            cart_cost_USD+=float(product.cost_USD)*float(row.product_qty)
 
-            for key, value in session.cart.iteritems():
-
-                product=db(db.product.id==key).select().first()
-                product_name=product.product_name
-                product_cost=product.cost_USD
-                product_qty=value
-
-                total_cost=float(product_cost)*float(product_qty)
-
-                product_weight=product.weight_oz
-                product_shipping_desc=product.shipping_description
-
-                cart_weight_oz+=float(product.weight_oz)
-
-                cart_for_shipping_dict=dict(
-                    product_name=product_name, 
-                    product_cost=product_cost,
-                    product_qty=product_qty,
-                    product_weight=product.weight_oz,
-                    product_shipping_desc=product_shipping_desc,
-                )
-
-                cart_for_shipping_calculations.append(cart_for_shipping_dict)
+            cart_for_shipping_calculations.append(dict(
+                product_name=product.product_name,
+                product_cost=product.cost_USD,
+                product_qty=row.product_qty,
+                product_weight=product.weight_oz,
+                product_shipping_desc=product.shipping_description,
+            ))
 
 
-            ## Address logic    
-            address_info=dict(
-            street_address_line_1=session.address['street_address_line_1'],
-            street_address_line_2=session.address['street_address_line_2'],
-            municipality=session.address['municipality'],
-            administrative_area=session.address['administrative_area'],
-            postal_code=session.address['postal_code'],
-            country=session.address['country'],
-            )
+        address_info=dict(
+            street_address_line_1=address.street_address_line_1, 
+            street_address_line_2=address.street_address_line_2, 
+            municipality=address.municipality, 
+            administrative_area=address.administrative_area, 
+            postal_code=address.postal_code, 
+            country=address.country,
+        )
+
 
         # now logged in or not we have the address that was chosen, the address info for the address that was chosen
         # and the cart info, and the combined weight of our package. 
@@ -577,7 +497,6 @@ def cart():
         shipping_grid_header_list=[':)', 'Carrier', 'Service', 'Cost']
         shipping_grid_table_row_LOL=[]
         
-
 
         # Build the shipping grid
         # I need to be able to sort the shipping rates based on the rate. 
@@ -618,8 +537,6 @@ def cart():
                 else:
                     pass
 
-            
-            
             shipping_grid=table_generation(shipping_grid_header_list, shipping_grid_table_row_LOL, 'shipping')
 
     except easypost.Error:
@@ -637,7 +554,6 @@ def cart():
         shipping_information['error_message']='There is nothing in your cart to ship'
         #shipping_options_LOD.append(dict(error=error, error_message=error_message))
         
-
     except TypeError:
 
         shipping_grid=DIV('There is no address to ship to')
@@ -645,6 +561,7 @@ def cart():
         shipping_information['error']=True,
         shipping_information['error_message']='There is no address to ship to'
         #shipping_options_LOD.append(dict(error=error, error_message=error_message))
+
 
 
 
@@ -787,6 +704,10 @@ def cart():
 
         address_information_LOD=address_information_LOD,
         address_information=address_information,
+
+        address=address,
+        cart_for_shipping_calculations=cart_for_shipping_calculations,
+        cart=cart,
 
 
         shipping_grid=shipping_grid,
