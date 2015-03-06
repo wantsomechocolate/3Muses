@@ -20,7 +20,34 @@
 
 			<h1>What You Are Buying</h1>
 
-			{{=cart_information}}
+			{{ if cart_information['error']==False: }}
+
+				{{ for i in range(len(cart_information['cart_information_LOD'])): }}
+
+					<div class="cart_cart_container">
+
+						<div class="cart_cart_info">
+
+							<div class="cart_cart_image">
+							{{ =cart_information['cart_information_LOD'][i]['product_image_url'] }}
+							</div>
+							{{ =cart_information['cart_information_LOD'][i]['product_name'] }}
+							{{ =cart_information['cart_information_LOD'][i]['product_cost'] }}
+							{{ =cart_information['cart_information_LOD'][i]['product_delete_button'] }}
+
+						</div>
+
+					</div>
+
+				{{pass}}
+
+			{{ else: }}
+
+				{{ =cart_information['error_message'] }}
+
+			{{ pass }}
+
+
 
 			<br/>
 

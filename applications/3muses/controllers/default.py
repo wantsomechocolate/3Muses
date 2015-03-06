@@ -3884,7 +3884,7 @@ def scratch_ajax():
     new_choice=request.vars['new_choice']
     if session.current_choice:
 
-        ## If the new choice is the same as the current choice, don't mark down that there was no change
+        ## If the new choice is the same as the current choice, mark down that there was no change
         if session.current_choice==request.vars['new_choice']:
             return json.dumps(dict(current_choice=session.current_choice,previous_choice=session.previous_choice,change=False))
         

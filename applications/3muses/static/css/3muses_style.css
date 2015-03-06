@@ -524,6 +524,29 @@ web2py customization
 
 /* Cart Cart Styles */
 
+.cart_cart_image{
+	width:80px;
+}
+
+.cart_cart_container{
+	border:2px solid black;
+	margin:0 auto;
+	width:600px;
+	display: inline-block;
+	padding-left: 40px;
+	padding-right: 40px;
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+
+.cart_cart_info{
+	
+	display:inline-block;
+	vertical-align: top;
+	line-height: 32px;
+	border:2px solid black;
+}
+
 .cart_grid_table_cell img{
 	width:50px;
 	height:50px;
@@ -598,7 +621,7 @@ web2py customization
 
 
 .cart_shipping_options{
-	/*border:2px solid black;*/
+	border:2px solid black;
 	vertical-align: top;
 	text-align: center;
 	width: 400px;

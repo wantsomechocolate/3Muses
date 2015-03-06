@@ -18,13 +18,13 @@ function get_info_from_server(view_html){
 /*Variable Declarations*/
 var DEFAULT_CHOICE='Choice1';
 
-
 /*Functions*/
 
 /*
 For scratch.html currently
 */
-function update_target(){
+
+function update_target(click_class_name, selected_class_name, view_name, target_div_id){
     /*Get current selection is one exists first*/
     var new_choice=$(this).attr('id')
 
@@ -56,12 +56,13 @@ function update_target(){
 For scratch.html currently
 This is for page load, ask the server what the current choice is, if there isn't one
 default to Choice1*/
-function set_selected_class(){
+
+function set_selected_class2(session_var, selected_class_name, default_choice_id){
     $.ajax({
 
             type:"POST",
             url:'get_session_var.html',
-            data: {session_var:'current_choice'},
+            data: {session_var:session_var},
             /*async because it needs to know the choice before other stuff can happen*/
             async:false,
 
@@ -69,12 +70,12 @@ function set_selected_class(){
 
             if (variable!='None'){
 
-                $('#'+variable).addClass('selected');
+                $('#'+variable).addClass( selected_class_name );
 
             } else {
 
                 /*Choice1 should probably be a variable declared earlier like DEFAULT_CHOICE*/
-                $('#'+'Choice1').addClass('selected');
+                $( '#'+default_choice_id ).addClass( selected_class_name );
 
             };
             
@@ -88,12 +89,21 @@ $(document).ready(function(){
     /*ask server for current choice in session*/
 
     if (window.location.pathname == '/scratch'){
-        set_selected_class();
+        //set_selected_class();
+        set_selected_class2('current_choice', 'selected', DEFAULT_CHOICE);
     }
 
     var current_id=$('.selected').attr('id');
 
-    $(".scratch_div").on('click',update_target);
+    //$(".scratch_div").on('click',update_target);
+
+    $(".scratch_div").on('click',{
+        click_class_name:"scratch_div", 
+        selected_class_name:"selected", 
+        view_name:"scratch_ajax.html",
+        target_div_id:"scratch_target",
+    }, update_target );
+
     
     $('#'+current_id).trigger('click');
 
