@@ -161,157 +161,27 @@ def artist():
 
 ## This needs to be shortened. Two long right now
 ## Consider bringing some of this crap to the view
+
+@auth.requires_login()
 def add_new_card():
 
-    if auth.is_logged_in():
+    stripe_form=FORM(
 
-        stripe_form=FORM(
-            DIV( 
-                LABEL( 'Name on the Card',),
-                
-                DIV(
-                    INPUT(
-                        _type='text', 
-                        _name='name', 
-                        _class='form-control', 
-                    ),
-                ),
-            ),
+        DIV( LABEL( 'Name on the Card',),DIV(INPUT(_type='text', _name='name', _class='form-control', ),),),
 
-            DIV( 
-                LABEL( 'Card Number',),
-                
-                DIV(
-                    INPUT(
-                        _type='integer', 
-                        _name='number', 
-                        _class='form-control', 
-                    ),
-                ),
-            ),
+        DIV( LABEL( 'Card Number',),DIV(INPUT(_type='integer', _name='number', _class='form-control', ),),),
 
-            DIV(
-                LABEL('Card CVC Number',),
-                
-                DIV(
-                    INPUT(
-                        _type='integer', 
-                        _name='cvc', 
-                        _class='form-control', 
-                    ),
-                ),
-            ),
+        DIV( LABEL('Card CVC Number',),DIV(INPUT(_type='integer', _name='cvc', _class='form-control', ),),),
 
-            DIV(
-                LABEL('Expiration Month',),
-                
-                DIV(
-                    INPUT(
-                        _type='integer', 
-                        _name='exp_month', 
-                        _class='form-control', 
-                    ),
-                ),
-            ),
+        DIV( LABEL('Expiration Month',),DIV(INPUT(_type='integer', _name='exp_month', _class='form-control', ),),),
 
-            DIV(
-                LABEL('Expiration Year (YYYY)',),
-                
-                DIV(
-                    INPUT(
-                        _type='integer', 
-                        _name='exp_year', 
-                        _class='form-control', 
-                        requires=IS_INT_IN_RANGE(2014,3000),
-                    ),
-                ),
-            ),
-       
-            INPUT(_type='submit', _class="btn btn-default"),
-                
+        DIV( LABEL('Expiration Year (YYYY)',),DIV(INPUT(_type='integer', _name='exp_year', _class='form-control', requires=IS_INT_IN_RANGE(2014,3000),),),),
+
+        INPUT(_type='submit', _class="btn btn-default"),
+
         _class='form-horizontal',
+
         _role='form').process()
-
-    else:
-        stripe_form=FORM(
-
-            DIV( 
-                LABEL( 'Email Address',),
-                
-                DIV(
-                    INPUT(
-                        _type='text', 
-                        _name='email', 
-                        _class='form-control', 
-                    ),
-                ),
-            ),
-            DIV( 
-                LABEL( 'Name on the Card',),
-                
-                DIV(
-                    INPUT(
-                        _type='text', 
-                        _name='name', 
-                        _class='form-control', 
-                    ),
-                ),
-            ),
-
-            DIV( 
-                LABEL( 'Card Number',),
-                
-                DIV(
-                    INPUT(
-                        _type='integer', 
-                        _name='number', 
-                        _class='form-control', 
-                    ),
-                ),
-            ),
-
-            DIV(
-                LABEL('Card CVC Number',),
-                
-                DIV(
-                    INPUT(
-                        _type='integer', 
-                        _name='cvc', 
-                        _class='form-control', 
-                    ),
-                ),
-            ),
-
-            DIV(
-                LABEL('Expiration Month',),
-                
-                DIV(
-                    INPUT(
-                        _type='integer', 
-                        _name='exp_month', 
-                        _class='form-control', 
-                    ),
-                ),
-            ),
-
-            DIV(
-                LABEL('Expiration Year (YYYY)',),
-                
-                DIV(
-                    INPUT(
-                        _type='integer', 
-                        _name='exp_year', 
-                        _class='form-control', 
-                        requires=IS_INT_IN_RANGE(2015,3000)
-                    ),
-                ),
-            ),
-       
-            INPUT(_type='submit', _class="btn btn-default"),
-                
-        _class='form-horizontal',
-        _role='form').process()
-
 
 
     if stripe_form.accepted:
@@ -337,66 +207,66 @@ def add_new_card():
                     )
                 )
 
-
         # if there is no stripe customer token for the current user, the there will be an index error
         # this means that the user doesn't have a token in the database
         except IndexError:
             # if user doesn't have stripe association yet when trying to create card
             # create customer and first card at the same time.
-            if auth.is_logged_in():
+            #if auth.is_logged_in():
 
-                try:
-                    customer = stripe.Customer.create(
-                        email=auth.user.email,
-                        card=dict(
-                            name=stripe_form.vars.name,
-                            number=stripe_form.vars.number,
-                            cvc=stripe_form.vars.cvc,
-                            exp_month=stripe_form.vars.exp_month,
-                            exp_year=stripe_form.vars.exp_year,     
-                        )
+            try:
+                customer = stripe.Customer.create(
+                    email=auth.user.email,
+                    card=dict(
+                        name=stripe_form.vars.name,
+                        number=stripe_form.vars.number,
+                        cvc=stripe_form.vars.cvc,
+                        exp_month=stripe_form.vars.exp_month,
+                        exp_year=stripe_form.vars.exp_year,     
                     )
+                )
 
-                    # add the fact the current customer is now a stripe customer to the db. 
-                    db.stripe_customers.insert(
-                        muses_id=auth.user_id,
-                        stripe_id=customer.id,
-                        stripeEmail=auth.user.email,
-                    )
+                # add the fact the current customer is now a stripe customer to the db. 
+                db.stripe_customers.insert(
+                    muses_id=auth.user_id,
+                    stripe_id=customer.id,
+                    ## might want to add some logic here to get a better email address when using a gimp user!
+                    stripeEmail=auth.user.email,
+                )
 
-                ## if there was a problem connecting to the stripe api
-                except stripe.error.APIConnectionError:
-                    customer=None
+            ## if there was a problem connecting to the stripe api
+            except stripe.error.APIConnectionError:
+                customer=None
 
             #If the user isn't logged in, add the info to session. 
-            else:
-                try:
-                    customer = stripe.Customer.create(
-                        email=stripe_form.vars.email,
-                        card=dict(
-                            name=stripe_form.vars.name,
-                            number=stripe_form.vars.number,
-                            cvc=stripe_form.vars.cvc,
-                            exp_month=stripe_form.vars.exp_month,
-                            exp_year=stripe_form.vars.exp_year,     
-                        )
-                    )
+            # else:
+            #     try:
+            #         customer = stripe.Customer.create(
+            #             email=stripe_form.vars.email,
+            #             card=dict(
+            #                 name=stripe_form.vars.name,
+            #                 number=stripe_form.vars.number,
+            #                 cvc=stripe_form.vars.cvc,
+            #                 exp_month=stripe_form.vars.exp_month,
+            #                 exp_year=stripe_form.vars.exp_year,     
+            #             )
+            #         )
 
-                    session_card=customer.cards.all()
+            #         session_card=customer.cards.all()
 
-                    #add the fact the current user has card info now to session
-                    session.card_info=dict(
-                        stripe_id=customer.id,
-                        email=customer.email,
-                        name=session_card['data'][0]['name'],
-                        last4=session_card['data'][0]['last4'],
-                        brand=session_card['data'][0]['brand'],
-                        exp_month=session_card['data'][0]['exp_month'],
-                        exp_year=session_card['data'][0]['exp_year'],
-                        card_id=session_card['data'][0]['id'],
-                        )
-                except stripe.error.APIConnectionError:
-                    customer=None
+            #         #add the fact the current user has card info now to session
+            #         session.card_info=dict(
+            #             stripe_id=customer.id,
+            #             email=customer.email,
+            #             name=session_card['data'][0]['name'],
+            #             last4=session_card['data'][0]['last4'],
+            #             brand=session_card['data'][0]['brand'],
+            #             exp_month=session_card['data'][0]['exp_month'],
+            #             exp_year=session_card['data'][0]['exp_year'],
+            #             card_id=session_card['data'][0]['id'],
+            #             )
+            #     except stripe.error.APIConnectionError:
+            #         customer=None
 
         redirect(URL('cart'))
 
@@ -405,142 +275,48 @@ def add_new_card():
         return dict(stripe_form=stripe_form)
 
 
-
-def add_new_address():
-
-    #http://codepen.io/Angelfire/pen/dJhyr
+@auth.requires_login()
+def add_new_address(): #http://codepen.io/Angelfire/pen/dJhyr
 
     add_address_form=FORM(
 
-        DIV( 
-            LABEL( 'First Name',),
-            
-            DIV(
-                INPUT(
-                    _type='text', 
-                    _name='first_name', 
-                    _class='form-control', 
-                ),
-            ),
-        ),
+        DIV ( LABEL ( 'First Name', ) , DIV ( INPUT ( _type='text' , _name='first_name' , _class='form-control' , ) , ) , ) ,
 
-        DIV( 
-            LABEL( 'Last Name',),
-            
-            DIV(
-                INPUT(
-                    _type='text', 
-                    _name='last_name', 
-                    _class='form-control', 
-                ),
-            ),
-        ),
+        DIV ( LABEL ( 'Last Name', ), DIV ( INPUT ( _type='text', _name='last_name' , _class='form-control' , ) , ) , ),
 
-        DIV( 
-            LABEL( 'Street Address/ PO Box/ Etc.',),
-            
-            DIV(
-                INPUT(
-                    _type='text', 
-                    _name='street_address_line_1', 
-                    _class='form-control', 
-                ),
-            ),
-        ),
+        DIV ( LABEL( 'Street Address/ PO Box/ Etc.',),DIV(INPUT(_type='text', _name='street_address_line_1', _class='form-control', ),),),
 
-        DIV( 
-            LABEL( 'Floor/ Suite/ Apt/ Etc.',),
-            
-            DIV(
-                INPUT(
-                    _type='text', 
-                    _name='street_address_line_2', 
-                    _class='form-control', 
-                ),
-            ),
-        ),
+        DIV ( LABEL ( 'Floor/ Suite/ Apt/ Etc.',),DIV(INPUT(_type='text', _name='street_address_line_2', _class='form-control', ),),),
 
-        DIV(
-            LABEL('Municipality',),
-            
-            DIV(
-                INPUT(
-                    _type='text', 
-                    _name='municipality', 
-                    _class='form-control', 
-                ),
-            ),
-        ),
+        DIV ( LABEL ( 'Municipality',),DIV(INPUT(_type='text', _name='municipality', _class='form-control', ),),),
 
-        DIV(
-            LABEL('Administrative Area',),
-            
-            DIV(
-                INPUT(
-                    _type='text', 
-                    _name='administrative_area', 
-                    _class='form-control', 
-                ),
-            ),
-        ),
+        DIV ( LABEL ( 'Administrative Area',),DIV(INPUT(_type='text', _name='administrative_area', _class='form-control', ),),),
 
-        DIV(
-            LABEL('Postal Code',),
-            
-            DIV(
-                INPUT(
-                    _type='text', 
-                    _name='postal_code', 
-                    _class='form-control', 
-                ),
-            ),
-        ),
+        DIV ( LABEL ( 'Postal Code',),DIV(INPUT(_type='text', _name='postal_code', _class='form-control', ),),),
 
-        DIV(
-            LABEL('Country',),
-            
-            DIV(
-                INPUT(
-                    _type='text', 
-                    _name='country', 
-                    _class='form-control', 
-                ),
-            ),
-        ),
-   
+        DIV ( LABEL ( 'Country',),DIV(INPUT(_type='text', _name='country', _class='form-control', ),),),
+
         INPUT(_type='submit', _class="btn btn-default"),
             
-    _class='form-horizontal',
-    _role='form').process()
+        _class='form-horizontal',
+
+        _role='form').process()
 
     if add_address_form.accepted:
 
-        if auth.is_logged_in():
-            db.addresses.insert(
-                user_id=auth.user_id,
-                first_name=add_address_form.vars.first_name,
-                last_name=add_address_form.vars.last_name,
-                street_address_line_1=add_address_form.vars.street_address_line_1,
-                street_address_line_2=add_address_form.vars.street_address_line_2,
-                municipality=add_address_form.vars.municipality,
-                administrative_area=add_address_form.vars.administrative_area,
-                postal_code=add_address_form.vars.postal_code,
-                country=add_address_form.vars.country,
-                default_address=True,
-            )
-
-        else:
-            session.address=dict(
-                first_name=add_address_form.vars.first_name,
-                last_name=add_address_form.vars.last_name,
-                street_address_line_1=add_address_form.vars.street_address_line_1,
-                street_address_line_2=add_address_form.vars.street_address_line_2,
-                municipality=add_address_form.vars.municipality,
-                administrative_area=add_address_form.vars.administrative_area,
-                postal_code=add_address_form.vars.postal_code,
-                country=add_address_form.vars.country,
-                default_address=True,
-            )
+        #if auth.is_logged_in():
+        db.addresses.insert(
+            user_id=auth.user_id,
+            first_name=add_address_form.vars.first_name,
+            last_name=add_address_form.vars.last_name,
+            street_address_line_1=add_address_form.vars.street_address_line_1,
+            street_address_line_2=add_address_form.vars.street_address_line_2,
+            municipality=add_address_form.vars.municipality,
+            administrative_area=add_address_form.vars.administrative_area,
+            postal_code=add_address_form.vars.postal_code,
+            country=add_address_form.vars.country,
+            default_address=True,
+        )
 
         redirect(URL('cart'))
 
@@ -567,14 +343,6 @@ def add_new_address():
 
 def cart():
 
-#############################################################################################
-###########-------------------Cart Logic (User and Non User)---------------------############
-#############################################################################################
-    
-
-
-
-
     ## If someone tries to mess with the URL in the browser by going to 
     ## cart/arg, It will reload the page without the arg
     if request.args(0) is not None:
@@ -583,160 +351,78 @@ def cart():
         pass
 
     ## If you try to visit this page while you are not logged in, you get logged in as a handicapped user. 
+    ## but the nav option don't change. 
     if auth.is_logged_in():
         pass
     else:
         create_gimp_user()
 
+#############################################################################################
+###########-------------------Cart Logic---------------------############
+#############################################################################################
 
-    ## Cart Table Headers - move to db
-    ## this checks to see if the cart is empty initially, but then 
-    ## potentially removes some items and doesn't check again, bad. 
-    cart_grid_header_list=["Cart","Item","Cost", "Delete"]
+    cart_information_LOD=[]
+    cart_information=dict(error=False,error_message=None,cart_information_LOD=cart_information_LOD)
 
-    ## This list will hold the info that will be displayed in the cart table
-    cart_grid_table_row_LOL=[]
+    ## Retrieve the current items from the users cart)
+    ## There is no check here to not include items that are sold out or no
+    ## longer active, That happens later.
+    cart_db=db(db.muses_cart.user_id==auth.user_id).select()
 
-    ## If we are dealing with a logged in user
-    if auth.is_logged_in():
+    ## If cart turns out to be empty, set cart_grid so the view can have
+    ## something to display. but now cart_grid_table_row_LOL will be empty,
+    ## which should disallow the user from pressing the checkout button. 
+    if not cart_db:
 
-        ## Retrieve the current items from the users cart)
-        ## There is no check here to not include items that are sold out or no
-        ## longer active, That happens later.
-        cart_db=db(db.muses_cart.user_id==auth.user_id).select()
+        cart_information['error']=True
+        cart_information['error_message']="empty"
 
-        ## If cart turns out to be empty, set cart_grid so the view can have
-        ## something to display. but now cart_grid_table_row_LOL will be empty,
-        ## which should disallow the user from pressing the checkout button. 
-        if not cart_db:
+    ## If the cart is not empty
+    else:
+        
+        ## For each product in the cart
+        for row in cart_db:
 
-            cart_is_empty="empty"
-            ## art_grid=DIV("You have not yet added anything to your cart")
+            ## Retreive product info from the db
+            product=db(db.product.id==row.product_id).select().first()
 
-        ## If the cart is not empty
-        else:
-            cart_is_empty="not_empty"
+            ## If using a local db get the product image locally
+            if sqlite_tf:
+                srcattr=URL('download',db(db.image.product_name==row.product_id).select().first().s3_url)
             
-            ## For each product in the cart
-            for row in cart_db:
+            ## For the more common case, get the image from aws s3
+            else:
+                srcattr=S3_BUCKET_PREFIX+str(db(db.image.product_name==row.product_id).select().first().s3_url)
 
-                ## Retreive product info from the db
-                product=db(db.product.id==row.product_id).select().first()
+            ## Create the product_image_url
+            product_image_url=A(IMG(_src=srcattr), _href=URL('default','product',args=[row.product_id]))
 
-                ## If the product is not active (so it can still be sold out,
-                ## apparently). Should add another condition here for qty?
-                if product.is_active==False:
+            ## Create a delete button for the item
+            delete_button=A('X', _href=URL('delete_item_from_cart', vars=dict(pri_key=row.id,redirect_url=URL('cart'))), _class="btn")
 
-                    ## Then delete it from the users cart. 
-                    db(db.muses_cart.product_id==product.id).delete()
+            ## Populate a list with the current product info
+            cart_grid_table_row_list=[
+                product_image_url, 
+                product.product_name, 
+                product.cost_USD, 
+                #row.product_qty, This was used when qty could be over 1,
+                delete_button
+            ]
 
-                ## If the product is active (and user is logged in)
-                else:
+            cart_item_dict=dict(
+                product_image_url=product_image_url,
+                product_name=product.product_name,
+                product_cost=product.cost_USD,
+                product_delete_button=delete_button,
+                product_active=product.is_active,
+                )
 
-                    ## If using a local db get the product image locally
-                    if sqlite_tf:
-                        srcattr=URL('download',db(db.image.product_name==row.product_id).select().first().s3_url)
-                    
-                    ## For the more common case, get the image from aws s3
-                    else:
-                        srcattr=S3_BUCKET_PREFIX+str(db(db.image.product_name==row.product_id).select().first().s3_url)
+            cart_information_LOD.append(cart_item_dict)
 
-                    ## Create the product_image_url
-                    product_image_url=A(IMG(_src=srcattr), _href=URL('default','product',args=[row.product_id]))
+            ## If the item is no longer active, remove it from the cart.
+            if not product.is_active:
+                db(db.muses_cart.product_id==product.id).delete()
 
-                    ## Create a delete button for the item
-                    delete_button=A('X', _href=URL('delete_item_from_cart', vars=dict(pri_key=row.id,redirect_url=URL('cart'))), _class="btn")
-
-                    ## Populate a list with the current product info
-                    cart_grid_table_row_list=[
-                        product_image_url, 
-                        product.product_name, 
-                        product.cost_USD, 
-                        #row.product_qty, This was used when qty could be over 1,
-                        delete_button
-                    ]
-
-                    ## Append to the cart_grid so that all products in the cart get a row in the table
-                    cart_grid_table_row_LOL.append(cart_grid_table_row_list)
-
-            if len(cart_grid_table_row_LOL)==0:
-                cart_is_empty="became_empty"
-
-            ## Call the table_generator to generate an ugly table with the data you just
-            ## got from the database. Table generator gets a list for header names, 
-            ## a list of lists for the rows, and a string to prepend to the html class names.
-            # cart_grid=table_generation(cart_grid_header_list, cart_grid_table_row_LOL, 'cart')
-
-
-    ## if the user is not logged in, use session cookies instead to generate the cart
-    else:
-
-        if not session.cart:
-
-            cart_is_empty="empty"
-            ## cart_grid=DIV("You have not yet added anything to your cart")
-
-        else:
-
-            cart_is_empty="not_empty"
-            ## For each item in the session cart
-            #for key, value in session.cart.iteritems():
-            for key in session.cart.keys():
-
-                ## Get product info from the database
-                product=db(db.product.id==key).select()[0]
-
-
-                if product.is_active==False:
-
-                    ## Then delete it from the users cart. 
-                    ## db(db.muses_cart.product_id==product.id).delete()
-                    dummy=session.cart.pop(key)
-
-                    if sqlite_tf:
-                        srcattr=URL('download',db(db.image.product_name==key).select()[0].s3_url)
-                    else:
-                        srcattr='https://s3.amazonaws.com/threemusesglass/site_images/'+str(db(db.image.product_name==key).select()[0].s3_url)
-                    product_image_url=A(IMG(_src=srcattr), _href=URL('default','product',args=[key]))
-
-                    cart_grid_table_row_list=[
-                        product_image_url,
-                        str(product.product_name)+" is no longer available"
-                    ]
-
-                    cart_grid_table_row_LOL.append(cart_grid_table_row_list)
-
-                else:
-
-                    ## Get the product image
-                    if sqlite_tf:
-                        srcattr=URL('download',db(db.image.product_name==key).select()[0].s3_url)
-                    else:
-                        srcattr='https://s3.amazonaws.com/threemusesglass/site_images/'+str(db(db.image.product_name==key).select()[0].s3_url)
-                    product_image_url=A(IMG(_src=srcattr), _href=URL('default','product',args=[key]))
-
-                    ## Create delete button for item.
-                    delete_button=A('X', _href=URL('delete_item_from_cart', vars=dict(pri_key=key, redirect_url=URL('cart'))), _class="btn")
-
-                    cart_grid_table_row_list=[
-                        product_image_url, 
-                        product.product_name, 
-                        product.cost_USD, 
-                        #value, 
-                        delete_button
-                    ]
-
-                    cart_grid_table_row_LOL.append(cart_grid_table_row_list)
-
-            if len(cart_grid_table_row_LOL)==0:
-                cart_is_empty="became_empty"
-
-    if cart_is_empty=="empty":
-        cart_grid=DIV("You have not yet added anything to your cart")
-    elif cart_is_empty=="became_empty":
-        cart_grid=DIV("The items you had in your cart are no longer available")
-    else:
-        cart_grid=table_generation(cart_grid_header_list, cart_grid_table_row_LOL, 'cart')
 
 
 #############################################################################################
@@ -745,131 +431,46 @@ def cart():
 
     address_information_LOD=[]
     address_information=dict(error=False,error_message=None,address_information_LOD=address_information_LOD)
-    ## This is the header for the address table, soon I won't need a header,
-    ## but right now I do!
-    address_grid_header_list=[
-        'Select One',
-        'Street Line 1',#'No. & Street/ P.O. Box/ etc.', 
-        'Street Line 2',#'Apt/ Suite/ Floor/ etc.', 
-        'Municipality',#'Town/ Section/ Municipality',
-        'State or Equivilent',#'State/ Admin Area',
-        'Postal Code',
-        'Country', 
-        'Edit', 
-        'Delete'
-    ]
 
-    address_grid_table_row_LOL=[]
+    address_list=db(db.addresses.user_id==auth.user_id).select(orderby=db.addresses.street_address_line_1)
 
-    if auth.is_logged_in():
+    if not address_list:
 
-        address_list=db(db.addresses.user_id==auth.user_id).select(orderby=db.addresses.street_address_line_1)
+        address_list_is_empty=True
 
-        if not address_list:
-
-            address_list_is_empty=True
-
-        else:
-
-            address_list_is_empty=False
-
-            for j in range(len(address_list)):
-
-                if address_list[j].default_address==True:
-                    radio_button=INPUT(_type='radio', _name='address', _value=address_list[j].id, _checked='checked')
-                    session.default_address_id=address_list[j].id
-                else:
-                    radio_button=INPUT(_type='radio', _name='address', _value=address_list[j].id)
-
-                edit_button=A('<-', _href=URL('edit_db_address', vars=dict(pri_key=address_list[j].id)), _class="btn")
-                
-                delete_button=A('X', _href=URL('delete_address', vars=dict(pri_key=address_list[j].id, redirect_url=URL('cart'))), _class="btn")
-
-                address_grid_table_row_list=[
-                    radio_button, 
-                    address_list[j].street_address_line_1, 
-                    address_list[j].street_address_line_2, 
-                    address_list[j].municipality, 
-                    address_list[j].administrative_area, 
-                    address_list[j].postal_code, 
-                    address_list[j].country, 
-                    edit_button, 
-                    delete_button
-                ]
-
-                address_information_LOD.append(dict(
-                    first_name=address_list[j].first_name,
-                    last_name=address_list[j].last_name,
-                    street_address_line_1=address_list[j].street_address_line_1, 
-                    street_address_line_2=address_list[j].street_address_line_2, 
-                    municipality=address_list[j].municipality, 
-                    administrative_area=address_list[j].administrative_area, 
-                    postal_code=address_list[j].postal_code, 
-                    country=address_list[j].country,
-                    id=address_list[j].id,
-                    default_address=address_list[j].default_address,
-                ))
-
-                address_grid_table_row_LOL.append(address_grid_table_row_list)
-
-            #address_grid=table_generation(address_grid_header_list, address_grid_table_row_LOL, 'address')
-
-    ## If user is not logged in
     else:
 
-        if not session.address:
+        address_list_is_empty=False
 
-            address_list_is_empty=True
-            address_information_LOD=[]
+        for j in range(len(address_list)):
 
-        else:
+            if address_list[j].default_address==True:
+                radio_button=INPUT(_type='radio', _name='address', _value=address_list[j].id, _checked='checked')
+                session.default_address_id=address_list[j].id
+            else:
+                radio_button=INPUT(_type='radio', _name='address', _value=address_list[j].id)
 
-            address_list_is_empty=False
+            edit_button=A('<-', _href=URL('edit_db_address', vars=dict(pri_key=address_list[j].id)), _class="btn")
+            
+            delete_button=A('X', _href=URL('delete_address', vars=dict(pri_key=address_list[j].id, redirect_url=URL('cart'))), _class="btn")
 
-            radio_button=FORM(INPUT(_type='radio', _name='address', _value='address', _checked='checked'), _action="")
-            session.default_address_id='address'
-            edit_button=A('<-', _href=URL('edit_session_address'), _class="btn btn-primary")
-            delete_button=A('X', _href=URL('delete_address', vars=dict(redirect_url=URL('cart'))), _class="btn btn-primary")
-
-            address_grid_table_row_list=[
-                radio_button, 
-                session.address['first_name'],
-                session.address['last_name'],
-                session.address['street_address_line_1'], 
-                session.address['street_address_line_2'], 
-                session.address['municipality'], 
-                session.address['administrative_area'], 
-                session.address['postal_code'], 
-                session.address['country'], 
-                edit_button, 
-                delete_button
-            ]
-
-            address_grid_table_row_LOL.append(address_grid_table_row_list)
-
-            address_information_LOD=[dict(
-                first_name=session.address['first_name'],
-                last_name=session.address['last_name'],
-                street_address_line_1=session.address['street_address_line_1'], 
-                street_address_line_2=session.address['street_address_line_2'], 
-                municipality=session.address['municipality'], 
-                administrative_area=session.address['administrative_area'], 
-                postal_code=session.address['postal_code'], 
-                country=session.address['country'], 
-                id=1,
-                default_address=session.address['default_address'],
-            )]
+            address_information_LOD.append(dict(
+                first_name=address_list[j].first_name,
+                last_name=address_list[j].last_name,
+                street_address_line_1=address_list[j].street_address_line_1, 
+                street_address_line_2=address_list[j].street_address_line_2, 
+                municipality=address_list[j].municipality, 
+                administrative_area=address_list[j].administrative_area, 
+                postal_code=address_list[j].postal_code, 
+                country=address_list[j].country,
+                id=address_list[j].id,
+                default_address=address_list[j].default_address,
+            ))
 
     if address_list_is_empty==True:
-        address_grid=DIV("Please add an address to continue with your purchase")
 
         address_information['error']=True
         address_information['error_message']="Please add an address to continue with your purchase"
-
-    else:
-        address_grid=table_generation(address_grid_header_list, address_grid_table_row_LOL, 'address')
-        address_information['error']=False
-        address_information['error_message']=None
         
 
 
@@ -1181,9 +782,8 @@ def cart():
             card_grid.append(DIV("Pay with Paypal"))
 
     return dict(
-        cart_grid=cart_grid,
 
-        address_grid=address_grid,
+        cart_information=cart_information,
 
         address_information_LOD=address_information_LOD,
         address_information=address_information,
@@ -1196,11 +796,8 @@ def cart():
         card_grid=card_grid,
         )
 
-    # return dict(
-    #     cart_grid=cart_grid_table_row_LOL,
-    #     address_grid=address_grid_table_row_LOL,
-    #     shipping_grid=shipping_grid_table_row_LOL,
-    #     card_grid=card_grid_table_row_LOL)
+    
+
 
 
 ## The view right before they click to get charged and stuff. 
