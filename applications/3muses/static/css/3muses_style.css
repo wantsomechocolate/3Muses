@@ -615,6 +615,10 @@ web2py customization
 	width:100px;
 }
 
+.selected_address{
+	background:gray;
+}
+
 
 /*Shipping Cart Styles*/
 

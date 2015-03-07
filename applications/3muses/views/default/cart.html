@@ -76,7 +76,9 @@
 
 					{{ for i in range(len(address_information_LOD)): }}
 
-						<div class="cart_address_container">
+						{{ div_id="address_"+str(i) }}
+
+						<div class="cart_address_container" id="{{ =div_id }}">
 
 							<div class="cart_address_info">
 							  {{ if address_information_LOD[i]['default_address']: }}
