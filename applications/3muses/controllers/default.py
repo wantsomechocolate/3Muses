@@ -336,11 +336,13 @@ def cart():
     if not cart_db:
 
         cart_information['error']=True
-        cart_information['error_message']="empty"
+        cart_information['error_message']="You have not yet added anything to your cart"
+        cart_is_empty=True
 
     ## If the cart is not empty
     else:
         
+        cart_is_empty=False
         ## For each product in the cart
         for row in cart_db:
 
@@ -434,6 +436,13 @@ def cart():
 #############################################################################################
 ###########---------------Shipping Logic (User and Non User)---------------------############
 #############################################################################################
+
+    if cart_is_empty:
+        shipping_information=dict(error=True, error_message="Please add something to your cart to continue", shipping_options_LOD=[])
+    elif address_list_is_empty:
+        shipping_information=dict(error=True, error_message="Please add an address to continue", shipping_options_LOD=[])
+    else:
+        shipping_information=dict(error=True, error_message="Generating shipping costs", shipping_options_LOD=[])
 
     # try:
 
@@ -708,7 +717,7 @@ def cart():
 
         #shipping_grid=shipping_grid,
         #shipping_options_LOD=shipping_options_LOD,
-        #shipping_information=shipping_information,
+        shipping_information=shipping_information,
 
         card_grid=card_grid,
         )
@@ -2718,69 +2727,77 @@ def default_address():
             product_shipping_desc=product.shipping_description,
             ))
 
-
-    #try:
-    # now logged in or not we have the address that was chosen, the address info for the address that was chosen
-    # and the cart info, and the combined weight of our package.
-    shipment=create_shipment(address_info, cart_for_shipping_calculations)
-
-
-    ## Put shipment info in the session to get it later!
-    session.shipment_info_from_easypost=shipment
-
-    # Generate list of sorted rates
-    shipping_rates_for_sorting=[]
-    for i in range(len(shipment.rates)):
-        shipping_rates_for_sorting.append(float(shipment.rates[i].rate))
-    shipping_rates_for_sorting.sort()
-
     shipping_options_LOD=[]
-    # Build the shipping grid
-    # I need to be able to sort the shipping rates based on the rate. 
-    for j in range(len(shipping_rates_for_sorting)):
+    error_status=False
+    error_message=None
+    shipping_information=dict(
+        shipping_options_LOD=shipping_options_LOD,
+        error_status=error_status,
+        error_message=error_message,
+        )
 
+    try:
+        # now logged in or not we have the address that was chosen, the address info for the address that was chosen
+        # and the cart info, and the combined weight of our package.
+        shipment=create_shipment(address_info, cart_for_shipping_calculations)
+
+
+        ## Put shipment info in the session to get it later!
+        session.shipment_info_from_easypost=shipment
+
+        # Generate list of sorted rates
+        shipping_rates_for_sorting=[]
         for i in range(len(shipment.rates)):
+            shipping_rates_for_sorting.append(float(shipment.rates[i].rate))
+        shipping_rates_for_sorting.sort()
 
-            if shipping_rates_for_sorting[j]==float(shipment.rates[i].rate):
+        
+        # Build the shipping grid
+        # I need to be able to sort the shipping rates based on the rate. 
+        for j in range(len(shipping_rates_for_sorting)):
 
-                if shipment.rates[i].service==session.shipping_choice:
+            for i in range(len(shipment.rates)):
 
-                    radio_button=INPUT(_type='radio', _name='shipping', _checked='checked', _value=shipment.rates[i].service)
+                if shipping_rates_for_sorting[j]==float(shipment.rates[i].rate):
 
-                else:
+                    if shipment.rates[i].service==session.shipping_choice:
 
-                    radio_button=INPUT(_type='radio', _name='shipping', _value=shipment.rates[i].service)
+                        radio_button=INPUT(_type='radio', _name='shipping', _checked='checked', _value=shipment.rates[i].service)
 
-                shipping_option_dict=dict(
-                        carrier=shipment.rates[i].carrier,
-                        service=camelcaseToUnderscore(shipment.rates[i].service),
-                        rate=shipment.rates[i].rate,
-                        rate_id=shipment.rates[i].id,
-                        shipment_id=shipment.rates[i].shipment_id,
-                        delivery_days=shipment.rates[i].delivery_days,
-                    )
+                    else:
 
-                shipping_options_LOD.append(shipping_option_dict)
+                        radio_button=INPUT(_type='radio', _name='shipping', _value=shipment.rates[i].service)
 
+                    shipping_option_dict=dict(
+                            carrier=shipment.rates[i].carrier,
+                            service=camelcaseToUnderscore(shipment.rates[i].service),
+                            rate=shipment.rates[i].rate,
+                            rate_id=shipment.rates[i].id,
+                            shipment_id=shipment.rates[i].shipment_id,
+                            delivery_days=shipment.rates[i].delivery_days,
+                        )
 
-    shipping_options_LOD_JSON=json.dumps(shipping_options_LOD)
-    #return dict(shipping_options_LOD_JSON=shipping_options_LOD_JSON)
-    return shipping_options_LOD_JSON
+                    shipping_options_LOD.append(shipping_option_dict)
 
-    # except easypost.Error:
-    #     shipping_grid_container=DIV('There was a problem generating the shipping costs for '+str(default_address_id))
-    #     return shipping_grid_container
+        error_status=False
+        error_message=None
+        return json.dumps(dict(error_status=error_status, error_message=error_message, shipping_options_LOD=shipping_options_LOD))
 
-    # except AttributeError:
-    #     shipping_grid_container=DIV('There is nothing in your cart to ship')
-    #     return shipping_grid_container
+    except easypost.Error:
+        error_status=True
+        error_message='There was a problem generating the shipping costs for '+str(default_address_id)
+        return json.dumps(dict(error_status=error_status, error_message=error_message, shipping_options_LOD=[]))
 
-    # except TypeError:
-    #     shipping_grid_container=DIV('There is no address to ship to')
-    #     return shipping_grid_container
+    except AttributeError:
+        error_status=True
+        error_message='There is nothing in your cart to ship'
+        return json.dumps(dict(error_status=error_status, error_message=error_message, shipping_options_LOD=[]))
 
-    # except easypost.Error:
-    #     return "There was an error calculating the shipping costs for address "+str(default_address_id)
+    except TypeError:
+        error_status=True
+        error_message='There is no address to ship to'
+        return json.dumps(dict(error_status=error_status, error_message=error_message, shipping_options_LOD=[]))
+
 
 
 

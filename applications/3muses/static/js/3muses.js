@@ -46,7 +46,7 @@ function update_target(click_class_name_or_all, selected_class_name, view_name, 
 
     // add the selected class to the clicked div. 
     $(this).addClass( selected_class_name );
-
+    
 
     // Call ajax to sort some stuff out!
     $.ajax({
