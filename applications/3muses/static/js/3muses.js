@@ -8,6 +8,8 @@ var DEFAULT_CHOICE='Choice1';
 function update_target(click_class_name_or_all, selected_class_name, view_name, target_div_id){
     /*Get current selection is one exists first*/
     
+    // alert("test");
+
     // alert('expected arguments are');
     // alert(update_target.length);
 
@@ -20,6 +22,7 @@ function update_target(click_class_name_or_all, selected_class_name, view_name, 
     //     alert(x);
     // }
 
+    // Depending on how the function is called it handles the arguments differently, why!?
     if (arguments.length==1) {
         click_class_name=update_target.arguments[0].data['click_class_name'];
         selected_class_name=update_target.arguments[0].data['selected_class_name'];
@@ -29,24 +32,33 @@ function update_target(click_class_name_or_all, selected_class_name, view_name, 
         click_class_name=click_class_name_or_all;
     };
 
-    var new_choice=$(this).attr('id')
+    // This will be the db id of the address in the db table
+    var new_choice=$(this).attr('id');
+    // alert(new_choice);
+    //var address_id=$(this).find('input[type=radio]').attr('value')
 
+    // Find and check the radio button inside the clicked div
     var radButton = $(this).find('input[type=radio]');
     $(radButton).prop("checked", true);
 
+    // remove selected class from all in group. Safer I think than just removing it from the one that has it
     $("."+click_class_name).removeClass( selected_class_name );
 
+    // add the selected class to the clicked div. 
     $(this).addClass( selected_class_name );
 
+
+    // Call ajax to sort some stuff out!
     $.ajax({
 
             type:"POST",
             url:view_name,
-            data:{new_choice: new_choice}
+            data:{new_choice: new_choice},
+            //async:false,
 
         }).done(function( target_div_text ){
             
-            //var obj=jQuery.parseJSON(target_div_text);
+            var obj=jQuery.parseJSON(target_div_text);
 
             /*This is not page load*/
             // if ( ($("#"+target_div_id).html()=="") || (obj.change==true) ) {
@@ -54,10 +66,11 @@ function update_target(click_class_name_or_all, selected_class_name, view_name, 
             //     $("#"+target_div_id).html( target_div_text );
 
             // }; 
+            
+            $("#"+"shipping_target").html( target_div_text );
 
-            $("#"+target_div_id).html( target_div_text );
-
-        });
+        }).error( function (error_message) {
+            alert(error_message['error'])});
 };
 
 /*This is for page load, ask the server what the current choice is, if there isn't one
@@ -79,6 +92,8 @@ function set_selected_class2(session_var, selected_class_name, default_choice_id
 
         }).done(function( variable ){
 
+            alert(variable);
+
             if (variable!='None'){
 
                 $('#'+variable).addClass( selected_class_name );
@@ -99,6 +114,31 @@ function set_selected_class2(session_var, selected_class_name, default_choice_id
             
         });
 };
+
+
+function get_default_address_id(selected_class_name){
+    
+    //alert(session_var);
+    //alert(selected_class_name);
+    //alert(default_choice_id);
+
+    $.ajax({
+
+            type:"POST",
+            url:'get_default_address_id.html',
+            //data: {session_var:session_var},
+            /*async because it needs to know the choice before other stuff can happen*/
+            async:false,
+
+        }).done(function( variable ){
+
+            alert(variable);
+
+            return variable;
+            
+        });
+};
+
 
 
 //Let's get ready to rumble
@@ -128,15 +168,11 @@ $(document).ready(function(){
 
 
 // for addresses in the cart
-    if (window.location.pathname == '/cart'){
-        //set_selected_class();
-        set_selected_class2('default_address', 'selected_address', 'address_0');
-    }
 
     var current_address_id=$('.selected_address').attr('id');
 
-    $(".cart_address_container").on('click',{
-        click_class_name:"cart_address_container", 
+    $(".cart_address_info").on('click',{
+        click_class_name:"cart_address_info", 
         selected_class_name:"selected_address", 
         view_name:"default_address.html",
         target_div_id:"shipping_target",

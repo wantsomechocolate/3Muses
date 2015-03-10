@@ -1,0 +1,14 @@
+The controller
+
+The controller blindly sends over all of the addresses including default status
+
+
+The View
+
+the view checks to see if an address is the default address, if it is it checks the radio box
+It should also add the selected class to the div I think. 
+
+AJAX
+
+The ajax should trigger a click on the selected div. The logic should say, if there is nothing there
+or if 'change' is true

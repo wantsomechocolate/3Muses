@@ -74,18 +74,25 @@
 
 				{{ if address_information['error']==False: }}
 
-					{{ for i in range(len(address_information_LOD)): }}
+					{{ for i in range(len(address_information['address_information_LOD'])): }}
 
-						{{ div_id="address_"+str(i) }}
+					  {{ if address_information['address_information_LOD'][i]['default_address']: }}
 
-						<div class="cart_address_container" id="{{ =div_id }}">
+						<div class="cart_address_container">
 
-							<div class="cart_address_info">
-							  {{ if address_information_LOD[i]['default_address']: }}
-					          	{{ =INPUT(_type='radio', _name='address', _value=address_information_LOD[i]['id'], _checked='checked') }}
-					          {{ else: }}
+							<div class="cart_address_info  selected_address" id="{{=address_information['address_information_LOD'][i]['id'] }}">
+
+								{{ =INPUT(_type='radio', _name='address', _value=address_information_LOD[i]['id'], _checked='checked') }}
+
+					  {{ else: }}
+
+					  	<div class="cart_address_container">
+
+							<div class="cart_address_info" id="{{=address_information['address_information_LOD'][i]['id'] }}">
+
 					            {{ =INPUT(_type='radio', _name='address', _value=address_information_LOD[i]['id']) }}
-					          {{ pass }}
+
+					  {{ pass }}
 
 					          	{{ =address_information_LOD[i]['first_name'] }}
 					          	{{ =address_information_LOD[i]['last_name'] }}
@@ -98,6 +105,7 @@
 					          	{{ =address_information_LOD[i]['postal_code'] }}
 					          	<br/>
 					          	{{ =address_information_LOD[i]['country'] }}
+					          	
 					        </div>
 
 					        <div class="cart_address_controls">
@@ -144,39 +152,7 @@
 
 				<div id='shipping_target'>
 
-					{{ if shipping_information['error']==False:}}
-
-						{{ for shipping_option in shipping_options_LOD: }}
-
-							<div class="cart_shipping_options">
-
-								{{ =INPUT(_type='radio', _name='shipping', _value=shipping_option['service']) }}
-
-								<div class="cart_shipping_inside_truck">
-									{{ =shipping_option['carrier'] }}
-									-
-									{{ =shipping_option['service'] }}
-									<br/>
-									Est Del Date: 
-									<br/>
-									01/15/2015 (Wednesday) {{ =shipping_option['delivery_days'] }}
-								</div>
-
-								<div class="cart_shipping_rate_info">
-									${{ =shipping_option['rate'] }}
-								</div>
-
-								<br/>
-
-							</div>
-
-						{{ pass }}
-
-					{{ else: }}
-
-						{{ =shipping_information['error_message'] }}
-
-					{{pass}}
+					
 
 
 				</div>

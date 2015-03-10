@@ -134,3 +134,105 @@ def splitSymbol(s):
 def camelcaseToUnderscore(s):
     return ' '.join(splitSymbol(s))
 
+def create_shipment(to_address_dict, shipping_cart_LOD):
+    import easypost
+
+    package_weight_oz=0
+    for item in shipping_cart_LOD:
+        package_weight_oz+=float(item['product_weight'])*float(item['product_qty'])
+
+    from_address=easypost.Address.create(
+        company='threemusesglass',
+        street1='308 Clearcreek Rd',
+        city='Myrtle Beach',
+        state='SC',
+        zip='29572',
+    )
+
+    parcel=easypost.Parcel.create(
+        #price really depends on weight so the dimensions are hard coded in here for now
+        length=8,
+        width=8,
+        height=4,
+        weight=package_weight_oz,
+    )
+
+    # If the package is shipping domestic
+    if to_address_dict['country']=='United States':
+
+        to_address=easypost.Address.create(
+            #name = to_address_dict['name'],
+            street1=to_address_dict['street_address_line_1'], 
+            street2=to_address_dict['street_address_line_2'],
+            city = to_address_dict['municipality'],
+            state = to_address_dict['administrative_area'],
+            zip = to_address_dict['postal_code'],
+        )
+
+        shipment=easypost.Shipment.create(
+            to_address = to_address,
+            from_address = from_address,
+            parcel=parcel,
+        )
+
+    else:
+
+        to_address=easypost.Address.create(
+            #name = to_address_dict['name'],
+            street1=to_address_dict['street_address_line_1'], 
+            street2=to_address_dict['street_address_line_2'],
+            city = to_address_dict['municipality'],
+            state = to_address_dict['administrative_area'],
+            zip = to_address_dict['postal_code'],
+            country=to_address_dict['country'],
+        )
+
+        customs_items=[]
+        for item in shipping_cart_LOD:
+            customs_item=easypost.CustomsItem.create(
+                description=item['product_shipping_desc'],
+                quantity=item['product_qty'],
+                value=item['product_cost'],
+                weight=float(item['product_weight']),
+                ## This is most generic tariff number for glass
+                hs_tariff_number=700100,
+                origin_country='US',
+            )
+            customs_items.append(customs_item)
+
+        if to_address_dict['country']=='Canada':
+
+            customs_info=easypost.CustomsInfo.create(
+                customs_items=customs_items,
+                contents_type='merchandise',
+                #contents_explanation=None,
+                restriction_type='none',
+                #restriction_comments=None,
+                customs_certify=True,
+                customs_signer='James McGlynn',
+                non_delivery_option='return',
+                eel_pfc='NOEEI 30.36',
+            )
+
+        else:
+
+            customs_info=easypost.CustomsInfo.create(
+                customs_items=customs_items,
+                contents_type='merchandise',
+                #contents_explanation=None,
+                restriction_type='none',
+                #restriction_comments=None,
+                customs_certify=True,
+                customs_signer='James McGlynn',
+                non_delivery_option='return',
+                eel_pfc='NOEEI 30.37(a).',
+            )
+
+        shipment=easypost.Shipment.create(
+            to_address=to_address,
+            from_address=from_address,
+            parcel=parcel,
+            customs_info=customs_info,
+        )
+
+    return shipment
