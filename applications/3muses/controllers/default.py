@@ -2669,7 +2669,7 @@ def default_address_2():
 
     return locals()
 
-def default_address():
+def ajax_shipping_information():
 
     #try:
     import easypost
@@ -2710,6 +2710,12 @@ def default_address():
 
     ## Now get all the items in the current user's cart.
     cart=db(db.muses_cart.user_id==auth.user_id).select()
+
+    if not cart:
+        error_status=True
+        error_message='There is nothing in your cart to ship'
+        return json.dumps(dict(error_status=error_status, error_message=error_message, shipping_options_LOD=[]))
+
     cart_for_shipping_calculations=[]
     cart_weight_oz=0
     cart_cost_USD=0

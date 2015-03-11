@@ -26,13 +26,21 @@
 
 					<div class="cart_cart_container">
 
+						<div class="cart_cart_image">
+
+							{{ =cart_information['cart_information_LOD'][i]['product_image_url'] }}
+
+						</div>
+
 						<div class="cart_cart_info">
 
-							<div class="cart_cart_image">
-							{{ =cart_information['cart_information_LOD'][i]['product_image_url'] }}
-							</div>
 							{{ =cart_information['cart_information_LOD'][i]['product_name'] }}
 							{{ =cart_information['cart_information_LOD'][i]['product_cost'] }}
+
+						</div>
+
+						<div class="cart_cart_controls">
+						
 							{{ =cart_information['cart_information_LOD'][i]['product_delete_button'] }}
 
 						</div>
