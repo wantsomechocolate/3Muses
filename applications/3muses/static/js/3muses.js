@@ -56,9 +56,9 @@ function update_target(click_class_name_or_all, selected_class_name, view_name, 
             data:{new_choice: new_choice},
             //async:false,
 
-        }).done(function( target_div_text ){
+        }).done(function( shipping_information ){
             
-            var obj=jQuery.parseJSON(target_div_text);
+            var obj=jQuery.parseJSON(shipping_information);
 
             /*This is not page load*/
             // if ( ($("#"+target_div_id).html()=="") || (obj.change==true) ) {
@@ -66,8 +66,22 @@ function update_target(click_class_name_or_all, selected_class_name, view_name, 
             //     $("#"+target_div_id).html( target_div_text );
 
             // }; 
+
+            // alert(obj['shipping_options_LOD']);
+
+            // if ( obj['error_status']=true ) {
+
+            //     $("#"+"shipping_target").html( obj['error_message'] );
+
+            // } else {
+
+            //     $("#"+"shipping_target").html( obj['shipping_options_LOD'] );
+
+            // };
+
+            $("#"+"shipping_target").html( shipping_information );
             
-            $("#"+"shipping_target").html( target_div_text );
+            
 
         }).error( function (error_message) {
             alert(error_message['error'])});
