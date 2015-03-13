@@ -3771,3 +3771,7 @@ def create_gimp_user():
         auth.login_bare(temp_email,temp_password)
         
         return dict()
+
+
+def bootstrap_nav():
+    return dict()
