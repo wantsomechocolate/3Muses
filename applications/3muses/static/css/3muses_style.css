@@ -448,8 +448,11 @@ web2py customization
 /* Cart Cart Styles */
 
 .cart_cart_image{
-	width:10vw;
 	display:inline-block;
+}
+
+.cart_cart_image img{
+	width:10vw;
 }
 
 .cart_cart_container{
@@ -473,11 +476,14 @@ web2py customization
 	vertical-align: top;
 	line-height: 32px;
 	border:2px solid black;
-	width:30vw;
+	font-size: 2em;
+	width:25vw;
 }
 
 
-
+.cart_cart_controls{
+	display:inline-block;
+}
 
 .cart_item_removed{
 	color:red;
@@ -603,9 +609,28 @@ web2py customization
 
 
 /*Card Cart Styles*/
-.card_grid_col_2{
-	width:250px;
+.cart_payment_option_container{
+
+	margin:0 auto;
+	width:50vw;
+	display: inline-block;
+	padding-left: 40px;
+	padding-right: 40px;
+	padding-top: 20px;
+	padding-bottom: 20px;
 }
+
+.cart_payment_option_container:hover{
+	background-color:rgba(231, 231, 231, 1);
+}
+
+
+.cart_payment_sub_options_container{
+	border:2px solid black;
+	width:46vw;
+	margin: 0 auto;
+}
+
 
 /* Checkout Button */
 .checkout-button{

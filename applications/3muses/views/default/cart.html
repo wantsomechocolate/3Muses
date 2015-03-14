@@ -90,7 +90,7 @@
 
 							<div class="cart_address_info  selected_address" id="{{=address_information['address_information_LOD'][i]['id'] }}">
 
-								{{ =INPUT(_type='radio', _name='address', _value=address_information_LOD[i]['id'], _checked='checked') }}
+								{{ =INPUT(_type='radio', _name='address', _value=address_information['address_information_LOD'][i]['id'], _checked='checked') }}
 
 					  {{ else: }}
 
@@ -98,30 +98,30 @@
 
 							<div class="cart_address_info" id="{{=address_information['address_information_LOD'][i]['id'] }}">
 
-					            {{ =INPUT(_type='radio', _name='address', _value=address_information_LOD[i]['id']) }}
+					            {{ =INPUT(_type='radio', _name='address', _value=address_information['address_information_LOD'][i]['id']) }}
 
 					  {{ pass }}
 
-					          	{{ =address_information_LOD[i]['first_name'] }}
-					          	{{ =address_information_LOD[i]['last_name'] }}
+					          	{{ =address_information['address_information_LOD'][i]['first_name'] }}
+					          	{{ =address_information['address_information_LOD'][i]['last_name'] }}
 					          	<br/>
-					          	{{ =address_information_LOD[i]['street_address_line_1'] }}
-					          	{{ =address_information_LOD[i]['street_address_line_2'] }}
+					          	{{ =address_information['address_information_LOD'][i]['street_address_line_1'] }}
+					          	{{ =address_information['address_information_LOD'][i]['street_address_line_2'] }}
 					          	<br/>
-					          	{{ =address_information_LOD[i]['municipality'] }},
-					          	{{ =address_information_LOD[i]['administrative_area'] }}
-					          	{{ =address_information_LOD[i]['postal_code'] }}
+					          	{{ =address_information['address_information_LOD'][i]['municipality'] }},
+					          	{{ =address_information['address_information_LOD'][i]['administrative_area'] }}
+					          	{{ =address_information['address_information_LOD'][i]['postal_code'] }}
 					          	<br/>
-					          	{{ =address_information_LOD[i]['country'] }}
+					          	{{ =address_information['address_information_LOD'][i]['country'] }}
 					          	
 					        </div>
 
 					        <div class="cart_address_controls">
-					            {{ =A('Edit', _href=URL('edit_address', vars=dict(pri_key=address_information_LOD[i]['id'])), _class="btn button") }}
+					            {{ =A('Edit', _href=URL('edit_address', vars=dict(pri_key=address_information['address_information_LOD'][i]['id'])), _class="btn button") }}
 					            
 					            <br/>
 
-					            {{ =A('Delete', _href=URL('delete_address', vars=dict(pri_key=address_information_LOD[i]['id'],redirect_url=URL('cart'))), _class="btn button") }}
+					            {{ =A('Delete', _href=URL('delete_address', vars=dict(pri_key=address_information['address_information_LOD'][i]['id'],redirect_url=URL('cart'))), _class="btn button") }}
 					        </div>
 
 			            </div>
@@ -177,11 +177,64 @@
 		<div class='muses_cart' id = 'cart_card'>
 			<h1>How You Are Paying</h1>
 
-			{{=card_grid}}
+			<div class="cart_payment_option_container">
+				Pay with Card
+			</div>
+
+				<div class="cart_payment_sub_options_container">
+
+					{{ if card_information['error']: }}
+						{{ =card_information['error_message'] }}
+					{{ else: }}
+
+						{{ for i in range(len(card_information['card_information_LOD'])): }}
+
+							<div class="cart_payment_sub_option_container">
+
+								{{ =card_information['card_information_LOD'][i] }}
+
+							</div>
+
+						{{ pass }}
+
+
+					{{ pass }}
+
+
+					<br/>
+					<form action="{{=URL('default','add_new_card')}}">
+					    <input type="submit" value="Add New Card">
+					</form>
+
+				</div>
+
 			<br/>
-			<form action="{{=URL('default','add_new_card')}}">
-			    <input type="submit" value="Add New Card">
-			</form>
+
+			<div class="cart_payment_option_container">
+				Other Payment Options
+			</div>
+
+				<div class="cart_payment_sub_options_container">
+
+					<div class="cart_payment_sub_option_container">
+
+						Paypal
+
+					</div>
+
+					<div class="cart_payment_sub_option_container">
+
+						Bitcoin
+						
+					</div>
+
+					<div class="cart_payment_sub_option_container">
+
+						Dwolla
+						
+					</div>
+
+				</div>
 
 		</div>
 

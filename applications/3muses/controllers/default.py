@@ -575,139 +575,140 @@ def cart():
 #############################################################################################
 
 
-    payment_options_LOD=[]
-    payment_information=dict(error=False,error_message=None,payment_options_LOD=payment_options_LOD)
+    card_information_LOD=[]
+    
 
     ## The headers for the table that I won't need for very much longer
     ## only applies to cards anyway. 
-    card_grid_header_list=[
-        'Select One', 
-        'Name', 
-        'Last 4', 
-        'Card Type',
-        'Exp Month',
-        'Exp Year', 
-        #'Card ID', 
-        'Delete'
-    ]
+ 
 
     ## a grid to fill up and give to table generater, but I might put more of the design in the view. 
-    card_grid_table_row_LOL=[]
+    ## card_grid_table_row_LOL=[]
 
     ## If the user is logged in. 
-    if auth.is_logged_in():
+    #if auth.is_logged_in():
 
-        ## See if the user has any card information on stripe. 
-        try:
-            ## get stripe id from the db
-            stripe_customer_token=db(db.stripe_customers.muses_id==auth.user_id).select()[0].stripe_id
+    ## See if the user has any card information on stripe. 
+    try:
+        ## get stripe id from the db
+        stripe_customer_token=db(db.stripe_customers.muses_id==auth.user_id).select()[0].stripe_id
 
-            ## get stripe info using stripe api
-            stripe_customer=stripe.Customer.retrieve(stripe_customer_token)
+        ## get stripe info using stripe api
+        stripe_customer=stripe.Customer.retrieve(stripe_customer_token)
 
-            ## put all stripe card info into a variable
-            ## this will only hold the first 10 cards a person has. If they have more cards
-            ## then they need help. 
-            stripe_cards=stripe_customer.cards.all()
+        ## put all stripe card info into a variable
+        ## this will only hold the first 10 cards a person has. If they have more cards
+        ## then they need help. 
+        stripe_cards=stripe_customer.cards.all()
 
-            for i in range(len(stripe_cards['data'])):
+        for i in range(len(stripe_cards['data'])):
 
-                if stripe_cards['data'][i]['id']==db(db.stripe_customers.muses_id==auth.user_id).select().first().stripe_next_card_id:
-                    radio_button=INPUT(_type='radio', _name='card', _value=stripe_cards['data'][i]['id'], _checked='checked')
-                else:
-                    radio_button=INPUT(_type='radio', _name='card', _value=stripe_cards['data'][i]['id'])
+            if stripe_cards['data'][i]['id']==db(db.stripe_customers.muses_id==auth.user_id).select().first().stripe_next_card_id:
+                radio_button=INPUT(_type='radio', _name='card', _value=stripe_cards['data'][i]['id'], _checked='checked')
+            else:
+                radio_button=INPUT(_type='radio', _name='card', _value=stripe_cards['data'][i]['id'])
 
-                delete_button=A('X', _href=URL('delete_item_from_db_card', vars=dict(customer_id=stripe_customer_token, card_id=stripe_cards['data'][i]['id'])), _class="btn")
+            delete_button=A('X', _href=URL('delete_item_from_db_card', vars=dict(customer_id=stripe_customer_token, card_id=stripe_cards['data'][i]['id'])), _class="btn")
 
-                card_grid_table_row_list=[
-                    radio_button, 
-                    stripe_cards['data'][i]['name'], 
-                    stripe_cards['data'][i]['last4'], 
-                    stripe_cards['data'][i]['brand'], 
-                    stripe_cards['data'][i]['exp_month'], 
-                    stripe_cards['data'][i]['exp_year'], 
-                    #stripe_cards['data'][i]['id'], 
-                    delete_button
-                ]
+            card_information_LOD.append(dict(
+                card_radio=radio_button, 
+                card_name=stripe_cards['data'][i]['name'], 
+                cart_last4=stripe_cards['data'][i]['last4'], 
+                card_brand=stripe_cards['data'][i]['brand'], 
+                card_exp_mo=stripe_cards['data'][i]['exp_month'], 
+                card_exp_yr=stripe_cards['data'][i]['exp_year'], 
+                #stripe_cards['data'][i]['id'], 
+                card_delete=delete_button,
+            ))
 
-                card_grid_table_row_LOL.append(card_grid_table_row_list)
+        card_information=dict(error=False, error_message=None, card_information_LOD=card_information_LOD)
 
-            card_grid=table_generation(card_grid_header_list, card_grid_table_row_LOL, 'card')
+            #card_grid_table_row_LOL.append(card_grid_table_row_list)
 
-            card_grid.append(DIV(INPUT(_type='radio', _name='card', _value='paypal')))
-            card_grid.append(DIV("Pay with Paypal"))
+        #card_grid=table_generation(card_grid_header_list, card_grid_table_row_LOL, 'card')
 
-        except IndexError:
-            #the current user does not yet have a stripe customer token
-            stripe_customer_token=None
-            stripe_customer=None
-            stripe_cards=None
+        #card_grid.append(DIV(INPUT(_type='radio', _name='card', _value='paypal')))
+        #card_grid.append(DIV("Pay with Paypal"))
 
-            #card_grid=DIV("You do not have any cards yet.")
-            #card_grid.append(DIV(INPUT(_type='radio', _name='card', _value='paypal')))
-            #card_grid.append(DIV("Pay with Paypal"))
-            card_grid=DIV("Pay with Paypal")
+        
 
-        except AttributeError:
-            #the current user does not yet have a stripe customer token
-            stripe_customer_token=None
-            stripe_customer=None
-            stripe_cards=None
+    except IndexError:
+        #the current user does not yet have a stripe customer token
+        #stripe_customer_token=None
+        #stripe_customer=None
+        #stripe_cards=None
 
-            card_grid=DIV("You do not have any cards yet, or there was a problem accessing your cards.")
-            card_grid.append(DIV(INPUT(_type='radio', _name='card', _value='paypal')))
-            card_grid.append(DIV("Pay with Paypal"))
+        #card_grid=DIV("You do not have any cards yet.")
+        #card_grid.append(DIV(INPUT(_type='radio', _name='card', _value='paypal')))
+        #card_grid.append(DIV("Pay with Paypal"))
+        #card_grid=DIV("Pay with Paypal")
 
-        except stripe.error.APIConnectionError, stripe.error.APIError:
-            #No access to the internet, probably
-            stripe_customer_token=None
-            stripe_customer=None
-            stripe_cards=None
+        card_information=dict(error=True, error_message="You do not have any cards", card_information_LOD=[])
 
-            card_grid=DIV("There was a problem trying to access Stripe")
-            card_grid.append(DIV(INPUT(_type='radio', _name='card', _value='paypal')))
-            card_grid.append(DIV("Pay with Paypal"))
+    except AttributeError:
+        #the current user does not yet have a stripe customer token
+        # stripe_customer_token=None
+        # stripe_customer=None
+        # stripe_cards=None
 
-    ## If user is not logged in.
-    else:
+        # card_grid=DIV("You do not have any cards yet, or there was a problem accessing your cards.")
+        # card_grid.append(DIV(INPUT(_type='radio', _name='card', _value='paypal')))
+        # card_grid.append(DIV("Pay with Paypal"))
 
-        if not session.card_info:
+        card_information=dict(error=True, error_message="You do not have any cards yet, or there was a problem accessing your cards.", card_information_LOD=[])
 
-            card_grid=DIV("You have not entered card information yet")
-            card_grid.append(DIV(INPUT(_type='radio', _name='card', _value='paypal')))
-            card_grid.append(DIV("Pay with Paypal"))
+    except stripe.error.APIConnectionError, stripe.error.APIError:
+        #No access to the internet, probably
+        # stripe_customer_token=None
+        # stripe_customer=None
+        # stripe_cards=None
 
-        else:
+        # card_grid=DIV("There was a problem trying to access Stripe")
+        # card_grid.append(DIV(INPUT(_type='radio', _name='card', _value='paypal')))
+        # card_grid.append(DIV("Pay with Paypal"))
 
-            #radio_button=FORM(INPUT(_type='radio', _name='card', _value=session.card_info['card_id'], _checked='checked'), _action="")
+        card_information=dict(error=True, error_message="You do not have a good enough internet connection to access your cards", card_information_LOD=[])
 
-            radio_button=INPUT(_type='radio', _name='card', _value=session.card_info['card_id'], _checked='checked')
+    # ## If user is not logged in.
+    # else:
 
-            delete_button=A('X', _href=URL('delete_item_from_session_card'), _class="btn btn-primary button")
+    #     if not session.card_info:
 
-            card_grid_table_row_list=[
-                radio_button,
-                session.card_info['name'],
-                session.card_info['last4'],
-                session.card_info['brand'],
-                session.card_info['exp_month'],
-                session.card_info['exp_year'],
-                #session.card_info['card_id'],
-                delete_button,
-            ]
+    #         card_grid=DIV("You have not entered card information yet")
+    #         card_grid.append(DIV(INPUT(_type='radio', _name='card', _value='paypal')))
+    #         card_grid.append(DIV("Pay with Paypal"))
 
-            card_grid_table_row_LOL.append(card_grid_table_row_list)
+    #     else:
 
-            card_grid=table_generation(card_grid_header_list, card_grid_table_row_LOL, 'address')
+    #         #radio_button=FORM(INPUT(_type='radio', _name='card', _value=session.card_info['card_id'], _checked='checked'), _action="")
 
-            card_grid.append(DIV(INPUT(_type='radio', _name='card', _value='paypal')))
-            card_grid.append(DIV("Pay with Paypal"))
+    #         radio_button=INPUT(_type='radio', _name='card', _value=session.card_info['card_id'], _checked='checked')
+
+    #         delete_button=A('X', _href=URL('delete_item_from_session_card'), _class="btn btn-primary button")
+
+    #         card_grid_table_row_list=[
+    #             radio_button,
+    #             session.card_info['name'],
+    #             session.card_info['last4'],
+    #             session.card_info['brand'],
+    #             session.card_info['exp_month'],
+    #             session.card_info['exp_year'],
+    #             #session.card_info['card_id'],
+    #             delete_button,
+    #         ]
+
+    #         card_grid_table_row_LOL.append(card_grid_table_row_list)
+
+    #         card_grid=table_generation(card_grid_header_list, card_grid_table_row_LOL, 'address')
+
+    #         card_grid.append(DIV(INPUT(_type='radio', _name='card', _value='paypal')))
+    #         card_grid.append(DIV("Pay with Paypal"))
 
     return dict(
 
         cart_information=cart_information,
 
-        address_information_LOD=address_information_LOD,
+        #address_information_LOD=address_information_LOD,
         address_information=address_information,
 
         #address=address,
@@ -719,7 +720,7 @@ def cart():
         #shipping_options_LOD=shipping_options_LOD,
         shipping_information=shipping_information,
 
-        card_grid=card_grid,
+        card_information=card_information,
         )
 
     
