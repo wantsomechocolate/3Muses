@@ -1,0 +1,41 @@
+p{
+	text-align:justify;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 10em !important;
+  padding-top: 50px !important;
+
+}
+
+footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 10em;
+  background-color: #f5f5f5;
+}
+
+.style1{
+	background:gray;
+}
+
+.style2{
+	background:teal;
+}
+
+.style1, .style2{
+	padding-top:2em;
+	padding-bottom:2em;
+}
+
+img{
+	width:100vw;
+}

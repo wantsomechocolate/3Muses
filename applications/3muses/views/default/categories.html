@@ -2,7 +2,7 @@
 
 
 {{if len(category_rows)==0:}}
-	<div id="main" class="wrapper style4">
+	<div class="container-fluid">
 		<div>Sorry, we are currently out of everything!</div>
 	</div>
 {{else:}}
@@ -10,9 +10,11 @@
 	{{for j in range(len(category_rows)):}}
 
 		{{if j%2==0:}}
-			<div id="main" class="wrapper style4">
+			<div class="container-fluid style1">
+				<div class="container">
 		{{else:}}
-			<div id="main" class="wrapper style5">
+			<div class="container-fluid style2">
+				<div class="container">
 		{{pass}}
 
 		{{if sqlite_tf:}}
@@ -21,32 +23,42 @@
 			{{srcattr='https://s3.amazonaws.com/threemusesglass/site_images/'+category_rows[j].s3_url}}
 		{{pass}}
 
-		 <div class="container">
+			<div class="row">
 
-			<div class="category-image-desc-case">
 
-				<div class = 'category-image'>
+			  {{if j%2==0:}}
+				<div class = "col-md-4 image-container pull-left">
+			  {{else:}}
+				<div class = "col-md-4 image-container pull-right">
+			  {{pass}}
 
-					{{=A(IMG(_src=srcattr, _alt="woops!"),_href=URL('display', args=[category_rows[j].category_name.replace(" ","_")]))}}
 
+					{{ =A(IMG(_src=srcattr, _class="img-responsive", _alt="woops!"),_href=URL('display', args=[category_rows[j].category_name.replace(" ","_")])) }}
+
+				
+			  {{if j%2==0:}}
 				</div>
-				<!--A(IMG(_src=URL('static','logo.png'), _alt="My Logo"), _href=URL('default','index'))-->
-				<div class="category-description">
+			  {{else:}}
+				</div>
+			  {{pass}}
+
+
+				<div class="col-md-8">
 
 					<div class = 'category-header'>{{=category_rows[j].category_name}}</div>
-					{{=category_rows[j].category_description}}
+
+					<div class = 'category-description'>{{=category_rows[j].category_description}}</div>
 
 				</div>
 
 			</div>
 
-		</div>
-
-		</div>
 
 		{{if j%2==0:}}
 			</div>
+			</div>
 		{{else:}}
+			</div>
 			</div>
 		{{pass}}
 
