@@ -46,9 +46,14 @@
         <li class="dropdown">
           <a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Shop<span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
-            <li><a href="#">Action</a></li>
-            <li><a href="#">Another action</a></li>
-            <li><a href="#">Something else here</a></li>
+
+          {{categories=db(db.categories.is_active==True).select(orderby=db.categories.display_order)}}
+          {{for row in categories:}}
+
+            <li><a href="{{=URL('display/'+str(row.category_name.replace(" ","_")))}}">{{=T(row.category_name)}}</a></li>
+
+          {{pass}}
+
             <li class="divider"></li>
             <li><a href="{{ =URL('categories') }}">All Categories</a></li>
           </ul>

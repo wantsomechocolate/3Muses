@@ -1,78 +1,67 @@
 {{extend 'layout.html'}}
 
-<!--
-		<div class="checkout-button">
+<div class="container-fluid style1">
 
-			<a href="{{=URL('checkout')}}"><button>Checkout</button></a>
-
-		</div>
-
-		<br/>
-		<br/>
--->
+	<div class='container'>
 
 
-<div id="main" class="wrapper style2">
+{{ if cart_information['error']==False: }}
 
-	<div id='content' class='container'>
+	{{ for i in range(len(cart_information['cart_information_LOD'])): }}
 
-		<div class='muses_cart' id='cart_cart'>
+		<div class="row">
 
-			<h1>What You Are Buying</h1>
+			<div class="col-md-1">
+				{{ =cart_information['cart_information_LOD'][i]['product_image_url'] }}
+			</div>
 
-			{{ if cart_information['error']==False: }}
-
-				{{ for i in range(len(cart_information['cart_information_LOD'])): }}
-
-					<div class="cart_cart_container">
-
-						<div class="cart_cart_image">
-
-							{{ =cart_information['cart_information_LOD'][i]['product_image_url'] }}
-
-						</div>
-
-						<div class="cart_cart_info">
+						
+			<div class="col-md-6">
 
 							{{ =cart_information['cart_information_LOD'][i]['product_name'] }}
 							{{ =cart_information['cart_information_LOD'][i]['product_cost'] }}
 
-						</div>
+			</div>
 
-						<div class="cart_cart_controls">
+			<div class="col-md-1">
 						
-							{{ =cart_information['cart_information_LOD'][i]['product_delete_button'] }}
+				{{ =cart_information['cart_information_LOD'][i]['product_delete_button'] }}
 
-						</div>
+			</div>
 
-					</div>
+		</div>
 
-				{{pass}}
+	{{pass}}
 
-			{{ else: }}
+{{ else: }}
+
+		<div class="row">
+
+			<div class="col-md-8">
 
 				{{ =cart_information['error_message'] }}
 
-			{{ pass }}
-
-
-
-			<br/>
-
-			<form action="{{=URL('default','categories')}}">
-
-			    <input type="submit" value="Back to Shopping">
-
-			</form>
+			</div>
 
 		</div>
+
+{{ pass }}
+
+
+		<form action="{{=URL('default','categories')}}">
+
+			<input type="submit" value="Back to Shopping">
+
+		</form>
 
 	</div>
 
 </div>
 
 
-<div id="main" class="wrapper style4">
+
+
+<div id="main" class="wrapper style2">
 
 	<div id='content' class='container'>
 
@@ -150,7 +139,7 @@
 </div>
 
 
-<div id="main" class="wrapper style2">
+<div id="main" class="wrapper style1">
 
 	<div id='content' class='container'>
 
@@ -170,7 +159,7 @@
 
 </div>
 
-<div id="main" class="wrapper style4">
+<div id="main" class="wrapper style2">
 
 	<div id='content' class='container'>
 
@@ -243,7 +232,7 @@
 </div>
 
 
-<div id="main" class="wrapper style2">
+<div id="main" class="wrapper style1">
 
 	<div id='content' class='container'>
 

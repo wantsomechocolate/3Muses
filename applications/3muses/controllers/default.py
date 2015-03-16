@@ -358,7 +358,7 @@ def cart():
                 srcattr=S3_BUCKET_PREFIX+str(db(db.image.product_name==row.product_id).select().first().s3_url)
 
             ## Create the product_image_url
-            product_image_url=A(IMG(_src=srcattr), _href=URL('default','product',args=[row.product_id]))
+            product_image_url=A(IMG(_src=srcattr, _class='img-thumbnail'), _href=URL('default','product',args=[row.product_id]))
 
             ## Create a delete button for the item
             delete_button=A('X', _href=URL('delete_item_from_cart', vars=dict(pri_key=row.id,redirect_url=URL('cart'))), _class="btn")
