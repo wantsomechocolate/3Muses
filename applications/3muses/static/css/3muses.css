@@ -47,6 +47,10 @@ h2{
 	text-align: right;
 }
 
+.align-hcenter{
+	text-align: center;
+}
+
 .vertical-align{
 	background-image: url("../img/banner.jpg");
     background-size: cover;
@@ -108,4 +112,17 @@ h2{
 
 .product-view-row{
 	padding-top:2em;
+}
+
+
+.cart-view-cart-item-name{
+	font-size: 2em;
+	text-align: center;
+	line-height:2em;
+}
+
+.cart-view-cart-item-cost{
+	font-size: 2em;
+	text-align: center;
+	line-height:2em;
 }
