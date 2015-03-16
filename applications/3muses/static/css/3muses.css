@@ -38,7 +38,14 @@ img{
 	width:100vw;
 }
 
+h2{
+	text-align: center;
+}
 
+
+.align-right{
+	text-align: right;
+}
 
 .vertical-align{
 	background-image: url("../img/banner.jpg");
@@ -78,11 +85,11 @@ img{
 }
 
 .style1{
-	background:gray;
+	background:#C3C3E5;
 }
 
 .style2{
-	background:teal;
+	background:#F1F0FF;
 }
 
 .style1, .style2{

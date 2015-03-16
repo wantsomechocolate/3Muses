@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os,ast
 #########################################################################
-## This scaffolding model makes your app work on Google App Engine too
+## This scaffolding model mak8es your app work on Google App Engine too
 ## File is released under public domain and you can use without limitations
 #########################################################################
 
@@ -9,7 +9,7 @@ import os,ast
 ## be redirected to HTTPS, uncomment the line below:
 # request.requires_https()
 
-sqlite_tf=False
+sqlite_tf=True
 
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
