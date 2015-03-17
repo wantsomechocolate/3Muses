@@ -11,23 +11,23 @@
 
 		<div class="row">
 
-			<div class="col-md-1 col-md-offset-2">
+			<div class="col-md-1 col-md-offset-2 cart-view-cart-item-tn">
 				{{ =cart_information['cart_information_LOD'][i]['product_image_url'] }}
 			</div>
 
 						
-			<div class="col-xs-12 col-md-5 cart-view-cart-item-name">
+			<div class="col-xs-10 col-md-5 cart-view-cart-item-name cart-view-cart-row">
 
 				{{ =cart_information['cart_information_LOD'][i]['product_name'] }}
 
 			</div>
 
-			<div class="col-xs-6 col-md-1 cart-view-cart-item-cost">
+			<div class="col-xs-2 col-md-1 cart-view-cart-item-cost cart-view-cart-row">
 				{{ =cart_information['cart_information_LOD'][i]['product_cost'] }}
 
 			</div>
 
-			<div class="col-xs-6 col-md-1">
+			<div class="col-xs-offset-8 col-xs-4 col-md-offset-0 col-md-1 cart-view-cart-item-button cart-view-cart-row">
 						
 				{{ =cart_information['cart_information_LOD'][i]['product_delete_button'] }}
 
@@ -41,7 +41,7 @@
 
 		<div class="row">
 
-			<div class="col-md-8">
+			<div class="col-md-8 col-md-offset-2 align-hcenter">
 
 				{{ =cart_information['error_message'] }}
 
@@ -57,7 +57,7 @@
 
 				<form action="{{=URL('default','categories')}}">
 
-					<input type="submit" value="Back to Shopping">
+					<input type="submit" value="Back to Shopping" class="btn cart-view-btn">
 
 				</form>
 
@@ -70,15 +70,11 @@
 </div>
 
 
+<div class="container-fluid style2">
 
-
-<div id="main" class="wrapper style2">
-
-	<div id='content' class='container'>
+	<div class='container'>
 
 		<div class='muses_cart' id = "cart_addresses">
-
-			<h1>Where You Are Shipping</h1>
 
 				{{ if address_information['error']==False: }}
 
@@ -102,26 +98,39 @@
 
 					  {{ pass }}
 
+
+					  			<div class="col-md-offset-2 col-md-6">
 					          	{{ =address_information['address_information_LOD'][i]['first_name'] }}
 					          	{{ =address_information['address_information_LOD'][i]['last_name'] }}
-					          	<br/>
+					          	</div>
+					          	
+					          	<div class="col-md-offset-2 col-md-6">
 					          	{{ =address_information['address_information_LOD'][i]['street_address_line_1'] }}
 					          	{{ =address_information['address_information_LOD'][i]['street_address_line_2'] }}
-					          	<br/>
+					          	</div>
+
+					          	<div class="col-md-offset-2 col-md-6">
 					          	{{ =address_information['address_information_LOD'][i]['municipality'] }},
 					          	{{ =address_information['address_information_LOD'][i]['administrative_area'] }}
 					          	{{ =address_information['address_information_LOD'][i]['postal_code'] }}
-					          	<br/>
+					          	</div>
+
+					          	<div class="col-md-offset-2 col-md-6">
 					          	{{ =address_information['address_information_LOD'][i]['country'] }}
+					          	</div>
+
+					       		<div class="col-xs-6 col-md-2">
+					            {{ =A('Edit', _href=URL('edit_address', vars=dict(pri_key=address_information['address_information_LOD'][i]['id'])), _class="btn button") }}
+					            </div>
 					          	
+					          	<div class="col-xs-6 col-md-2">
+					            {{ =A('Delete', _href=URL('delete_address', vars=dict(pri_key=address_information['address_information_LOD'][i]['id'],redirect_url=URL('cart'))), _class="btn button") }}
+					            </div>
+
 					        </div>
 
 					        <div class="cart_address_controls">
-					            {{ =A('Edit', _href=URL('edit_address', vars=dict(pri_key=address_information['address_information_LOD'][i]['id'])), _class="btn button") }}
-					            
-					            <br/>
 
-					            {{ =A('Delete', _href=URL('delete_address', vars=dict(pri_key=address_information['address_information_LOD'][i]['id'],redirect_url=URL('cart'))), _class="btn button") }}
 					        </div>
 
 			            </div>
@@ -132,16 +141,31 @@
 
 				{{ else: }}
 
-					{{ =address_information['error_message'] }}
+					<div class="row">
+
+						<div class="col-md-8 col-md-offset-2 align-hcenter">
+
+							{{ =address_information['error_message'] }}
+
+						</div>
+
+					</div>
 
 				{{ pass }}
 
+			<div class="row">
 
-			<form action="{{=URL('default','add_new_address')}}">
+				<div class="col-md-3 col-md-offset-7 align-right">
 
-			    <input type="submit" value="Add New Address">
+					<form action="{{=URL('default','add_new_address')}}">
 
-			</form>
+					    <input type="submit" value="Add New Address" class="btn cart-view-btn">
+
+					</form>
+
+				</div>
+
+			</div>
 
 		</div>
 
@@ -156,10 +180,11 @@
 
 		<div class='muses_cart' id = "cart_shipping">
 
-			<h1>What Kind Of Shipping?</h1>
+			<!--<h1>What Kind Of Shipping?</h1>-->
 
 				<div id='shipping_target'>
 
+				<!-- All styles and classes are done server side for the shipping-->
 					{{=shipping_information['error_message']}}
 
 				</div>
@@ -175,13 +200,13 @@
 	<div id='content' class='container'>
 
 		<div class='muses_cart' id = 'cart_card'>
-			<h1>How You Are Paying</h1>
+			<!--<h1>How You Are Paying</h1>-->
 
-			<div class="cart_payment_option_container">
+			<div class="col-md-offset-2 col-md-8 align-hcenter">
 				Pay with Card
 			</div>
 
-				<div class="cart_payment_sub_options_container">
+				<div class="col-md-offset-3 col-md-7 align-hcenter">
 
 					{{ if card_information['error']: }}
 						{{ =card_information['error_message'] }}
@@ -189,7 +214,7 @@
 
 						{{ for i in range(len(card_information['card_information_LOD'])): }}
 
-							<div class="cart_payment_sub_option_container">
+							<div class="">
 
 								{{ =card_information['card_information_LOD'][i] }}
 
@@ -201,34 +226,42 @@
 					{{ pass }}
 
 
-					<br/>
-					<form action="{{=URL('default','add_new_card')}}">
-					    <input type="submit" value="Add New Card">
-					</form>
 
 				</div>
 
+					<div class="row">
+
+						<div class="col-md-3 col-md-offset-7 align-right">
+							
+							<form action="{{=URL('default','add_new_card')}}">
+							    <input type="submit" value="Add New Card" class="btn cart-view-btn">
+							</form>
+
+						</div>
+
+					</div>
+
 			<br/>
 
-			<div class="cart_payment_option_container">
+			<div class="col-md-offset-2 col-md-8 align-hcenter cart_payment_option_container">
 				Other Payment Options
 			</div>
 
 				<div class="cart_payment_sub_options_container">
 
-					<div class="cart_payment_sub_option_container">
+					<div class="col-md-offset-3 col-md-7 align-hcenter">
 
 						Paypal
 
 					</div>
 
-					<div class="cart_payment_sub_option_container">
+					<div class="col-md-offset-3 col-md-7 align-hcenter">
 
 						Bitcoin
 						
 					</div>
 
-					<div class="cart_payment_sub_option_container">
+					<div class="col-md-offset-3 col-md-7 align-hcenter">
 
 						Dwolla
 						
@@ -249,9 +282,18 @@
 
 		<div class='muses_cart' id = 'cart_checkout_button_div'>
 
-			<div>
 
-				<a class="button" href="{{=URL('checkout')}}">Checkout</a>
+			<div class="row">
+
+				<div class="col-md-3 col-md-offset-7 align-right">
+
+					<!--<a class="btn btn-sucess" href=" cbcb =URL('checkout') cbcb ">Checkout</a>-->
+
+					<form action="{{=URL('checkout')}}">
+					    <input type="submit" value="Checkout" class="btn btn-success cart-view-btn">
+					</form>
+
+				</div>
 
 			</div>
 
