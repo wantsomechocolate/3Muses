@@ -74,6 +74,20 @@ function update_target(click_class_name_or_all, selected_class_name, view_name, 
 //Let's get ready to rumble
 $(document).ready(function(){
 
+
+// Add classes to auth
+
+$("#auth_user_email").addClass("form-control");
+$("#auth_user_password").addClass("form-control");
+$("#auth_user_remember").addClass("display_inline_block_class");
+$("input[value=Login]").addClass("form-control");
+$("#auth_user_email__label").addClass("display_none_class");
+$("#auth_user_password__label").addClass("display_none_class");
+
+
+
+
+
 // for addresses in the cart
 
     var current_address_id=$('.selected_address').attr('id');
