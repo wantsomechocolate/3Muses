@@ -70,110 +70,121 @@
 </div>
 
 
+
+<!--The Address Container-->
+
 <div class="container-fluid style2">
 
 	<div class='container'>
 
-		<div class='muses_cart' id = "cart_addresses">
-
-				{{ if address_information['error']==False: }}
-
-					{{ for i in range(len(address_information['address_information_LOD'])): }}
-
-					  {{ if address_information['address_information_LOD'][i]['default_address']: }}
-
-						<div class="cart_address_container">
-
-							<div class="cart_address_info  selected_address" id="{{=address_information['address_information_LOD'][i]['id'] }}">
-
-								{{ =INPUT(_type='radio', _name='address', _value=address_information['address_information_LOD'][i]['id'], _checked='checked') }}
-
-					  {{ else: }}
-
-					  	<div class="cart_address_container">
-
-							<div class="cart_address_info" id="{{=address_information['address_information_LOD'][i]['id'] }}">
-
-					            {{ =INPUT(_type='radio', _name='address', _value=address_information['address_information_LOD'][i]['id']) }}
-
-					  {{ pass }}
 
 
-					  			<div class="col-md-offset-2 col-md-6">
-					          	{{ =address_information['address_information_LOD'][i]['first_name'] }}
-					          	{{ =address_information['address_information_LOD'][i]['last_name'] }}
-					          	</div>
+
+
+{{ if address_information['error']==False: }}
+
+	{{ for i in range(len(address_information['address_information_LOD'])): }}
+
+		<div class="row">
+
+			<div class="col-md-offset-2 col-md-6 cart_address_info  selected_address" id="{{ =address_information['address_information_LOD'][i]['id'] }}">
+
+		{{ if address_information['address_information_LOD'][i]['default_address']: }}
+				{{ =INPUT(_type='radio', _name='address', _value=address_information['address_information_LOD'][i]['id'], _checked='checked') }}
+		{{ else: }}
+				{{ =INPUT(_type='radio', _name='address', _value=address_information['address_information_LOD'][i]['id']) }}
+		{{ pass }}
+
+	  			<div class="cart-view-address-info-child">
+	          	{{ =address_information['address_information_LOD'][i]['first_name'] }}
+	          	{{ =address_information['address_information_LOD'][i]['last_name'] }}
+	          	</div>
 					          	
-					          	<div class="col-md-offset-2 col-md-6">
-					          	{{ =address_information['address_information_LOD'][i]['street_address_line_1'] }}
-					          	{{ =address_information['address_information_LOD'][i]['street_address_line_2'] }}
-					          	</div>
+	          	<div class="cart-view-address-info-child">
+	          	{{ =address_information['address_information_LOD'][i]['street_address_line_1'] }}
+	          	{{ =address_information['address_information_LOD'][i]['street_address_line_2'] }}
+	          	</div>
 
-					          	<div class="col-md-offset-2 col-md-6">
-					          	{{ =address_information['address_information_LOD'][i]['municipality'] }},
-					          	{{ =address_information['address_information_LOD'][i]['administrative_area'] }}
-					          	{{ =address_information['address_information_LOD'][i]['postal_code'] }}
-					          	</div>
+	          	<div class="cart-view-address-info-child">
+	          	{{ =address_information['address_information_LOD'][i]['municipality'] }},
+	          	{{ =address_information['address_information_LOD'][i]['administrative_area'] }}
+	          	{{ =address_information['address_information_LOD'][i]['postal_code'] }}
+	          	</div>
 
-					          	<div class="col-md-offset-2 col-md-6">
-					          	{{ =address_information['address_information_LOD'][i]['country'] }}
-					          	</div>
+	          	<div class="cart-view-address-info-child">
+	          	{{ =address_information['address_information_LOD'][i]['country'] }}
+	          	</div>
 
-					       		<div class="col-xs-6 col-md-2">
-					            {{ =A('Edit', _href=URL('edit_address', vars=dict(pri_key=address_information['address_information_LOD'][i]['id'])), _class="btn button") }}
-					            </div>
-					          	
-					          	<div class="col-xs-6 col-md-2">
-					            {{ =A('Delete', _href=URL('delete_address', vars=dict(pri_key=address_information['address_information_LOD'][i]['id'],redirect_url=URL('cart'))), _class="btn button") }}
-					            </div>
 
-					        </div>
+		    </div> <!-- Close the div that can be clicked to pick shipping address -->
 
-					        <div class="cart_address_controls">
 
-					        </div>
+		    <div class="col-md-2 cart-view-address-controls">
 
-			            </div>
-						
+	       		<div class="cart-view-address-controls-child">
+	            {{ =A('Edit', _href=URL('edit_address', vars=dict(pri_key=address_information['address_information_LOD'][i]['id'])), _class="btn button") }}
+	            </div>
+	          	
+	          	<div class="cart-view-address-controls-child">
+	            {{ =A('Delete', _href=URL('delete_address', vars=dict(pri_key=address_information['address_information_LOD'][i]['id'],redirect_url=URL('cart'))), _class="btn button") }}
+	            </div>
+
+		    </div>
+
+
+		</div>			
 						<br/>
 						<br/>
 						<br/>
 
-					{{pass}}
+	{{pass}}  <!--For the for loop-->
 
-				{{ else: }}
+{{ else: }}
 
-					<div class="row">
 
-						<div class="col-md-8 col-md-offset-2 align-hcenter">
+		<div class="row">
 
-							{{ =address_information['error_message'] }}
+			<div class="col-md-8 col-md-offset-2 align-hcenter">
 
-						</div>
-
-					</div>
-
-				{{ pass }}
-
-			<div class="row">
-
-				<div class="col-md-3 col-md-offset-7 align-right">
-
-					<form action="{{=URL('default','add_new_address')}}">
-
-					    <input type="submit" value="Add New Address" class="btn cart-view-btn">
-
-					</form>
-
-				</div>
+				{{ =address_information['error_message'] }}
 
 			</div>
 
 		</div>
 
+
+{{ pass }}
+
+
+
+
+
+
+		<div class="row">
+
+			<div class="col-md-3 col-md-offset-7 align-right">
+
+				<form action="{{=URL('default','add_new_address')}}">
+
+				    <input type="submit" value="Add New Address" class="btn cart-view-btn">
+
+				</form>
+
+			</div>
+
+		</div>
+
+
+
+
+
+
+
 	</div>
 
 </div>
+
+
 
 
 <div id="main" class="wrapper style1">

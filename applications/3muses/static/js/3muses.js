@@ -80,7 +80,7 @@ $(document).ready(function(){
 $("#auth_user_email").addClass("form-control");
 $("#auth_user_password").addClass("form-control");
 $("#auth_user_remember").addClass("display_inline_block_class");
-$("input[value=Login]").addClass("form-control");
+$("input[value=Login]").addClass("form-control btn-success");
 $("#auth_user_email__label").addClass("display_none_class");
 $("#auth_user_password__label").addClass("display_none_class");
 

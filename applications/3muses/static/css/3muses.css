@@ -80,7 +80,9 @@ h2{
 	width:100%;
 }
 
-
+.user-view-button-width-50-percent{
+	width:50%;
+}
 
 
 
@@ -155,16 +157,21 @@ h2{
     width:20em;
 }
 
+.cart-view-cart-row{
+	display:flex;
+}
+
 @media screen and (max-width: 768px) {
     .cart-view-btn {
         width:100%;
     }
+
+    .cart-view-cart-row {
+        display:inherit;
+    }
+
 }
 
-
-.cart-view-cart-row{
-	display:flex;
-}
 
 .cart-view-cart-row-child{
 	
@@ -215,4 +222,18 @@ input[type=radio]{
 
 .cart_address_info div{
 	border:2px solid black;
+}
+
+.cart-view-address-controls{
+	border:2px solid black;
+}
+
+.cart-view-address-info-child{
+	height:3em;
+	line-height:3em;
+	text-align:center;
+}
+
+.cart-vew-address-controls-child{
+	height:6em;
 }
