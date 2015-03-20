@@ -75,14 +75,14 @@ function update_target(click_class_name_or_all, selected_class_name, view_name, 
 $(document).ready(function(){
 
 
-// Add classes to auth
+    // Add classes to auth
 
-$("#auth_user_email").addClass("form-control");
-$("#auth_user_password").addClass("form-control");
-$("#auth_user_remember").addClass("display_inline_block_class");
-$("input[value=Login]").addClass("form-control btn-success");
-$("#auth_user_email__label").addClass("display_none_class");
-$("#auth_user_password__label").addClass("display_none_class");
+    $("#auth_user_email").addClass("form-control");
+    $("#auth_user_password").addClass("form-control");
+    $("#auth_user_remember").addClass("display_inline_block_class");
+    $("input[value=Login]").addClass("form-control btn-success");
+    $("#auth_user_email__label").addClass("display_none_class");
+    $("#auth_user_password__label").addClass("display_none_class");
 
 
 
@@ -92,8 +92,8 @@ $("#auth_user_password__label").addClass("display_none_class");
 
     var current_address_id=$('.selected_address').attr('id');
 
-    $(".cart_address_info").on('click',{
-        click_class_name:"cart_address_info", 
+    $(".cart-view-address-info").on('click',{
+        click_class_name:"cart-view-address-info", 
         selected_class_name:"selected_address", 
         view_name:"ajax_shipping_information.html",
         target_div_id:"shipping_target",
