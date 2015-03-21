@@ -54,20 +54,90 @@ function update_target(click_class_name_or_all, selected_class_name, view_name, 
 
             // alert(obj['shipping_options_LOD']);
 
-            // if ( obj['error_status']=true ) {
 
-            //     $("#"+"shipping_target").html( obj['error_message'] );
+            var newHtml=[]
 
-            // } else {
+            if ( obj['error_status']===true ) {
 
-            //     $("#"+"shipping_target").html( obj['shipping_options_LOD'] );
+                newHtml.push('<div class="row">');
+                     newHtml.push('<div class="col-md-offset-2 col-md-8">')
 
-            // };
+                         newHtml.push(obj['error_message']);
 
-            $("#"+"shipping_target").html( shipping_information );
+                     newHtml.push('</div>');
+                 newHtml.push('</div>');
+
+                 target_html=newHtml.join('');
+
+                 //$("#"+"shipping_target").html( '<div class="col-md-offset-2 col-md-8">' + obj['error_message'] + '</div>');
+
+                 $("#"+"shipping_target").html( target_html );
+
+                 //$("#"+"shipping_target").html( obj['error_message'] );
+
+             } else {
+
+                //alert(obj['shipping_options_LOD'].length);
+                //alert(obj['shipping_options_LOD'][0]['rate_id']);
+
+                for (i=obj['shipping_options_LOD'].length-1;i>=0;i--){
+
+                    newHtml.push('<div class="row cart-view-shipping-row">');
+
+
+                        newHtml.push('<div class="row col-xs-8 col-md-offset-2 col-md-5 cart-view-shipping-row-subset">');
+
+
+                            newHtml.push('<div class="col-md-5 vert-hori-center-parent">');
+                                newHtml.push('<div class="vert-hori-center-child">');
+                                    newHtml.push(obj['shipping_options_LOD'][i]['carrier']);
+                                newHtml.push('</div>');
+                            newHtml.push('</div>');
+
+
+                            newHtml.push('<div class="col-md-7">')
+                                newHtml.push('<div class="vert-hori-center-child">');
+                                    newHtml.push(obj['shipping_options_LOD'][i]['service']);
+                                newHtml.push('</div>');
+                            newHtml.push('</div>');
+
+
+                        newHtml.push('</div>');
+
+
+                        newHtml.push('<div class="row col-xs-5 col-md-3 cart-view-shipping-row-subset">');
+
+                            newHtml.push('<div class="col-md-4">')
+                                newHtml.push('<div class="vert-hori-center-child">');
+                                    newHtml.push(obj['shipping_options_LOD'][i]['rate']);
+                                newHtml.push('</div>');
+                            newHtml.push('</div>');
+
+
+                            newHtml.push('<div class="col-md-8">')
+                                newHtml.push('<div class="vert-hori-center-child">');
+                                    newHtml.push(obj['shipping_options_LOD'][i]['delivery_days']);
+                                newHtml.push('</div>');
+                            newHtml.push('</div>');
+
+                        newHtml.push('</div>');
+
+
+                    newHtml.push('</div>');
+                    newHtml.push('<br/>');                          
+                         
+                };
+                    
+                target_html=newHtml.join('');
+
+                $("#"+"shipping_target").html( target_html );
+                //$("#"+"shipping_target").html( shipping_information );
+
+             };
+
             
         }).error( function (error_message) {
-            alert(error_message['error'])});
+            alert( "Help, I need an adult!" )});
 };
 
 
@@ -103,6 +173,11 @@ $(document).ready(function(){
 
 
 
+// for shipping options in the cart
+
+    $(".cart-view-shipping-row-subset").on("click", function(){
+        alert("The paragraph was clicked.");
+    });
 
 
 
