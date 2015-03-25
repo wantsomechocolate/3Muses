@@ -59,8 +59,8 @@ function update_target(click_class_name_or_all, selected_class_name, view_name, 
 
             if ( obj['error_status']===true ) {
 
-                newHtml.push('<div class="row">');
-                     newHtml.push('<div class="col-md-offset-2 col-md-8">')
+                newHtml.push('<div class="row cart-view-shipping-row">');
+                     newHtml.push('<div class="col-md-offset-2 col-md-8 cart-view-shipping-row-error">')
 
                          newHtml.push(obj['error_message']);
 
@@ -242,5 +242,49 @@ $(document).ready(function(){
     $(".cart_grid_table_cell:contains(is no longer available)").addClass("cart_item_removed")
 
     //alert("6");
+
+    $(function () {
+      $('[data-toggle="popover"]').popover()
+    })
+
+
+    // $(function() {
+    //     var pop = $('.popbtn');
+    //     // var pop = $('[data-toggle="popover"]')
+    //     // var row = $('.row:not(:first):not(:last)');
+    //     // var row = $('.cart-view-cart-row');
+
+    //     pop.popover({
+    //         trigger: 'manual',
+    //         html: true,
+    //         container: 'body',
+    //         placement: 'bottom',
+    //         animation: false,
+    //         content: function() {
+    //             return $('#popover').html();
+    //         }
+    //     });
+
+
+    //     pop.on('click', function(e) {
+    //         pop.popover('toggle');
+    //         pop.not(this).popover('hide');
+    //     });
+
+    //     $(window).on('resize', function() {
+    //         pop.popover('hide');
+    //     });
+
+    //     // row.on('touchend', function(e) {
+    //     //     $(this).find('.popbtn').popover('toggle');
+    //     //     row.not(this).find('.popbtn').popover('hide');
+    //     //     return false;
+    //     // });
+
+    // });
+
+
+
+
 
 });

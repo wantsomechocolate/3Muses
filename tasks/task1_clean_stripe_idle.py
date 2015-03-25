@@ -15,13 +15,13 @@ tables_folder="applications/3muses/databases"
 
 tables_folder_path=os.path.join(cwd,tables_folder)
 
-try:
-        db = DAL(os.environ['HEROKU_POSTGRESQL_SILVER_URL'], pool_size=10, folder=tables_folder, auto_import=True)
-except:
-        with open('/home/wantsomechocolate/Code/API Info/database_urls.txt','r') as fh:
-                text=fh.read()
-                database_urls = ast.literal_eval(text)
-        db = DAL(database_urls['heroku']['3muses']['DATABASE_URL'], pool_size=10, folder=tables_folder, auto_import=True)
+##try:
+##        db = DAL(os.environ['HEROKU_POSTGRESQL_SILVER_URL'], pool_size=10, folder=tables_folder, auto_import=True)
+##except:
+##        with open('/home/wantsomechocolate/Code/API Info/database_urls.txt','r') as fh:
+##                text=fh.read()
+##                database_urls = ast.literal_eval(text)
+##        db = DAL(database_urls['heroku']['3muses']['DATABASE_URL'], pool_size=10, folder=tables_folder, auto_import=True)
 
 ## Consts
 try:
@@ -52,7 +52,7 @@ cursor_id=""
 has_more=True
 
 stripe_list_of_deleted_customers=[]
-stripe_list_of_deleted_customers.append("Test")
+#stripe_list_of_deleted_customers.append("Test")
 
 ## While there are no more pages of users to go through
 while has_more==True:
@@ -75,9 +75,9 @@ while has_more==True:
     ## Check to see if the email of the customer is in the threemuses user list. 
     ## (I should be using stripe id not email for this)
     for stripe_customer in stripe_customer_list_data:
-        three_muses_user=db(db.stripe_customers.stripe_id==stripe_customer['id']).select().first()
-        if not three_muses_user:
-
+        #three_muses_user=db(db.stripe_customers.stripe_id==stripe_customer['id']).select().first()
+        if True: #not three_muses_user:
+                
             hours_since_creation=(utc_seconds-stripe_customer['created'])/3600
 
             if hours_since_creation>=STRIPE_SESSION_RETIRE_HOURS:
@@ -94,7 +94,7 @@ while has_more==True:
     ## This will be false if no more customers to retrieve. True if there are. 
     has_more=stripe_customer_list['has_more']
 
-db.commit()
+#db.commit()
 
 print "Done!"
 #print stripe_list_of_deleted_customers

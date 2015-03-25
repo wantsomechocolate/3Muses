@@ -608,12 +608,12 @@ def cart():
             else:
                 radio_button=INPUT(_type='radio', _name='card', _value=stripe_cards['data'][i]['id'])
 
-            delete_button=A('X', _href=URL('delete_item_from_db_card', vars=dict(customer_id=stripe_customer_token, card_id=stripe_cards['data'][i]['id'])), _class="btn")
+            delete_button=A('X', _href=URL('delete_item_from_db_card', vars=dict(customer_id=stripe_customer_token, card_id=stripe_cards['data'][i]['id'])), _class="btn btn-danger cart-view-payment-card-deletebutton")
 
             card_information_LOD.append(dict(
                 card_radio=radio_button, 
                 card_name=stripe_cards['data'][i]['name'], 
-                cart_last4=stripe_cards['data'][i]['last4'], 
+                card_last4=stripe_cards['data'][i]['last4'], 
                 card_brand=stripe_cards['data'][i]['brand'], 
                 card_exp_mo=stripe_cards['data'][i]['exp_month'], 
                 card_exp_yr=stripe_cards['data'][i]['exp_year'], 
@@ -3775,4 +3775,7 @@ def create_gimp_user():
 
 
 def bootstrap_nav():
+    return dict()
+
+def shopping_cart():
     return dict()
