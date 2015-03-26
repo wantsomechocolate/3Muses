@@ -158,7 +158,7 @@ h2{
 /*general cart styles*/
 
 .cart-view-btn{
-	margin-top:20px;
+	/*margin-top:20px;*/
 }
 
 
@@ -169,6 +169,7 @@ h2{
 	height:5em;
 	padding-left:15px;
 	padding-right:15px;
+	margin-bottom:10px;
 }
 
 .cart-view-btn {
@@ -194,6 +195,7 @@ h2{
 	padding-left:0px !important;
 	padding-right:0px !important;
 	overflow:hidden;
+	box-shadow:2px 2px 5px #888888;
 }
 
 .cart-view-cart-row-child{
@@ -201,11 +203,14 @@ h2{
 }
 
 .cart-view-cart-item-name{
-	background-color: paleturquoise
+	background-color: paleturquoise;
+	box-shadow:2px 2px 5px #888888;
 }
 
 .cart-view-cart-item-cost{
-	background-color: paleturquoise
+	background-color: paleturquoise;
+	box-shadow:2px 2px 5px #888888;
+	border-left:1px solid #888888;
 }
 
 .cart-view-cart-item-remove{
@@ -216,7 +221,14 @@ h2{
 
 .cart-view-cart-item-remove-container{
 	padding:0px;
+	text-align: left !important;
+
 }
+
+.cart-view-cart-controls-popover{
+	height:100%;
+}
+
 
 @media screen and (min-width: 992px) {
 
@@ -224,6 +236,11 @@ h2{
 		height:100%;
 		vertical-align: middle;
 		text-align: center;
+	}
+
+	.cart-view-cart-controls-popover{
+		margin-left:4px;
+		width:100%;
 	}
 
 }
@@ -257,12 +274,16 @@ h2{
 		padding-left:inherit;
 		padding-right:inherit;
 		overflow:inherit;
+
+		/*margin-bottom:10px;*/
 	}
 
 	.cart-view-cart-item-name{
 		font-size: 1em;
 		height:4em !important;
 		position:relative;
+
+		
 	}
 
 	.cart-view-cart-item-cost{
@@ -270,6 +291,8 @@ h2{
 		height:4em !important;
 		position:relative;
 		border-left:2px solid antiquewhite;
+
+
 	}
 
 	.cart-view-cart-item-cost div{
@@ -292,6 +315,11 @@ h2{
 		font-size:1.5em;
 	}
 
+	.cart-view-cart-controls-popover{
+		width:100%;
+		/*margin-top:10px;*/
+	}
+
 }
 
 
@@ -306,11 +334,31 @@ input[type=radio]{
 	display:none;
 }
 
+.cart-view-address-info-container{
+	padding-right: 15px;
+	padding-left: 15px;
+}
+
+.cart-view-address-info{
+	padding-left:0px !important;
+	padding-right:0px !important;
+
+	box-shadow:2px 2px 5px #888888;
+}
+
 .cart-view-address-info div{
 	background-color: paleturquoise;
 	height: 2.5em;
 	line-height: 2.5em;
 	text-align:center;
+}
+
+.cart-view-address-controls{
+	padding:0px;
+}
+
+.cart-view-address-controls-popover{
+	width:100%;
 }
 
 .cart-view-address-controls-child{

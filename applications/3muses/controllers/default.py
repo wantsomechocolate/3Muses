@@ -2792,7 +2792,8 @@ def ajax_shipping_information():
 
     except easypost.Error:
         error_status=True
-        error_message='There was a problem generating the shipping costs for '+str(default_address_id)
+        #error_message='There was a problem generating the shipping costs for '+str(default_address_id)
+        error_message='There was a problem fetching the shipping information'
         return json.dumps(dict(error_status=error_status, error_message=error_message, shipping_options_LOD=[]))
 
     except AttributeError:
