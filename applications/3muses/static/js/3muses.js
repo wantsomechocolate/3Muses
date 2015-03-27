@@ -160,7 +160,11 @@ $(document).ready(function(){
 
 // for addresses in the cart
 
+    $('input[type=radio]:checked').parent().addClass('selected_address');
+
     var current_address_id=$('.selected_address').attr('id');
+    // alert(current_address_id);
+    // alert(current_address_id);
 
     $(".cart-view-address-info").on('click',{
         click_class_name:"cart-view-address-info", 

@@ -304,6 +304,10 @@ def add_new_address(): #http://codepen.io/Angelfire/pen/dJhyr
 
 def cart():
 
+#############################################################################################
+###########--------------------------Initial Logic-------------------------------############
+#############################################################################################
+
     ## If someone tries to mess with the URL in the browser by going to 
     ## cart/arg, It will reload the page without the arg
     if request.args(0) is not None:
@@ -319,7 +323,7 @@ def cart():
         create_gimp_user()
 
 #############################################################################################
-###########-------------------Cart Logic---------------------############
+###########----------------------------Cart Logic--------------------------------############
 #############################################################################################
 
     cart_information_LOD=[]
@@ -409,16 +413,6 @@ def cart():
 
         for j in range(len(address_list)):
 
-            # if address_list[j].default_address==True:
-            #     radio_button=INPUT(_type='radio', _name='address', _value=address_list[j].id, _checked='checked')
-            #     session.default_address_id=address_list[j].id
-            # else:
-            #     radio_button=INPUT(_type='radio', _name='address', _value=address_list[j].id)
-
-            # edit_button=A('<-', _href=URL('edit_db_address', vars=dict(pri_key=address_list[j].id)), _class="btn")
-            
-            # delete_button=A('X', _href=URL('delete_address', vars=dict(pri_key=address_list[j].id, redirect_url=URL('cart'))), _class="btn")
-
             address_information_LOD.append(dict(
                 first_name=address_list[j].first_name,
                 last_name=address_list[j].last_name,
@@ -444,6 +438,10 @@ def cart():
     else:
         shipping_information=dict(error=True, error_message="Generating shipping costs", shipping_options_LOD=[])
 
+
+
+
+## Old shipping code
     # try:
 
     #     shipping_options_LOD=[]
@@ -576,20 +574,10 @@ def cart():
 
 
     card_information_LOD=[]
-    
-
-    ## The headers for the table that I won't need for very much longer
-    ## only applies to cards anyway. 
- 
-
-    ## a grid to fill up and give to table generater, but I might put more of the design in the view. 
-    ## card_grid_table_row_LOL=[]
-
-    ## If the user is logged in. 
-    #if auth.is_logged_in():
 
     ## See if the user has any card information on stripe. 
     try:
+
         ## get stripe id from the db
         stripe_customer_token=db(db.stripe_customers.muses_id==auth.user_id).select()[0].stripe_id
 
@@ -623,104 +611,37 @@ def cart():
 
         card_information=dict(error=False, error_message=None, card_information_LOD=card_information_LOD)
 
-            #card_grid_table_row_LOL.append(card_grid_table_row_list)
-
-        #card_grid=table_generation(card_grid_header_list, card_grid_table_row_LOL, 'card')
-
-        #card_grid.append(DIV(INPUT(_type='radio', _name='card', _value='paypal')))
-        #card_grid.append(DIV("Pay with Paypal"))
-
-        
 
     except IndexError:
+
         #the current user does not yet have a stripe customer token
-        #stripe_customer_token=None
-        #stripe_customer=None
-        #stripe_cards=None
-
-        #card_grid=DIV("You do not have any cards yet.")
-        #card_grid.append(DIV(INPUT(_type='radio', _name='card', _value='paypal')))
-        #card_grid.append(DIV("Pay with Paypal"))
-        #card_grid=DIV("Pay with Paypal")
-
         card_information=dict(error=True, error_message="You do not have any cards", card_information_LOD=[])
 
     except AttributeError:
+
         #the current user does not yet have a stripe customer token
-        # stripe_customer_token=None
-        # stripe_customer=None
-        # stripe_cards=None
-
-        # card_grid=DIV("You do not have any cards yet, or there was a problem accessing your cards.")
-        # card_grid.append(DIV(INPUT(_type='radio', _name='card', _value='paypal')))
-        # card_grid.append(DIV("Pay with Paypal"))
-
         card_information=dict(error=True, error_message="You do not have any cards yet, or there was a problem accessing your cards.", card_information_LOD=[])
 
     except stripe.error.APIConnectionError, stripe.error.APIError:
+
         #No access to the internet, probably
-        # stripe_customer_token=None
-        # stripe_customer=None
-        # stripe_cards=None
-
-        # card_grid=DIV("There was a problem trying to access Stripe")
-        # card_grid.append(DIV(INPUT(_type='radio', _name='card', _value='paypal')))
-        # card_grid.append(DIV("Pay with Paypal"))
-
         card_information=dict(error=True, error_message="You do not have a good enough internet connection to access your cards", card_information_LOD=[])
 
-    # ## If user is not logged in.
-    # else:
 
-    #     if not session.card_info:
-
-    #         card_grid=DIV("You have not entered card information yet")
-    #         card_grid.append(DIV(INPUT(_type='radio', _name='card', _value='paypal')))
-    #         card_grid.append(DIV("Pay with Paypal"))
-
-    #     else:
-
-    #         #radio_button=FORM(INPUT(_type='radio', _name='card', _value=session.card_info['card_id'], _checked='checked'), _action="")
-
-    #         radio_button=INPUT(_type='radio', _name='card', _value=session.card_info['card_id'], _checked='checked')
-
-    #         delete_button=A('X', _href=URL('delete_item_from_session_card'), _class="btn btn-primary button")
-
-    #         card_grid_table_row_list=[
-    #             radio_button,
-    #             session.card_info['name'],
-    #             session.card_info['last4'],
-    #             session.card_info['brand'],
-    #             session.card_info['exp_month'],
-    #             session.card_info['exp_year'],
-    #             #session.card_info['card_id'],
-    #             delete_button,
-    #         ]
-
-    #         card_grid_table_row_LOL.append(card_grid_table_row_list)
-
-    #         card_grid=table_generation(card_grid_header_list, card_grid_table_row_LOL, 'address')
-
-    #         card_grid.append(DIV(INPUT(_type='radio', _name='card', _value='paypal')))
-    #         card_grid.append(DIV("Pay with Paypal"))
+#############################################################################################
+###########--------------------------------Final---------------------------------############
+#############################################################################################
 
     return dict(
 
         cart_information=cart_information,
 
-        #address_information_LOD=address_information_LOD,
         address_information=address_information,
 
-        #address=address,
-        #cart_for_shipping_calculations=cart_for_shipping_calculations,
-        #cart=cart,
-
-
-        #shipping_grid=shipping_grid,
-        #shipping_options_LOD=shipping_options_LOD,
         shipping_information=shipping_information,
 
         card_information=card_information,
+
         )
 
     
@@ -2701,6 +2622,8 @@ def ajax_shipping_information():
 
     ## Prepare an address dict
     address_info=dict(
+        first_name=address.first_name,
+        last_name=address.last_name,
         street_address_line_1=address.street_address_line_1, 
         street_address_line_2=address.street_address_line_2, 
         municipality=address.municipality, 

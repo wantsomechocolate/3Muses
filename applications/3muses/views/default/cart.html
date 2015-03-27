@@ -113,7 +113,7 @@
 
 		<div class="row cart-view-address-info-container">
 
-			<div class="col-md-offset-2 col-md-6 cart-view-address-info  selected_address" id="{{ =address_information['address_information_LOD'][i]['id'] }}">
+			<div class="col-md-offset-2 col-md-6 cart-view-address-info" id="{{ =address_information['address_information_LOD'][i]['id'] }}">
 
 		{{ if address_information['address_information_LOD'][i]['default_address']: }}
 				{{ =INPUT(_type='radio', _name='address', _value=address_information['address_information_LOD'][i]['id'], _checked='checked') }}
@@ -155,11 +155,11 @@
 					data-placement="left" 
 					data-trigger="focus" 
 					data-html="true" 
-					data-content="<div class='col-xs-6 col-md-12 cart-view-address-controls-child'>
+					data-content="<div class='col-xs-6 col-md-12'>
 		            {{ =A('Edit', _href=URL('edit_address', vars=dict(pri_key=address_information['address_information_LOD'][i]['id'])), _class='btn btn-primary cart-view-address-controls-button').xml() }}
 		            </div>
 
-		          	<div class='col-xs-6 col-md-12 cart-view-address-controls-child'>
+		          	<div class='col-xs-6 col-md-12'>
 		            {{ =A('Delete', _href=URL('delete_address', vars=dict(pri_key=address_information['address_information_LOD'][i]['id'],redirect_url=URL('cart'))), _class='btn btn-danger cart-view-address-controls-button').xml() }}
 		            </div>
 		            ">
