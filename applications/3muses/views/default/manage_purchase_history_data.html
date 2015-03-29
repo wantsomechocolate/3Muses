@@ -1,14 +1,16 @@
 {{extend 'layout.html'}}
 
-<div id="main" class="wrapper style4">
+<div class="container-fluid">
 
-	<div id='content' class='container'>
+	<div class='container manage-view-container manage-purchase-history-view-container'>
 
-		<div>
-		View People's past purchases here.
-		You can even currently edit them, but that will probably change at somepoint
+		<div class="manage-view-header">
+			View People's past purchases here.
+			<br/>
+			You can even currently edit them, but that will probably change at somepoint
 		</div>
-		{{=purchase_history_data_grid}}
+
+		{{ =grid }}
 
 	</div>
 

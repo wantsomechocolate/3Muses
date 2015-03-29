@@ -1,14 +1,16 @@
 {{extend 'layout.html'}}
 
-<div id="main" class="wrapper style4">
+<div class="container-fluid">
 
-	<div id='content' class='container'>
+	<div class='container manage-view-container manage-product-images-view-container'>
 
-		<div>
-		Image grid for images associated with each product
-		Add as many images as you'd liked for each product
+		<div class="manage-view-header">
+			Image grid for images associated with each product.
+			<br/>
+			Add as many images as you'd liked for each product.
 		</div>
-		{{=image_grid}}
+
+		{{=grid}}
 
 	</div>
 

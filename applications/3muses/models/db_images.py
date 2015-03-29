@@ -243,9 +243,10 @@ db.define_table('addresses',
 	Field('postal_code'),
 	Field('country'),
 	Field('default_address', 'boolean'),
-	#Field('last_modified', 'datetime'),
-	#Field('easypost_api_response', 'text'),
-	#Field('easypost_api_datetime', 'datetime'),
+	Field('last_modified', 'datetime'),
+	Field('easypost_api_response', 'text'),
+	Field('easypost_api_datetime', 'datetime'),
+	Field('easypost_default_shipping_rate_id'),
 	)
 db.addresses.id.readable=False
 db.addresses.user_id.readable=False

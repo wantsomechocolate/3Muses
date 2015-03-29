@@ -1,15 +1,18 @@
 {{extend 'layout.html'}}
 
-<div id="main" class="wrapper style4">
+<div class="container-fluid">
 
-	<div id='content' class='container'>
+	<div class='container manage-view-container manage-purchase-history-products-view-container'>
 
-		<div>
-		View People's past purchased products here.
-		You can even currently edit them, but that will probably change at somepoint
-		I will actually implement a smartgrid here soon!
+		<div class="manage-view-header">
+			View People's past purchased products here.
+			<br/>
+			You can even currently edit them, but that will probably change at somepoint
+			<br/>
+			I can implement a smartgrid here if you want.
 		</div>
-		{{=purchase_history_products_grid}}
+
+		{{ =grid }}
 
 	</div>
 

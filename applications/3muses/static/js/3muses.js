@@ -1,7 +1,7 @@
 
 
 /*Variable Declarations*/
-var DEFAULT_CHOICE='Choice1';
+
 
 /*Functions*/
 
@@ -84,46 +84,51 @@ function update_target(click_class_name_or_all, selected_class_name, view_name, 
 
                     newHtml.push('<div class="row cart-view-shipping-row">');
 
+                        newHtml.push('<div class="col-md-offset-2 col-md-8 cart-view-shipping-row-wrapper" id="'+obj['shipping_options_LOD'][i]['rate_id']+'">')
 
-                        newHtml.push('<div class="row col-xs-8 col-md-offset-2 col-md-5 cart-view-shipping-row-subset">');
+                            newHtml.push('<div class="col-xs-7 col-md-7 cart-view-shipping-row-subset">');
 
 
-                            newHtml.push('<div class="col-md-5 vert-hori-center-parent">');
-                                newHtml.push('<div class="vert-hori-center-child">');
-                                    newHtml.push(obj['shipping_options_LOD'][i]['carrier']);
+                                newHtml.push('<div class="col-md-5 vert-hori-center-parent">');
+                                    newHtml.push('<div class="vert-hori-center-child">');
+                                        newHtml.push(obj['shipping_options_LOD'][i]['carrier']);
+                                    newHtml.push('</div>');
                                 newHtml.push('</div>');
+
+
+                                newHtml.push('<div class="col-md-7">')
+                                    newHtml.push('<div class="vert-hori-center-child">');
+                                        newHtml.push(obj['shipping_options_LOD'][i]['service']);
+                                    newHtml.push('</div>');
+                                newHtml.push('</div>');
+
+
                             newHtml.push('</div>');
 
 
-                            newHtml.push('<div class="col-md-7">')
-                                newHtml.push('<div class="vert-hori-center-child">');
-                                    newHtml.push(obj['shipping_options_LOD'][i]['service']);
-                                newHtml.push('</div>');
-                            newHtml.push('</div>');
+                            newHtml.push('<div class="col-xs-5 col-md-5 cart-view-shipping-row-subset">');
 
+
+                                newHtml.push('<div class="col-md-4">')
+                                    newHtml.push('<div class="vert-hori-center-child">');
+                                        newHtml.push(obj['shipping_options_LOD'][i]['rate']);
+                                    newHtml.push('</div>');
+                                newHtml.push('</div>');
+
+
+                                newHtml.push('<div class="col-md-8">')
+                                    newHtml.push('<div class="vert-hori-center-child">');
+                                        newHtml.push(obj['shipping_options_LOD'][i]['delivery_days']);
+                                    newHtml.push('</div>');
+                                newHtml.push('</div>');
+
+
+                            newHtml.push('</div>');
 
                         newHtml.push('</div>');
-
-
-                        newHtml.push('<div class="row col-xs-5 col-md-3 cart-view-shipping-row-subset">');
-
-                            newHtml.push('<div class="col-md-4">')
-                                newHtml.push('<div class="vert-hori-center-child">');
-                                    newHtml.push(obj['shipping_options_LOD'][i]['rate']);
-                                newHtml.push('</div>');
-                            newHtml.push('</div>');
-
-
-                            newHtml.push('<div class="col-md-8">')
-                                newHtml.push('<div class="vert-hori-center-child">');
-                                    newHtml.push(obj['shipping_options_LOD'][i]['delivery_days']);
-                                newHtml.push('</div>');
-                            newHtml.push('</div>');
-
-                        newHtml.push('</div>');
-
 
                     newHtml.push('</div>');
+
                     newHtml.push('<br/>');                          
                          
                 };
@@ -137,7 +142,45 @@ function update_target(click_class_name_or_all, selected_class_name, view_name, 
 
             
         }).error( function (error_message) {
-            alert( "Help, I need an adult!" )});
+            alert( "There was an error, your address has not been set." )});
+};
+
+
+function update_shipping_option(value_one_or_all, value_two){
+
+    // Depending on how the function is called it handles the arguments differently, why!?
+    if (arguments.length==1) {
+        value_one=update_shipping_option.arguments[0].data['value_one'];
+        value_two=update_shipping_option.arguments[0].data['value_two'];
+    } else {
+        value_one=value_one_or_all;
+    };
+
+    // alert(value_two);
+
+    $(".cart-view-shipping-row-wrapper").removeClass('cart-view-shipping-row-wrapper-selected');
+    $(this).addClass("cart-view-shipping-row-wrapper-selected");
+
+    shipping_choice_rate_id=$(this).attr('id');
+
+    // alert(shipping_choice_rate_id);
+
+ // Call ajax to sort some stuff out!
+    $.ajax({
+
+            type:"POST",
+            url:"ajax_choose_shipping_option.html",
+            data:{shipping_choice_rate_id: shipping_choice_rate_id},
+
+        }).done(function( obj_json ){
+
+            var obj=jQuery.parseJSON( obj_json );
+
+            // alert( obj['msg'] );
+
+        }).error( function (error_message) {
+            alert( "There was an error setting your shipping option in the db" )});
+
 };
 
 
@@ -179,38 +222,40 @@ $(document).ready(function(){
 
 // for shipping options in the cart
 
-    $(".cart-view-shipping-row-subset").on("click", function(){
-        alert("The paragraph was clicked.");
-    });
+    // $(".cart-view-shipping-row-wrapper").on('click',{
+    //     value_one:"value",
+    //     value_two:"value",
+    // }, update_shipping_option );
+
+    // $(document).on("click",".cart-view-shipping-row-wrapper",function(e){
+    //     alert("I've been clicked"); 
+    // });
+
+    $(document).on("click",".cart-view-shipping-row-wrapper",{
+        value_one:"value one",
+        value_two:"value two",
+    }, update_shipping_option );
+
+    // // I need to add to this function to grey out the checkout button
+    // // until this is finished running
+    // $("input[name='shipping']").click(function(){
+    //     //alert('clicked');
+    //     shipping_choice=$(this).attr('value');
+    //     //alert(shipping_choice);
+    //     $.ajax({
+    //         type: "POST",
+    //         url: "add_shipping_choice_to_session.html",
+    //         data: { shipping_choice: shipping_choice }
+    //     })
+    //         .done(function( result ){
+    //             //alert( "added to sesh" );
+    //             result=jQuery.parseJSON(result)
+    //             //alert( result.shipping_choice )
+    //         });
+    // });
 
 
 
-
-
-
-
-    // I need to add to this function to grey out the checkout button
-    // until this is finished running
-    $("input[name='shipping']").click(function(){
-        
-        //alert('clicked');
-        
-        shipping_choice=$(this).attr('value');
-        //alert(shipping_choice);
-
-        $.ajax({
-
-            type: "POST",
-            url: "add_shipping_choice_to_session.html",
-            data: { shipping_choice: shipping_choice }
-
-        })
-            .done(function( result ){
-                //alert( "added to sesh" );
-                result=jQuery.parseJSON(result)
-                //alert( result.shipping_choice )
-            });
-    });
 
 
     $("input[name='card']").click(function(){
@@ -234,7 +279,7 @@ $(document).ready(function(){
     //alert("3");
 
     $('.web2py_htmltable table').addClass('table-bordered');
-    $('.web2py_htmltable table').addClass('muses_cart_table');
+    $('.web2py_htmltable table').addClass('manage-view-table');
 
     //alert("4");
 

@@ -1,14 +1,15 @@
 {{extend 'layout.html'}}
 
-<div id="main" class="wrapper style4">
+<div class="container-fluid">
 
-	<div id='content' class='container'>
+	<div class='container manage-view-container manage-categories-view-container'>
 
-		<div>
-		Category Grid
-		Category description and picture go here
+		<div class="manage-view-header">
+			Category Grid
+			Category description and picture go here
 		</div>
-		{{=category_grid}}
+		
+		{{=grid}}
 
 	</div>
 

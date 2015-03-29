@@ -428,8 +428,24 @@ input[type=radio]{
 
 /*shipping stuff both*/
 
-.cart-view-shipping-row-subset div{
+.cart-view-shipping-row-wrapper{
 	background-color: paleturquoise;
+	box-shadow:2px 2px 5px #888888;
+	display:inline-block;
+	cursor:pointer;
+}
+
+.cart-view-shipping-row-wrapper-selected{
+	border:2px solid #888;
+}
+
+.cart-view-shipping-row-subset{
+	padding-left:0;
+	padding-right:0;
+}
+
+
+.cart-view-shipping-row-subset div{
 	text-align: center;
 	height:3em;
 
@@ -476,6 +492,10 @@ input[type=radio]{
 /*shipping stuff small screen*/
 
 @media screen and (max-width: 992px) {
+
+	.cart-view-shipping-row-wrapper{
+		width:100%;
+	}
 
 	.cart-view-shipping-row-subset:nth-child(2){
 		float:right;
@@ -538,6 +558,159 @@ input[type=radio]{
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+/*Admin Page Styles*/
+
+.manage-view-container{
+	padding-top:30px;
+	padding-bottom:30px;
+}
+
+.manage-view-header{
+	font-size:2em;
+	text-align: center;
+}
+
+
+.web2py_console{
+	text-align: center;
+	margin-top:20px;
+	margin-bottom:20px;
+}
+
+.web2py_htmltable table{
+	width: 100%;
+	text-align: center;
+}
+
+.web2py_paginator{
+	width: 100%;
+	text-align: center;
+}
+
+.web2py_paginator ul li{
+	display:inline-block;
+	padding:5px;
+}
+
+.w2p_export_menu{
+	text-align: center;
+}
+
+.manage-view-container .web2py_grid .web2py_table .web2py_htmltable table tbody tr td{
+	min-width: 50px;
+}
+
+.manage-view-container .web2py_grid .web2py_table .web2py_htmltable table thead tr th{
+	text-align: center;
+}
+
+
+
+/*Manage Product Images View*/
+
+.manage-product-images-view-container .web2py_grid .web2py_table .web2py_htmltable table tbody tr td:nth-child(2){
+	min-width: 100px;
+}
+
+.manage-product-images-view-container .web2py_grid .web2py_table .web2py_htmltable table tbody tr td:nth-child(3){
+	min-width: 200px;
+}
+
+.manage-product-images-view-container .web2py_grid .web2py_table .web2py_htmltable table tbody tr td:nth-child(4){
+	min-width: 100px;
+}
+
+
+
+/*Manage Products View*/
+
+.manage-products-view-container .web2py_grid .web2py_table .web2py_htmltable table tbody tr td:nth-child(2){
+	min-width: 100px;
+}
+
+.manage-products-view-container .web2py_grid .web2py_table .web2py_htmltable table tbody tr td:nth-child(3){
+	min-width: 100px;
+}
+
+.manage-products-view-container .web2py_grid .web2py_table .web2py_htmltable table tbody tr td:nth-child(4){
+	min-width: 200px;
+}
+
+.manage-products-view-container .web2py_grid .web2py_table .web2py_htmltable table tbody tr td:nth-child(5){
+	min-width: 75px;
+}
+
+.manage-products-view-container .web2py_grid .web2py_table .web2py_htmltable table tbody tr td:nth-child(9){
+	min-width: 100px;
+}
+
+
+/*Manage Categories View*/
+
+.manage-categories-view-container .web2py_grid .web2py_table .web2py_htmltable table tbody tr td:nth-child(2){
+	min-width: 100px;
+}
+
+.manage-categories-view-container .web2py_grid .web2py_table .web2py_htmltable table tbody tr td:nth-child(3){
+	min-width: 200px;
+}
+
+
+
+/* manage-landing-page-images-view-container */
+
+.manage-landing-page-images-view-container .web2py_grid .web2py_table .web2py_htmltable table tbody tr td:nth-child(2){
+	min-width: 200px;
+}
+
+
+
+/* manage-purchase-history-view-container */
+
+.manage-purchase-history-view-container .web2py_grid .web2py_table .web2py_htmltable table tbody tr td:nth-child(3){
+	min-width: 100px;
+}
+
+.manage-purchase-history-view-container .web2py_grid .web2py_table .web2py_htmltable table tbody tr td:nth-child(4){
+	min-width: 100px;
+}
+
+
+
+
+
+/* manage-purchase-history-products-view-container */
+
+.manage-purchase-history-products-view-container .web2py_grid .web2py_table .web2py_htmltable table tbody tr td:nth-child(6){
+	min-width: 100px;
+}
+
+.manage-purchase-history-products-view-container .web2py_grid .web2py_table .web2py_htmltable table tbody tr td:nth-child(7){
+	min-width: 200px;
+}
+
+.manage-purchase-history-products-view-container .web2py_grid .web2py_table .web2py_htmltable table tbody tr td:nth-child(12){
+	min-width: 100px;
+}
+
+
+
+
+/* FOOTER STYLES */
+footer{
+	padding:2em;
+}
 
 
 
