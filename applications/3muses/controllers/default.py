@@ -207,7 +207,7 @@ def add_new_card():
 
         DIV( LABEL('Expiration Year (YYYY)',),DIV(INPUT(_type='integer', _name='exp_year', _class='form-control', requires=IS_INT_IN_RANGE(2014,3000),),),),
 
-        INPUT(_type='submit', _class="btn btn-default"),
+        INPUT(_type='submit', _class="btn btn-info add-new-card-view-btn"),
 
         _class='form-horizontal',
 
@@ -262,6 +262,7 @@ def add_new_card():
                     stripe_id=customer.id,
                     ## might want to add some logic here to get a better email address when using a gimp user!
                     stripeEmail=auth.user.email,
+                    stripe_next_card_id=customer.default_source
                 )
 
             ## if there was a problem connecting to the stripe api
@@ -751,7 +752,7 @@ def checkout():
 
 
 #############################################################################################
-###########------------------------------Card Logic -----------------------------############
+###########---------------------------Payment Logic -----------------------------############
 #############################################################################################
 
 
@@ -769,6 +770,8 @@ def checkout():
         ## Retrieve the default card for the current customer by:
         ## Getting the stripe customer info from db with user_id
         stripe_customer_row=db(db.stripe_customers.muses_id==auth.user_id).select().first()
+
+        print stripe_customer_row
 
         ## From that get the customer id and default card id
         stripe_customer_token=stripe_customer_row.stripe_id
@@ -790,7 +793,7 @@ def checkout():
             approval_url=approval_url,
             ))
 
-        payment_information=dict(error=error, error_message=error_message, information=payment_information_LOD)
+        payment_information=dict(error=error, error_message=error_message, information_LOD=payment_information_LOD)
 
 
     ## If not paying with stripe, then assume they are paying with Paypal
@@ -952,7 +955,8 @@ def pay():
         
 
     ## Get total cost from session (Need to get a lot more than this I think)
-    total_cost_USD=session.total_cost_USD
+    # total_cost_USD=session.total_cost_USD
+    total_cost_USD=session.summary_information['information_LOD'][0]['total_cost_USD']
 
 
     ## To try and charge the card with the stripe id (defualt card should already be set within stripe)
@@ -985,42 +989,42 @@ def pay():
         session_db_record_id=response.session_db_record_id,
 
         ## Shipping Fields
-        shipping_street_address_line_1=session.purchase_history_address_info['street_address_line_1'],
-        shipping_street_address_line_2=session.purchase_history_address_info['street_address_line_2'],
-        shipping_municipality=session.purchase_history_address_info['municipality'],
-        shipping_administrative_area=session.purchase_history_address_info['administrative_area'],
-        shipping_postal_code=session.purchase_history_address_info['postal_code'],
-        shipping_country=session.purchase_history_address_info['country'],
+        shipping_street_address_line_1=session.address_information['information_LOD'][0]['street_address_line_1'],
+        shipping_street_address_line_2=session.address_information['information_LOD'][0]['street_address_line_2'],
+        shipping_municipality=session.address_information['information_LOD'][0]['municipality'],
+        shipping_administrative_area=session.address_information['information_LOD'][0]['administrative_area'],
+        shipping_postal_code=session.address_information['information_LOD'][0]['postal_code'],
+        shipping_country=session.address_information['information_LOD'][0]['country'],
 
         ## Easypost Fields?
-        easypost_shipping_service=session.purchase_history_shipping_info['service'],
-        easypost_shipping_carrier=session.purchase_history_shipping_info['carrier'],
-        easypost_shipment_id=None,#session.purchase_history_shipping_info['id'],
-        easypost_rate_id=None,#session.purchase_history_shipping_info['shipment_id'],
-        easypost_rate=session.purchase_history_shipping_info['rate'],
-        easypost_api_response=session.shipping_json,
+        # easypost_shipping_service=session.purchase_history_shipping_info['service'],
+        # easypost_shipping_carrier=session.purchase_history_shipping_info['carrier'],
+        # easypost_shipment_id=None,#session.purchase_history_shipping_info['id'],
+        # easypost_rate_id=None,#session.purchase_history_shipping_info['shipment_id'],
+        # easypost_rate=session.purchase_history_shipping_info['rate'],
+        # easypost_api_response=session.shipping_json,
 
 
         ## Payment Fields
         payment_service='stripe',
-        payment_confirmation_dictionary=json.dumps(charge, default=lambda x: None),
+        # payment_confirmation_dictionary=json.dumps(charge, default=lambda x: None),
 
 
         ## Legacy Fields
-        payment_method='stripe',
-        payment_stripe_name=charge['card']['name'],
-        payment_stripe_user_id=charge['customer'],
-        payment_stripe_last_4=charge['card']['last4'],
-        payment_stripe_brand=charge['card']['brand'],
-        payment_stripe_exp_month=charge['card']['exp_month'],
-        payment_stripe_exp_year=charge['card']['exp_year'],
-        payment_stripe_card_id=charge['card']['id'],
-        payment_stripe_transaction_id=charge['id'],
+        # payment_method='stripe',
+        # payment_stripe_name=charge['card']['name'],
+        # payment_stripe_user_id=charge['customer'],
+        # payment_stripe_last_4=charge['card']['last4'],
+        # payment_stripe_brand=charge['card']['brand'],
+        # payment_stripe_exp_month=charge['card']['exp_month'],
+        # payment_stripe_exp_year=charge['card']['exp_year'],
+        # payment_stripe_card_id=charge['card']['id'],
+        # payment_stripe_transaction_id=charge['id'],
 
         ## Cart Details
-        cart_base_cost=session.purchase_history_summary_info['cart_cost_USD'],
-        cart_shipping_cost=session.purchase_history_summary_info['shipping_cost_USD'],
-        cart_total_cost=session.purchase_history_summary_info['total_cost_USD'],
+        cart_base_cost=session.summary_information['information_LOD'][0]['cart_cost_USD'],
+        cart_shipping_cost=session.summary_information['information_LOD'][0]['shipping_cost_USD'],
+        cart_total_cost=session.summary_information['information_LOD'][0]['total_cost_USD'],
 
     )
 

@@ -824,6 +824,21 @@ input[type=radio]{
 }
 
 
+.add-new-card-view-container-fluid{
+	background-color: aliceblue
+}
+
+.add-new-card-form{
+	padding-top:20px;
+	padding-bottom:20px;
+}
+
+.add-new-card-view-btn{
+	width:100%;
+	margin-top:20px;
+}
+
+
 
 
 /* FOOTER STYLES */
