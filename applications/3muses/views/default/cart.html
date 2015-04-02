@@ -62,7 +62,7 @@
 
 		<div class="row">
 
-			<div class="col-md-8 col-md-offset-2 align-hcenter">
+			<div class="col-md-8 col-md-offset-2 align-hcenter cart-view-error-text-container">
 
 				{{ =cart_information['error_message'] }}
 
@@ -76,7 +76,7 @@
 
 		<div class="row">
 
-			<div class="col-md-3 col-md-offset-7 align-right">
+			<div class="col-md-3 col-md-offset-7 align-right cart-view-btn-container">
 
 				<form action="{{=URL('default','categories')}}">
 
@@ -182,7 +182,7 @@
 
 		<div class="row">
 
-			<div class="col-md-8 col-md-offset-2 align-hcenter">
+			<div class="col-md-8 col-md-offset-2 align-hcenter cart-view-error-text-container">
 
 				{{ =address_information['error_message'] }}
 
@@ -198,7 +198,7 @@
 
 		<div class="row">
 
-			<div class="col-md-3 col-md-offset-7 align-right">
+			<div class="col-md-3 col-md-offset-7 align-right cart-view-btn-container">
 
 				<form action="{{=URL('default','add_new_address')}}">
 
@@ -231,7 +231,7 @@
 
 		<!-- All styles and classes are done server side for the shipping-->
 		<div class="row">
-			<div class="col-md-offset-2 col-md-8 align-hcenter">	
+			<div class="col-md-offset-2 col-md-8 align-hcenter cart-view-error-text-container">	
 				{{=shipping_information['error_message']}}
 			</div>
 		</div>
@@ -279,21 +279,23 @@
     <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
       <div class="panel-body">
 
-
-
-
-
-
-				<div class="align-hcenter">
+				<div class="align-hcenter cart-view-card-container">
 
 					{{ if card_information['error']: }}
-						{{ =card_information['error_message'] }}
+
+						<div class="cart-view-error-text-container">
+
+							{{ =card_information['error_message'] }}
+
+						</div>
+
+
 					{{ else: }}
 
 						{{ for i in range(len(card_information['card_information_LOD'])): }}
 
 						<div>
-							<div class="col-md-offset-3 col-md-6 cart-view-payment-card-container">
+							<div id= "{{ =card_information['card_information_LOD'][i]['cart_id'] }}" class="col-md-offset-3 col-md-6 cart-view-payment-card-container cart-view-payment-option">
 
 								<div class="cart-view-payment-card-cardnumber">
 									XXXX-XXXX-XXXX-{{ =card_information['card_information_LOD'][i]['card_last4'] }}
@@ -315,11 +317,11 @@
 							</div> <!--Close cart-view-payment-card-container-->
 
 
-							<div class="col-xs-offset-6 col-xs-6 col-md-2 cart-view-payment-card-controls-container">
+							<div class="col-xs-offset-6 col-xs-6 col-md-offset-7 col-md-2 cart-view-payment-card-controls-container">
 
 
 								<button type="button" 
-									class="btn btn-default" 
+									class="btn btn-default cart-view-card-controls-popover" 
 									data-container="body" 
 									data-toggle="popover" 
 									data-placement="left" 
@@ -348,7 +350,7 @@
 				</div>
 
 
-				<div class="align-right">
+				<div class="align-right cart-view-btn-container">
 					
 					<form action="{{=URL('default','add_new_card')}}">
 					    <input type="submit" value="Add New Card" class="btn btn-info cart-view-btn">
@@ -381,15 +383,19 @@
 
 				<div class="cart_payment_sub_options_container">
 
-					<div class="align-hcenter">
+					<div id="paypal" class="align-hcenter col-md-offset-3 col-md-6 cart-view-payment-paypal-container cart-view-payment-option">
 
-						Paypal
+						<div>
+							Paypal
+						</div>
 
 					</div>
 
-					<div class="align-hcenter">
+					<div id="Bitcoin" class="align-hcenter col-md-offset-3 col-md-6 cart-view-payment-bitcoin-container cart-view-payment-option">
 
-						Bitcoin
+						<div>
+							Bitcoin
+						</div>
 						
 					</div>
 

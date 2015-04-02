@@ -184,6 +184,44 @@ function update_shipping_option(value_one_or_all, value_two){
 };
 
 
+function update_payment_option(value_one_or_all, value_two){
+
+    // Depending on how the function is called it handles the arguments differently, why!?
+    if (arguments.length==1) {
+        value_one=update_payment_option.arguments[0].data['value_one'];
+        value_two=update_payment_option.arguments[0].data['value_two'];
+    } else {
+        value_one=value_one_or_all;
+    };
+
+    // alert("a payment option has been clicked");
+
+    $(".cart-view-payment-option").removeClass("cart-view-payment-option-selected");
+    $(this).addClass("cart-view-payment-option-selected");
+
+    payment_method=$(this).attr('id');
+
+    $.ajax({
+
+            type:"POST",
+            url:"ajax_choose_payment_option.html",
+            data:{payment_method: payment_method},
+
+        }).done(function( obj_json ){
+
+            // var obj=jQuery.parseJSON( obj_json );
+
+            // alert( obj['msg'] );
+
+            // alert("Success!");
+
+        }).error( function (error_message) {
+            alert( "There was an error setting your shipping option in the db" )});
+
+};
+
+
+
 //Let's get ready to rumble
 $(document).ready(function(){
 
@@ -235,6 +273,15 @@ $(document).ready(function(){
         value_one:"value one",
         value_two:"value two",
     }, update_shipping_option );
+
+
+    $(document).on("click",".cart-view-payment-option",{
+        value_one:"value one",
+        value_two:"value two",
+    }, update_payment_option );
+
+
+
 
     // // I need to add to this function to grey out the checkout button
     // // until this is finished running

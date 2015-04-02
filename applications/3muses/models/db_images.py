@@ -151,6 +151,42 @@ db.define_table('purchase_history_data',
 	plural=T("Purchase History Data"),
 )
 
+
+
+
+
+db.define_table('purchase_history_data2',
+
+	## 3Muses User Fields
+	Field('user_data', 'text'),
+
+	## Session Fields (These actually come from response not session)
+	Field('response_data', 'text'),
+
+	## Shipping/Address Fields
+	Field('address_data', 'text'),
+
+	## Payment Fields
+	Field('payment_data', 'text'),
+
+	## Summary Fields
+	Field('summary_data', 'text'),
+
+	singular=T("Purchase History Data"),
+	plural=T("Purchase History Data"),
+)
+
+
+
+
+
+
+
+
+
+
+
+
 ## This purchase history product table
 ## is going to save everything about a product
 ## this is becaus I want the site master to be able to reuse products
@@ -158,7 +194,7 @@ db.define_table('purchase_history_data',
 ## Just upload new pictures and keep the desc, weight, etc. 
 db.define_table('purchase_history_products',
 
-	Field('purchase_history_data_id','reference purchase_history_data'),
+	Field('purchase_history_data_id','reference purchase_history_data2'),
 	Field('product_id'),
 	Field('product_qty'),
 

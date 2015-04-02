@@ -1,12 +1,12 @@
 {{extend 'layout.html'}}
 
-<div id="main" class="wrapper style4">
+<div class="conatiner-fluid style1">
 
-	<div id='content' class='container'>
+	<div class='container'>
 
 		<div class='muses_checkout' id = "checkout_cart">
 			<h1>Cart Contents</h1>
-			{{=cart_grid}}
+			{{=cart_information}}
 		</div>
 
 	</div>
@@ -14,13 +14,13 @@
 </div>
 
 
-<div id="main" class="wrapper style2">
+<div class="conatiner-fluid style2">
 
-	<div id='content' class='container'>
+	<div class='container'>
 
 		<div class='muses_checkout' id = "checkout_addresses">
 			<h1>Shipping Address</h1>
-			{{=address_grid}}
+			{{=address_information}}
 		</div>
 
 	</div>
@@ -28,13 +28,13 @@
 </div>
 
 
-<div id="main" class="wrapper style4">
+<div class="conatiner-fluid style1">
 
-	<div id='content' class='container'>
+	<div class='container'>
 
 		<div class='muses_checkout' id = "checkout_shipping">
 			<h1>Shipping Method</h1>
-			{{=shipping_grid}}
+			{{ =shipping_information }}
 		</div>
 
 	</div>
@@ -42,13 +42,13 @@
 </div>
 
 
-<div id="main" class="wrapper style2">
+<div class="conatiner-fluid style2">
 
-	<div id='content' class='container'>
+	<div class='container'>
 
 		<div class='muses_checkout' id = "checkout_card">
-			<h1>Card Information</h1>
-			{{=card_grid}}
+			<h1>Payment Information</h1>
+			{{ =payment_information }}
 
 		</div>
 
@@ -57,13 +57,14 @@
 </div>
 
 
-<div id="main" class="wrapper style4">
+<div class="conatiner-fluid style1">
 
-	<div id='content' class='container'>
+	<div class='container'>
 
 		<div class='muses_checkout' id = "checkout_summary">
 			<h1>Summary Info</h1>
-			{{=summary_grid}}
+			
+			{{ =summary_information }}
 
 		</div>
 
@@ -73,17 +74,19 @@
 
 
 
-<div id="main" class="wrapper style2">
+<div class="conatiner-fluid style2">
 
-	<div id='content' class='container'>
+	<div class='container'>
 
 		<div class='muses_checkout' id = 'checkout_pay_button_div'>
 
 			<div>
-			{{ if session.payment_method=='stripe':}}
-				<a class="button" href="{{=URL('pay')}}">Pay</a>
-			{{else:}}
-				<a class="button" href="{{=approval_url}}" target="_blank">Pay with Paypal</a>
+			{{ if payment_information['information_LOD'][0]['payment_method']=='stripe':}}
+				<a class="btn btn-success" href="{{=payment_information['information_LOD'][0]['approval_url']}}">Pay</a>
+			{{elif payment_information['information_LOD'][0]['payment_method']=='paypal':}}
+				<a class="btn btn-success" href="{{=payment_information['information_LOD'][0]['approval_url']}}" target="_blank">Pay with Paypal</a>
+			{{ else: }}
+				<a class="btn btn-success" href="#">Something is wrong!</a>
 			{{pass}}
 			
 

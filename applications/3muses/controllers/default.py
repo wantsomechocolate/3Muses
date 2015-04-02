@@ -101,6 +101,9 @@ def product():
 
     product_row=db(db.product.id==product_id).select()
 
+    cart_row=db((db.muses_cart.product_id==product_id)&(db.muses_cart.user_id==auth.user_id)).select()
+
+
     cart_form=FORM(
 
         INPUT(
@@ -111,28 +114,53 @@ def product():
             #requires=IS_INT_IN_RANGE(1,2),
         ),BR(),
 
-        INPUT(_type='submit', _class="btn", _value="Add to Cart"),
+        INPUT(_type='submit', _class="btn btn-info product-view-btn", _value="Add/Remove"),
     )
+
+
+    if len(cart_row)==1:
+
+        cart_form[2]['_value']="Remove from Cart"
+
+    else:
+
+        cart_form[2]['_value']="Add to Cart"
+
 
     if cart_form.accepts(request, session):
 
-        ## If the form is accepted, you must be logged in to add item to cart, so make sure
-        if auth.is_logged_in():
-            pass
+        ## If the cart was full when you pressed the button, remove the item
+        if len(cart_row)==1:
+
+            #cart_row=db((db.muses_cart.product_id==product_row[j].id)&(db.muses_cart.user_id==auth.user_id)).select()
+            existing_cart_entry_id=db((db.muses_cart.product_id==product_id)&(db.muses_cart.user_id==auth.user_id)).select()[0].id
+
+            del db.muses_cart[existing_cart_entry_id]
+
+            cart_form[2]['_value']="Add to Cart"
+
+        ## If the cart was empty when you pressed the button
         else:
-            create_gimp_user()
 
-        try:
-            existing_cart_entry=db((db.muses_cart.product_id==product_id)&(db.muses_cart.user_id==auth.user_id)).select()[0]
-            db.muses_cart[existing_cart_entry.id]=dict(product_qty=cart_form.vars.qty)
+            ## If the form is accepted, you must be logged in to add item to cart, so make sure
+            if auth.is_logged_in():
+                pass
+            else:
+                create_gimp_user()
 
-        except IndexError:
+            try:
+                existing_cart_entry=db((db.muses_cart.product_id==product_id)&(db.muses_cart.user_id==auth.user_id)).select()[0]
+                db.muses_cart[existing_cart_entry.id]=dict(product_qty=cart_form.vars.qty)
 
-            db.muses_cart.insert(
-                user_id=auth.user_id,
-                product_id=product_id,
-                product_qty=cart_form.vars.qty,
-            )
+            except IndexError:
+
+                db.muses_cart.insert(
+                    user_id=auth.user_id,
+                    product_id=product_id,
+                    product_qty=cart_form.vars.qty,
+                )
+
+            cart_form[2]['_value']="Remove from Cart"
 
     return dict(
         product_id=product_id,
@@ -140,6 +168,17 @@ def product():
         cart_form=cart_form,
         )
 
+
+# =A('X', _href=URL('delete_item_from_cart', vars=dict(pri_key=cart_row[0].id, redirect_url=URL('product',args=product_row[j].id))), _class="button")
+
+    ## pri_key is the primary key referencing the muses_cart db table, which holds records for 
+    ## every user and every item that user has in their cart. This function can only delete a single item at a time
+    if auth.is_logged_in():
+        del db.muses_cart[request.vars['pri_key']]
+    else:
+        dummy=session.cart.pop(request.vars['pri_key'])
+
+    redirect(request.vars['redirect_url'])
 
 
 ## Meet the artist is under construction
@@ -257,7 +296,7 @@ def add_new_address(): #http://codepen.io/Angelfire/pen/dJhyr
 
         DIV ( LABEL ( 'Country',),DIV(INPUT(_type='text', _name='country', _class='form-control', ),),),
 
-        INPUT(_type='submit', _class="btn btn-default"),
+        INPUT(_type='submit', _class="btn btn-info add-new-address-view-button"),
             
         _class='form-horizontal',
 
@@ -439,135 +478,6 @@ def cart():
         shipping_information=dict(error=True, error_message="Generating shipping costs", shipping_options_LOD=[])
 
 
-
-
-## Old shipping code
-    # try:
-
-    #     shipping_options_LOD=[]
-    #     shipping_information=dict(error=False,error_message=None,shipping_options_LOD=shipping_options_LOD)
-
-
-    #     #get default_address and make a dict out of it
-    #     address=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select().first()
-
-
-    #     cart=db(db.muses_cart.user_id==auth.user_id).select()
-    #     cart_for_shipping_calculations=[]
-    #     cart_weight_oz=0
-    #     cart_cost_USD=0
-
-    #     for row in cart:
-
-    #         product=db(db.product.id==row.product_id).select().first()
-    #         cart_weight_oz+=float(product.weight_oz)*float(row.product_qty)
-    #         cart_cost_USD+=float(product.cost_USD)*float(row.product_qty)
-
-    #         cart_for_shipping_calculations.append(dict(
-    #             product_name=product.product_name,
-    #             product_cost=product.cost_USD,
-    #             product_qty=row.product_qty,
-    #             product_weight=product.weight_oz,
-    #             product_shipping_desc=product.shipping_description,
-    #         ))
-
-
-    #     address_info=dict(
-    #         street_address_line_1=address.street_address_line_1, 
-    #         street_address_line_2=address.street_address_line_2, 
-    #         municipality=address.municipality, 
-    #         administrative_area=address.administrative_area, 
-    #         postal_code=address.postal_code, 
-    #         country=address.country,
-    #     )
-
-
-    #     # now logged in or not we have the address that was chosen, the address info for the address that was chosen
-    #     # and the cart info, and the combined weight of our package. 
-
-    #     shipment=create_shipment(address_info, cart_for_shipping_calculations)
-
-    #     ## Put shipment info in the session to get it later!
-    #     session.shipment_info_from_easypost=shipment
-
-    #     # Generate list of sorted rates
-    #     shipping_rates_for_sorting=[]
-    #     for i in range(len(shipment.rates)):
-    #         shipping_rates_for_sorting.append(float(shipment.rates[i].rate))
-    #     shipping_rates_for_sorting.sort()
-
-
-    #     shipping_grid_header_list=[':)', 'Carrier', 'Service', 'Cost']
-    #     shipping_grid_table_row_LOL=[]
-        
-
-    #     # Build the shipping grid
-    #     # I need to be able to sort the shipping rates based on the rate. 
-    #     for j in range(len(shipping_rates_for_sorting)):
-
-    #         for i in range(len(shipment.rates)):
-
-    #             if shipping_rates_for_sorting[j]==float(shipment.rates[i].rate):
-
-    #                 if shipment.rates[i].service==session.shipping_choice:
-
-    #                 #radio_button=INPUT(_type='radio', _name='shipping', _value=shipment.rates[i].service)
-
-    #                     radio_button=INPUT(_type='radio', _name='shipping', _checked='checked', _value=shipment.rates[i].service)
-
-    #                 else:
-
-    #                     radio_button=INPUT(_type='radio', _name='shipping', _value=shipment.rates[i].service)
-
-    #                 shipping_grid_table_row_list=[
-    #                     radio_button,
-    #                     shipment.rates[i].carrier,
-    #                     camelcaseToUnderscore(shipment.rates[i].service),
-    #                     shipment.rates[i].rate,
-    #                 ]
-
-    #                 shipping_option_dict=dict(
-    #                         carrier=shipment.rates[i].carrier,
-    #                         service=camelcaseToUnderscore(shipment.rates[i].service),
-    #                         rate=shipment.rates[i].rate,
-    #                         rate_id=shipment.rates[i].id,
-    #                         shipment_id=shipment.rates[i].shipment_id,
-    #                         delivery_days=shipment.rates[i].delivery_days,
-    #                     )
-
-    #                 shipping_grid_table_row_LOL.append(shipping_grid_table_row_list)
-    #                 shipping_options_LOD.append(shipping_option_dict)
-    #             else:
-    #                 pass
-
-    #         shipping_grid=table_generation(shipping_grid_header_list, shipping_grid_table_row_LOL, 'shipping')
-
-    # except easypost.Error:
-
-    #     shipping_grid=DIV('There was a problem generating the shipping costs')
-    #     shipping_information['error']=True,
-    #     shipping_information['error_message']='There was a problem generating the shipping costs'
-    #     #shipping_options_LOD.append(dict(error=error, error_message=error_message))
-
-    # except AttributeError:
-
-    #     shipping_grid=DIV('There is nothing in your cart to ship')
-
-    #     shipping_information['error']=True,
-    #     shipping_information['error_message']='There is nothing in your cart to ship'
-    #     #shipping_options_LOD.append(dict(error=error, error_message=error_message))
-        
-    # except TypeError:
-
-    #     shipping_grid=DIV('There is no address to ship to')
-
-    #     shipping_information['error']=True,
-    #     shipping_information['error_message']='There is no address to ship to'
-    #     #shipping_options_LOD.append(dict(error=error, error_message=error_message))
-
-
-
-
 #############################################################################################
 ###########-------------------Card Logic (User and Non User)---------------------############
 #############################################################################################
@@ -605,7 +515,7 @@ def cart():
                 card_brand=stripe_cards['data'][i]['brand'], 
                 card_exp_mo=stripe_cards['data'][i]['exp_month'], 
                 card_exp_yr=stripe_cards['data'][i]['exp_year'], 
-                #stripe_cards['data'][i]['id'], 
+                cart_id=stripe_cards['data'][i]['id'], 
                 card_delete=delete_button,
             ))
 
@@ -625,7 +535,7 @@ def cart():
     except stripe.error.APIConnectionError, stripe.error.APIError:
 
         #No access to the internet, probably
-        card_information=dict(error=True, error_message="You do not have a good enough internet connection to access your cards", card_information_LOD=[])
+        card_information=dict(error=True, error_message="There was a problem connecting to stripe", card_information_LOD=[])
 
 
 #############################################################################################
@@ -663,186 +573,338 @@ def checkout():
 ###########-----------------------Cart Logic -----------------------############
 #############################################################################################
 
+    # import json
+
+    # cart_for_shipping_calculations=[]
+    # cart_weight_oz=cart_cost_USD=0
+    # cart_grid_row_LOL=[]
+    # cart_grid_header_list=["TN",'Product Name', 'Cost']
+
+    # ## If the payment method is paypal, I need to create the payment link so that
+    # ## when the users presses pay they are sent to paypal. This is the beginning of that
+    # cart_for_paypal_LOD=[]
+
+    # ## If the user is logged in and ready to checkout
+    # # if auth.is_logged_in():
+
+    # ## Retrieve cart based on user id
+    # ## I should probably be checking again to make sure that the products are still available. 
+    # ## maybe implement that timer garbage. 
+    # cart=db(db.muses_cart.user_id==auth.user_id).select()
+  
+    # ## for every item the user has in their cart
+    # ## logic placed at the cart level should ensure they have something in their cart,
+    # ## but you never now, I should have a backup plan here. 
+    # for row in cart:
+
+    #     ## Retrieve the product info from the db
+    #     product=db(db.product.id==row.product_id).select().first()
+
+    #     ## Generate a dictionary for shipping information of the current product
+    #     ## I believe this is only used for shipping internationally
+    #     # cart_for_shipping_dict=dict(
+    #     #     product_name=product.product_name, 
+    #     #     product_cost=product.cost_USD,
+    #     #     product_qty=row.product_qty,
+    #     #     product_weight=product.weight_oz,
+    #     #     product_shipping_desc=product.shipping_description,
+    #     # )
+
+    #     ## Append to list shipping info for all product in cart
+    #     cart_for_shipping_calculations.append(
+    #         dict(
+    #             product_name=product.product_name, 
+    #             product_cost=product.cost_USD,
+    #             product_qty=row.product_qty,
+    #             product_weight=product.weight_oz,
+    #             product_shipping_desc=product.shipping_description,
+    #             )
+    #         )
+
+    #     ## Generate a dictionary for the paypal item. 
+    #     # cart_for_paypal_dict=dict(
+    #     #     quantity=str(int(row.product_qty)),
+    #     #     name=product.product_name,
+    #     #     price='{:.2f}'.format(product.cost_USD),
+    #     #     currency='USD',
+    #     #     description=product.shipping_description,
+    #     #     )
+
+    #     ## Append the product dict to the list of dicts for paypal
+    #     cart_for_paypal_LOD.append(
+    #         dict(   
+    #             quantity=str(int(row.product_qty)),
+    #             name=product.product_name,
+    #             price='{:.2f}'.format(product.cost_USD),
+    #             currency='USD',
+    #             description=product.shipping_description,
+    #             )
+    #         )
+
+
+    #     ## Keeping track of cost and weight for presentation/display purposes.
+    #     cart_weight_oz+=float(product.weight_oz)*float(row.product_qty)
+    #     cart_cost_USD+=float(product.cost_USD)*float(row.product_qty)
+    #     row_cost_USD=float(product.cost_USD)*float(row.product_qty)
+
+    #     ## Get the thumbnail image for each product
+    #     if sqlite_tf:
+    #         srcattr=URL('download',db(db.image.product_name==row.product_id).select().first().s3_url)
+    #     else:
+    #         srcattr=S3_BUCKET_PREFIX+str(db(db.image.product_name==row.product_id).select().first().s3_url)
+    #     product_image_url=A(IMG(_src=srcattr), _href=URL('default','product',args=[row.product_id]))
+
+    #     ## Add product information to the row list and then add that to the list of lists(rows)
+    #     cart_grid_table_row_list=[product_image_url, product.product_name, row_cost_USD]
+
+    #     cart_grid_row_LOL.append(cart_grid_table_row_list)
+
+
+
+    session.summary_data={}
+
+
+
+    import json
 
     cart_for_shipping_calculations=[]
+
     cart_weight_oz=cart_cost_USD=0
-    cart_grid_row_LOL=[]
-    cart_grid_header_list=["TN",'Product Name', 'Cost']
 
     ## If the payment method is paypal, I need to create the payment link so that
     ## when the users presses pay they are sent to paypal. This is the beginning of that
     cart_for_paypal_LOD=[]
 
-    ## If the user is logged in and ready to checkout
-    if auth.is_logged_in():
 
-        ## Retrieve cart based on user id
-        ## I should probably be checking again to make sure that the products are still available. 
-        ## maybe implement that timer crap. 
-        cart=db(db.muses_cart.user_id==auth.user_id).select()
-      
-        ## for every item the user has in their cart
-        ## logic placed at the cart level should ensure they have something in their cart,
-        ## but you never now, I should have a backup plan here. 
-        for row in cart:
+    cart_information_LOD=[]
+    cart_information=dict(error=False,error_message=None,information_LOD=cart_information_LOD)
 
-            ## Retrieve the product info from the db
+    ## Retrieve the current items from the users cart)
+    ## There is no check here to not include items that are sold out or no
+    ## longer active, That happens later.
+    cart_db=db(db.muses_cart.user_id==auth.user_id).select()
+
+    ## If cart turns out to be empty, set cart_grid so the view can have
+    ## something to display. but now cart_grid_table_row_LOL will be empty,
+    ## which should disallow the user from pressing the checkout button. 
+    if not cart_db:
+
+        cart_information['error']=True
+        cart_information['error_message']="Please go back and add something to your cart"
+        cart_is_empty=True
+
+    ## If the cart is not empty
+    else:
+        
+        cart_is_empty=False
+        ## For each product in the cart
+        for row in cart_db:
+
+            ## Retreive product info from the db
             product=db(db.product.id==row.product_id).select().first()
 
-            ## Generate a dictionary for shipping information of the current product
-            ## I believe this is only used for shipping internationally
-            cart_for_shipping_dict=dict(
-                product_name=product.product_name, 
-                product_cost=product.cost_USD,
-                product_qty=row.product_qty,
-                product_weight=product.weight_oz,
-                product_shipping_desc=product.shipping_description,
-            )
-
-            ## Append to list shipping info for all product in cart
-            cart_for_shipping_calculations.append(cart_for_shipping_dict)
-
-            ## Generate a dictionary for the paypal item. 
-            cart_for_paypal_dict=dict(
-                quantity=str(int(row.product_qty)),
-                name=product.product_name,
-                price='{:.2f}'.format(product.cost_USD),
-                currency='USD',
-                description=product.shipping_description,
-                )
-
-            ## Append the product dict to the list of dicts for paypal
-            cart_for_paypal_LOD.append(cart_for_paypal_dict)
-
-
-            ## Keeping track of cost and weight for presentation/display purposes.
-            cart_weight_oz+=float(product.weight_oz)*float(row.product_qty)
-            cart_cost_USD+=float(product.cost_USD)*float(row.product_qty)
-            row_cost_USD=float(product.cost_USD)*float(row.product_qty)
-
-            ## Get the thumbnail image for each product
+            ## If using a local db get the product image locally
             if sqlite_tf:
                 srcattr=URL('download',db(db.image.product_name==row.product_id).select().first().s3_url)
+            
+            ## For the more common case, get the image from aws s3
             else:
                 srcattr=S3_BUCKET_PREFIX+str(db(db.image.product_name==row.product_id).select().first().s3_url)
-            product_image_url=A(IMG(_src=srcattr), _href=URL('default','product',args=[row.product_id]))
 
-            ## Add product information to the row list and then add that to the list of lists(rows)
-            cart_grid_table_row_list=[product_image_url, product.product_name, row_cost_USD]
-            cart_grid_row_LOL.append(cart_grid_table_row_list)
+            ## Create the product_image_url
+            product_image_url=A(IMG(_src=srcattr, _class='img-thumbnail cart-view-cart-tn'), _href=URL('default','product',args=[row.product_id]))
+
+            # ## Create a delete button for the item
+            # delete_button=A('X', _href=URL('delete_item_from_cart', vars=dict(pri_key=row.id,redirect_url=URL('cart'))), _class="btn btn-danger cart-view-cart-item-remove")
+
+            # cart_item_dict=dict(
+            #     product_image_url=product_image_url,
+            #     product_name=product.product_name,
+            #     product_cost=product.cost_USD,
+            #     product_delete_button=delete_button,
+            #     product_active=product.is_active,
+            #     )
 
 
-    ## If the user is not logged in but ready to checkout. 
-    else:
-
-        for key, value in session.cart.iteritems():
-
-            product=db(db.product.id==key).select().first()
-
-            cart_for_shipping_dict=dict(
-                product_name=product.product_name, 
-                product_cost=product.cost_USD,
-                product_qty=value,
-                product_weight=product.weight_oz,
-                product_shipping_desc=product.shipping_description,
-            )
-
-            cart_for_shipping_calculations.append(cart_for_shipping_dict)
-
-            cart_for_paypal_dict=dict(
-                quantity=str(int(value)),
-                name=product.product_name,
-                price='{:.2f}'.format(product.cost_USD),
-                currency='USD',
-                description=product.shipping_description,
+            cart_for_shipping_calculations.append(
+                dict(
+                    product_name=product.product_name, 
+                    product_cost=product.cost_USD,
+                    product_qty=row.product_qty,
+                    product_weight=product.weight_oz,
+                    product_shipping_desc=product.shipping_description,
+                    )
                 )
 
-            ## Append the product dict to the list of dicts for paypal
-            cart_for_paypal_LOD.append(cart_for_paypal_dict)
 
-            # Value is from session 
-            cart_weight_oz+=float(product.weight_oz)*float(value)
-            cart_cost_USD+=float(product.cost_USD)*float(value)
-            row_cost_USD=float(product.cost_USD)*float(value)
+            cart_for_paypal_LOD.append(
+                dict(   
+                    quantity=str(int(row.product_qty)),
+                    name=product.product_name,
+                    price='{:.2f}'.format(product.cost_USD),
+                    currency='USD',
+                    description=product.shipping_description,
+                    )
+                )
 
-            if sqlite_tf:
-                srcattr=URL('download',db(db.image.product_name==key).select().first().s3_url)
-            else:
-                srcattr=S3_BUCKET_PREFIX+str(db(db.image.product_name==key).select().first().s3_url)
-            product_image_url=A(IMG(_src=srcattr), _href=URL('default','product',args=[key]))
 
-            cart_grid_table_row_list=[product_image_url, product.product_name, row_cost_USD]
-            cart_grid_row_LOL.append(cart_grid_table_row_list)
+            cart_information_LOD.append(
+                dict(
+                        product_image_url=product_image_url,
+                        product_name=product.product_name,
+                        product_cost=product.cost_USD,
+                        #product_delete_button=delete_button,
+                        product_active=product.is_active,
+                    )
+                )
+
+            cart_weight_oz+=float(product.weight_oz)*float(row.product_qty)
+            cart_cost_USD+=float(product.cost_USD)*float(row.product_qty)
+            
+            ## This was from a time when you could buy more than one of something. 
+            # row_cost_USD=float(product.cost_USD)*float(row.product_qty)
+
+            ## If the item is no longer active, remove it from the cart.
+            if not product.is_active:
+                db(db.muses_cart.product_id==product.id).delete()
+
+
+
+
+
+
+
+
+
+
+
+
+    # ## If the user is not logged in but ready to checkout. 
+    # else:
+
+    #     for key, value in session.cart.iteritems():
+
+    #         product=db(db.product.id==key).select().first()
+
+    #         cart_for_shipping_dict=dict(
+    #             product_name=product.product_name, 
+    #             product_cost=product.cost_USD,
+    #             product_qty=value,
+    #             product_weight=product.weight_oz,
+    #             product_shipping_desc=product.shipping_description,
+    #         )
+
+    #         cart_for_shipping_calculations.append(cart_for_shipping_dict)
+
+    #         cart_for_paypal_dict=dict(
+    #             quantity=str(int(value)),
+    #             name=product.product_name,
+    #             price='{:.2f}'.format(product.cost_USD),
+    #             currency='USD',
+    #             description=product.shipping_description,
+    #             )
+
+    #         ## Append the product dict to the list of dicts for paypal
+    #         cart_for_paypal_LOD.append(cart_for_paypal_dict)
+
+    #         # Value is from session 
+    #         cart_weight_oz+=float(product.weight_oz)*float(value)
+    #         cart_cost_USD+=float(product.cost_USD)*float(value)
+    #         row_cost_USD=float(product.cost_USD)*float(value)
+
+    #         if sqlite_tf:
+    #             srcattr=URL('download',db(db.image.product_name==key).select().first().s3_url)
+    #         else:
+    #             srcattr=S3_BUCKET_PREFIX+str(db(db.image.product_name==key).select().first().s3_url)
+    #         product_image_url=A(IMG(_src=srcattr), _href=URL('default','product',args=[key]))
+
+    #         cart_grid_table_row_list=[product_image_url, product.product_name, row_cost_USD]
+    #         cart_grid_row_LOL.append(cart_grid_table_row_list)
 
 
     ## Generate the table, takes header info, row info, and then css class prefix
-    cart_grid=table_generation(cart_grid_header_list, cart_grid_row_LOL, 'checkout_cart')
+    #cart_grid=table_generation(cart_grid_header_list, cart_grid_row_LOL, 'checkout_cart')
 
     ## Add total cart cost to the session for receipt info testing
     session.cart_cost_USD=cart_cost_USD
+
+    session.summary_data['cart_cost_USD']=cart_cost_USD
 
 
 #############################################################################################
 ###########--------------------------Address Logic ------------------------------############
 #############################################################################################
 
-    address_grid_header_list=[
-        'Street Line 1', 
-        'Street Line 2', 
-        'Municipality',
-        'State or Equivilent',
-        'Postal Code',
-        'Country',
-    ]
+    # address_grid_header_list=[
+    #     'Street Line 1', 
+    #     'Street Line 2', 
+    #     'Municipality',
+    #     'State or Equivilent',
+    #     'Postal Code',
+    #     'Country',
+    # ]
 
     ## If the user is logged in and ready to checkout
-    if auth.is_logged_in():
+    # if auth.is_logged_in():
 
-        ## Get the address that they have as their default address
-        address=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select().first()
+    ## Get the address that they have as their default address
+    error=False
+    error_message=None
+    address_information_LOD=[]
 
-        address_dict=dict(
-            street_address_line_1=address.street_address_line_1, 
-            street_address_line_2=address.street_address_line_2, 
-            municipality=address.municipality, 
-            administrative_area=address.administrative_area, 
-            postal_code=address.postal_code, 
-            country=address.country,
-        )
+    address=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select().first()
 
-        address_grid_row_list=[
-            address.street_address_line_1, 
-            address.street_address_line_2, 
-            address.municipality, 
-            address.administrative_area, 
-            address.postal_code, 
-            address.country,
-        ]
+    address_information_LOD.append(dict(
+        first_name=address.first_name,
+        last_name=address.last_name,
+        street_address_line_1=address.street_address_line_1, 
+        street_address_line_2=address.street_address_line_2, 
+        municipality=address.municipality, 
+        administrative_area=address.administrative_area, 
+        postal_code=address.postal_code, 
+        country=address.country,
+    ))
+
+    ## This is how the cart logic works
+    error=False
+    error_message=None
+    address_information=dict( error=error, error_message=error_message, information_LOD=address_information_LOD )
+
+    # address_grid_row_list=[
+    #     address.first_name,
+    #     address.last_name,
+    #     address.street_address_line_1, 
+    #     address.street_address_line_2, 
+    #     address.municipality, 
+    #     address.administrative_area, 
+    #     address.postal_code, 
+    #     address.country,
+    # ]
       
-    ## If the user is not logged in but ready to checkout out
-    else:
+    # ## If the user is not logged in but ready to checkout out
+    # else:
 
-        ## You can get everything you need from the session. 
-        address_dict=dict(
-            street_address_line_1=session.address['street_address_line_1'],
-            street_address_line_2=session.address['street_address_line_2'],
-            municipality=session.address['municipality'],
-            administrative_area=session.address['administrative_area'],
-            postal_code=session.address['postal_code'],
-            country=session.address['country'],
-        )
+    #     ## You can get everything you need from the session. 
+    #     address_dict=dict(
+    #         street_address_line_1=session.address['street_address_line_1'],
+    #         street_address_line_2=session.address['street_address_line_2'],
+    #         municipality=session.address['municipality'],
+    #         administrative_area=session.address['administrative_area'],
+    #         postal_code=session.address['postal_code'],
+    #         country=session.address['country'],
+    #     )
        
-        address_grid_row_list=[
-            session.address['street_address_line_1'], 
-            session.address['street_address_line_2'], 
-            session.address['municipality'], 
-            session.address['administrative_area'], 
-            session.address['postal_code'], 
-            session.address['country'],
-        ]
+    #     address_grid_row_list=[
+    #         session.address['street_address_line_1'], 
+    #         session.address['street_address_line_2'], 
+    #         session.address['municipality'], 
+    #         session.address['administrative_area'], 
+    #         session.address['postal_code'], 
+    #         session.address['country'],
+    #     ]
 
 
-    address_grid=table_generation(address_grid_header_list, [address_grid_row_list], 'checkout_address')
+    #address_grid=table_generation(address_grid_header_list, [address_grid_row_list], 'checkout_address')
 
 
 
@@ -856,42 +918,90 @@ def checkout():
     ## I have to change that right now. 
     # shipment=create_shipment(address_dict, cart_for_shipping_calculations)
 
-    shipment=session.shipment_info_from_easypost
 
-    shipping_grid_header_list=['Carrier', 'Service', 'Cost']
 
-    shipping_grid_row_list=[]
-    shipping_dict={}
+    shipment=json.loads(address.easypost_api_response)
 
-    match_found=False
+    shipping_option_id=address.easypost_default_shipping_rate_id
+
     shipping_cost_USD=0
-    for rate in shipment.rates:
-        if rate.service==session.shipping_choice:
-            #create grid
 
-            shipping_grid_row_list=[rate.carrier, rate.service, rate.rate, ]
-            shipping_dict=dict(
-                carrier=rate.carrier,
-                service=rate.service,
-                rate=rate.rate,
-            )
+    error=False
+    error_message=None
+    shipping_information_LOD=[]
 
-            shipping_cost_USD=float(rate.rate)
-
-            shipping_grid=table_generation(shipping_grid_header_list, [shipping_grid_row_list], 'checkout_shipping')
-
-            match_found=True
+    for rate in shipment['rates']:
+        if rate['id']==shipping_option_id:
+            shipping_information_LOD.append(dict(
+                carrier=rate['carrier'],
+                service=rate['service'],
+                cost=rate['rate'],
+                delivery_date=rate['delivery_date'],
+                ))
+            shipping_cost_USD=float(rate['rate'])
         else:
             pass
 
-    if match_found==False:
-        shipping_grid=DIV("Go back to cart and select a shipping service")
-    else:
-        pass
+    if len(shipping_information_LOD)==0:
+        error=True
+        error_message="Please go back to the cart and select an address"
+
+    shipping_information=dict(error=error, error_message=error_message, information_LOD=shipping_information_LOD)
+
+    ## I should put some logic here to pick the cheaper or more expensive rate if somehow there is an issue where a single rateid is used on multple option in the api resonse. 
+    # elif len(shipping_information)>1:
+    #     error=True
+    #     error_message="The "
+    #     shipping_information=[]
+
+    session.summary_data['shipping_cost_USD']=shipping_cost_USD
 
     total_cost_USD=cart_cost_USD+shipping_cost_USD
 
-    session.total_cost_USD=total_cost_USD
+    session.summary_data['total_cost_USD']=total_cost_USD
+
+    #shipping_grid=[shipment,shipping_option_id]
+
+
+
+
+
+    # shipment=session.shipment_info_from_easypost
+
+    # shipping_grid_header_list=['Carrier', 'Service', 'Cost']
+
+    # shipping_grid_row_list=[]
+    # shipping_dict={}
+
+    # match_found=False
+    # shipping_cost_USD=0
+    # for rate in shipment.rates:
+    #     if rate.service==session.shipping_choice:
+    #         #create grid
+
+    #         shipping_grid_row_list=[rate.carrier, rate.service, rate.rate, ]
+    #         shipping_dict=dict(
+    #             carrier=rate.carrier,
+    #             service=rate.service,
+    #             rate=rate.rate,
+    #         )
+
+    #         shipping_cost_USD=float(rate.rate)
+
+    #         shipping_grid=table_generation(shipping_grid_header_list, [shipping_grid_row_list], 'checkout_shipping')
+
+    #         match_found=True
+    #     else:
+    #         pass
+
+    # if match_found==False:
+    #     shipping_grid=DIV("Go back to cart and select a shipping service")
+    # else:
+    #     pass
+
+    # total_cost_USD=cart_cost_USD+shipping_cost_USD
+
+    # session.total_cost_USD=total_cost_USD
 
 
 
@@ -899,222 +1009,262 @@ def checkout():
 ###########------------------------------Card Logic -----------------------------############
 #############################################################################################
 
-    card_grid_header_list=[
-        'Name', 
-        'Last 4', 
-        'Card Type',
-        'Expiration Month',
-        'Expiration Year', 
-    ]
+    # card_grid_header_list=[
+    #     'Name', 
+    #     'Last 4', 
+    #     'Card Type',
+    #     'Expiration Month',
+    #     'Expiration Year', 
+    # ]
 
 
-    if auth.is_logged_in():
+    # if auth.is_logged_in():
 
         ## If for some reason the payment method wasn't set, set an assumption?
         #if not session.payment_method:
         #    session.payment_method='stripe'
 
-        if session.payment_method=='stripe':
+    error=False
+    error_message=None
+    payment_information_LOD=[]
 
-            ## This is the url attached tothe pay button
-            ## for paypal it will be more complicated. 
-            approval_url=URL('pay')
-
-            ## Retrieve the default card for the current customer by:
-            ## Getting the stripe customer info from db with user_id
-            stripe_customer_row=db(db.stripe_customers.muses_id==auth.user_id).select().first()
-
-            ## From that get the customer id and default card id
-            stripe_customer_token=stripe_customer_row.stripe_id
-            stripe_customer_card=stripe_customer_row.stripe_next_card_id
-
-            ## Use stripe API to retrieve customer and then to retrieve card from customer
-            stripe_customer=stripe.Customer.retrieve(stripe_customer_token)
-            stripe_card=stripe_customer.cards.retrieve(stripe_customer_card)
-
-            ## Generate table information
-            card_grid_row_list=[
-                stripe_card['name'],
-                stripe_card['last4'], 
-                stripe_card['brand'], 
-                stripe_card['exp_month'], 
-                stripe_card['exp_year'],
-            ]
+    
 
 
-        ## If not paying with stripe, then assume they are paying with Paypal
-        ## For a logged in user and a non logged in user, the functionality
-        ## right now is identical
+    if session.payment_method=='stripe':
+
+        ## This is the url attached tothe pay button
+        ## for paypal it will be more complicated. 
+        approval_url=URL('pay')
+
+        ## Retrieve the default card for the current customer by:
+        ## Getting the stripe customer info from db with user_id
+        stripe_customer_row=db(db.stripe_customers.muses_id==auth.user_id).select().first()
+
+        ## From that get the customer id and default card id
+        stripe_customer_token=stripe_customer_row.stripe_id
+        stripe_customer_card=stripe_customer_row.stripe_next_card_id
+
+        ## Use stripe API to retrieve customer and then to retrieve card from customer
+        stripe_customer=stripe.Customer.retrieve(stripe_customer_token)
+        stripe_card=stripe_customer.cards.retrieve(stripe_customer_card)
+
+        ## Generate table information
+        # card_grid_row_list=[
+        #     stripe_card['name'],
+        #     stripe_card['last4'], 
+        #     stripe_card['brand'], 
+        #     stripe_card['exp_month'], 
+        #     stripe_card['exp_year'],
+        # ]
+
+
+        payment_information_LOD.append(dict(
+            payment_method='stripe',
+            card_name=stripe_card['name'],
+            card_last4=stripe_card['last4'], 
+            card_brand=stripe_card['brand'], 
+            card_exp_mo=stripe_card['exp_month'], 
+            card_exp_year=stripe_card['exp_year'],
+            approval_url=approval_url,
+            ))
+
+        payment_information=dict(error=error, error_message=error_message, information=payment_information_LOD)
+
+
+    ## If not paying with stripe, then assume they are paying with Paypal
+    ## For a logged in user and a non logged in user, the functionality
+    ## right now is identical
+    elif session.payment_method=='paypal':
+
+        ## import all the helper stuff
+        import paypalrestsdk
+        from aux import get_env_var
+        from aux import id_generator
+        from aux import paypal_create_payment_dict
+
+        ## Get the paypal keys
+        PAYPAL_CLIENT_ID=get_env_var('paypal',PRODUCTION_STATUS,'PAYPAL_CLIENT_ID')
+        PAYPAL_CLIENT_SECRET=get_env_var('paypal',PRODUCTION_STATUS,'PAYPAL_CLIENT_SECRET')
+
+        ## configure paypal api with keys
+        paypalrestsdk.configure({
+            "mode": PAYPAL_MODE, # sandbox or live
+            "client_id": PAYPAL_CLIENT_ID,
+            "client_secret": PAYPAL_CLIENT_SECRET })
+
+
+        invoice_number=id_generator()
+
+
+        ## cart_for_paypal_LOD is from the cart logic section
+        payment_dict=paypal_create_payment_dict(
+            intent='sale',
+            payment_method='paypal', 
+            redirect_urls=dict(
+                return_url="https://threemusesglass.herokuapp.com/paypal_confirmation",
+                cancel_url="https://threemusesglass.herokuapp.com"),
+            cost_dict=dict(
+                shipping_cost_USD=shipping_cost_USD,
+                cart_cost_USD=cart_cost_USD,
+                total_cost_USD=total_cost_USD),
+            transaction_description='Purchase from ThreeMusesGlass',
+            invoice_number=invoice_number,
+            items_paypal_list_of_dicts=cart_for_paypal_LOD,)
+
+
+        payment=paypalrestsdk.Payment(payment_dict)
+
+        if payment.create():
+            status="Created successfully"
+            approval_url=payment['links'][1]['href']
+            session.expect_paypal_webhook=True
+            #session.payment_id=payment
         else:
-
-            ## import all the helper stuff
-            import paypalrestsdk
-            from aux import get_env_var
-            from aux import id_generator
-            from aux import paypal_create_payment_dict
-
-            ## Get the paypal keys
-            PAYPAL_CLIENT_ID=get_env_var('paypal',PRODUCTION_STATUS,'PAYPAL_CLIENT_ID')
-            PAYPAL_CLIENT_SECRET=get_env_var('paypal',PRODUCTION_STATUS,'PAYPAL_CLIENT_SECRET')
-
-            ## configure paypal api with keys
-            paypalrestsdk.configure({
-                "mode": PAYPAL_MODE, # sandbox or live
-                "client_id": PAYPAL_CLIENT_ID,
-                "client_secret": PAYPAL_CLIENT_SECRET })
+            status=payment.error
+            approval_url=status
 
 
-            invoice_number=id_generator()
+        payment_information_LOD.append(dict(
+
+            payment_method='paypal',
+            approval_url=approval_url,
+
+            ))
+
+        payment_information=dict(error=error, error_message=error_message, information_LOD=payment_information_LOD)
+
+        # card_grid=DIV('You are using Paypal for this purchase')
+
+        # card_grid_header_list=[
+        #     'Name', 
+        #     'Email', 
+        #     'Payment Type',
+        # ]
+
+        # card_grid_row_list=[
+        #     'Name',
+        #     'Email',
+        #     'Paypal',
+        # ]
+
+        #card_grid=table_generation(card_grid_header_list, [card_grid_row_list], 'checkout_card')
 
 
-            ## cart_for_paypal_LOD is from the cart logic section
-            payment_dict=paypal_create_payment_dict(
-                intent='sale',
-                payment_method='paypal', 
-                redirect_urls=dict(
-                    return_url="https://threemusesglass.herokuapp.com/paypal_confirmation",
-                    cancel_url="https://threemusesglass.herokuapp.com"),
-                cost_dict=dict(
-                    shipping_cost_USD=shipping_cost_USD, 
-                    cart_cost_USD=cart_cost_USD, 
-                    total_cost_USD=total_cost_USD),
-                transaction_description='Purchase from ThreeMusesGlass',
-                invoice_number=invoice_number,
-                items_paypal_list_of_dicts=cart_for_paypal_LOD,)
+    # ## Card logic for non logged in user. 
+    # else:
+
+    #     ## The default choice thing?
+    #     # if not session.payment_method:
+    #     #    session.payment_method='stripe'
+
+    #     if session.payment_method=='stripe':
+
+    #         approval_url=URL('pay')
+
+    #         card_grid_row_list=[
+    #             session.card_info['name'],
+    #             session.card_info['last4'],
+    #             session.card_info['brand'],
+    #             session.card_info['exp_month'],
+    #             session.card_info['exp_year'],
+    #             #session.card_info['card_id'],
+    #         ]
+
+    #         card_grid=table_generation(card_grid_header_list, [card_grid_row_list], 'checkout_card')
 
 
-            payment=paypalrestsdk.Payment(payment_dict)
+    #     else:
 
-            if payment.create():
-                status="Created successfully"
-                approval_url=payment['links'][1]['href']
-                session.expect_paypal_webhook=True
-                #session.payment_id=payment
-            else:
-                status=payment.error
-                approval_url=status
+    #         import paypalrestsdk
+    #         from aux import get_env_var
+    #         from aux import id_generator
+    #         from aux import paypal_create_payment_dict
+
+    #         PAYPAL_CLIENT_ID=get_env_var('paypal', PRODUCTION_STATUS, 'PAYPAL_CLIENT_ID')
+    #         PAYPAL_CLIENT_SECRET=get_env_var('paypal', PRODUCTION_STATUS, 'PAYPAL_CLIENT_SECRET')
+
+    #         paypalrestsdk.configure({
+    #             "mode": PAYPAL_MODE, # sandbox or live
+    #             "client_id": PAYPAL_CLIENT_ID,
+    #             "client_secret": PAYPAL_CLIENT_SECRET })
+
+    #         invoice_number=id_generator()
+
+    #         payment_dict=paypal_create_payment_dict(
+    #             intent='sale',
+    #             payment_method='paypal', 
+    #             redirect_urls=dict(
+    #                 return_url="https://threemusesglass.herokuapp.com/paypal_confirmation",
+    #                 cancel_url="https://threemusesglass.herokuapp.com"),
+    #             cost_dict=dict(
+    #                 shipping_cost_USD=shipping_cost_USD, 
+    #                 cart_cost_USD=cart_cost_USD, 
+    #                 total_cost_USD=total_cost_USD),
+    #             transaction_description='Purchase from ThreeMusesGlass',
+    #             invoice_number=invoice_number,
+    #             items_paypal_list_of_dicts=cart_for_paypal_LOD,)
 
 
-            card_grid=DIV('You are using Paypal for this purchase')
+    #         payment=paypalrestsdk.Payment(payment_dict)
 
-            card_grid_header_list=[
-                'Name', 
-                'Email', 
-                'Payment Type',
-            ]
+    #         if payment.create():
+    #             status="Created successfully"
+    #             approval_url=payment['links'][1]['href']
+    #             session.expect_paypal_webhook=True
+    #             #session.payment_id=payment
+    #         else:
+    #             status=payment.error
+    #             approval_url=status
 
-            card_grid_row_list=[
-                'Name',
-                'Email',
-                'Paypal',
-            ]
+    #         #return dict(status=status, approval_url=approval_url)
 
-            #card_grid=table_generation(card_grid_header_list, [card_grid_row_list], 'checkout_card')
+    #         card_grid=DIV('You are using Paypal for this purchase')
 
+    #         card_grid_header_list=[
+    #             'Name', 
+    #             'Email', 
+    #             'Payment Type',
+    #         ]
 
-    ## Card logic for non logged in user. 
+    #         card_grid_row_list=[
+    #             'Name',
+    #             'Email',
+    #             'Paypal',
+    #         ]
+
+    #         #card_grid=table_generation(card_grid_header_list, [card_grid_row_list], 'checkout_card')
+
+    #card_grid=table_generation(card_grid_header_list, [card_grid_row_list], 'checkout_card')
+
     else:
 
-        ## The default choice thing?
-        # if not session.payment_method:
-        #    session.payment_method='stripe'
+        error=True
+        error_message="Go back and select a valid payment method"
 
-        if session.payment_method=='stripe':
-
-            approval_url=URL('pay')
-
-            card_grid_row_list=[
-                session.card_info['name'],
-                session.card_info['last4'],
-                session.card_info['brand'],
-                session.card_info['exp_month'],
-                session.card_info['exp_year'],
-                #session.card_info['card_id'],
-            ]
-
-            card_grid=table_generation(card_grid_header_list, [card_grid_row_list], 'checkout_card')
-
-
-        else:
-
-            import paypalrestsdk
-            from aux import get_env_var
-            from aux import id_generator
-            from aux import paypal_create_payment_dict
-
-            PAYPAL_CLIENT_ID=get_env_var('paypal', PRODUCTION_STATUS, 'PAYPAL_CLIENT_ID')
-            PAYPAL_CLIENT_SECRET=get_env_var('paypal', PRODUCTION_STATUS, 'PAYPAL_CLIENT_SECRET')
-
-            paypalrestsdk.configure({
-                "mode": PAYPAL_MODE, # sandbox or live
-                "client_id": PAYPAL_CLIENT_ID,
-                "client_secret": PAYPAL_CLIENT_SECRET })
-
-            invoice_number=id_generator()
-
-            payment_dict=paypal_create_payment_dict(
-                intent='sale',
-                payment_method='paypal', 
-                redirect_urls=dict(
-                    return_url="https://threemusesglass.herokuapp.com/paypal_confirmation",
-                    cancel_url="https://threemusesglass.herokuapp.com"),
-                cost_dict=dict(
-                    shipping_cost_USD=shipping_cost_USD, 
-                    cart_cost_USD=cart_cost_USD, 
-                    total_cost_USD=total_cost_USD),
-                transaction_description='Purchase from ThreeMusesGlass',
-                invoice_number=invoice_number,
-                items_paypal_list_of_dicts=cart_for_paypal_LOD,)
-
-
-            payment=paypalrestsdk.Payment(payment_dict)
-
-            if payment.create():
-                status="Created successfully"
-                approval_url=payment['links'][1]['href']
-                session.expect_paypal_webhook=True
-                #session.payment_id=payment
-            else:
-                status=payment.error
-                approval_url=status
-
-            #return dict(status=status, approval_url=approval_url)
-
-            card_grid=DIV('You are using Paypal for this purchase')
-
-            card_grid_header_list=[
-                'Name', 
-                'Email', 
-                'Payment Type',
-            ]
-
-            card_grid_row_list=[
-                'Name',
-                'Email',
-                'Paypal',
-            ]
-
-            #card_grid=table_generation(card_grid_header_list, [card_grid_row_list], 'checkout_card')
-
-    card_grid=table_generation(card_grid_header_list, [card_grid_row_list], 'checkout_card')
-
-
+        payment_information=dict(error=error, error_message=error_message, information_LOD=[dict(payment_method=None)])
 
 
 #############################################################################################
 ###########-----------------Summary Logic (User and Non User)--------------------############
 #############################################################################################
 
-    summary_grid_header_list=['Cart Cost','Shipping Cost', 'Total']
-    summary_grid_row_lists=[cart_cost_USD,shipping_cost_USD,cart_cost_USD+shipping_cost_USD]
+    # summary_grid_header_list=['Cart Cost','Shipping Cost', 'Total']
+    # summary_grid_row_lists=[cart_cost_USD,shipping_cost_USD,cart_cost_USD+shipping_cost_USD]
 
-    summary_dict=dict(
+    error=False
+    error_message=None
+    summary_information_LOD=[]
+
+    summary_information_LOD.append(dict(
         cart_cost_USD=cart_cost_USD,
         shipping_cost_USD=shipping_cost_USD,
         total_cost_USD=cart_cost_USD+shipping_cost_USD,
-    )
+    ))
 
-    summary_grid=table_generation(summary_grid_header_list, [summary_grid_row_lists], "summary")
+    summary_information=dict(error=error, error_message=error_message, information_LOD=summary_information_LOD)
+
+    # summary_grid=table_generation(summary_grid_header_list, [summary_grid_row_lists], "summary")
 
 #############################################################################################
 ###########---------------------Put Everything in Session------------------------############
@@ -1123,27 +1273,35 @@ def checkout():
 
     ## Adding all the info to the session for use in databasing purchase history inforation
     ## list of dicts
-    session.purchase_history_cart_info=cart_for_shipping_calculations
+    # session.purchase_history_cart_info=cart_for_shipping_calculations
+
+    session.cart_information=cart_information
 
     ## dictionary of address info
-    session.purchase_history_address_info=address_dict
+    #session.purchase_history_address_info=address_dict
+
+    session.address_information=address_information
 
     ## dictionary of shipping_info
-    session.purchase_history_shipping_info=shipping_dict
+    #session.purchase_history_shipping_info=shipping_dict
+
+    session.shipping_information=shipping_information
 
     ## Card info is transferred via the stripe interface right now. 
     #session.purchase_history_card_info=card_grid_row_list
 
+    session.payment_information=payment_information
+
     ## dictionary of summary info
-    session.purchase_history_summary_info=summary_dict
+    session.summary_information=summary_information
 
     return dict(
-        cart_grid=cart_grid,
-        address_grid=address_grid,
-        shipping_grid=shipping_grid,
-        card_grid=card_grid,
-        summary_grid=summary_grid,
-        approval_url=approval_url,
+        cart_information=cart_information,
+        address_information=address_information,
+        shipping_information=shipping_information,
+        payment_information=payment_information,
+        summary_information=summary_information,
+        # approval_url=approval_url,
         )
 
 
@@ -2887,6 +3045,10 @@ def ajax_choose_shipping_option():
 
     return json.dumps(dict(msg="no error"))
 
+def ajax_choose_payment_option():
+
+    session.payment_method=request.vars.payment_method
+
 
 
 
@@ -3394,7 +3556,7 @@ def paypal_confirmation():
         "client_secret": PAYPAL_CLIENT_SECRET })
 
 
-    skip=False
+    skip=True
     ## Make sure this person recently started the purchase process
     if session.expect_paypal_webhook or skip:
     #if True:
@@ -3405,6 +3567,8 @@ def paypal_confirmation():
         
         ## Use the paymentId to retrieve payment object
         payment=paypalrestsdk.Payment.find(payment_id)
+
+        print "one"
         
 
         ## Try to execute the payment with the payer_id
@@ -3413,67 +3577,86 @@ def paypal_confirmation():
             status="success"
             session.expect_paypal_webhook=False
 
-
+            print "two"
             ## Get user information
-            if auth.is_logged_in():
+            # if auth.is_logged_in():
 
-                user_data=db(db.auth_user.id==auth.user_id).select().first()
+            user_data=db(db.auth_user.id==auth.user_id).select().first()
 
-                muses_id=user_data.id
-                muses_email_address=user_data.email
-                muses_name=user_data.first_name
+            # muses_id=user_data.id
+            # muses_email_address=user_data.email
+            # muses_name=user_data.first_name
                 
-            else:
-                ## If anonymous user,
-                muses_id=None
-                muses_name=None
-                muses_email_address=payment['payer']['payer_info']['email']
+            address_data=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select().first()
 
+            # else:
+            #     ## If anonymous user,
+            #     muses_id=None
+            #     muses_name=None
+            #     muses_email_address=payment['payer']['payer_info']['email']
 
+            payment_data=dict(payment_method='paypal', payment_details=payment.to_dict())
+
+            response_data=dict(
+                session_id_3muses=response.session_id_3muses,
+                session_db_table=response.session_db_table,
+                session_db_record_id=response.session_db_record_id,
+                )
+
+            print "three"
 
             ## Populating the purchase history dict
             ## This is used in the next view to show the user the purchase details. 
             purchase_history_dict=dict(
 
-                muses_id=muses_id,
-                muses_email_address=muses_email_address,
-                muses_name=muses_name,
+                # muses_id=muses_id,
+                # muses_email_address=muses_email_address,
+                # muses_name=muses_name,
+
+                user_data=json.dumps(user_data, default=lambda x: None),
 
                 ## Session Fields (These actually come from response not session)
-                session_id_3muses=response.session_id_3muses,
-                session_db_table=response.session_db_table,
-                session_db_record_id=response.session_db_record_id,
+                # session_id_3muses=response.session_id_3muses,
+                # session_db_table=response.session_db_table,
+                # session_db_record_id=response.session_db_record_id,
 
-                ## Shipping Fields
-                shipping_street_address_line_1=session.purchase_history_address_info['street_address_line_1'],
-                shipping_street_address_line_2=session.purchase_history_address_info['street_address_line_2'],
-                shipping_municipality=session.purchase_history_address_info['municipality'],
-                shipping_administrative_area=session.purchase_history_address_info['administrative_area'],
-                shipping_postal_code=session.purchase_history_address_info['postal_code'],
-                shipping_country=session.purchase_history_address_info['country'],
+                response_data=json.dumps(response_data, default=lambda x: None),
 
-                ## Easypost Fields?
-                easypost_shipping_service=session.purchase_history_shipping_info['service'],
-                easypost_shipping_carrier=session.purchase_history_shipping_info['carrier'],
-                easypost_shipment_id=None,#session.purchase_history_shipping_info['id'],
-                easypost_rate_id=None,#session.purchase_history_shipping_info['shipment_id'],
-                easypost_rate=session.purchase_history_shipping_info['rate'],
-                easypost_api_response=session.shipping_json,
+                # ## Shipping Fields
+                # shipping_first_name=
+                # shipping_street_address_line_1=session.purchase_history_address_info['street_address_line_1'],
+                # shipping_street_address_line_2=session.purchase_history_address_info['street_address_line_2'],
+                # shipping_municipality=session.purchase_history_address_info['municipality'],
+                # shipping_administrative_area=session.purchase_history_address_info['administrative_area'],
+                # shipping_postal_code=session.purchase_history_address_info['postal_code'],
+                # shipping_country=session.purchase_history_address_info['country'],
 
+                # ## Easypost Fields?
+                # easypost_shipping_service=session.purchase_history_shipping_info['service'],
+                # easypost_shipping_carrier=session.purchase_history_shipping_info['carrier'],
+                # easypost_shipment_id=None,#session.purchase_history_shipping_info['id'],
+                # easypost_rate_id=None,#session.purchase_history_shipping_info['shipment_id'],
+                # easypost_rate=session.purchase_history_shipping_info['rate'],
+                # easypost_api_response=session.shipping_json,
 
-                payment_service='paypal',
-                payment_confirmation_dictionary=json.dumps(payment.to_dict(), default=lambda x: None),
+                ## This includes all the address data and the shipping api response with all shipping options, and the shipping id of the chosen option
+                address_data=json.dumps(address_data, default=lambda x: None),
 
-                ## Legacy Fields
-                payment_method='paypal',
-                payment_stripe_name=None,
-                payment_stripe_user_id=None,
-                payment_stripe_last_4=None,
-                payment_stripe_brand=None,
-                payment_stripe_exp_month=None,
-                payment_stripe_exp_year=None,
-                payment_stripe_card_id=None,
-                payment_stripe_transaction_id=None,
+                payment_data=json.dumps(payment_data, default=lambda x: None),
+
+                # payment_service='paypal',
+                # payment_confirmation_dictionary=json.dumps(payment.to_dict(), default=lambda x: None),
+
+                # ## Legacy Fields
+                # payment_method='paypal',
+                # payment_stripe_name=None,
+                # payment_stripe_user_id=None,
+                # payment_stripe_last_4=None,
+                # payment_stripe_brand=None,
+                # payment_stripe_exp_month=None,
+                # payment_stripe_exp_year=None,
+                # payment_stripe_card_id=None,
+                # payment_stripe_transaction_id=None,
 
                 #payment_paypal_name=,
                 #payment_paypal_id=,
@@ -3489,14 +3672,28 @@ def paypal_confirmation():
 
 
                 ## Cart Details
-                cart_base_cost=session.purchase_history_summary_info['cart_cost_USD'],
-                cart_shipping_cost=session.purchase_history_summary_info['shipping_cost_USD'],
-                cart_total_cost=session.purchase_history_summary_info['total_cost_USD'],
+                summary_data=json.dumps(session.summary_information, default=lambda x: None),
+
+                # cart_base_cost=session.purchase_history_summary_info['cart_cost_USD'],
+                # cart_shipping_cost=session.purchase_history_summary_info['shipping_cost_USD'],
+                # cart_total_cost=session.purchase_history_summary_info['total_cost_USD'],
 
             )
 
+            print "four"
+
             ## place data in the database. 
-            purchase_history_data_id=db.purchase_history_data.bulk_insert([purchase_history_dict])[0]
+            purchase_history_data_id=db.purchase_history_data2.bulk_insert([purchase_history_dict])[0]
+
+            db.commit()
+
+            purchase_history_data_test=db(db.purchase_history_data.id==purchase_history_data_id).select().first()
+
+            print purchase_history_data_test
+
+            print purchase_history_dict
+
+            print purchase_history_data_id
 
             ## Add id of most recent purchase to the session for viewing purposes.
             session.session_purchase_history_data_id=purchase_history_data_id
@@ -3506,101 +3703,101 @@ def paypal_confirmation():
             purchase_history_products_LOD=[]
 
             ## If logged in, get the cart information from the database
-            if auth.is_logged_in():
+            #if auth.is_logged_in():
 
-                cart=db(db.muses_cart.user_id==auth.user_id).select()
+            cart=db(db.muses_cart.user_id==auth.user_id).select()
 
-                
-                ## For item in cart, add id from record above with product and qty and all info about the product,
-                ## then deal with inventory by removing the item from the cart.
-                for row in cart:
-                    product_record=db(db.product.id==row.product_id).select().first()
-                    current_qty=int(product_record.qty_in_stock)
-                    qty_purchased=int(row.product_qty)
-                    new_qty=current_qty-qty_purchased
+            
+            ## For item in cart, add id from record above with product and qty and all info about the product,
+            ## then deal with inventory by removing the item from the cart.
+            for row in cart:
+                product_record=db(db.product.id==row.product_id).select().first()
+                current_qty=int(product_record.qty_in_stock)
+                qty_purchased=int(row.product_qty)
+                new_qty=current_qty-qty_purchased
 
-                    ## Remove item from the cart
-                    db(db.muses_cart.product_id==product_record.id).delete()
-
-
-                    purchase_history_product_dict=dict(
-
-                        purchase_history_data_id=purchase_history_data_id,
-                        product_id=product_record.id,
-                        product_qty=int(row.product_qty),
-
-                        category_name=product_record.category_name,
-                        product_name=product_record.product_name,
-                        description=product_record.description,
-                        cost_USD=product_record.cost_USD,
-                        qty_in_stock=new_qty,
-                        is_active=product_record.is_active,
-                        display_order=product_record.display_order,
-                        shipping_description=product_record.shipping_description,
-                        weight_oz=product_record.weight_oz,
-
-                    )
-
-                    ## Generate a list of dicts to use bulk insert
-                    purchase_history_products_LOD.append(purchase_history_product_dict)
+                ## Remove item from the cart
+                db(db.muses_cart.product_id==product_record.id).delete()
 
 
-                    ## If you lowered the qty to 0 or less, make qty 0 and deactivate item
-                    if new_qty<=0:
+                purchase_history_product_dict=dict(
 
-                        product_record.update(qty_in_stock=0)
-                        product_record.update_record()
-                        product_record.update(is_active=False)
-                        product_record.update_record()
+                    purchase_history_data_id=purchase_history_data_id,
+                    product_id=product_record.id,
+                    product_qty=int(row.product_qty),
 
-                    ## If not, just lower the qty
-                    else:
-                        product_record.update(qty_in_stock=new_qty)
-                        product_record.update_record()
+                    category_name=product_record.category_name,
+                    product_name=product_record.product_name,
+                    description=product_record.description,
+                    cost_USD=product_record.cost_USD,
+                    qty_in_stock=new_qty,
+                    is_active=product_record.is_active,
+                    display_order=product_record.display_order,
+                    shipping_description=product_record.shipping_description,
+                    weight_oz=product_record.weight_oz,
 
-            ## If the user is not logged in, get the cart information from session. 
-            else:
+                )
 
-
-                for product_id, qty in session.cart.iteritems():
-                    product_record=db(db.product.id==product_id).select().first()
-                    current_qty=int(product_record.qty_in_stock)
-                    qty_purchased=int(qty)
-                    new_qty=current_qty-qty_purchased
+                ## Generate a list of dicts to use bulk insert
+                purchase_history_products_LOD.append(purchase_history_product_dict)
 
 
-                    purchase_history_product_dict=dict(
+                ## If you lowered the qty to 0 or less, make qty 0 and deactivate item
+                if new_qty<=0:
 
-                        purchase_history_data_id=purchase_history_data_id,
-                        product_id=product_record.id,
-                        product_qty=qty_purchased,
+                    product_record.update(qty_in_stock=0)
+                    product_record.update_record()
+                    product_record.update(is_active=False)
+                    product_record.update_record()
 
-                        category_name=product_record.category_name,
-                        product_name=product_record.product_name,
-                        description=product_record.description,
-                        cost_USD=product_record.cost_USD,
-                        qty_in_stock=new_qty,
-                        is_active=product_record.is_active,
-                        display_order=product_record.display_order,
-                        shipping_description=product_record.shipping_description,
-                        weight_oz=product_record.weight_oz,
+                ## If not, just lower the qty
+                else:
+                    product_record.update(qty_in_stock=new_qty)
+                    product_record.update_record()
 
-                    )
-
-                    ## Generate a list of dicts to use bulk insert
-                    purchase_history_products_LOD.append(purchase_history_product_dict)
+            # ## If the user is not logged in, get the cart information from session. 
+            # else:
 
 
-                    if new_qty<=0:
-                        product_record.update(qty_in_stock=0)
-                        product_record.update_record()
-                        product_record.update(is_active=False)
-                        product_record.update_record()
-                    else:
-                        product_record.update(qty_in_stock=new_qty)
-                        product_record.update_record()
+            #     for product_id, qty in session.cart.iteritems():
+            #         product_record=db(db.product.id==product_id).select().first()
+            #         current_qty=int(product_record.qty_in_stock)
+            #         qty_purchased=int(qty)
+            #         new_qty=current_qty-qty_purchased
 
-                session.cart=None
+
+            #         purchase_history_product_dict=dict(
+
+            #             purchase_history_data_id=purchase_history_data_id,
+            #             product_id=product_record.id,
+            #             product_qty=qty_purchased,
+
+            #             category_name=product_record.category_name,
+            #             product_name=product_record.product_name,
+            #             description=product_record.description,
+            #             cost_USD=product_record.cost_USD,
+            #             qty_in_stock=new_qty,
+            #             is_active=product_record.is_active,
+            #             display_order=product_record.display_order,
+            #             shipping_description=product_record.shipping_description,
+            #             weight_oz=product_record.weight_oz,
+
+            #         )
+
+            #         ## Generate a list of dicts to use bulk insert
+            #         purchase_history_products_LOD.append(purchase_history_product_dict)
+
+
+            #         if new_qty<=0:
+            #             product_record.update(qty_in_stock=0)
+            #             product_record.update_record()
+            #             product_record.update(is_active=False)
+            #             product_record.update_record()
+            #         else:
+            #             product_record.update(qty_in_stock=new_qty)
+            #             product_record.update_record()
+
+            #     session.cart=None
 
 
 

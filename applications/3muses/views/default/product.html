@@ -8,13 +8,16 @@
 
 {{for j in range(len(product_row)):}}
 
-	<div class='col-md-4'>
-				
+	<div class='col-md-4 product-view-carousel-container'>
 
 		<!--  Carousel - consult the Twitter Bootstrap docs at 
 		      http://twitter.github.com/bootstrap/javascript.html#carousel -->
-		<div id="product-carousel-{{=j}}" class="carousel slide product-carousel"><!-- class of slide for animation -->
+		<div id="product-carousel-{{=j}}" class="carousel slide product-view-carousel"><!-- class of slide for animation -->
 		  
+		  	<div class="product-view-product-cost">
+				${{ =product_row[j].cost_USD }}
+			</div>
+
 		  <!-- Indicators -->
 		    <ol class="carousel-indicators">
 
@@ -85,11 +88,11 @@
 		<div class = 'product-description'>
 			{{=product_row[j].description}}
 		</div>
-
+<!-- 
 		<div class = 'product-cost'>
-			Cost: {{=product_row[j].cost_USD}}
+			Cost: ocbocb =product_row[j].cost_USD ccbccb
 		</div>
-		
+		 -->
 		<div class = 'product-controls'>
 
 		{{if product_row[j].qty_in_stock==0:}}
@@ -98,51 +101,7 @@
 
 		{{else:}}
 
-			{{ if auth.is_logged_in(): }}
-
-				{{cart_row=db((db.muses_cart.product_id==product_row[j].id)&(db.muses_cart.user_id==auth.user_id)).select()}}
-
-				{{try:}}
-					{{cart_row[0]}}
-					{{="You currently have this item in your cart."}}
-					<!--="You currently have "+str(cart_row[0].product_qty)+" of this item in your cart."-->
-					{{=A('X', _href=URL('delete_item_from_cart', vars=dict(pri_key=cart_row[0].id, redirect_url=URL('product',args=product_row[j].id))), _class="button")}}
-					<br/>
-					{{=cart_form}}
-
-				{{except IndexError:}}
-
-					{{=cart_form}}
-				
-				{{pass}}
-
-			{{else:}}
-
-				{{if not session.cart:}}
-
-					{{=cart_form}}
-
-				{{else:}}
-
-					{{if str(product_row[j].id) in session.cart.keys():}}
-
-						You currently have this item in your cart.
-
-						<!--You currently have  =session.cart[str(product_row[j].id)]  of this item in your cart.-->
-
-						{{=A('X', _href=URL('delete_item_from_cart', vars=dict(pri_key=product_row[j].id, redirect_url=URL('product',args=product_row[j].id))), _class="button")}}
-						<br/>
-						{{=cart_form}}
-
-					{{else:}}
-
-						{{=cart_form}}
-
-					{{pass}} <!-- End if checking for item in cart (session) -->
-
-				{{pass}} <!-- End if checking for items in the cart-->
-
-			{{pass}} <!-- -->
+			{{=cart_form}}
 
 		{{pass}} <!--End if checking for qty-->
 

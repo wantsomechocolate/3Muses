@@ -137,12 +137,6 @@ h2{
 	padding-bottom:2em;
 }
 
-.product-view-row{
-	padding-top:2em;
-}
-
-
-
 
 
 
@@ -154,11 +148,67 @@ h2{
 
 
 
+/* Product View Styles */
+
+.product-header{
+	font-size: 2em;
+	font-weight: bold;
+	letter-spacing: 0.05em;
+}
+
+
+.product-view-row{
+	padding-top:2em;
+	padding-bottom:2em;
+}
+
+.product-view-carousel{
+	position:relative;
+}
+
+.product-view-product-cost{
+	position: absolute;
+	right: 0px;
+	bottom: 0px;
+	margin: 5px;
+	margin-right: 10px;
+	font-size: 2em;
+	font-weight: bold;
+	z-index: 10;
+ }
+
+@media screen and (min-width: 992px) {
+
+	.product-view-btn{
+		width:20%;
+		float:right;
+	}
+
+}
+
+
+@media screen and (max-width: 992px) {
+
+	.product-view-btn{
+		width:100%;
+	}
+
+}
+
+
 
 /*general cart styles*/
 
+.cart-view-btn-container{
+	margin-top:20px;
+}
+
 .cart-view-btn{
 	/*margin-top:20px;*/
+}
+
+.cart-view-error-text-container{
+	font-size: 2em;
 }
 
 
@@ -515,11 +565,17 @@ input[type=radio]{
 
 /* payment stuff all widths */
 
+.cart-view-card-container{
+	display:inline-block;
+	width:100%;
+}
 
 .cart-view-payment-card-container{
-	border: 2px solid black;
+	/*border: 2px solid black;*/
 	border-radius: 10px;
 	font-size: 1.3em;
+	background-color: #eee;
+	box-shadow:2px 2px 5px #888;
 }
 
 .cart-view-payment-card-cardnumber{
@@ -555,10 +611,53 @@ input[type=radio]{
 
 .cart-view-payment-card-controls-container{
 	padding:0;
+	margin-bottom:20px;
+}
+
+.cart-view-card-controls-popover{
+	width:100%;
 }
 
 
+.cart-view-payment-paypal-container{
+	/*border: 2px solid black;*/
+	border-radius: 10px;
+	font-size: 1.3em;
+	background-color: #eee;
+	box-shadow:2px 2px 5px #888;
+	margin-bottom:20px;
+	height: 6em;
+}
 
+.cart-view-payment-paypal-container div{
+	position: relative;
+	top: 50%;
+	-webkit-transform: translateY(-50%);
+	-ms-transform: translateY(-50%);
+	transform: translateY(-50%);
+}
+
+.cart-view-payment-bitcoin-container{
+	/*border: 2px solid black;*/
+	border-radius: 10px;
+	font-size: 1.3em;
+	background-color: #eee;
+	box-shadow:2px 2px 5px #888;
+	margin-bottom:20px;
+	height: 6em;
+}
+
+.cart-view-payment-bitcoin-container div{
+	position: relative;
+	top: 50%;
+	-webkit-transform: translateY(-50%);
+	-ms-transform: translateY(-50%);
+	transform: translateY(-50%);
+}
+
+.cart-view-payment-option-selected{
+	border:2px solid #888;
+}
 
 
 
@@ -702,6 +801,26 @@ input[type=radio]{
 
 .manage-purchase-history-products-view-container .web2py_grid .web2py_table .web2py_htmltable table tbody tr td:nth-child(12){
 	min-width: 100px;
+}
+
+
+
+
+
+/* Pages with only forms */
+
+.add-new-address-view-container-fluid{
+	background-color: aliceblue
+}
+
+.add_new_address_form{
+	padding-top:20px;
+	padding-bottom:20px;
+}
+
+.add-new-address-view-button{
+	width:100%;
+	margin-top:20px;
 }
 
 
