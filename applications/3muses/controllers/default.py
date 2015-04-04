@@ -928,6 +928,8 @@ def checkout():
 
 def pay():
 
+    ## This function is for paying with stripe only
+
     import json
 
     #The purpose of this function is to populate the database table purchase history with all 
@@ -935,27 +937,28 @@ def pay():
     # also send an email using postmark. 
 
     ## Try to put payment through. 
-    if auth.is_logged_in():
-        ## Get customer_id from stripe data in db
-        customer_id=db(db.stripe_customers.muses_id==auth.user_id).select().first().stripe_id
+    # if auth.is_logged_in():
 
+    ## Get customer_id from stripe data in db
+    customer_id=db(db.stripe_customers.muses_id==auth.user_id).select().first().stripe_id
 
-        user_data=db(db.auth_user.id==auth.user_id).select().first()
+    user_data=db(db.auth_user.id==auth.user_id).select().first()
 
-        muses_id=user_data.id
-        muses_email_address=user_data.email
-        muses_name=user_data.first_name
+    muses_id=user_data.id
+    muses_email_address=user_data.email
+    muses_name=user_data.first_name
         
-    else:
-        ## If anonymous user, get customer stripe id from session
-        customer_id=session.card_info['stripe_id']
-        muses_id=None
-        muses_name=None
+    # else:
+    #     ## If anonymous user, get customer stripe id from session
+    #     customer_id=session.card_info['stripe_id']
+    #     muses_id=None
+    #     muses_name=None
 
         
 
     ## Get total cost from session (Need to get a lot more than this I think)
     # total_cost_USD=session.total_cost_USD
+
     total_cost_USD=session.summary_information['information_LOD'][0]['total_cost_USD']
 
 
@@ -968,12 +971,27 @@ def pay():
     )
 
     ## Set email address (if not logged in use stripe email)
-    if auth.is_logged_in():
-        pass
-    else:
-        ## change to the email from charge
-        muses_email_address=session.card_info['email']
+    # if auth.is_logged_in():
+    #     pass
+    # else:
+    #     ## change to the email from charge
+    #     muses_email_address=session.card_info['email']
 
+    default_address=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select().first()
+
+    # print default_address
+
+    easypost_response=json.loads(default_address['easypost_api_response'])
+
+    rates=easypost_response['rates']
+
+    default_rate=default_address['easypost_default_shipping_rate_id']
+
+    rate_info={}
+
+    for rate in rates:
+        if rate['id']==default_rate:
+            rate_info=rate
 
     ## Populating the purchase history dict
     ## This is used in the next view to show the user the purchase details. 
@@ -997,29 +1015,30 @@ def pay():
         shipping_country=session.address_information['information_LOD'][0]['country'],
 
         ## Easypost Fields?
-        # easypost_shipping_service=session.purchase_history_shipping_info['service'],
-        # easypost_shipping_carrier=session.purchase_history_shipping_info['carrier'],
-        # easypost_shipment_id=None,#session.purchase_history_shipping_info['id'],
-        # easypost_rate_id=None,#session.purchase_history_shipping_info['shipment_id'],
-        # easypost_rate=session.purchase_history_shipping_info['rate'],
-        # easypost_api_response=session.shipping_json,
+        easypost_shipping_service=rate_info['service'],
+
+        easypost_shipping_carrier=rate_info['carrier'],
+        easypost_shipment_id=rate_info['shipment_id'],
+        easypost_rate_id=rate_info['id'],
+        easypost_rate=rate_info['rate'],
+        easypost_api_response=rates,
 
 
         ## Payment Fields
         payment_service='stripe',
-        # payment_confirmation_dictionary=json.dumps(charge, default=lambda x: None),
+        payment_confirmation_dictionary=json.dumps(charge, default=lambda x: None),
 
 
         ## Legacy Fields
-        # payment_method='stripe',
-        # payment_stripe_name=charge['card']['name'],
-        # payment_stripe_user_id=charge['customer'],
-        # payment_stripe_last_4=charge['card']['last4'],
-        # payment_stripe_brand=charge['card']['brand'],
-        # payment_stripe_exp_month=charge['card']['exp_month'],
-        # payment_stripe_exp_year=charge['card']['exp_year'],
-        # payment_stripe_card_id=charge['card']['id'],
-        # payment_stripe_transaction_id=charge['id'],
+        payment_method='stripe',
+        payment_stripe_name=charge['card']['name'],
+        payment_stripe_user_id=charge['customer'],
+        payment_stripe_last_4=charge['card']['last4'],
+        payment_stripe_brand=charge['card']['brand'],
+        payment_stripe_exp_month=charge['card']['exp_month'],
+        payment_stripe_exp_year=charge['card']['exp_year'],
+        payment_stripe_card_id=charge['card']['id'],
+        payment_stripe_transaction_id=charge['id'],
 
         ## Cart Details
         cart_base_cost=session.summary_information['information_LOD'][0]['cart_cost_USD'],
@@ -1031,6 +1050,8 @@ def pay():
     ## place data in the database. 
     purchase_history_data_id=db.purchase_history_data.bulk_insert([purchase_history_dict])[0]
 
+    # print purchase_history_data_id
+
     ## Add id of most recent purchase to the session for viewing purposes.
     session.session_purchase_history_data_id=purchase_history_data_id
 
@@ -1039,102 +1060,101 @@ def pay():
     purchase_history_products_LOD=[]
 
     ## If logged in, get the cart information from the database
-    if auth.is_logged_in():
+    # if auth.is_logged_in():
 
-        cart=db(db.muses_cart.user_id==auth.user_id).select()
+    cart=db(db.muses_cart.user_id==auth.user_id).select()
 
-        
-        ## For item in cart, add id from record above with product and qty and all info about the product,
-        ## then deal with inventory by removing the item from the cart.
-        for row in cart:
-            product_record=db(db.product.id==row.product_id).select().first()
-            current_qty=int(product_record.qty_in_stock)
-            qty_purchased=int(row.product_qty)
-            new_qty=current_qty-qty_purchased
+    
+    ## For item in cart, add id from record above with product and qty and all info about the product,
+    ## then deal with inventory by removing the item from the cart.
+    for row in cart:
+        product_record=db(db.product.id==row.product_id).select().first()
+        current_qty=int(product_record.qty_in_stock)
+        qty_purchased=int(row.product_qty)
+        new_qty=current_qty-qty_purchased
 
-            ## Remove item from the cart
-            db(db.muses_cart.product_id==product_record.id).delete()
-
-
-            purchase_history_product_dict=dict(
-
-                purchase_history_data_id=purchase_history_data_id,
-                product_id=product_record.id,
-                product_qty=int(row.product_qty),
-
-                category_name=product_record.category_name,
-                product_name=product_record.product_name,
-                description=product_record.description,
-                cost_USD=product_record.cost_USD,
-                qty_in_stock=new_qty,
-                is_active=product_record.is_active,
-                display_order=product_record.display_order,
-                shipping_description=product_record.shipping_description,
-                weight_oz=product_record.weight_oz,
-
-            )
-
-            ## Generate a list of dicts to use bulk insert
-            purchase_history_products_LOD.append(purchase_history_product_dict)
+        ## Remove item from the cart
+        db(db.muses_cart.product_id==product_record.id).delete()
 
 
-            ## If you lowered the qty to 0 or less, make qty 0 and deactivate item
-            if new_qty<=0:
+        purchase_history_product_dict=dict(
 
-                product_record.update(qty_in_stock=0)
-                product_record.update_record()
-                product_record.update(is_active=False)
-                product_record.update_record()
+            purchase_history_data_id=purchase_history_data_id,
+            product_id=product_record.id,
+            product_qty=int(row.product_qty),
 
-            ## If not, just lower the qty
-            else:
-                product_record.update(qty_in_stock=new_qty)
-                product_record.update_record()
+            category_name=product_record.category_name,
+            product_name=product_record.product_name,
+            description=product_record.description,
+            cost_USD=product_record.cost_USD,
+            qty_in_stock=new_qty,
+            is_active=product_record.is_active,
+            display_order=product_record.display_order,
+            shipping_description=product_record.shipping_description,
+            weight_oz=product_record.weight_oz,
 
-    ## If the user is not logged in, get the cart information from session. 
-    else:
+        )
 
-
-        for product_id, qty in session.cart.iteritems():
-            product_record=db(db.product.id==product_id).select().first()
-            current_qty=int(product_record.qty_in_stock)
-            qty_purchased=int(qty)
-            new_qty=current_qty-qty_purchased
+        ## Generate a list of dicts to use bulk insert
+        purchase_history_products_LOD.append(purchase_history_product_dict)
 
 
-            purchase_history_product_dict=dict(
+        ## If you lowered the qty to 0 or less, make qty 0 and deactivate item
+        if new_qty<=0:
 
-                purchase_history_data_id=purchase_history_data_id,
-                product_id=product_record.id,
-                product_qty=qty_purchased,
+            product_record.update(qty_in_stock=0)
+            product_record.update_record()
+            product_record.update(is_active=False)
+            product_record.update_record()
 
-                category_name=product_record.category_name,
-                product_name=product_record.product_name,
-                description=product_record.description,
-                cost_USD=product_record.cost_USD,
-                qty_in_stock=new_qty,
-                is_active=product_record.is_active,
-                display_order=product_record.display_order,
-                shipping_description=product_record.shipping_description,
-                weight_oz=product_record.weight_oz,
+        ## If not, just lower the qty
+        else:
+            product_record.update(qty_in_stock=new_qty)
+            product_record.update_record()
 
-            )
-
-            ## Generate a list of dicts to use bulk insert
-            purchase_history_products_LOD.append(purchase_history_product_dict)
+    # ## If the user is not logged in, get the cart information from session. 
+    # else:
 
 
-            if new_qty<=0:
-                product_record.update(qty_in_stock=0)
-                product_record.update_record()
-                product_record.update(is_active=False)
-                product_record.update_record()
-            else:
-                product_record.update(qty_in_stock=new_qty)
-                product_record.update_record()
+    #     for product_id, qty in session.cart.iteritems():
+    #         product_record=db(db.product.id==product_id).select().first()
+    #         current_qty=int(product_record.qty_in_stock)
+    #         qty_purchased=int(qty)
+    #         new_qty=current_qty-qty_purchased
 
-        session.cart=None
 
+    #         purchase_history_product_dict=dict(
+
+    #             purchase_history_data_id=purchase_history_data_id,
+    #             product_id=product_record.id,
+    #             product_qty=qty_purchased,
+
+    #             category_name=product_record.category_name,
+    #             product_name=product_record.product_name,
+    #             description=product_record.description,
+    #             cost_USD=product_record.cost_USD,
+    #             qty_in_stock=new_qty,
+    #             is_active=product_record.is_active,
+    #             display_order=product_record.display_order,
+    #             shipping_description=product_record.shipping_description,
+    #             weight_oz=product_record.weight_oz,
+
+    #         )
+
+    #         ## Generate a list of dicts to use bulk insert
+    #         purchase_history_products_LOD.append(purchase_history_product_dict)
+
+
+    #         if new_qty<=0:
+    #             product_record.update(qty_in_stock=0)
+    #             product_record.update_record()
+    #             product_record.update(is_active=False)
+    #             product_record.update_record()
+    #         else:
+    #             product_record.update(qty_in_stock=new_qty)
+    #             product_record.update_record()
+
+    #     session.cart=None
 
 
     purchase_history_products_ids=db.purchase_history_products.bulk_insert(purchase_history_products_LOD)
@@ -3202,9 +3222,9 @@ def paypal_confirmation():
 
             user_data=db(db.auth_user.id==auth.user_id).select().first()
 
-            # muses_id=user_data.id
-            # muses_email_address=user_data.email
-            # muses_name=user_data.first_name
+            muses_id=user_data.id
+            muses_email_address=user_data.email
+            muses_name=user_data.first_name
                 
             address_data=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select().first()
 
@@ -3226,56 +3246,77 @@ def paypal_confirmation():
 
             ## Populating the purchase history dict
             ## This is used in the next view to show the user the purchase details. 
+
+
+            default_address=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select().first()
+
+            # print default_address
+
+            easypost_response=json.loads(default_address['easypost_api_response'])
+
+            rates=easypost_response['rates']
+
+            default_rate=default_address['easypost_default_shipping_rate_id']
+
+            rate_info={}
+
+            for rate in rates:
+                if rate['id']==default_rate:
+                    rate_info=rate
+
             purchase_history_dict=dict(
 
-                # muses_id=muses_id,
-                # muses_email_address=muses_email_address,
-                # muses_name=muses_name,
+                muses_id=muses_id,
+                muses_email_address=muses_email_address,
+                muses_name=muses_name,
 
-                user_data=json.dumps(user_data, default=lambda x: None),
+                # user_data=json.dumps(user_data, default=lambda x: None),
+
+
+               
 
                 ## Session Fields (These actually come from response not session)
-                # session_id_3muses=response.session_id_3muses,
-                # session_db_table=response.session_db_table,
-                # session_db_record_id=response.session_db_record_id,
+                session_id_3muses=response.session_id_3muses,
+                session_db_table=response.session_db_table,
+                session_db_record_id=response.session_db_record_id,
 
-                response_data=json.dumps(response_data, default=lambda x: None),
+                # response_data=json.dumps(response_data, default=lambda x: None),
 
-                # ## Shipping Fields
-                # shipping_first_name=
-                # shipping_street_address_line_1=session.purchase_history_address_info['street_address_line_1'],
-                # shipping_street_address_line_2=session.purchase_history_address_info['street_address_line_2'],
-                # shipping_municipality=session.purchase_history_address_info['municipality'],
-                # shipping_administrative_area=session.purchase_history_address_info['administrative_area'],
-                # shipping_postal_code=session.purchase_history_address_info['postal_code'],
-                # shipping_country=session.purchase_history_address_info['country'],
+                ## Shipping Fields
+                shipping_street_address_line_1=session.address_information['information_LOD'][0]['street_address_line_1'],
+                shipping_street_address_line_2=session.address_information['information_LOD'][0]['street_address_line_2'],
+                shipping_municipality=session.address_information['information_LOD'][0]['municipality'],
+                shipping_administrative_area=session.address_information['information_LOD'][0]['administrative_area'],
+                shipping_postal_code=session.address_information['information_LOD'][0]['postal_code'],
+                shipping_country=session.address_information['information_LOD'][0]['country'],
 
-                # ## Easypost Fields?
-                # easypost_shipping_service=session.purchase_history_shipping_info['service'],
-                # easypost_shipping_carrier=session.purchase_history_shipping_info['carrier'],
-                # easypost_shipment_id=None,#session.purchase_history_shipping_info['id'],
-                # easypost_rate_id=None,#session.purchase_history_shipping_info['shipment_id'],
-                # easypost_rate=session.purchase_history_shipping_info['rate'],
-                # easypost_api_response=session.shipping_json,
+                ## Easypost Fields?
+                easypost_shipping_service=rate_info['service'],
+
+                easypost_shipping_carrier=rate_info['carrier'],
+                easypost_shipment_id=rate_info['shipment_id'],
+                easypost_rate_id=rate_info['id'],
+                easypost_rate=rate_info['rate'],
+                easypost_api_response=rates,
 
                 ## This includes all the address data and the shipping api response with all shipping options, and the shipping id of the chosen option
-                address_data=json.dumps(address_data, default=lambda x: None),
+                # address_data=json.dumps(address_data, default=lambda x: None),
 
-                payment_data=json.dumps(payment_data, default=lambda x: None),
+                # payment_data=json.dumps(payment_data, default=lambda x: None),
 
-                # payment_service='paypal',
-                # payment_confirmation_dictionary=json.dumps(payment.to_dict(), default=lambda x: None),
+                payment_service='paypal',
+                payment_confirmation_dictionary=json.dumps(payment.to_dict(), default=lambda x: None),
 
                 # ## Legacy Fields
-                # payment_method='paypal',
-                # payment_stripe_name=None,
-                # payment_stripe_user_id=None,
-                # payment_stripe_last_4=None,
-                # payment_stripe_brand=None,
-                # payment_stripe_exp_month=None,
-                # payment_stripe_exp_year=None,
-                # payment_stripe_card_id=None,
-                # payment_stripe_transaction_id=None,
+                payment_method='paypal',
+                payment_stripe_name=None,
+                payment_stripe_user_id=None,
+                payment_stripe_last_4=None,
+                payment_stripe_brand=None,
+                payment_stripe_exp_month=None,
+                payment_stripe_exp_year=None,
+                payment_stripe_card_id=None,
+                payment_stripe_transaction_id=None,
 
                 #payment_paypal_name=,
                 #payment_paypal_id=,
@@ -3291,28 +3332,28 @@ def paypal_confirmation():
 
 
                 ## Cart Details
-                summary_data=json.dumps(session.summary_information, default=lambda x: None),
+                # summary_data=json.dumps(session.summary_information, default=lambda x: None),
 
-                # cart_base_cost=session.purchase_history_summary_info['cart_cost_USD'],
-                # cart_shipping_cost=session.purchase_history_summary_info['shipping_cost_USD'],
-                # cart_total_cost=session.purchase_history_summary_info['total_cost_USD'],
+                cart_base_cost=session.summary_information['information_LOD'][0]['cart_cost_USD'],
+                cart_shipping_cost=session.summary_information['information_LOD'][0]['shipping_cost_USD'],
+                cart_total_cost=session.summary_information['information_LOD'][0]['total_cost_USD'],
 
             )
 
             print "four"
 
             ## place data in the database. 
-            purchase_history_data_id=db.purchase_history_data2.bulk_insert([purchase_history_dict])[0]
+            purchase_history_data_id=db.purchase_history_data.bulk_insert([purchase_history_dict])[0]
 
-            db.commit()
+            # db.commit()
 
-            purchase_history_data_test=db(db.purchase_history_data.id==purchase_history_data_id).select().first()
+            # purchase_history_data_test=db(db.purchase_history_data.id==purchase_history_data_id).select().first()
 
-            print purchase_history_data_test
+            # print purchase_history_data_test
 
-            print purchase_history_dict
+            # print purchase_history_dict
 
-            print purchase_history_data_id
+            # print purchase_history_data_id
 
             ## Add id of most recent purchase to the session for viewing purposes.
             session.session_purchase_history_data_id=purchase_history_data_id

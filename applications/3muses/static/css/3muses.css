@@ -8,6 +8,16 @@
 
 
 
+.error{
+	margin-top:5px;
+	margin-bottom:5px;
+	background-color: red;
+	color:white;
+}
+
+
+
+
 p{
 	text-align:justify;
 }
@@ -571,7 +581,7 @@ input[type=radio]{
 }
 
 .cart-view-payment-card-container{
-	/*border: 2px solid black;*/
+	border: 1px solid #eee;
 	border-radius: 10px;
 	font-size: 1.3em;
 	background-color: #eee;

@@ -1,0 +1,18 @@
+CART
+
+muses_cart table for cart data
+
+
+addresses table for address and shipping data
+
+
+payment table for preferred payment info?
+
+
+stripe_customers table to store which users have stripe accounts
+I could instead make this one a payment information table
+	stripe_info
+	paypal_info
+	bitcoin_info
+	billing_address_info
+	default_billing_address for each payment method?
