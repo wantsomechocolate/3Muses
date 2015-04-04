@@ -55,7 +55,7 @@
 				</ol>
 
 
-				<div class="carousel-inner">
+				<div class="carousel-inner display-view-carousel-inner">
 
 	  		{{for i in range(len(results)):}}
 
@@ -66,9 +66,9 @@
 				{{pass}}
 		  	
 		  		{{if i == 0:}}
-		    		<div class="item active"><!-- class of active since it's the first item -->
+		    		<div class="item active display-view-img"><!-- class of active since it's the first item -->
 		    	{{else:}}
-		    		<div class="item"><!-- class of active since it's the first item -->	
+		    		<div class="item display-view-img"><!-- class of active since it's the first item -->	
 		    	{{pass}}
 				    	
 				    	{{=A(IMG(_src=srcattr, _class="img-thumbnail", _alt="woops!"),_href=URL('product', args=[product_rows[j].id]))}}
@@ -97,7 +97,7 @@
 			</div>
 			-->
 
-			<div class = 'display-header'>
+			<div class = 'display-header radial-gradient'>
 				{{=product_rows[j].product_name}}
 			</div>
 

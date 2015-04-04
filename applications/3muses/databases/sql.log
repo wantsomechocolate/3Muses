@@ -71460,3 +71460,21 @@ success!
 success!
 success!
 success!
+timestamp: 2015-04-04T08:31:11.682833
+CREATE TABLE purchase_history_data2(
+    id SERIAL PRIMARY KEY,
+    user_data TEXT,
+    response_data TEXT,
+    address_data TEXT,
+    payment_data TEXT,
+    summary_data TEXT
+);
+timestamp: 2015-04-04T08:31:12.759641
+CREATE TABLE purchase_history_data2(
+    id SERIAL PRIMARY KEY,
+    user_data TEXT,
+    response_data TEXT,
+    address_data TEXT,
+    payment_data TEXT,
+    summary_data TEXT
+);

@@ -6,6 +6,17 @@
   transform: translateY(-50%);
 }
 
+.radial-gradient{
+	background: #ffffff; /* Old browsers */
+	background: -moz-radial-gradient(center, ellipse cover,  #ffffff 0%, #e5e5e5 100%); /* FF3.6+ */
+	background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,#ffffff), color-stop(100%,#e5e5e5)); /* Chrome,Safari4+ */
+	background: -webkit-radial-gradient(center, ellipse cover,  #ffffff 0%,#e5e5e5 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-radial-gradient(center, ellipse cover,  #ffffff 0%,#e5e5e5 100%); /* Opera 12+ */
+	background: -ms-radial-gradient(center, ellipse cover,  #ffffff 0%,#e5e5e5 100%); /* IE10+ */
+	background: radial-gradient(ellipse at center,  #ffffff 0%,#e5e5e5 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e5e5e5',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+}
+
 
 
 .error{
@@ -138,8 +149,32 @@ h2{
 	padding-bottom:2em;
 }
 
+
+
+/* product line page styles */
+
+.category-header{
+	font-size: 2.3em;
+	border-bottom: 2px solid #888;
+}
+
+.category-description{
+	margin-top: 5px;
+	font-size: 1.3em;
+}
+
+.image-container a{
+	display:inline-block;
+}
+
+
+
+/* Display View Styles */
+
 .display-view-header-fluid-container{
-	background:orange;
+	background: #ddd;
+	border-bottom: 2px solid #888;
+	padding-bottom: 10px;
 }
 
 .display-view-product-square{
@@ -147,14 +182,22 @@ h2{
 	padding-bottom:2em;
 }
 
-
-
-
-/* product line page styles */
-
-.image-container a{
-	display:inline-block;
+.display-header{
+	text-align: center;
+	font-size: 1.3em;
+	margin-top: 10px;
+	box-shadow: 2px 2px 2px #888;
+	padding: 5px;
 }
+
+.display-view-img a img{
+	padding:0px;
+}
+
+.display-view-carousel-inner{
+	box-shadow: 2px 2px 2px #888;
+}
+
 
 
 
