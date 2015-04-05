@@ -162,10 +162,16 @@ def product():
 
             cart_form[2]['_value']="Remove from Cart"
 
+
+    category_rows=db(db.categories.is_active==True).select(orderby=db.categories.display_order)
+
+
+
     return dict(
         product_id=product_id,
         product_row=product_row,
         cart_form=cart_form,
+        category_rows=category_rows,
         )
 
 

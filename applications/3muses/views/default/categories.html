@@ -2,11 +2,13 @@
 
 
 {{if len(category_rows)==0:}}
+
 	<div class="container-fluid">
 		<div class="container">
 			<div>Sorry, we are currently out of everything!</div>
 		</div>
 	</div>
+
 {{else:}}
 
 	{{for j in range(len(category_rows)):}}
@@ -29,9 +31,9 @@
 
 
 			  {{if j%2==0:}}
-				<div class = "col-md-4 image-container pull-left">
+				<div class = "col-md-4 image-container category-view-image-container-left">
 			  {{else:}}
-				<div class = "col-md-4 image-container pull-right">
+				<div class = "col-md-4 image-container category-view-image-container-right">
 			  {{pass}}
 
 

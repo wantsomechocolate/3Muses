@@ -120,12 +120,57 @@
 </div>
 
 
+
+
+
+
+
+
+
+
+{{if len(category_rows)==0:}}
+
+{{else:}}
+
+
 	<div class="container-fliud style1">
 		<div class="container">
 			<div class="row product-view-row">
-			Content
+
+	{{for j in range(len(category_rows)):}}
+
+		{{if sqlite_tf:}}
+			{{srcattr=URL('download',category_rows[j].s3_url)}}
+		{{else:}}
+			{{srcattr='https://s3.amazonaws.com/threemusesglass/site_images/'+category_rows[j].s3_url}}
+		{{pass}}
+
+			<div class = "col-md-4 image-container">
+
+				<div class = 'category-header'>{{=category_rows[j].category_name}}</div>
+
+				{{ =A(IMG(_src=srcattr, _class="img-responsive", _alt="woops!"),_href=URL('display', args=[category_rows[j].category_name.replace(" ","_")])) }}
+
+			</div>
+
+
+	{{pass}}
+
 			</div>
 		</div>
 	</div>
+
+
+{{pass}}
+
+
+
+
+
+
+
+
+
+
 
 

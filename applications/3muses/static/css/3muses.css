@@ -151,20 +151,34 @@ h2{
 
 
 
-/* product line page styles */
+/* Category View */
 
 .category-header{
 	font-size: 2.3em;
 	border-bottom: 2px solid #888;
 }
 
+ 
 .category-description{
 	margin-top: 5px;
 	font-size: 1.3em;
+	text-align: justify;
 }
+
 
 .image-container a{
 	display:inline-block;
+}
+
+
+@media screen and (min-width: 992px) {
+
+	.category-view-image-container-right{
+
+		float:right !important;
+
+	}
+
 }
 
 
