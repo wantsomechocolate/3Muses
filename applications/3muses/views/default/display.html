@@ -45,11 +45,19 @@
 				<!-- Indicators -->
 				<ol class="carousel-indicators">
 			{{results=db(db.image.product_name==product_rows[j].id).select()}}
-			{{for i in range(len(results)):}}
-				{{if i == 0:}}
-					<li data-target="#display-carousel-{{=j}}" data-slide-to="{{=i}}" class="active"></li>
-				{{else:}}
-					<li data-target="#display-carousel-{{=j}}" data-slide-to="{{=i}}"></li>
+
+
+			{{ if len(results)==0: }}
+				<!-- <li data-target="#display-carousel-{{=j}}" data-slide-to="0" class="active"></li> -->
+			{{ else: }}
+
+
+				{{for i in range(len(results)):}}
+					{{if i == 0:}}
+						
+					{{else:}}
+						<li data-target="#display-carousel-{{=j}}" data-slide-to="{{=i}}"></li>
+					{{pass}}
 				{{pass}}
 			{{pass}}
 				</ol>
@@ -57,43 +65,67 @@
 
 				<div class="carousel-inner display-view-carousel-inner">
 
-	  		{{for i in range(len(results)):}}
 
-				{{if sqlite_tf:}}
-					{{srcattr=URL('download',results[i].s3_url)}}
-				{{else:}}
-					{{srcattr='https://s3.amazonaws.com/threemusesglass/site_images/'+results[i].s3_url}}
+			{{ if len(results)==0: }}
+			
+				{{ srcattr=URL('static','img/no_images.png') }}
+				<div class="item active display-view-img"><!-- class of active since it's the first item -->
+
+					<a href="{{ =URL('product', args=[product_rows[j].id]) }}">
+
+					  <div style="background:url( {{ =srcattr }} ) center center; background-size:cover;" class="slider-size">
+
+					      <div class="carousel-caption">
+					         Email: <br/> Rebecca@ThreeMuses.Glass <br/> For Photos!	   
+					      </div>
+					      
+					  </div>
+
+					</a>
+
+				</div>
+
+			{{ else: }}	
+
+		  		{{for i in range(len(results)):}}
+
+					{{if sqlite_tf:}}
+						{{srcattr=URL('download',results[i].s3_url)}}
+					{{else:}}
+						{{srcattr='https://s3.amazonaws.com/threemusesglass/site_images/'+results[i].s3_url}}
+					{{pass}}
+			  	
+			  		{{if i == 0:}}
+			    		<div class="item active display-view-img"><!-- class of active since it's the first item -->
+			    	{{else:}}
+			    		<div class="item display-view-img"><!-- class of active since it's the first item -->	
+			    	{{pass}}
+					    	
+
+
+					    	<!-- ocbocb=A(IMG(_src=srcattr, _class="img-thumbnail", _alt="woops!"),_href=URL('product', args=[product_rows[j].id]))ccvccv -->
+					      <a href="{{ =URL('product', args=[product_rows[j].id]) }}">
+
+						      <div style="background:url( {{ =srcattr }} ) center center; background-size:cover;" class="slider-size">
+
+							      <div class="carousel-caption">
+							        				   
+							      </div>
+							      
+							  </div>
+
+						  </a>
+
+
+			    	{{if i == 0:}}
+			    		</div>
+			    	{{else:}}
+			    		</div>	
+			    	{{pass}}
+
 				{{pass}}
-		  	
-		  		{{if i == 0:}}
-		    		<div class="item active display-view-img"><!-- class of active since it's the first item -->
-		    	{{else:}}
-		    		<div class="item display-view-img"><!-- class of active since it's the first item -->	
-		    	{{pass}}
-				    	
 
-
-				    	<!-- ocbocb=A(IMG(_src=srcattr, _class="img-thumbnail", _alt="woops!"),_href=URL('product', args=[product_rows[j].id]))ccvccv -->
-				      <a href="{{ =URL('product', args=[product_rows[j].id]) }}">
-
-					      <div style="background:url( {{ =srcattr }} ) center center; background-size:cover;" class="slider-size">
-
-						      <div class="carousel-caption">
-						        				   
-						      </div>
-						      
-						  </div>
-
-					  </a>
-
-
-		    	{{if i == 0:}}
-		    		</div>
-		    	{{else:}}
-		    		</div>	
-		    	{{pass}}
-
-			{{pass}}
+			{{ pass }}
 
 				</div><!-- /.carousel-inner -->
 
@@ -136,3 +168,43 @@
 
 {{pass}} <!--close else from having no items-->
 
+
+
+
+
+
+
+{{if len(category_rows)==0:}}
+
+{{else:}}
+
+
+	<div class="container-fliud style1">
+		<div class="container">
+			<div class="row product-view-row">
+
+	{{for j in range(len(category_rows)):}}
+
+		{{if sqlite_tf:}}
+			{{srcattr=URL('download',category_rows[j].s3_url)}}
+		{{else:}}
+			{{srcattr='https://s3.amazonaws.com/threemusesglass/site_images/'+category_rows[j].s3_url}}
+		{{pass}}
+
+			<div class = "col-md-4 image-container">
+
+				<div class = 'category-header'>{{=category_rows[j].category_name}}</div>
+
+				{{ =A(IMG(_src=srcattr, _class="img-responsive", _alt="woops!"),_href=URL('display', args=[category_rows[j].category_name.replace(" ","_")])) }}
+
+			</div>
+
+
+	{{pass}}
+
+			</div>
+		</div>
+	</div>
+
+
+{{pass}}

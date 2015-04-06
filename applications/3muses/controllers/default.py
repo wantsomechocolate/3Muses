@@ -88,9 +88,12 @@ def display():
 
     product_rows=db((db.product.category_name==category_id)&(db.product.is_active==True)).select(orderby=db.product.display_order)
 
+    category_rows=db(db.categories.is_active==True).select(orderby=db.categories.display_order)
+
     return dict(
         category_id=category_id,
         product_rows=product_rows,
+        category_rows=category_rows,
         )
 
 
