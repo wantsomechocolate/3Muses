@@ -3725,3 +3725,21 @@ def bootstrap_nav():
 
 def shopping_cart():
     return dict()
+
+
+
+def new_hotness():
+
+    if request.args(0) is not None:
+
+        redirect(URL('categories'))
+
+    else:
+
+        pass
+
+    category_rows=db(db.categories.is_active==True).select(orderby=db.categories.display_order)
+
+    return dict(
+        category_rows=category_rows,
+        )
