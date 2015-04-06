@@ -71,7 +71,21 @@
 		    		<div class="item display-view-img"><!-- class of active since it's the first item -->	
 		    	{{pass}}
 				    	
-				    	{{=A(IMG(_src=srcattr, _class="img-thumbnail", _alt="woops!"),_href=URL('product', args=[product_rows[j].id]))}}
+
+
+				    	<!-- ocbocb=A(IMG(_src=srcattr, _class="img-thumbnail", _alt="woops!"),_href=URL('product', args=[product_rows[j].id]))ccvccv -->
+				      <a href="{{ =URL('product', args=[product_rows[j].id]) }}">
+
+					      <div style="background:url( {{ =srcattr }} ) center center; background-size:cover;" class="slider-size">
+
+						      <div class="carousel-caption">
+						        				   
+						      </div>
+						      
+						  </div>
+
+					  </a>
+
 
 		    	{{if i == 0:}}
 		    		</div>
@@ -88,6 +102,17 @@
 			    <a class="carousel-control left" href="#display-carousel" data-slide="prev">&lsaquo;</a>
 			    <a class="carousel-control right" href="#display-carousel" data-slide="next">&rsaquo;</a>
 				-->
+
+				<a class="left carousel-control" href="javascript:void(0)" 
+				     data-slide="prev" data-target="#display-carousel-{{ =j }}">
+				<span class="glyphicon glyphicon-chevron-left"></span>
+				</a>
+				<a class="right carousel-control" href="javascript:void(0)" 
+				     data-slide="next" data-target="#display-carousel-{{ =j }}">
+				<span class="glyphicon glyphicon-chevron-right"></span>
+				</a>
+
+
 
 			</div><!-- /.carousel -->
 

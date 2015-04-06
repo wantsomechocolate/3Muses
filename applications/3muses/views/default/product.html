@@ -24,9 +24,9 @@
 	  	{{results=db(db.image.product_name==product_row[j].id).select()}}
 	  	{{for i in range(len(results)):}}
 	  		{{if i == 0:}}
-				<li data-target="#product-carousel-{{=j}}" data-slide-to="{{=i}}" class="active"></li>
+				<li data-target="#product-carousel-{{ =j }}" data-slide-to="{{ =i }}" class="active"></li>
 			{{else:}}
-				<li data-target="#product-carousel-{{=j}}" data-slide-to="{{=i}}"></li>
+				<li data-target="#product-carousel-{{ =j }}" data-slide-to="{{ =i }}"></li>
 			{{pass}}
 		{{pass}}
 
@@ -48,13 +48,28 @@
 					 {{srcattr='https://s3.amazonaws.com/threemusesglass/site_images/'+results[i].s3_url}}
 				    {{pass}}
 
-				    {{=A(IMG(_src=srcattr, _class="img-thumbnail", _alt="woops!"))}}
-			    			
+
+				    <!--
+				    ocbocb =A(IMG(_src=srcattr, _class="img-thumbnail", _alt="woops!"))ccbccb
+			    	-->
+
+				      <div style="background:url( {{ =srcattr }} ) center center; background-size:cover;" class="slider-size">
+
+					      <div class="carousel-caption">
+					        
+					      	
+
+					      </div>
+					      
+					  </div>
+
 			      			<!--<div class="carousel-caption">
 			        			<p>YO!</p>
 							=URL('download',results[i].image)
 
 			      				</div>-->
+
+
 			  		{{if i == 0:}}
 			    		</div>
 			    	{{else:}}
@@ -69,6 +84,15 @@
 		    <a class="carousel-control left" href="#product-carousel" data-slide="prev">&lsaquo;</a>
 		    <a class="carousel-control right" href="#product-carousel" data-slide="next">&rsaquo;</a>
 			-->
+
+			<a class="left carousel-control" href="javascript:void(0)" 
+			     data-slide="prev" data-target="#product-carousel-{{ =j }}">
+			<span class="glyphicon glyphicon-chevron-left"></span>
+			</a>
+			<a class="right carousel-control" href="javascript:void(0)" 
+			     data-slide="next" data-target="#product-carousel-{{ =j }}">
+			<span class="glyphicon glyphicon-chevron-right"></span>
+			</a>
 
 		</div><!-- /.carousel -->
 

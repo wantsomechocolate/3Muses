@@ -1,14 +1,20 @@
 {{ extend 'layout.html' }}
 
 
-
-
 <div id="carousel-example" class="carousel slide" data-ride="carousel">
   <!-- Indicators -->
   <ol class="carousel-indicators">
-    <li data-target="#carousel-example" data-slide-to="0" class="active"></li>
-    <li data-target="#carousel-example" data-slide-to="1"></li>
-    <li data-target="#carousel-example" data-slide-to="2"></li>
+
+  {{for j in range(len(category_rows)):}}
+
+  	{{ if j==0: }}
+    <li data-target="#carousel-example" data-slide-to="{{ =j }}" class="active"></li>
+    {{ else: }}
+    <li data-target="#carousel-example" data-slide-to="{{ =j }}"></li>
+    {{ pass }}
+
+  {{ pass }}
+    
   </ol>
 
   <!-- Wrapper for slides -->
@@ -30,12 +36,13 @@
       <!-- <img src="..." alt="..."> -->
       <div style="background:url( {{ =srcattr }} ) center center; background-size:cover;" class="slider-size">
 
-      <div class="carousel-caption">
-        
-      	{{=category_rows[j].category_name}}
+	      <div class="carousel-caption">
+	        
+	      	{{=category_rows[j].category_name}}
 
-      </div>
-    </div>
+	      </div>
+	      
+	  </div>
 
 	{{ if j==0: }}
     </div>
