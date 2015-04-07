@@ -195,15 +195,64 @@
 
 				<div class = 'category-header'>{{=category_rows[j].category_name}}</div>
 
-			  {{ onErrorAttr = URL('static','img/no_category_img.png') }}
+			  {{ onErrorAttr = "this.onerror=null;this.src='"+URL('static','img/no_category_img.png')+"'" }}
 
-					{{ =A( IMG( _src=srcattr, _class="img-responsive", _alt="Category Image Not Found", _onError="this.onerror=null;this.src='"+onErrorAttr+"'" ),_href=URL('display', args=[category_rows[j].category_name.replace(" ","_")])) }}
+					<!-- 
+					ocbocb =A( IMG( _src=srcattr, _class="img-responsive", _alt="Category Image Not Found", _onError="this.onerror=null;this.src='"+onErrorAttr+"'" ),_href=URL('display', args=[category_rows[j].category_name.replace(" ","_")])) ccbccb
+					 -->
+
+					<!-- 	
+					<a href="{{ =URL('display', args=[category_rows[j].category_name.replace(' ','_')]) }}">
+
+						<img src="{{ =srcattr }}" class="img-responsive", alt="Category Image Not Found", onError="{{ =onErrorAttr }}" >
+
+					</a>
+					-->
 
 
-					{{ =A( DIV(_style="background:url("+srcattr+") center center; background-size:cover;", _class="slide-size"),_href=URL('display', args=[category_rows[j].category_name.replace(" ","_")])) }}
-				
-				DIV(_style="background:url("+srcattr+") center center; background-size:cover;" _class="slide-size")
-				<div style="background:url( {{ =srcattr }} ) center center; background-size:cover;" class="slider-size">
+				<div id="yolo" class="carousel slide display-carousel" data-interval="false">
+
+
+					<ol class="carousel-indicators">
+						<li data-target="#yolo" data-slide-to="0" class="active"></li> 
+					</ol>
+
+
+
+
+
+					<div class="carousel-inner display-view-carousel-inner">
+
+						<div class="item active display-view-img"><!-- class of active since it's the first item -->
+
+					
+
+								<!-- DIV(_style="background:url("+srcattr+") center center; background-size:cover;" _class="slide-size") -->
+								<div style="background:url( {{ =srcattr }} ),url( {{ =URL('static','img/no_category_img.png') }} ) center center; background-size:cover;" class="slider-size">
+
+									<div class="carousel-caption">
+										Caption
+									</div>
+
+								</div>
+
+
+
+						</div>
+
+					</div>
+
+
+
+
+
+
+
+
+				</div>
+
+
+
 
 			</div>
 
