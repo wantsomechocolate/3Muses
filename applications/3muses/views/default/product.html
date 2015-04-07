@@ -22,18 +22,48 @@
 		    <ol class="carousel-indicators">
 
 	  	{{results=db(db.image.product_name==product_row[j].id).select()}}
-	  	{{for i in range(len(results)):}}
-	  		{{if i == 0:}}
-				<li data-target="#product-carousel-{{ =j }}" data-slide-to="{{ =i }}" class="active"></li>
-			{{else:}}
-				<li data-target="#product-carousel-{{ =j }}" data-slide-to="{{ =i }}"></li>
-			{{pass}}
-		{{pass}}
+
+		{{ if len(results)==0: }}
+			<!-- <li data-target="#display-carousel-{{=j}}" data-slide-to="0" class="active"></li> -->
+		{{ else: }}
+
+		  	{{for i in range(len(results)):}}
+		  		{{if i == 0:}}
+					<li data-target="#product-carousel-{{ =j }}" data-slide-to="{{ =i }}" class="active"></li>
+				{{else:}}
+					<li data-target="#product-carousel-{{ =j }}" data-slide-to="{{ =i }}"></li>
+				{{ pass }}
+			{{ pass }}
+		{{ pass }}
 
 		    </ol>
 
 
 		    <div class="carousel-inner">
+
+
+			{{ if len(results)==0: }}
+			
+				{{ srcattr=URL('static','img/no_images.png') }}
+				<div class="item active display-view-img"><!-- class of active since it's the first item -->
+
+					
+
+					  <div style="background:url( {{ =srcattr }} ) center center; background-size:cover;" class="slider-size">
+
+					      <div class="carousel-caption">
+					         Email: <br/> Rebecca@ThreeMuses.Glass <br/> For Photos!	   
+					      </div>
+					      
+					  </div>
+
+					
+
+				</div>
+
+			{{ else: }}	
+
+
 
 		  		{{for i in range(len(results)):}}
 			  		{{if i == 0:}}
@@ -74,9 +104,11 @@
 			    		</div>
 			    	{{else:}}
 			    		</div>
-			    	{{pass}}
+			    	{{ pass }}
 
-		    	{{pass}}
+			    {{ pass }}
+
+		   	{{ pass }}
 		  
 		    </div><!-- /.carousel-inner -->
 		  	<!--  Next and Previous controls below href values must reference the id for this carousel -->
@@ -173,7 +205,9 @@
 
 				<div class = 'category-header'>{{=category_rows[j].category_name}}</div>
 
-				{{ =A(IMG(_src=srcattr, _class="img-responsive", _alt="woops!"),_href=URL('display', args=[category_rows[j].category_name.replace(" ","_")])) }}
+			  {{ onErrorAttr = URL('static','img/no_category_img.png') }}
+
+					{{ =A( IMG( _src=srcattr, _class="img-responsive", _alt="Category Image Not Found", _onError="this.onerror=null;this.src='"+onErrorAttr+"'" ),_href=URL('display', args=[category_rows[j].category_name.replace(" ","_")])) }}
 
 			</div>
 

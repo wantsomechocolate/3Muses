@@ -27,6 +27,9 @@
 			{{srcattr='https://s3.amazonaws.com/threemusesglass/site_images/'+category_rows[j].s3_url}}
 		{{pass}}
 
+		{{ print "srcattr" }}
+		{{ print srcattr }}
+
 			<div class="row">
 
 
@@ -36,8 +39,11 @@
 				<div class = "col-md-4 image-container category-view-image-container-right">
 			  {{pass}}
 
+			  {{ onErrorAttr = URL('static','img/no_category_img.png') }}
 
-					{{ =A(IMG(_src=srcattr, _class="img-responsive", _alt="woops!"),_href=URL('display', args=[category_rows[j].category_name.replace(" ","_")])) }}
+					{{ =A( IMG( _src=srcattr, _class="img-responsive", _alt="Category Image Not Found", _onError="this.onerror=null;this.src='"+onErrorAttr+"'" ),_href=URL('display', args=[category_rows[j].category_name.replace(" ","_")])) }}
+
+				<!-- <img src="imagenotfound.gif" alt="Image not found" onError="this.onerror=null;this.src='imagefound.gif';" /> -->
 
 				
 			  {{if j%2==0:}}

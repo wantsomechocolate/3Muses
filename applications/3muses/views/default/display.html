@@ -2,7 +2,7 @@
 
 	<div class="container-fliud display-view-header-fluid-container">
 		<div class="container">
-			<div class="row">
+			<div class="row display-view-header-row">
 				<h1>
 					{{=db(db.categories.id==category_id).select()[0].category_name}}
 				</h1>
@@ -54,7 +54,7 @@
 
 				{{for i in range(len(results)):}}
 					{{if i == 0:}}
-						
+						<li data-target="#display-carousel-{{=j}}" data-slide-to="0" class="active"></li> 
 					{{else:}}
 						<li data-target="#display-carousel-{{=j}}" data-slide-to="{{=i}}"></li>
 					{{pass}}
@@ -195,7 +195,15 @@
 
 				<div class = 'category-header'>{{=category_rows[j].category_name}}</div>
 
-				{{ =A(IMG(_src=srcattr, _class="img-responsive", _alt="woops!"),_href=URL('display', args=[category_rows[j].category_name.replace(" ","_")])) }}
+			  {{ onErrorAttr = URL('static','img/no_category_img.png') }}
+
+					{{ =A( IMG( _src=srcattr, _class="img-responsive", _alt="Category Image Not Found", _onError="this.onerror=null;this.src='"+onErrorAttr+"'" ),_href=URL('display', args=[category_rows[j].category_name.replace(" ","_")])) }}
+
+
+					{{ =A( DIV(_style="background:url("+srcattr+") center center; background-size:cover;", _class="slide-size"),_href=URL('display', args=[category_rows[j].category_name.replace(" ","_")])) }}
+				
+				DIV(_style="background:url("+srcattr+") center center; background-size:cover;" _class="slide-size")
+				<div style="background:url( {{ =srcattr }} ) center center; background-size:cover;" class="slider-size">
 
 			</div>
 
