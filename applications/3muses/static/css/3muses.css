@@ -190,6 +190,17 @@ h2{
 
 /* Display View Styles */
 
+.display-view-product-cost{
+	position: absolute;
+	right: 0px;
+	bottom: 0px;
+	margin: 5px;
+	margin-right: 10px;
+	font-size: 2em;
+	font-weight: bold;
+	z-index: 10;
+ }
+
 .display-view-header-fluid-container{
 	background: #ddd;
 	border-bottom: 2px solid #888;
@@ -933,6 +944,13 @@ input[type=radio]{
 }
 
 
+
+/* Conditional Footers */
+
+/* Category Footer Styles */
+.category-footer-image-container{
+	margin-bottom:20px;
+}
 
 
 /* FOOTER STYLES */

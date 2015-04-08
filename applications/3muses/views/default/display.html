@@ -42,6 +42,11 @@
 			      http://twitter.github.com/bootstrap/javascript.html#carousel -->
 			<div id="display-carousel-{{=j}}" class="carousel slide display-carousel" data-interval="false"><!-- class of slide for animation -->
 			  
+				<div class="display-view-product-cost">
+					${{ =product_rows[j].cost_USD }}
+				</div>
+
+
 				<!-- Indicators -->
 				<ol class="carousel-indicators">
 			{{results=db(db.image.product_name==product_rows[j].id).select()}}
@@ -171,97 +176,4 @@
 
 
 
-
-
-
-{{if len(category_rows)==0:}}
-
-{{else:}}
-
-
-	<div class="container-fliud style1">
-		<div class="container">
-			<div class="row product-view-row">
-
-	{{for j in range(len(category_rows)):}}
-
-		{{if sqlite_tf:}}
-			{{srcattr=URL('download',category_rows[j].s3_url)}}
-		{{else:}}
-			{{srcattr='https://s3.amazonaws.com/threemusesglass/site_images/'+category_rows[j].s3_url}}
-		{{pass}}
-
-			<div class = "col-md-4 image-container">
-
-				<div class = 'category-header'>{{=category_rows[j].category_name}}</div>
-
-			  {{ onErrorAttr = "this.onerror=null;this.src='"+URL('static','img/no_category_img.png')+"'" }}
-
-					<!-- 
-					ocbocb =A( IMG( _src=srcattr, _class="img-responsive", _alt="Category Image Not Found", _onError="this.onerror=null;this.src='"+onErrorAttr+"'" ),_href=URL('display', args=[category_rows[j].category_name.replace(" ","_")])) ccbccb
-					 -->
-
-					<!-- 	
-					<a href="{{ =URL('display', args=[category_rows[j].category_name.replace(' ','_')]) }}">
-
-						<img src="{{ =srcattr }}" class="img-responsive", alt="Category Image Not Found", onError="{{ =onErrorAttr }}" >
-
-					</a>
-					-->
-
-
-				<div id="yolo" class="carousel slide display-carousel" data-interval="false">
-
-
-					<ol class="carousel-indicators">
-						<li data-target="#yolo" data-slide-to="0" class="active"></li> 
-					</ol>
-
-
-
-
-
-					<div class="carousel-inner display-view-carousel-inner">
-
-						<div class="item active display-view-img"><!-- class of active since it's the first item -->
-
-					
-
-								<!-- DIV(_style="background:url("+srcattr+") center center; background-size:cover;" _class="slide-size") -->
-								<div style="background:url( {{ =srcattr }} ),url( {{ =URL('static','img/no_category_img.png') }} ) center center; background-size:cover;" class="slider-size">
-
-									<div class="carousel-caption">
-										Caption
-									</div>
-
-								</div>
-
-
-
-						</div>
-
-					</div>
-
-
-
-
-
-
-
-
-				</div>
-
-
-
-
-			</div>
-
-
-	{{pass}}
-
-			</div>
-		</div>
-	</div>
-
-
-{{pass}}
+{{ include 'category_footer.html' }}

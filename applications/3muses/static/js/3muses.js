@@ -270,15 +270,48 @@ function update_payment_option(value_one_or_all, value_two){
 
 
 
+function adjust_slider_heights(){
 
+    var width=$('.slider-size').width()*.9;
+
+    $('.slider-size').css('height',width+"px")
+
+}
 
 
 //Let's get ready to rumble
 $(document).ready(function(){
 
+    
+
+
+    //Enable swiping...
+    // $(".carousel-inner").swipe( {
+    //     //Generic swipe handler for all directions
+    //     swipeLeft:function(event, direction, distance, duration, fingerCount) {
+    //         $(this).parent().carousel('prev'); 
+    //     },
+    //     swipeRight: function() {
+    //         $(this).parent().carousel('next'); 
+    //     },
+    //     //Default is 75px, set to 0 for demo so any distance triggers swipe
+    //     threshold:0
+    // });
+
+
+    // var width=$('.slider-size').width()*.9;
+    // // alert(width);
+
+    // $('.slider-size').css('height',width+"px")
+
+
+    $(window).on("resize", adjust_slider_heights);
+    $(window).on("load", adjust_slider_heights);
+    $(window).on("orientationchange", adjust_slider_heights);
+
+
 
     // Add classes to auth
-
     $("#auth_user_email").addClass("form-control");
     $("#auth_user_password").addClass("form-control");
     $("#auth_user_remember").addClass("display_inline_block_class");
@@ -452,18 +485,8 @@ $(document).ready(function(){
     //     $(this).carousel('next');  
     // });  
 
-    //Enable swiping...
-    $(".carousel-inner").swipe( {
-        //Generic swipe handler for all directions
-        swipeLeft:function(event, direction, distance, duration, fingerCount) {
-            $(this).parent().carousel('prev'); 
-        },
-        swipeRight: function() {
-            $(this).parent().carousel('next'); 
-        },
-        //Default is 75px, set to 0 for demo so any distance triggers swipe
-        threshold:0
-    });
+
+
 
 
 });
