@@ -1025,3 +1025,14 @@ footer{
 	width:100%; 
 	margin:0 auto; /* center your carousel if other than 100% */ 
 }
+
+.frame {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+}
+
+.frame img {
+  width: 100%;
+}
