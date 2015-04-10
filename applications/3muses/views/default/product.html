@@ -47,7 +47,24 @@
 				{{ srcattr=URL('static','img/no_images.png') }}
 				<div class="item active display-view-img"><!-- class of active since it's the first item -->
 
-					
+
+
+
+
+				 <div class="slider-size image-container">
+
+					<a href="{{ =URL('display', args=[category_rows[j].category_name.replace(" ","_")]) }}">
+
+						<img src="{{ =srcattr }}" class="img-responsive" alt="{{ =category_rows[j].category_name }}" onError="{{ =onErrorAttr }}">
+
+					</a>
+
+				</div>
+
+
+
+
+
 
 					  <div style="background:url( {{ =srcattr }} ) center center; background-size:cover;" class="slider-size">
 
