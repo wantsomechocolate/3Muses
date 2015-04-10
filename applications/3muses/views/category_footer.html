@@ -22,13 +22,17 @@
 
 			  {{ onErrorAttr = "this.onerror=null;this.src='"+URL('static','img/no_category_img.png')+"'" }}
 
-				<a href="{{ =URL('display', args=[category_rows[j].category_name.replace(' ','_')]) }}">
+				  <div class="slider-size">
 
-					<div style="background:url( {{ =srcattr }} ),url( {{ =URL('static','img/no_category_img.png') }} ); background-position: center center; background-size:cover;" class="slider-size">
+					<a href="{{ =URL('display', args=[category_rows[j].category_name.replace(' ','_')]) }}">
 
-					</div>
+						<div style="background:url( {{ =srcattr }} ),url( {{ =URL('static','img/no_category_img.png') }} ); background-position: center center; background-size:cover;" class="slider-size">
 
-				</a>
+						</div>
+
+					</a>
+
+				</div>
 
 			</div>
 

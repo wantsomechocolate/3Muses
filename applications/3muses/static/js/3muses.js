@@ -274,7 +274,7 @@ function adjust_slider_heights(){
 
     var width=$('.slider-size').width()*.9;
 
-    $('.slider-size').css('height',width+"px")
+    $('.slider-size').css({'height':width+"px"})
 
 }
 
@@ -284,6 +284,30 @@ $(document).ready(function(){
 
     
 
+
+    // var center_fill = function (){
+
+    //     var img_frames = $('.image-container a img');
+    //      img_frames.each(function(){
+
+    //         current_img_width=parseInt($(this).css('width'));
+    //         current_img_height=parseInt($(this).css('height'));
+
+
+
+
+
+
+
+
+
+
+    //      });
+    // };
+
+
+
+// http://stackoverflow.com/questions/17084246/make-image-fill-div-proportionally-and-center-image-vertically
 
     //Enable swiping...
     $(".carousel-inner").swipe( {
@@ -295,7 +319,7 @@ $(document).ready(function(){
             $(this).parent().carousel('prev'); 
         },
         //Default is 75px, set to 0 for demo so any distance triggers swipe
-        threshold:0
+        threshold:10
     });
 
 
@@ -310,7 +334,66 @@ $(document).ready(function(){
     $(window).on("orientationchange", adjust_slider_heights);
 
 
-    $(".frame img").centerImage();
+
+
+// find the height and width of each image and the height and width of each parent
+// if the aspect ratio w/h of the img is higher than the container
+// that means you will need to adjust the height and let the width overflow
+// if the aspect ratio w/h of the img is lower than the container
+// The width expands to fill the container, and the vertically positioning needs to be adjusted so that the image is centered
+
+    var centerImageVertically = function () {
+        var imgframes = $('.image-container a img');
+        imgframes.each(function (i) {
+            // var imgVRelativeOffset = ($(this).height() - $(this).parent(".image-container").height()) / 2;
+            current_img_width=$(this).width();
+            current_img_height=$(this).height();
+
+            container_width=$(this).width(this).parent().parent().width();
+            container_height=$(this).height(this).parent().parent().height();
+
+            // $('#object').width($('#object').parent().width());
+
+            // alert(current_img_width);
+            // alert(current_img_height);
+            // alert(container_width);
+            // alert(container_height);
+            // alert("s");
+            img_ar=current_img_width/current_img_height;
+            container_ar=container_width/container_height;
+
+            // alert(img_ar);
+            // alert(container_ar);
+            // alert("1");
+            if (img_ar>container_ar){
+                // alert("2");
+                img_min_width_px=img_ar*container_height;
+
+            } else if (img_ar<container_ar) {
+                // alert("3");
+                img_min_width_px=container_width;
+
+            } else {
+                // alert("4");
+                img_min_width_px=current_img_width;
+
+            };
+            // alert(img_min_width_px);
+            $(this).css({
+                'min-width':img_min_width_px+'px'
+            });
+        });
+    };
+
+    centerImageVertically();
+    // $(window).resize(centerImageVertically);
+    $(window).on("resize", centerImageVertically);
+    $(window).on("load", centerImageVertically);
+    $(window).on("orientationchange", centerImageVertically);
+
+
+
+    // $(".frame img").centerImage();
 
 
     // Add classes to auth

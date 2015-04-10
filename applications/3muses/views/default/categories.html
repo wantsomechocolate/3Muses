@@ -34,16 +34,23 @@
 
 
 			  {{if j%2==0:}}
-				<div class = "col-md-4 image-container category-view-image-container-left">
+				<div class = "col-md-4 image-container category-view-image-container-left slider-size">
 			  {{else:}}
-				<div class = "col-md-4 image-container category-view-image-container-right">
+				<div class = "col-md-4 image-container category-view-image-container-right slider-size">
 			  {{pass}}
 
-			  {{ onErrorAttr = URL('static','img/no_category_img.png') }}
+			  
+			  {{ onErrorAttr = "this.onerror=null;this.src='"+URL('static','img/no_category_img.png')+"'" }}
 
-					{{ =A( IMG( _src=srcattr, _class="img-responsive", _alt="Category Image Not Found", _onError="this.onerror=null;this.src='"+onErrorAttr+"'" ),_href=URL('display', args=[category_rows[j].category_name.replace(" ","_")])) }}
+					<!-- ocbocb =A( IMG( _src=srcattr, _class="img-responsive", _alt="Category Image Not Found", _onError="this.onerror=null;this.src='"+onErrorAttr+"'" ),_href=URL('display', args=[category_rows[j].category_name.replace(" ","_")])) ccbccb -->
 
 				<!-- <img src="imagenotfound.gif" alt="Image not found" onError="this.onerror=null;this.src='imagefound.gif';" /> -->
+
+					<a href="{{ =URL('display', args=[category_rows[j].category_name.replace(" ","_")]) }}">
+
+						<img src="{{ =srcattr }}" class="img-responsive" alt="{{ =category_rows[j].category_name }}" onError="{{ =onErrorAttr }}">
+
+					</a>
 
 				
 			  {{if j%2==0:}}
