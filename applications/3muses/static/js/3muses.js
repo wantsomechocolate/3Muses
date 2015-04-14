@@ -82,6 +82,21 @@ function update_target(click_class_name_or_all, selected_class_name, view_name, 
 
                 for (i=obj['shipping_options_LOD'].length-1;i>=0;i--){
 
+                    //Try to get the upper bound estimated delivery date
+                    delivery_days=obj['shipping_options_LOD'][i]['delivery_days'];
+
+                    delivery_date = new Date();
+
+                    if (delivery_days=0){
+                        delivery_date.setDate(delivery_date.getDate()+5)
+                    } else if(delivery_days>0){
+                        delivery_date.setDate(delivery_date.getDate()+delivery_days)
+                    } else {
+                        delivery_date.setDate(delivery_date.getDate()+5)
+                    };
+
+                    alert(delivery_date);
+
                     newHtml.push('<div class="row cart-view-shipping-row">');
 
                         newHtml.push('<div class="col-md-offset-2 col-md-8 cart-view-shipping-row-wrapper" id="'+obj['shipping_options_LOD'][i]['rate_id']+'">')
@@ -118,7 +133,7 @@ function update_target(click_class_name_or_all, selected_class_name, view_name, 
 
                                 newHtml.push('<div class="col-md-8">')
                                     newHtml.push('<div class="vert-hori-center-child">');
-                                        newHtml.push(obj['shipping_options_LOD'][i]['delivery_days']);
+                                        newHtml.push(delivery_date);
                                     newHtml.push('</div>');
                                 newHtml.push('</div>');
 
@@ -282,7 +297,8 @@ function adjust_slider_heights(){
 //Let's get ready to rumble
 $(document).ready(function(){
 
-    
+
+ 
 
 
     // var center_fill = function (){
@@ -391,18 +407,27 @@ $(document).ready(function(){
     $(window).on("load", centerImageVertically);
     $(window).on("orientationchange", centerImageVertically);
 
+    
+
 
 
     // $(".frame img").centerImage();
 
 
     // Add classes to auth
-    $("#auth_user_email").addClass("form-control");
-    $("#auth_user_password").addClass("form-control");
-    $("#auth_user_remember").addClass("display_inline_block_class");
-    $("input[value=Login]").addClass("form-control btn-success");
-    $("#auth_user_email__label").addClass("display_none_class");
-    $("#auth_user_password__label").addClass("display_none_class");
+
+    var current_page=window.location.pathname;
+
+    if (current_page.lastIndexOf("/appadmin",0)===0){
+        // alert("now we here");
+    } else {
+        $("#auth_user_email").addClass("form-control");
+        $("#auth_user_password").addClass("form-control");
+        $("#auth_user_remember").addClass("display_inline_block_class");
+        $("input[value=Login]").addClass("form-control btn-success");
+        $("#auth_user_email__label").addClass("display_none_class");
+        $("#auth_user_password__label").addClass("display_none_class");
+    };
 
 
 

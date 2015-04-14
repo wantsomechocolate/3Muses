@@ -206,6 +206,8 @@ def add_new_card():
 
     stripe_form=FORM(
 
+        DIV( LABEL( 'Email Address',),DIV(INPUT(_type='text',_name='email', _class='form-control', ),),),
+
         DIV( LABEL( 'Name on the Card',),DIV(INPUT(_type='text', _name='name', _class='form-control', ),),),
 
         DIV( LABEL( 'Card Number',),DIV(INPUT(_type='integer', _name='number', _class='form-control', ),),),
@@ -231,6 +233,7 @@ def add_new_card():
 
         try:
             stripe_customer_token=db(db.stripe_customers.muses_id==auth.user_id).select()[0].stripe_id
+            print ("I should not be able to get here from a gimp user")
             customer=stripe.Customer.retrieve(stripe_customer_token)
             ## This is failing because customer is none I think?
             if customer==None:
@@ -254,8 +257,22 @@ def add_new_card():
             #if auth.is_logged_in():
 
             try:
+
+                print ("Hello, we made it to the part where the use doesn't have any cards")
+
+                if auth.has_membership('gimp'):
+                    muses_email=stripe_form.vars.email
+
+                    product_record=db(db.auth_user.id==auth.user_id).select().first()
+
+                    print (product_record)
+
+                    product_record.update(email=muses_email)
+                    product_record.update_record()
+
+
                 customer = stripe.Customer.create(
-                    email=auth.user.email,
+                    email=muses_email,
                     card=dict(
                         name=stripe_form.vars.name,
                         number=stripe_form.vars.number,
@@ -270,7 +287,7 @@ def add_new_card():
                     muses_id=auth.user_id,
                     stripe_id=customer.id,
                     ## might want to add some logic here to get a better email address when using a gimp user!
-                    stripeEmail=auth.user.email,
+                    stripeEmail=muses_email,
                     stripe_next_card_id=customer.default_source
                 )
 

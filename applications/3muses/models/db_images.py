@@ -7,24 +7,27 @@ if db._dbname=='sqlite':
 else:
 	sqlite_tf=False
 
-try:
+# try:
 
-	## see if you can acces the heroku environment variables
-	myfs = fs.s3fs.S3FS('threemusesglass','site_images',os.environ['AWS_ACCESS_KEY_ID'], os.environ['AWS_SECRET_ACCESS_KEY'])
+## see if you can acces the heroku environment variables
+myfs = fs.s3fs.S3FS('threemusesglass','site_images',os.environ['AWS_ACCESS_KEY_ID'], os.environ['AWS_SECRET_ACCESS_KEY'])
 
-## what exception exactly?
-except KeyError:
+# ## what exception exactly?
+# except KeyError:
 
-	# you aren't running on heroku
-	# this will fail if it can't find the local keys. GOOD.
-	with open('/home/wantsomechocolate/Code/API Info/api_keys.txt','r') as fh:
-		text=fh.read()
-		api_keys = ast.literal_eval(text)
+# 	# you aren't running on heroku
+# 	# this will fail if it can't find the local keys. GOOD.
+# 	# with open('/home/wantsomechocolate/Code/API Info/api_keys.txt','r') as fh:
+# 	# 	text=fh.read()
+# 	# 	api_keys = ast.literal_eval(text)
 	
-	AWS_ACCESS_KEY_ID=api_keys['aws']['wantsomechocolate']['AWS_ACCESS_KEY_ID']
-	AWS_SECRET_ACCESS_KEY=api_keys['aws']['wantsomechocolate']['AWS_SECRET_ACCESS_KEY']
+# 	# AWS_ACCESS_KEY_ID=api_keys['aws']['wantsomechocolate']['AWS_ACCESS_KEY_ID']
+# 	# AWS_SECRET_ACCESS_KEY=api_keys['aws']['wantsomechocolate']['AWS_SECRET_ACCESS_KEY']
 
-	myfs = fs.s3fs.S3FS('threemusesglass','site_images',AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY)
+# 	AWS_ACCESS_KEY_ID=os.environ['AWS_ACCESS_KEY_ID']
+# 	AWS_SECRET_ACCESS_KEY=os.environ['AWS_SECRET_ACCESS_KEY']
+
+# 	myfs = fs.s3fs.S3FS('threemusesglass','site_images',AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY)
 
 
 
