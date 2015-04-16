@@ -18,13 +18,13 @@
 
 			<div class = "col-md-4 category-footer-image-container">
 
-				<div class = 'category-header'>{{=category_rows[j].category_name}}</div>
+				<div class = 'category-footer-header'>{{=category_rows[j].category_name}}</div>
 
 			  {{ onErrorAttr = "this.onerror=null;this.src='"+URL('static','img/no_category_img.png')+"'" }}
 
 			  		<div>
 			  		</div>
-				  <div class="slider-size image-container">
+				  <div class="slider-size image-container category-footer-image-container-child">
 
 					<a href="{{ =URL('display', args=[category_rows[j].category_name.replace(" ","_")]) }}">
 

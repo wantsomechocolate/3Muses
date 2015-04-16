@@ -284,6 +284,7 @@ h2{
 
 .product-view-carousel{
 	position:relative;
+	box-shadow: 5px 5px 8px #888;
 }
 
 .product-view-product-cost{
@@ -963,8 +964,17 @@ input[type=radio]{
 /* Conditional Footers */
 
 /* Category Footer Styles */
+.category-footer-header{
+	font-size: 2.3em;
+	text-align: center;
+}
+
 .category-footer-image-container{
 	margin-bottom:20px;
+}
+
+.category-footer-image-container-child{
+	box-shadow: 5px 5px 8px #888;
 }
 
 

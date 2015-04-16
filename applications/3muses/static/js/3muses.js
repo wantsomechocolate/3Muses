@@ -87,15 +87,16 @@ function update_target(click_class_name_or_all, selected_class_name, view_name, 
 
                     delivery_date = new Date();
 
-                    if (delivery_days=0){
-                        delivery_date.setDate(delivery_date.getDate()+5)
+                    if (delivery_days==0){
+                        delivery_date.setDate(delivery_date.getDate()+5);
                     } else if(delivery_days>0){
-                        delivery_date.setDate(delivery_date.getDate()+delivery_days)
+                        delivery_date.setDate(delivery_date.getDate()+delivery_days);
                     } else {
-                        delivery_date.setDate(delivery_date.getDate()+5)
+                        delivery_date.setDate(delivery_date.getDate()+5);
                     };
 
-                    alert(delivery_date);
+                    // alert(delivery_date);
+                    
 
                     newHtml.push('<div class="row cart-view-shipping-row">');
 
@@ -298,7 +299,7 @@ function adjust_slider_heights(){
 $(document).ready(function(){
 
 
- 
+     alert(moment().format());
 
 
     // var center_fill = function (){
