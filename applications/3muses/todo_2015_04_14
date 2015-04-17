@@ -16,6 +16,12 @@ Product Page
 Fix image heights on non-default active images - LOW PRIORITY
 
 Cart Page
+
+General
 Add edit icon to all popovers
 
+Shipping
 Get dates in shipping options to format properly using moment.js
+
+payment
+Add email to database while processing paypal purchase information

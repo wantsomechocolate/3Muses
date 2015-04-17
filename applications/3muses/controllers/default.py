@@ -847,10 +847,39 @@ def checkout():
         invoice_number=id_generator()
 
 
+
+        web_profile = paypalrestsdk.WebProfile({
+            "name": "ThreeMusesGlass02",
+            "presentation": {
+                "brand_name": "ThreeMusesGlass",
+                "logo_image": "http://s3-ec.buzzfed.com/static/2014-07/18/8/enhanced/webdr02/anigif_enhanced-buzz-21087-1405685585-12.gif",
+                "locale_code": "US"
+            },
+            "input_fields": {
+                "allow_note": True,
+                "no_shipping": 1,
+                "address_override": 1
+            },
+            "flow_config": {
+                "landing_page_type": "Login",
+            }
+        })
+
+        if web_profile.create():
+            experience_profile_id=web_profile.id
+            print "Profile was created" 
+            print web_profile.id
+        else:
+            experience_profile_id='threemusesglass'
+            print "There was an error creating the profile - see below."
+            print web_profile.error
+
+
         ## cart_for_paypal_LOD is from the cart logic section
         payment_dict=paypal_create_payment_dict(
             intent='sale',
             payment_method='paypal', 
+            experience_profile_id=experience_profile_id,
             redirect_urls=dict(
                 return_url="https://threemusesglass.herokuapp.com/paypal_confirmation",
                 cancel_url="https://threemusesglass.herokuapp.com"),

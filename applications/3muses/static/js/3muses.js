@@ -88,14 +88,19 @@ function update_target(click_class_name_or_all, selected_class_name, view_name, 
                     delivery_date = new Date();
 
                     if (delivery_days==0){
+                        // alert("delivery days were 0")
                         delivery_date.setDate(delivery_date.getDate()+5);
                     } else if(delivery_days>0){
-                        delivery_date.setDate(delivery_date.getDate()+delivery_days);
+                        // alert("delivery days were greater than 0")
+                        delivery_date.setDate(delivery_date.getDate()+delivery_days+1);
                     } else {
+                        // alert("delivery days were something else, probably none")
                         delivery_date.setDate(delivery_date.getDate()+5);
                     };
 
                     // alert(delivery_date);
+                    formatted_date=moment(delivery_date).format('ddd MMM Do')
+                    // alert(formatted_date);
                     
 
                     newHtml.push('<div class="row cart-view-shipping-row">');
@@ -134,7 +139,7 @@ function update_target(click_class_name_or_all, selected_class_name, view_name, 
 
                                 newHtml.push('<div class="col-md-8">')
                                     newHtml.push('<div class="vert-hori-center-child">');
-                                        newHtml.push(delivery_date);
+                                        newHtml.push(formatted_date);
                                     newHtml.push('</div>');
                                 newHtml.push('</div>');
 
@@ -299,7 +304,7 @@ function adjust_slider_heights(){
 $(document).ready(function(){
 
 
-     alert(moment().format());
+    // alert(moment().format());
 
 
     // var center_fill = function (){
