@@ -419,13 +419,25 @@ def cart():
             ## Retreive product info from the db
             product=db(db.product.id==row.product_id).select().first()
 
-            ## If using a local db get the product image locally
-            if sqlite_tf:
-                srcattr=URL('download',db(db.image.product_name==row.product_id).select().first().s3_url)
-            
-            ## For the more common case, get the image from aws s3
+            image=db(db.image.product_name==row.product_id).select().first()
+
+            if not image:
+                srcattr=URL('static','img/no_images.png')
             else:
-                srcattr=S3_BUCKET_PREFIX+str(db(db.image.product_name==row.product_id).select().first().s3_url)
+
+                ## If using a local db get the product image locally
+                if sqlite_tf:
+                    # # image=db(db.image.product_name==row.product_id).select().first()
+                    # if len(images)==0:
+                    #     srcattr=URL('static','img/no_images.png')
+                    # else:
+                    srcattr=URL('download', image.s3_url)
+                    # print ("sqlite")
+                
+                ## For the more common case, get the image from aws s3
+                else:
+                    # srcattr=S3_BUCKET_PREFIX+str(db(db.image.product_name==row.product_id).select().first().s3_url)
+                    srcattr=S3_BUCKET_PREFIX+str(image.s3_url)
 
             ## Create the product_image_url
             product_image_url=A(IMG(_src=srcattr, _class='img-thumbnail cart-view-cart-tn'), _href=URL('default','product',args=[row.product_id]))
@@ -849,7 +861,7 @@ def checkout():
 
 
         web_profile = paypalrestsdk.WebProfile({
-            "name": "ThreeMusesGlass02",
+            "name": "ThreeMusesGlass03",
             "presentation": {
                 "brand_name": "ThreeMusesGlass",
                 "logo_image": "http://s3-ec.buzzfed.com/static/2014-07/18/8/enhanced/webdr02/anigif_enhanced-buzz-21087-1405685585-12.gif",
@@ -870,7 +882,7 @@ def checkout():
             print "Profile was created" 
             print web_profile.id
         else:
-            experience_profile_id='threemusesglass'
+            experience_profile_id='XP-SLXS-5VPC-DL2F-VE9X'
             print "There was an error creating the profile - see below."
             print web_profile.error
 
@@ -3268,6 +3280,7 @@ def paypal_confirmation():
         ## Try to execute the payment with the payer_id
         if payment.execute({"payer_id":payer_id}) or skip:
         #if True:
+            print payment
             status="success"
             session.expect_paypal_webhook=False
 
@@ -3277,9 +3290,33 @@ def paypal_confirmation():
 
             user_data=db(db.auth_user.id==auth.user_id).select().first()
 
+            if auth.has_membership('gimp'):
+
+                muses_email_address=payment['payer']['payer_info']['email']
+
+                # user_record=db(db.auth_user.id==auth.user_id).select().first()
+
+                # print (user_record)
+
+                user_data.update(email=muses_email_address)
+
+                user_data.update_record()
+
+            else:
+
+            # user_data=db(db.auth_user.id==auth.user_id).select().first()
+
+                muses_email_address=user_data.email
+
             muses_id=user_data.id
-            muses_email_address=user_data.email
             muses_name=user_data.first_name
+
+
+
+
+
+
+
                 
             address_data=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select().first()
 
@@ -3297,7 +3334,7 @@ def paypal_confirmation():
                 session_db_record_id=response.session_db_record_id,
                 )
 
-            print "three"
+            # print "three"
 
             ## Populating the purchase history dict
             ## This is used in the next view to show the user the purchase details. 
@@ -3395,7 +3432,7 @@ def paypal_confirmation():
 
             )
 
-            print "four"
+            # print "four"
 
             ## place data in the database. 
             purchase_history_data_id=db.purchase_history_data.bulk_insert([purchase_history_dict])[0]
@@ -3660,6 +3697,9 @@ def paypal_confirmation():
                 tag="confirmation")
 
             ## try:
+
+            ## Set this up so that it emails rebecca if anything bad happens with the info she
+            ## needs to send out the product. 
             message.send()
 
             ## except postmark.core.PMMailUnprocessableEntityException:

@@ -17,11 +17,30 @@ Fix image heights on non-default active images - LOW PRIORITY
 
 Cart Page
 
-General
-Add edit icon to all popovers
+	General
+	Add edit icon to all popovers
+	format contents of all popovers
 
-Shipping
-Get dates in shipping options to format properly using moment.js
+	Shipping
+	Get dates in shipping options to format properly using moment.js - done
+	correctly calculate the shipping dates in the absence of an estimated shipping time
+	correctly account for business days
+	Remember shipping options after page refresh
 
-payment
-Add email to database while processing paypal purchase information
+	payment
+	Add email to database while processing paypal purchase information - working on it
+	remember payment option after page refresh
+	get bitcoin working?
+
+
+Checkout page
+There is absolutely no formatting or cosmetics on this page at all right now.
+
+
+Confirmation page
+There is absolutely no formatting or cosmetics on thei page at all right now. 
+
+
+
+Misc.
+Make a function for adding purchase info to the database since it is done in two different controller functions
