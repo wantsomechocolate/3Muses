@@ -799,9 +799,13 @@ def checkout():
     payment_information_LOD=[]
 
 
+    ## Should the invoice ID be generated here and put in session?
+    ## I only have one right now for paypal because they require one. 
+
+
     if session.payment_method[:4]=='card':
 
-        ## This is the url attached tothe pay button
+        ## This is the url attached to the pay button
         ## for paypal it will be more complicated. 
         approval_url=URL('pay')
 
@@ -809,7 +813,7 @@ def checkout():
         ## Getting the stripe customer info from db with user_id
         stripe_customer_row=db(db.stripe_customers.muses_id==auth.user_id).select().first()
 
-        print stripe_customer_row
+        # print stripe_customer_row
 
         ## From that get the customer id and default card id
         stripe_customer_token=stripe_customer_row.stripe_id
@@ -860,6 +864,9 @@ def checkout():
 
 
 
+        ## This will usually fail because of a namespace conflict
+        ## I"m just keeping it here so I can tweak the web experience 
+        ## everytime until I like it, then I will gray it out. 
         web_profile = paypalrestsdk.WebProfile({
             "name": "ThreeMusesGlass03",
             "presentation": {
@@ -914,6 +921,7 @@ def checkout():
         else:
             status=payment.error
             approval_url=status
+            print status
 
 
         payment_information_LOD.append(dict(
@@ -994,42 +1002,37 @@ def checkout():
 
 
 def pay():
+    ### This function is for paying with stripe only
 
-    ## This function is for paying with stripe only
-
+    
+    ## The purpose of this function is to populate the database table purchase history with all 
+    ## of the info about the purchase and send an email using postmark. 
+    ## Presenting the confirmation screen is done later using the database
     import json
 
-    #The purpose of this function is to populate the database table purchase history with all 
-    # of the info about the purchase and ultimately generate a receipt looking thing. 
-    # also send an email using postmark. 
-
-    ## Try to put payment through. 
-    # if auth.is_logged_in():
-
-    ## Get customer_id from stripe data in db
+    ## Get customer_id from stripe data in db. They should have one, if they don't at this point
+    ## something went wrong.
     customer_id=db(db.stripe_customers.muses_id==auth.user_id).select().first().stripe_id
 
+    ## Get the information from the db about the user
     user_data=db(db.auth_user.id==auth.user_id).select().first()
 
+    ## The email address should be a real email address at this point
     muses_id=user_data.id
     muses_email_address=user_data.email
     muses_name=user_data.first_name
         
-    # else:
-    #     ## If anonymous user, get customer stripe id from session
-    #     customer_id=session.card_info['stripe_id']
-    #     muses_id=None
-    #     muses_name=None
 
-        
-
-    ## Get total cost from session (Need to get a lot more than this I think)
-    # total_cost_USD=session.total_cost_USD
-
+    ## From Session ##
     total_cost_USD=session.summary_information['information_LOD'][0]['total_cost_USD']
+
+    # customer_id=session.card_info['stripe_id']
 
 
     ## To try and charge the card with the stripe id (defualt card should already be set within stripe)
+    ## Otherwise something else went wrong
+
+    ## TODO: Add description back in?
     charge=stripe.Charge.create(
         amount=int(float(total_cost_USD)*100),
         currency='usd',
@@ -1037,6 +1040,7 @@ def pay():
         #description='test purchase',
     )
 
+    ## TODO: Do I still need this?
     ## Set email address (if not logged in use stripe email)
     # if auth.is_logged_in():
     #     pass
@@ -1044,10 +1048,15 @@ def pay():
     #     ## change to the email from charge
     #     muses_email_address=session.card_info['email']
 
+
+    ##################################################
+    ################----ADDRESS INFO------############
+    ##################################################
     default_address=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select().first()
 
-    # print default_address
-
+    ##################################################
+    ################----SHIPPING INFO-----############
+    ##################################################
     easypost_response=json.loads(default_address['easypost_api_response'])
 
     rates=easypost_response['rates']

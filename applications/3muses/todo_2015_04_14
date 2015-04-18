@@ -44,3 +44,13 @@ There is absolutely no formatting or cosmetics on thei page at all right now.
 
 Misc.
 Make a function for adding purchase info to the database since it is done in two different controller functions
+
+
+
+Discuss with Manoj:
+
+Session vs DB
+
+Make a screen that expires after 
+	the first visit
+	Amt of time
