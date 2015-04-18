@@ -653,13 +653,38 @@ def checkout():
             ## Retreive product info from the db
             product=db(db.product.id==row.product_id).select().first()
 
-            ## If using a local db get the product image locally
-            if sqlite_tf:
-                srcattr=URL('download',db(db.image.product_name==row.product_id).select().first().s3_url)
+            # ## If using a local db get the product image locally
+            # if sqlite_tf:
+            #     srcattr=URL('download',db(db.image.product_name==row.product_id).select().first().s3_url)
             
-            ## For the more common case, get the image from aws s3
+            # ## For the more common case, get the image from aws s3
+            # else:
+            #     srcattr=S3_BUCKET_PREFIX+str(db(db.image.product_name==row.product_id).select().first().s3_url)
+
+            ## Retreive product info from the db
+
+            image=db(db.image.product_name==row.product_id).select().first()
+
+            if not image:
+                srcattr=URL('static','img/no_images.png')
             else:
-                srcattr=S3_BUCKET_PREFIX+str(db(db.image.product_name==row.product_id).select().first().s3_url)
+
+                ## If using a local db get the product image locally
+                if sqlite_tf:
+                    # # image=db(db.image.product_name==row.product_id).select().first()
+                    # if len(images)==0:
+                    #     srcattr=URL('static','img/no_images.png')
+                    # else:
+                    srcattr=URL('download', image.s3_url)
+                    # print ("sqlite")
+                
+                ## For the more common case, get the image from aws s3
+                else:
+                    # srcattr=S3_BUCKET_PREFIX+str(db(db.image.product_name==row.product_id).select().first().s3_url)
+                    srcattr=S3_BUCKET_PREFIX+str(image.s3_url)
+
+
+
 
             ## Create the product_image_url
             product_image_url=A(IMG(_src=srcattr, _class='img-thumbnail cart-view-cart-tn'), _href=URL('default','product',args=[row.product_id]))
@@ -1009,19 +1034,11 @@ def pay():
     ## of the info about the purchase and send an email using postmark. 
     ## Presenting the confirmation screen is done later using the database
     import json
+    from aux import create_purchase_history_dict
 
     ## Get customer_id from stripe data in db. They should have one, if they don't at this point
     ## something went wrong.
     customer_id=db(db.stripe_customers.muses_id==auth.user_id).select().first().stripe_id
-
-    ## Get the information from the db about the user
-    user_data=db(db.auth_user.id==auth.user_id).select().first()
-
-    ## The email address should be a real email address at this point
-    muses_id=user_data.id
-    muses_email_address=user_data.email
-    muses_name=user_data.first_name
-        
 
     ## From Session ##
     total_cost_USD=session.summary_information['information_LOD'][0]['total_cost_USD']
@@ -1050,78 +1067,117 @@ def pay():
 
 
     ##################################################
-    ################----ADDRESS INFO------############
+    ################------USER INFO-------############
+    ##################################################
+
+    ## Get the information from the db about the user
+    user_data=db(db.auth_user.id==auth.user_id).select().first()
+
+    ## The email address should be a real email address at this point
+    # muses_id=user_data.id
+    muses_email_address=user_data.email
+    # muses_name=user_data.first_name
+
+    ##################################################
+    ################-----ADDRESS AND------############
+    ################----SHIPPING INFO-----############
     ##################################################
     default_address=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select().first()
 
-    ##################################################
-    ################----SHIPPING INFO-----############
-    ##################################################
-    easypost_response=json.loads(default_address['easypost_api_response'])
+    # ## Shipping information comes from the defualt address. 
+    # easypost_response=json.loads(default_address['easypost_api_response'])
 
-    rates=easypost_response['rates']
+    # rates=easypost_response['rates']
 
-    default_rate=default_address['easypost_default_shipping_rate_id']
+    # default_rate=default_address['easypost_default_shipping_rate_id']
 
-    rate_info={}
+    # rate_info={}
 
-    for rate in rates:
-        if rate['id']==default_rate:
-            rate_info=rate
+    # for rate in rates:
+    #     if rate['id']==default_rate:
+    #         rate_info=rate
 
-    ## Populating the purchase history dict
-    ## This is used in the next view to show the user the purchase details. 
-    purchase_history_dict=dict(
+    purchase_history_dict=create_purchase_history_dict(
 
-        muses_id=muses_id,
-        muses_email_address=muses_email_address,
-        muses_name=muses_name,
+        session_data=response,
 
-        ## Session Fields (These actually come from response not session)
-        session_id_3muses=response.session_id_3muses,
-        session_db_table=response.session_db_table,
-        session_db_record_id=response.session_db_record_id,
+        user_data=user_data,
 
-        ## Shipping Fields
-        shipping_street_address_line_1=session.address_information['information_LOD'][0]['street_address_line_1'],
-        shipping_street_address_line_2=session.address_information['information_LOD'][0]['street_address_line_2'],
-        shipping_municipality=session.address_information['information_LOD'][0]['municipality'],
-        shipping_administrative_area=session.address_information['information_LOD'][0]['administrative_area'],
-        shipping_postal_code=session.address_information['information_LOD'][0]['postal_code'],
-        shipping_country=session.address_information['information_LOD'][0]['country'],
+        address_data=default_address,
 
-        ## Easypost Fields?
-        easypost_shipping_service=rate_info['service'],
-
-        easypost_shipping_carrier=rate_info['carrier'],
-        easypost_shipment_id=rate_info['shipment_id'],
-        easypost_rate_id=rate_info['id'],
-        easypost_rate=rate_info['rate'],
-        easypost_api_response=rates,
-
-
-        ## Payment Fields
+        # shipping_data=rates,
+        
         payment_service='stripe',
-        payment_confirmation_dictionary=json.dumps(charge, default=lambda x: None),
 
+        payment_data=charge,
 
-        ## Legacy Fields
-        payment_method='stripe',
-        payment_stripe_name=charge['card']['name'],
-        payment_stripe_user_id=charge['customer'],
-        payment_stripe_last_4=charge['card']['last4'],
-        payment_stripe_brand=charge['card']['brand'],
-        payment_stripe_exp_month=charge['card']['exp_month'],
-        payment_stripe_exp_year=charge['card']['exp_year'],
-        payment_stripe_card_id=charge['card']['id'],
-        payment_stripe_transaction_id=charge['id'],
+        summary_data=session.summary_information,
 
-        ## Cart Details
-        cart_base_cost=session.summary_information['information_LOD'][0]['cart_cost_USD'],
-        cart_shipping_cost=session.summary_information['information_LOD'][0]['shipping_cost_USD'],
-        cart_total_cost=session.summary_information['information_LOD'][0]['total_cost_USD'],
+        )
 
-    )
+    print ("----------")
+    print ("Purchase history dict")
+    print (purchase_history_dict)
+    print ("----------")
+
+    # ## Populating the purchase history dict
+    # ## This is used in the next view to show the user the purchase details. 
+    # purchase_history_dict=dict(
+
+    #     muses_id=muses_id,
+    #     muses_email_address=muses_email_address,
+    #     muses_name=muses_name,
+
+    #     ## Session Fields (These actually come from response not session)
+    #     session_id_3muses=response.session_id_3muses,
+    #     session_db_table=response.session_db_table,
+    #     session_db_record_id=response.session_db_record_id,
+
+    #     ## Shipping Fields
+    #     # shipping_street_address_line_1=session.address_information['information_LOD'][0]['street_address_line_1'],
+    #     # shipping_street_address_line_2=session.address_information['information_LOD'][0]['street_address_line_2'],
+    #     # shipping_municipality=session.address_information['information_LOD'][0]['municipality'],
+    #     # shipping_administrative_area=session.address_information['information_LOD'][0]['administrative_area'],
+    #     # shipping_postal_code=session.address_information['information_LOD'][0]['postal_code'],
+    #     # shipping_country=session.address_information['information_LOD'][0]['country'],
+
+    #     shipping_street_address_line_1=default_address['street_address_line_1'],
+    #     shipping_street_address_line_2=default_address['street_address_line_2'],
+    #     shipping_municipality=default_address['municipality'],
+    #     shipping_administrative_area=default_address['administrative_area'],
+    #     shipping_postal_code=default_address['postal_code'],
+    #     shipping_country=default_address['country'],
+        
+
+    #     ## Easypost Fields?
+    #     easypost_shipping_service=rate_info['service'],
+    #     easypost_shipping_carrier=rate_info['carrier'],
+    #     easypost_shipment_id=rate_info['shipment_id'],
+    #     easypost_rate_id=rate_info['id'],
+    #     easypost_rate=rate_info['rate'],
+    #     easypost_api_response=rates,
+
+    #     ## Payment Fields
+    #     payment_service='stripe',
+    #     payment_confirmation_dictionary=json.dumps(charge, default=lambda x: None),
+
+    #     ## Legacy Fields
+    #     payment_method='stripe',
+    #     payment_stripe_name=charge['card']['name'],
+    #     payment_stripe_user_id=charge['customer'],
+    #     payment_stripe_last_4=charge['card']['last4'],
+    #     payment_stripe_brand=charge['card']['brand'],
+    #     payment_stripe_exp_month=charge['card']['exp_month'],
+    #     payment_stripe_exp_year=charge['card']['exp_year'],
+    #     payment_stripe_card_id=charge['card']['id'],
+    #     payment_stripe_transaction_id=charge['id'],
+
+    #     ## Cart Details
+    #     cart_base_cost=session.summary_information['information_LOD'][0]['cart_cost_USD'],
+    #     cart_shipping_cost=session.summary_information['information_LOD'][0]['shipping_cost_USD'],
+    #     cart_total_cost=session.summary_information['information_LOD'][0]['total_cost_USD'],
+
+    # )
 
     ## place data in the database. 
     purchase_history_data_id=db.purchase_history_data.bulk_insert([purchase_history_dict])[0]
@@ -1264,6 +1320,11 @@ def pay():
         ## if success, then get the corresponding db info
         purchase_history_data_row=db(db.purchase_history_data.id==purchase_history_data_id).select().first()
 
+
+
+        payment_information=json.loads(purchase_history_data_row.payment_confirmation_dictionary)
+
+
         purchase_history_products_rows=db(db.purchase_history_products.purchase_history_data_id==purchase_history_data_id).select()
 
         ## product table
@@ -1322,12 +1383,29 @@ def pay():
         confirmation_shipping_grid=table_generation(shipping_header_row,shipping_table_row_LOL,"confirmation_shipping")
 
 
+
+    #     payment_stripe_name=payment_information['card']['name'],
+    #     payment_stripe_user_id=payment_information['customer'],
+    #     payment_stripe_last_4=payment_information['card']['last4'],
+    #     payment_stripe_brand=payment_information['card']['brand'],
+    #     payment_stripe_exp_month=payment_information['card']['exp_month'],
+    #     payment_stripe_exp_year=payment_information['card']['exp_year'],
+    #     payment_stripe_card_id=payment_information['card']['id'],
+    #     payment_stripe_transaction_id=payment_information['id'],
+
+        print ("")
+        print ("--------------------")
+        print ("payment_dictionary")
+        print (payment_information)
+        print ("-------------------")
+        print ("")
+
         ##Card Table
         card_header_row=['Name', 'Brand-Last4', 'Expiration(mm/yyyy)']
         card_table_row_LOL=[[
-            purchase_history_data_row.payment_stripe_name,
-            purchase_history_data_row.payment_stripe_brand + " - " + purchase_history_data_row.payment_stripe_last_4,
-            purchase_history_data_row.payment_stripe_exp_month + " / " + purchase_history_data_row.payment_stripe_exp_year,
+            str(payment_information['card']['name']),
+            str(payment_information['card']['brand']) + " - " + str(payment_information['card']['last4']),
+            str(payment_information['card']['exp_month']) + " / " + str(payment_information['card']['exp_year']),
         ]]
 
         confirmation_card_grid=table_generation(card_header_row,card_table_row_LOL,"confirmation_card")
@@ -1436,6 +1514,7 @@ def pay():
 
 def confirmation():
 
+    import json
     ## This function has a problem with deleting a user
     ## And then someone reusing the same email when they sign up
     ## FIX IT. 
@@ -1456,6 +1535,8 @@ def confirmation():
 
             ## if success, then get the corresponding db info
             purchase_history_data_row=db(db.purchase_history_data.id==purchase_history_data_id).select().first()
+
+            payment_information=json.loads(purchase_history_data_row.payment_confirmation_dictionary)
 
             purchase_history_products_rows=db(db.purchase_history_products.purchase_history_data_id==purchase_history_data_id).select()
 
@@ -1516,15 +1597,21 @@ def confirmation():
 
 
             ##Card Table
-            if purchase_history_data_row.payment_method=='stripe':
+            if purchase_history_data_row.payment_service=='stripe':
                 card_header_row=['Name', 'Brand-Last4', 'Expiration(mm/yyyy)']
+                # card_table_row_LOL=[[
+                #     purchase_history_data_row.payment_stripe_name,
+                #     purchase_history_data_row.payment_stripe_brand + " - " + purchase_history_data_row.payment_stripe_last_4,
+                #     purchase_history_data_row.payment_stripe_exp_month + " / " + purchase_history_data_row.payment_stripe_exp_year,
+                # ]]
+
                 card_table_row_LOL=[[
-                    purchase_history_data_row.payment_stripe_name,
-                    purchase_history_data_row.payment_stripe_brand + " - " + purchase_history_data_row.payment_stripe_last_4,
-                    purchase_history_data_row.payment_stripe_exp_month + " / " + purchase_history_data_row.payment_stripe_exp_year,
+                    str(payment_information['card']['name']),
+                    str(payment_information['card']['brand']) + " - " + str(payment_information['card']['last4']),
+                    str(payment_information['card']['exp_month']) + " / " + str(payment_information['card']['exp_year']),
                 ]]
 
-            elif purchase_history_data_row.payment_method=='paypal':
+            elif purchase_history_data_row.payment_service=='paypal':
                 card_header_row=['Name', 'Paypal Email', 'Something Else']
                 card_table_row_LOL=[[
                     'Name', 'Email', 'Else'

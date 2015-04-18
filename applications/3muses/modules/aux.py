@@ -269,3 +269,67 @@ def create_shipment(to_address_dict, shipping_cart_LOD):
         )
 
     return shipment
+
+
+
+def create_purchase_history_dict(
+
+    session_data,
+    user_data,
+    address_data,
+    payment_service,
+    payment_data,
+    summary_data,
+    ):
+
+    import json
+
+    easypost_response=json.loads(address_data['easypost_api_response'])
+
+    rates=easypost_response['rates']
+
+    default_rate=address_data['easypost_default_shipping_rate_id']
+
+    rate_info={}
+
+    for rate in rates:
+        if rate['id']==default_rate:
+            rate_info=rate
+
+
+    purchase_history_data_dict=dict(
+
+        session_id_3muses=session_data.session_id_3muses,
+        session_db_table=session_data.session_db_table,
+        session_db_record_id=session_data.session_db_record_id,
+
+        muses_id=user_data.id,
+        muses_email_address=user_data.email,
+        muses_name=user_data.first_name,
+
+        shipping_street_address_line_1=address_data['street_address_line_1'],
+        shipping_street_address_line_2=address_data['street_address_line_2'],
+        shipping_municipality=address_data['municipality'],
+        shipping_administrative_area=address_data['administrative_area'],
+        shipping_postal_code=address_data['postal_code'],
+        shipping_country=address_data['country'],
+
+        easypost_shipping_service=rate_info['service'],
+        easypost_shipping_carrier=rate_info['carrier'],
+        easypost_shipment_id=rate_info['shipment_id'],
+        easypost_rate_id=rate_info['id'],
+        easypost_rate=rate_info['rate'],
+        easypost_api_response=address_data['easypost_api_response'],
+
+        payment_service=payment_service,
+        payment_confirmation_dictionary=json.dumps(payment_data, default=lambda x: None),
+
+        cart_base_cost=summary_data['information_LOD'][0]['cart_cost_USD'],
+        cart_shipping_cost=summary_data['information_LOD'][0]['shipping_cost_USD'],
+        cart_total_cost=summary_data['information_LOD'][0]['total_cost_USD'],
+
+    )
+
+    return purchase_history_data_dict
+
+
