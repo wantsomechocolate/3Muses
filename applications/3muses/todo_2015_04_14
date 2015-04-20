@@ -41,14 +41,15 @@ There is absolutely no formatting or cosmetics on this page at all right now.
 
 
 Confirmation page
-There is absolutely no formatting or cosmetics on thei page at all right now. 
+There is absolutely no formatting or cosmetics on thei page at all right now.
+DB changes need to be propegated to this page.  
 
 
 Pay
 Stopped working due to some db changes.
 It's most likely related to the function I'm making to handle putting purchase info in the db. 
 
-Add functionality to handle someone cancelling a paypal paymnet. ("I'm thinking I just bring them back to the cart page")
+Add functionality to handle someone cancelling a paypal payment. ("I'm thinking I just bring them back to the cart page")
 
 
 
@@ -62,6 +63,9 @@ This page no longer works because of db changes.
 I want to keep the default bread crumb functionality so I will keep some api responses in here
 I'm thinking that the user can click on a link to see specific stripe, shipping, paypal information that opens up a modal. 
 
+
+Profile Page
+Does not reliably accept edits to information complaining that the email address is already in use. l
 
 
 Misc.
