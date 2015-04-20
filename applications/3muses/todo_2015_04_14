@@ -2,7 +2,7 @@
 Main Page
 Add real text to the landing page
 Update background image to a relevant photo
-Ask mom about a powered by model
+Ask mom about a powered by modal
 Figure out what else can go in the footer
 
 Category page
@@ -10,10 +10,11 @@ I like this page
 Update the colors, but other than that I like it
 
 Display Page
-This is page is ok for now as well
+In mobile view the picture carousels collapse to 0 height if the page is scrolled after any carousel is invoked. 
 
 Product Page
 Fix image heights on non-default active images - LOW PRIORITY
+In mobile view the picture carousels collapse to 0 height if the page is scrolled after any carousel is invoked. 
 
 Cart Page
 
@@ -30,6 +31,7 @@ Cart Page
 	payment
 	Add email to database while processing paypal purchase information - working on it
 	remember payment option after page refresh
+	Adding billing zip to card creation for stripe
 	get bitcoin working?
 
 
@@ -37,20 +39,31 @@ Checkout page
 There is absolutely no formatting or cosmetics on this page at all right now.
 
 
+
 Confirmation page
 There is absolutely no formatting or cosmetics on thei page at all right now. 
+
+
+Pay
+Stopped working due to some db changes.
+It's most likely related to the function I'm making to handle putting purchase info in the db. 
+
+Add functionality to handle someone cancelling a paypal paymnet. ("I'm thinking I just bring them back to the cart page")
+
+
+
+
+
+Login Page
+No error when incorrect credentials are entered. Just page refresh.
+
+View Purchase History Page
+This page no longer works because of db changes. 
+I want to keep the default bread crumb functionality so I will keep some api responses in here
+I'm thinking that the user can click on a link to see specific stripe, shipping, paypal information that opens up a modal. 
 
 
 
 Misc.
 Make a function for adding purchase info to the database since it is done in two different controller functions
 
-
-
-Discuss with Manoj:
-
-Session vs DB
-
-Make a screen that expires after 
-	the first visit
-	Amt of time

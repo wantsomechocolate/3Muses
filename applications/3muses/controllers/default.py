@@ -1991,6 +1991,8 @@ def user():
 
     #grid=SQLFORM.smartgrid(db.purchase_history_data, linked_tables=['purchase_history_products'])
 
+                                                                                                                                                                                                    
+
     return dict(form=auth())
 
 
@@ -3086,7 +3088,7 @@ def view_purchase_history():
     db.purchase_history_data.session_db_record_id.readable=db.purchase_history_data.session_db_record_id.writable=False
     db.purchase_history_data.easypost_rate_id.readable=db.purchase_history_data.easypost_rate_id.writable=False
     db.purchase_history_data.easypost_shipment_id.readable=db.purchase_history_data.easypost_shipment_id.writable=False
-    db.purchase_history_data.payment_method.readable=db.purchase_history_data.payment_method.writable=False
+    db.purchase_history_data.payment_service.readable=db.purchase_history_data.payment_service.writable=False
     db.purchase_history_data.payment_stripe_user_id.readable=db.purchase_history_data.payment_stripe_user_id.writable=False
     db.purchase_history_data.payment_stripe_card_id.readable=db.purchase_history_data.payment_stripe_card_id.writable=False
     db.purchase_history_data.payment_stripe_transaction_id.readable=db.purchase_history_data.payment_stripe_transaction_id.writable=False

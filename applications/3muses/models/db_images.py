@@ -78,7 +78,7 @@ db.define_table('purchase_history_data',
 	## Session Fields (These actually come from response not session)
 	## These will be available for all users
 	Field('session_id_3muses'),
-	Field('session_db_table'),
+	Field('session_db_table'), ## Probably don't need this field
 	Field('session_db_record_id'),
 
 	## Shipping Fields
@@ -86,8 +86,9 @@ db.define_table('purchase_history_data',
 	## Addresses are going to be used interchangeably 
 	## like on every other site.
 	## Although a billing address isn't necessary for paypal
-	Field('shipping_name_first'), ## Added new
-	Field('shipping_name_last'), ## Added new
+	Field('shipping_name_first'), ## Added new ## Probably don't need this field
+	Field('shipping_name_last'), ## Added new ## Probably don't need this field
+	Field('shipping_name'),
 	Field('shipping_street_address_line_1'),
 	Field('shipping_street_address_line_2'),
 	Field('shipping_municipality'),
@@ -99,12 +100,12 @@ db.define_table('purchase_history_data',
 	## I might want to add a field here that stores
 	## serialized json of the entire api response used for 
 	## shipping rates. 
-	Field('easypost_shipping_service'),
-	Field('easypost_shipping_carrier'),
+	Field('easypost_shipping_service'), ## Probably don't need this field
+	Field('easypost_shipping_carrier'), ## Probably don't need this field
 	Field('easypost_rate_id'),
 	Field('easypost_shipment_id'),
-	Field('easypost_rate'),
-	Field('easypost_api_response', 'text'),
+	Field('easypost_rate'), ## Probably don't need this field
+	Field('easypost_api_response', 'text'), ## Probably don't need this field
 
 
 
@@ -117,38 +118,39 @@ db.define_table('purchase_history_data',
 
 	## 
 	Field('payment_service'),
-	Field('payment_confirmation_dictionary', 'text'),
+	Field('payment_confirmation_dictionary', 'text'), ## Probably don't need this field
+	Field('payment_confirmation_id'),
 
 
-	## Legacy Fields - Might keep some high level stuff 
-	## just to make browsing the data easier. 
-	Field('payment_method'),
-	Field('payment_stripe_name'),
-	Field('payment_stripe_user_id'),
-	Field('payment_stripe_last_4'),
-	Field('payment_stripe_brand'),
-	Field('payment_stripe_exp_month'),
-	Field('payment_stripe_exp_year'),
-	Field('payment_stripe_card_id'),
-	Field('payment_stripe_transaction_id'),
+	# ## Legacy Fields - Might keep some high level stuff 
+	# ## just to make browsing the data easier. 
+	# Field('payment_method'),
+	# Field('payment_stripe_name'),
+	# Field('payment_stripe_user_id'),
+	# Field('payment_stripe_last_4'),
+	# Field('payment_stripe_brand'),
+	# Field('payment_stripe_exp_month'),
+	# Field('payment_stripe_exp_year'),
+	# Field('payment_stripe_card_id'),
+	# Field('payment_stripe_transaction_id'),
 
 
-	## Billing address information
-	Field('billing_first_name'),
-	Field('billing_last_name'),
-	Field('billing_street_line_1'),
-	Field('billing_street_line_2'),
-	Field('billing_municipality'),
-	Field('billing_administrative_area'),
-	Field('billing_postal_code'),
-	Field('billing_country_code'),
+	# ## Billing address information
+	# Field('billing_first_name'),
+	# Field('billing_last_name'),
+	# Field('billing_street_line_1'),
+	# Field('billing_street_line_2'),
+	# Field('billing_municipality'),
+	# Field('billing_administrative_area'),
+	# Field('billing_postal_code'),
+	# Field('billing_country_code'),
 
 
 
 	## Cart Summary Details
-	Field('cart_base_cost'),
-	Field('cart_shipping_cost'),
-	Field('cart_total_cost'),
+	Field('cart_base_cost'), ## Probably don't need this field
+	Field('cart_shipping_cost'), ## Probably don't need this field
+	Field('cart_total_cost'), ## Probably don't need this field
 
 	singular=T("Purchase History Data"),
 	plural=T("Purchase History Data"),

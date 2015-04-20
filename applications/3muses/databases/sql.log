@@ -87693,3 +87693,42 @@ success!
 success!
 success!
 success!
+timestamp: 2015-04-19T09:48:29.725329
+ALTER TABLE purchase_history_data ADD shipping_name VARCHAR(512);
+timestamp: 2015-04-19T09:48:29.827168
+ALTER TABLE purchase_history_data ADD payment_confirmation_id VARCHAR(512);
+timestamp: 2015-04-19T09:48:29.890917
+ALTER TABLE purchase_history_data DROP COLUMN payment_method;
+timestamp: 2015-04-19T09:48:29.946167
+ALTER TABLE purchase_history_data DROP COLUMN billing_street_line_2;
+timestamp: 2015-04-19T09:48:29.979726
+ALTER TABLE purchase_history_data DROP COLUMN billing_street_line_1;
+timestamp: 2015-04-19T09:48:30.005917
+ALTER TABLE purchase_history_data DROP COLUMN billing_last_name;
+timestamp: 2015-04-19T09:48:30.056226
+ALTER TABLE purchase_history_data DROP COLUMN payment_stripe_transaction_id;
+timestamp: 2015-04-19T09:48:30.084370
+ALTER TABLE purchase_history_data DROP COLUMN billing_municipality;
+timestamp: 2015-04-19T09:48:30.108980
+ALTER TABLE purchase_history_data DROP COLUMN billing_country_code;
+timestamp: 2015-04-19T09:48:30.136591
+ALTER TABLE purchase_history_data DROP COLUMN billing_first_name;
+timestamp: 2015-04-19T09:48:30.162815
+ALTER TABLE purchase_history_data DROP COLUMN payment_stripe_last_4;
+timestamp: 2015-04-19T09:48:30.210511
+ALTER TABLE purchase_history_data DROP COLUMN billing_administrative_area;
+timestamp: 2015-04-19T09:48:30.237632
+ALTER TABLE purchase_history_data DROP COLUMN billing_postal_code;
+timestamp: 2015-04-19T09:48:30.263287
+ALTER TABLE purchase_history_data DROP COLUMN payment_stripe_exp_month;
+timestamp: 2015-04-19T09:48:30.298247
+ALTER TABLE purchase_history_data DROP COLUMN payment_stripe_name;
+timestamp: 2015-04-19T09:48:30.324596
+ALTER TABLE purchase_history_data DROP COLUMN payment_stripe_user_id;
+timestamp: 2015-04-19T09:48:30.353628
+ALTER TABLE purchase_history_data DROP COLUMN payment_stripe_card_id;
+timestamp: 2015-04-19T09:48:30.379999
+ALTER TABLE purchase_history_data DROP COLUMN payment_stripe_brand;
+timestamp: 2015-04-19T09:48:30.420682
+ALTER TABLE purchase_history_data DROP COLUMN payment_stripe_exp_year;
+success!

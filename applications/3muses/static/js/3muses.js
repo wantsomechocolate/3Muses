@@ -423,17 +423,50 @@ $(document).ready(function(){
     // Add classes to auth
 
     var current_page=window.location.pathname;
+    // alert(current_page);
 
-    if (current_page.lastIndexOf("/appadmin",0)===0){
-        // alert("now we here");
-    } else {
-        $("#auth_user_email").addClass("form-control");
-        $("#auth_user_password").addClass("form-control");
-        $("#auth_user_remember").addClass("display_inline_block_class");
-        $("input[value=Login]").addClass("form-control btn-success");
-        $("#auth_user_email__label").addClass("display_none_class");
-        $("#auth_user_password__label").addClass("display_none_class");
+    if (current_page==='/user/register'){
+
+        $("input[type=submit]").addClass("btn-info");
+
+        $("input[name=first_name]").attr("placeholder", "First Name");
+        $("input[name=last_name]").attr("placeholder", "Last Name");
+        $("input[name=email]").attr("placeholder", "Email Address");
+        $("input[name=password]").attr("placeholder", "Password");
+        $("input[name=password_two]").attr("placeholder", "Verify Password");
+
+    } else if (current_page==='/user/login'||current_page==='/default/user/login'){
+
+        $("input[type=submit]").addClass("btn-info");
+        $("input[type=text]").attr("placeholder", "Enter Your Email Address");
+        $("input[type=password]").attr("placeholder", "Enter Your Password");
+
+    } else if (current_page==='/user/request_reset_password'){
+
+        $("input[type=submit]").addClass("btn-info");
+        $("input[name=email]").attr("placeholder", "Enter Your Email Address");
+
+    } else if (current_page==='/user/profile'||current_page==='/default/user/profile'){
+
+        $("input[type=submit]").addClass("btn-info");
+        // $("input[name=email]").attr("placeholder", "Enter Your Email Address");
+
     };
+
+
+
+    // alert(current_page);
+
+    // if (current_page==='user/login'){
+
+    //     $("#auth_user_email").addClass("form-control");
+    //     $("#auth_user_password").addClass("form-control");
+    //     $("#auth_user_remember").addClass("display_inline_block_class");
+    //     $("input[value=Login]").addClass("form-control btn-success");
+    //     $("#auth_user_email__label").addClass("display_none_class");
+    //     $("#auth_user_password__label").addClass("display_none_class");
+
+    // };
 
 
 
