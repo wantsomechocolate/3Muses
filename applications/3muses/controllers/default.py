@@ -771,7 +771,9 @@ def checkout():
 #############################################################################################
 
 
-    shipment=json.loads(address.easypost_api_response)
+    #shipment=json.loads(address.easypost_api_response)
+
+    shipment=easypost.Shipment.retrieve(address.easypost_shipping_id)
 
     shipping_option_id=address.easypost_default_shipping_rate_id
 
@@ -1074,8 +1076,8 @@ def pay():
     user_data=db(db.auth_user.id==auth.user_id).select().first()
 
     ## The email address should be a real email address at this point
-    # muses_id=user_data.id
-    muses_email_address=user_data.email
+    #muses_id=user_data.id
+    #muses_email_address=user_data.email
     # muses_name=user_data.first_name
 
     ##################################################
@@ -1096,6 +1098,8 @@ def pay():
     # for rate in rates:
     #     if rate['id']==default_rate:
     #         rate_info=rate
+
+    # session_data.session_db_record_id
 
     purchase_history_dict=create_purchase_history_dict(
 
@@ -2639,14 +2643,14 @@ def ajax_shipping_information():
         shipment=create_shipment(address_info, cart_for_shipping_calculations)
 
         ## Put shipment info in the session to get it later!
-        ## PUT THIS IN THE DB INSTEAD? YES!
+        ## PUT THIS IN THE DB INSTEAD? NO! Just put the ID
         session.shipment_info_from_easypost=shipment
 
 
 
         clicked_address = db(db.addresses.id==default_address_id).select().first()
         
-        clicked_address.update(easypost_api_response=shipment)
+        clicked_address.update(easypost_shipping_id=shipment.id)
         clicked_address.update(easypost_api_datetime=datetime.now())
 
         clicked_address.update_record()

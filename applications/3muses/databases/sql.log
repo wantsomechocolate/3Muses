@@ -87732,3 +87732,35 @@ ALTER TABLE purchase_history_data DROP COLUMN payment_stripe_brand;
 timestamp: 2015-04-19T09:48:30.420682
 ALTER TABLE purchase_history_data DROP COLUMN payment_stripe_exp_year;
 success!
+timestamp: 2015-04-21T08:37:05.050215
+ALTER TABLE purchase_history_data DROP COLUMN session_id_3muses;
+timestamp: 2015-04-21T08:37:05.194549
+ALTER TABLE purchase_history_data DROP COLUMN easypost_api_response;
+timestamp: 2015-04-21T08:37:05.289942
+ALTER TABLE purchase_history_data DROP COLUMN muses_name;
+timestamp: 2015-04-21T08:37:05.401416
+ALTER TABLE purchase_history_data DROP COLUMN payment_confirmation_dictionary;
+timestamp: 2015-04-21T08:37:05.530226
+ALTER TABLE purchase_history_data DROP COLUMN session_db_table;
+success!
+timestamp: 2015-04-21T08:47:15.661147
+ALTER TABLE addresses ADD name VARCHAR(512);
+timestamp: 2015-04-21T08:47:15.760049
+ALTER TABLE addresses ADD easypost_shipping_id VARCHAR(512);
+timestamp: 2015-04-21T08:47:15.873132
+ALTER TABLE addresses DROP COLUMN first_name;
+timestamp: 2015-04-21T08:47:15.960204
+ALTER TABLE addresses DROP COLUMN last_name;
+timestamp: 2015-04-21T08:47:16.048182
+ALTER TABLE addresses DROP COLUMN easypost_api_response;
+success!
+timestamp: 2015-04-21T08:47:54.511202
+ALTER TABLE addresses ADD first_name VARCHAR(512);
+timestamp: 2015-04-21T08:47:54.600095
+ALTER TABLE addresses ADD last_name VARCHAR(512);
+timestamp: 2015-04-21T08:47:54.698966
+ALTER TABLE addresses DROP COLUMN name;
+success!
+timestamp: 2015-04-21T09:22:13.660091
+ALTER TABLE purchase_history_data DROP COLUMN shipping_name;
+success!

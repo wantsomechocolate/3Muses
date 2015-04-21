@@ -69,26 +69,17 @@ db.product.is_active.default=True
 ## except for quantity
 db.define_table('purchase_history_data',
 
-	## 3Muses User Fields
-	## These will be None for non users
+	## User Fields
 	Field('muses_id'),
 	Field('muses_email_address'),
-	Field('muses_name'),
 
-	## Session Fields (These actually come from response not session)
-	## These will be available for all users
-	Field('session_id_3muses'),
-	Field('session_db_table'), ## Probably don't need this field
+	## Session Fields
 	Field('session_db_record_id'),
 
-	## Shipping Fields
-	## Name is seperated because shipping and billing 
-	## Addresses are going to be used interchangeably 
-	## like on every other site.
-	## Although a billing address isn't necessary for paypal
+	## Shipping Address Fields
 	Field('shipping_name_first'), ## Added new ## Probably don't need this field
 	Field('shipping_name_last'), ## Added new ## Probably don't need this field
-	Field('shipping_name'),
+	# Field('shipping_name'),
 	Field('shipping_street_address_line_1'),
 	Field('shipping_street_address_line_2'),
 	Field('shipping_municipality'),
@@ -96,31 +87,58 @@ db.define_table('purchase_history_data',
 	Field('shipping_postal_code'),
 	Field('shipping_country'),
 
-	## Easypost Fields?
-	## I might want to add a field here that stores
-	## serialized json of the entire api response used for 
-	## shipping rates. 
+	## Shipping Fields
 	Field('easypost_shipping_service'), ## Probably don't need this field
 	Field('easypost_shipping_carrier'), ## Probably don't need this field
 	Field('easypost_rate_id'),
 	Field('easypost_shipment_id'),
 	Field('easypost_rate'), ## Probably don't need this field
-	Field('easypost_api_response', 'text'), ## Probably don't need this field
+	
+	## Payment Fields
+	Field('payment_service'),
+	Field('payment_confirmation_id'),
+
+	## Cart Summary Details
+	Field('cart_base_cost'), ## Probably don't need this field
+	Field('cart_shipping_cost'), ## Probably don't need this field
+	Field('cart_total_cost'), ## Probably don't need this field
+
+	singular=T("Purchase History Data"),
+	plural=T("Purchase History Data"),
+)
 
 
+## Vestigial Fields
+	## User Fields
+	## These will be None for non users
+	# Field('muses_name'),
 
+	## Session Fields (These actually come from response not session)
+	## These will be available for all users
+	# Field('session_id_3muses'),
+	# Field('session_db_table'), ## Probably don't need this field
+
+
+	## Shipping Fields
+	## Name is seperated because shipping and billing 
+	## Addresses are going to be used interchangeably 
+	## like on every other site.
+	## Although a billing address isn't necessary for paypal
+
+
+	## Easypost Fields?
+	## I might want to add a field here that stores
+	## serialized json of the entire api response used for 
+	## shipping rates. 
+	# Field('easypost_api_response', 'text'), ## Probably don't need this field
 
 	## Payment Fields are going to be vastly different
 	## I'm keeping all the old fields for now, 
 	## but the new idea is to store the payment confirmation response in the db
 	## as serialized json. and just keep the payment service top level. 
-	## Payment Fields
 
-	## 
-	Field('payment_service'),
-	Field('payment_confirmation_dictionary', 'text'), ## Probably don't need this field
-	Field('payment_confirmation_id'),
-
+	# ## Payment Fields
+	# Field('payment_confirmation_dictionary', 'text'), ## Probably don't need this field
 
 	# ## Legacy Fields - Might keep some high level stuff 
 	# ## just to make browsing the data easier. 
@@ -147,19 +165,8 @@ db.define_table('purchase_history_data',
 
 
 
-	## Cart Summary Details
-	Field('cart_base_cost'), ## Probably don't need this field
-	Field('cart_shipping_cost'), ## Probably don't need this field
-	Field('cart_total_cost'), ## Probably don't need this field
 
-	singular=T("Purchase History Data"),
-	plural=T("Purchase History Data"),
-)
-
-
-
-
-
+## Failed Experiment
 # db.define_table('purchase_history_data2',
 
 # 	## 3Muses User Fields
@@ -184,14 +191,6 @@ db.define_table('purchase_history_data',
 
 
 
-
-
-
-
-
-
-
-
 ## This purchase history product table
 ## is going to save everything about a product
 ## this is becaus I want the site master to be able to reuse products
@@ -200,9 +199,12 @@ db.define_table('purchase_history_data',
 db.define_table('purchase_history_products',
 
 	Field('purchase_history_data_id','reference purchase_history_data'),
+
+	## Cart info
 	Field('product_id'),
 	Field('product_qty'),
 
+	## Product Info
 	Field('category_name'),
 	Field('product_name'),
 	Field('description','text'),
@@ -217,20 +219,18 @@ db.define_table('purchase_history_products',
 	)
 
 
-
-
 db.define_table('image',
 	Field('category_name', 'reference categories'),
 	Field('product_name', 'reference product'),
 	Field('title'),
 	Field('s3_url', 'upload'),
 	)
+
 db.image.title.requires=IS_NOT_IN_DB(db,db.image.title)
 if sqlite_tf:
 	pass
 else:
 	db.image.s3_url.uploadfs=myfs
-
 
 
 db.define_table('landing_page_images',
@@ -275,6 +275,11 @@ db.muses_cart.product_id.writable=False
 
 db.define_table('addresses',
 	Field('user_id', 'reference auth_user'),
+	# Field('first_name'),
+	# Field('last_name'),
+
+	## Address Fields
+	# Field('name'),
 	Field('first_name'),
 	Field('last_name'),
 	Field('street_address_line_1'),
@@ -283,12 +288,18 @@ db.define_table('addresses',
 	Field('administrative_area'),
 	Field('postal_code'),
 	Field('country'),
+
+	## Default Fields
 	Field('default_address', 'boolean'),
 	Field('last_modified', 'datetime'),
-	Field('easypost_api_response', 'text'),
+	# Field('easypost_api_response', 'text'),
+
+	## Shipping Fields
+	Field('easypost_shipping_id'),
 	Field('easypost_api_datetime', 'datetime'),
 	Field('easypost_default_shipping_rate_id'),
 	)
+
 db.addresses.id.readable=False
 db.addresses.user_id.readable=False
 db.addresses.user_id.writable=False

@@ -299,14 +299,16 @@ def create_purchase_history_dict(
 
     purchase_history_data_dict=dict(
 
-        session_id_3muses=session_data.session_id_3muses,
-        session_db_table=session_data.session_db_table,
+        # session_id_3muses=session_data.session_id_3muses,
+        # session_db_table=session_data.session_db_table,
         session_db_record_id=session_data.session_db_record_id,
 
         muses_id=user_data.id,
         muses_email_address=user_data.email,
-        muses_name=user_data.first_name,
+        # muses_name=user_data.first_name,
 
+        shipping_name_first=address_data['shipping_name_first'],
+        shipping_name_last=address_data['shipping_name_last'],
         shipping_street_address_line_1=address_data['street_address_line_1'],
         shipping_street_address_line_2=address_data['street_address_line_2'],
         shipping_municipality=address_data['municipality'],
@@ -319,10 +321,10 @@ def create_purchase_history_dict(
         easypost_shipment_id=rate_info['shipment_id'],
         easypost_rate_id=rate_info['id'],
         easypost_rate=rate_info['rate'],
-        easypost_api_response=address_data['easypost_api_response'],
+        #easypost_api_response=address_data['easypost_api_response'],
 
         payment_service=payment_service,
-        payment_confirmation_dictionary=json.dumps(payment_data, default=lambda x: None),
+        payment_confirmation_id=payment_data.id,
 
         cart_base_cost=summary_data['information_LOD'][0]['cart_cost_USD'],
         cart_shipping_cost=summary_data['information_LOD'][0]['shipping_cost_USD'],
