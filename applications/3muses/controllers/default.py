@@ -1119,10 +1119,10 @@ def pay():
 
         )
 
-    print ("----------")
-    print ("Purchase history dict")
-    print (purchase_history_dict)
-    print ("----------")
+    # print ("----------")
+    # print ("Purchase history dict")
+    # print (purchase_history_dict)
+    # print ("----------")
 
     # ## Populating the purchase history dict
     # ## This is used in the next view to show the user the purchase details. 
@@ -1248,50 +1248,6 @@ def pay():
             product_record.update(qty_in_stock=new_qty)
             product_record.update_record()
 
-    # ## If the user is not logged in, get the cart information from session. 
-    # else:
-
-
-    #     for product_id, qty in session.cart.iteritems():
-    #         product_record=db(db.product.id==product_id).select().first()
-    #         current_qty=int(product_record.qty_in_stock)
-    #         qty_purchased=int(qty)
-    #         new_qty=current_qty-qty_purchased
-
-
-    #         purchase_history_product_dict=dict(
-
-    #             purchase_history_data_id=purchase_history_data_id,
-    #             product_id=product_record.id,
-    #             product_qty=qty_purchased,
-
-    #             category_name=product_record.category_name,
-    #             product_name=product_record.product_name,
-    #             description=product_record.description,
-    #             cost_USD=product_record.cost_USD,
-    #             qty_in_stock=new_qty,
-    #             is_active=product_record.is_active,
-    #             display_order=product_record.display_order,
-    #             shipping_description=product_record.shipping_description,
-    #             weight_oz=product_record.weight_oz,
-
-    #         )
-
-    #         ## Generate a list of dicts to use bulk insert
-    #         purchase_history_products_LOD.append(purchase_history_product_dict)
-
-
-    #         if new_qty<=0:
-    #             product_record.update(qty_in_stock=0)
-    #             product_record.update_record()
-    #             product_record.update(is_active=False)
-    #             product_record.update_record()
-    #         else:
-    #             product_record.update(qty_in_stock=new_qty)
-    #             product_record.update_record()
-
-    #     session.cart=None
-
 
     purchase_history_products_ids=db.purchase_history_products.bulk_insert(purchase_history_products_LOD)
 
@@ -1300,17 +1256,14 @@ def pay():
 
 ####### This is where I need to make the reciept! DO IT!
 
-
-
-
 ## This is a scary place in the code 
 ## if True, lol
 
 
 
 
-
-
+    ## If I wrap the below in a function, just know that it needs the email address as an input!
+    muses_email_address=user_data.email
 
 
 
@@ -1319,124 +1272,125 @@ def pay():
 
 ##   try:
     #Try to convert and compare the url arg with the session arg that the user is allowed to view. 
-    if True: #int(purchase_history_data_id)==int(session.session_purchase_history_data_id):
+    # if True: #int(purchase_history_data_id)==int(session.session_purchase_history_data_id):
 
-        ## if success, then get the corresponding db info
-        purchase_history_data_row=db(db.purchase_history_data.id==purchase_history_data_id).select().first()
-
-
-
-        payment_information=json.loads(purchase_history_data_row.payment_confirmation_dictionary)
+    ## if success, then get the corresponding db info
+    purchase_history_data_row=db(db.purchase_history_data.id==purchase_history_data_id).select().first()
 
 
-        purchase_history_products_rows=db(db.purchase_history_products.purchase_history_data_id==purchase_history_data_id).select()
+    payment_information=stripe.Charge.retrieve(purchase_history_data_row.payment_confirmation_id)
 
-        ## product table
-        product_header_row=['Product','Total Weight (oz)','Total Cost($)']
-        product_table_row_LOL=[]
-        product_total_weight=0
-        product_total_cost=0
-
-        ## change this so that you don't have to go into the product database to get this data
-        ## It should all be available in the other purchase history tables. 
-        ## I'm doing this because the product table has all editable stuff
-        ## And I want a more permanent record of the transaction. 
-        for row in purchase_history_products_rows:
-            #product_data=db(db.product.id==row.product_id).select().first()
-
-            line_item_weight_oz=int(row.product_qty)*int(row.weight_oz)
-            line_item_cost_usd=int(row.product_qty)*int(row.cost_USD)
-
-            product_table_row=[
-                row.product_name,
-                line_item_weight_oz,
-                line_item_cost_usd,
-            ]
-
-            product_total_weight+=line_item_weight_oz
-            product_total_cost+=line_item_cost_usd
-
-            product_table_row_LOL.append(product_table_row)
-
-        product_totals_row=['Total',product_total_weight,product_total_cost,]
-
-        product_table_row_LOL.append(product_totals_row)
-
-        confirmation_product_grid=table_generation(product_header_row,product_table_row_LOL,'confirmation_product')
+    #payment_information=json.loads(purchase_history_data_row.payment_confirmation_dictionary)
 
 
-        ##Shipping Address Table
-        address_header_row=['Street Address Info', 'Local Address Info', 'Country']
-        address_table_row_LOL=[[
-            purchase_history_data_row.shipping_street_address_line_1+" "+purchase_history_data_row.shipping_street_address_line_2,
-            purchase_history_data_row.shipping_municipality+", "+purchase_history_data_row.shipping_administrative_area+" "+purchase_history_data_row.shipping_postal_code,
-            purchase_history_data_row.shipping_country,
-        ]]
+    purchase_history_products_rows=db(db.purchase_history_products.purchase_history_data_id==purchase_history_data_id).select()
 
-        confirmation_address_grid=table_generation(address_header_row,address_table_row_LOL,"confirmation_address")
+    ## product table
+    product_header_row=['Product','Total Weight (oz)','Total Cost($)']
+    product_table_row_LOL=[]
+    product_total_weight=0
+    product_total_cost=0
 
+    ## change this so that you don't have to go into the product database to get this data
+    ## It should all be available in the other purchase history tables. 
+    ## I'm doing this because the product table has all editable stuff
+    ## And I want a more permanent record of the transaction. 
+    for row in purchase_history_products_rows:
+        #product_data=db(db.product.id==row.product_id).select().first()
 
-        ##Shipping Info Table
-        shipping_header_row=['Carrier-Rate', 'Shipping Weight (Oz)', 'Estimated Shipping Cost ($)']
-        shipping_table_row_LOL=[[
-            purchase_history_data_row.easypost_shipping_carrier + " - " + purchase_history_data_row.easypost_shipping_service,
-            product_total_weight,
-            purchase_history_data_row.easypost_rate,
-        ]]
+        line_item_weight_oz=int(row.product_qty)*int(row.weight_oz)
+        line_item_cost_usd=int(row.product_qty)*int(row.cost_USD)
 
-        confirmation_shipping_grid=table_generation(shipping_header_row,shipping_table_row_LOL,"confirmation_shipping")
+        product_table_row=[
+            row.product_name,
+            line_item_weight_oz,
+            line_item_cost_usd,
+        ]
 
+        product_total_weight+=line_item_weight_oz
+        product_total_cost+=line_item_cost_usd
 
+        product_table_row_LOL.append(product_table_row)
 
-    #     payment_stripe_name=payment_information['card']['name'],
-    #     payment_stripe_user_id=payment_information['customer'],
-    #     payment_stripe_last_4=payment_information['card']['last4'],
-    #     payment_stripe_brand=payment_information['card']['brand'],
-    #     payment_stripe_exp_month=payment_information['card']['exp_month'],
-    #     payment_stripe_exp_year=payment_information['card']['exp_year'],
-    #     payment_stripe_card_id=payment_information['card']['id'],
-    #     payment_stripe_transaction_id=payment_information['id'],
+    product_totals_row=['Total',product_total_weight,product_total_cost,]
 
-        print ("")
-        print ("--------------------")
-        print ("payment_dictionary")
-        print (payment_information)
-        print ("-------------------")
-        print ("")
+    product_table_row_LOL.append(product_totals_row)
 
-        ##Card Table
-        card_header_row=['Name', 'Brand-Last4', 'Expiration(mm/yyyy)']
-        card_table_row_LOL=[[
-            str(payment_information['card']['name']),
-            str(payment_information['card']['brand']) + " - " + str(payment_information['card']['last4']),
-            str(payment_information['card']['exp_month']) + " / " + str(payment_information['card']['exp_year']),
-        ]]
-
-        confirmation_card_grid=table_generation(card_header_row,card_table_row_LOL,"confirmation_card")
+    confirmation_product_grid=table_generation(product_header_row,product_table_row_LOL,'confirmation_product')
 
 
-        ##Summary Table
+    ##Shipping Address Table
+    address_header_row=['Street Address Info', 'Local Address Info', 'Country']
+    address_table_row_LOL=[[
+        purchase_history_data_row.shipping_street_address_line_1+" "+purchase_history_data_row.shipping_street_address_line_2,
+        purchase_history_data_row.shipping_municipality+", "+purchase_history_data_row.shipping_administrative_area+" "+purchase_history_data_row.shipping_postal_code,
+        purchase_history_data_row.shipping_country,
+    ]]
 
-        summary_header_row=['Shipping Cost ($)', 'Product Cost ($)', 'Total Cost ($)']
-        summary_table_row_LOL=[[
-            purchase_history_data_row.easypost_rate,
-            product_total_cost,
-            float(purchase_history_data_row.easypost_rate)+product_total_cost,
-        ]]
+    confirmation_address_grid=table_generation(address_header_row,address_table_row_LOL,"confirmation_address")
 
-        confirmation_summary_grid=table_generation(summary_header_row,summary_table_row_LOL,"confirmation_summary")
 
-        final_div=DIV(_class="muses_pay")
-        final_div.append(DIV("Product Details",_class="confirmation_heading"))
-        final_div.append(confirmation_product_grid)
-        final_div.append(DIV("Address Details",_class="confirmation_heading"))
-        final_div.append(confirmation_address_grid)
-        final_div.append(DIV("Shipping Details",_class="confirmation_heading"))
-        final_div.append(confirmation_shipping_grid)
-        final_div.append(DIV("Payment Details",_class="confirmation_heading"))
-        final_div.append(confirmation_card_grid)
-        final_div.append(DIV("Summary",_class="confirmation_heading"))
-        final_div.append(confirmation_summary_grid)
+    ##Shipping Info Table
+    shipping_header_row=['Carrier-Rate', 'Shipping Weight (Oz)', 'Estimated Shipping Cost ($)']
+    shipping_table_row_LOL=[[
+        purchase_history_data_row.easypost_shipping_carrier + " - " + purchase_history_data_row.easypost_shipping_service,
+        product_total_weight,
+        purchase_history_data_row.easypost_rate,
+    ]]
+
+    confirmation_shipping_grid=table_generation(shipping_header_row,shipping_table_row_LOL,"confirmation_shipping")
+
+
+
+#     payment_stripe_name=payment_information['card']['name'],
+#     payment_stripe_user_id=payment_information['customer'],
+#     payment_stripe_last_4=payment_information['card']['last4'],
+#     payment_stripe_brand=payment_information['card']['brand'],
+#     payment_stripe_exp_month=payment_information['card']['exp_month'],
+#     payment_stripe_exp_year=payment_information['card']['exp_year'],
+#     payment_stripe_card_id=payment_information['card']['id'],
+#     payment_stripe_transaction_id=payment_information['id'],
+
+    print ("")
+    print ("--------------------")
+    print ("payment_dictionary")
+    print (payment_information)
+    print ("-------------------")
+    print ("")
+
+    ##Card Table
+    card_header_row=['Name', 'Brand-Last4', 'Expiration(mm/yyyy)']
+    card_table_row_LOL=[[
+        str(payment_information['card']['name']),
+        str(payment_information['card']['brand']) + " - " + str(payment_information['card']['last4']),
+        str(payment_information['card']['exp_month']) + " / " + str(payment_information['card']['exp_year']),
+    ]]
+
+    confirmation_card_grid=table_generation(card_header_row,card_table_row_LOL,"confirmation_card")
+
+
+    ##Summary Table
+
+    summary_header_row=['Shipping Cost ($)', 'Product Cost ($)', 'Total Cost ($)']
+    summary_table_row_LOL=[[
+        purchase_history_data_row.easypost_rate,
+        product_total_cost,
+        float(purchase_history_data_row.easypost_rate)+product_total_cost,
+    ]]
+
+    confirmation_summary_grid=table_generation(summary_header_row,summary_table_row_LOL,"confirmation_summary")
+
+    final_div=DIV(_class="muses_pay")
+    final_div.append(DIV("Product Details",_class="confirmation_heading"))
+    final_div.append(confirmation_product_grid)
+    final_div.append(DIV("Address Details",_class="confirmation_heading"))
+    final_div.append(confirmation_address_grid)
+    final_div.append(DIV("Shipping Details",_class="confirmation_heading"))
+    final_div.append(confirmation_shipping_grid)
+    final_div.append(DIV("Payment Details",_class="confirmation_heading"))
+    final_div.append(confirmation_card_grid)
+    final_div.append(DIV("Summary",_class="confirmation_heading"))
+    final_div.append(confirmation_summary_grid)
         
 
     #     return dict(
@@ -1468,6 +1422,9 @@ def pay():
     #             purchase_history_data_row = "TypeError",
     #             purchase_history_products_rows = None,
     #         )
+
+
+
 
     #final_div['styles']
     final_div_html=final_div.xml()
@@ -1540,7 +1497,19 @@ def confirmation():
         ## if success, then get the corresponding db info
         purchase_history_data_row=db(db.purchase_history_data.id==purchase_history_data_id).select().first()
 
-        payment_information=json.loads(purchase_history_data_row.payment_confirmation_dictionary)
+        # payment_information=json.loads(purchase_history_data_row.payment_confirmation_dictionary)
+
+        if purchase_history_data_row['payment_service']=='stripe':
+
+            payment_information=stripe.Charge.retrieve(purchase_history_data_row['payment_confirmation_id'])
+
+        elif purchase_history_data_row['payment_service']=='paypal':
+
+            payment_information=paypalrestsdk.Payment.retrieve(purchase_history_data_row['payment_confirmation_id'])
+
+        else:
+
+            payment_information=None
 
         purchase_history_products_rows=db(db.purchase_history_products.purchase_history_data_id==purchase_history_data_id).select()
 
@@ -2585,6 +2554,8 @@ def ajax_shipping_information():
     address.update(default_address=True)
     address.update_record()
 
+    # print address
+
     ## We have the address from the DB so now we have prep if for inclusion in a call to easypost
     address_info=dict(
         first_name=address.first_name,
@@ -2625,6 +2596,8 @@ def ajax_shipping_information():
             product_shipping_desc=product.shipping_description,
             ))
 
+    # print cart
+
     shipping_options_LOD=[]
     error_status=False
     error_message=None
@@ -2642,6 +2615,9 @@ def ajax_shipping_information():
         ## Call to easypost
         shipment=create_shipment(address_info, cart_for_shipping_calculations)
 
+        # print ("------------")
+        # print shipment
+
         ## Put shipment info in the session to get it later!
         ## PUT THIS IN THE DB INSTEAD? NO! Just put the ID
         session.shipment_info_from_easypost=shipment
@@ -2656,44 +2632,49 @@ def ajax_shipping_information():
         clicked_address.update_record()
 
 
+        if len(shipment.rates)==0:
+            error_status=True
+            error_message='No rates are being returned for the selected address'
+            return json.dumps(dict(error_status=error_status, error_message=error_message, shipping_options_LOD=[]))
 
-        # Generate list of sorted rates
-        shipping_rates_for_sorting=[]
-        for i in range(len(shipment.rates)):
-            shipping_rates_for_sorting.append(float(shipment.rates[i].rate))
-        shipping_rates_for_sorting.sort()
-
-        
-        # Build the shipping grid
-        # I need to be able to sort the shipping rates based on the rate. 
-        for j in range(len(shipping_rates_for_sorting)):
-
+        else:
+            # Generate list of sorted rates
+            shipping_rates_for_sorting=[]
             for i in range(len(shipment.rates)):
+                shipping_rates_for_sorting.append(float(shipment.rates[i].rate))
+            shipping_rates_for_sorting.sort()
 
-                if shipping_rates_for_sorting[j]==float(shipment.rates[i].rate):
+            
+            # Build the shipping grid
+            # I need to be able to sort the shipping rates based on the rate. 
+            for j in range(len(shipping_rates_for_sorting)):
 
-                    if shipment.rates[i].service==session.shipping_choice:
+                for i in range(len(shipment.rates)):
 
-                        radio_button=INPUT(_type='radio', _name='shipping', _checked='checked', _value=shipment.rates[i].service)
+                    if shipping_rates_for_sorting[j]==float(shipment.rates[i].rate):
 
-                    else:
+                        if shipment.rates[i].service==session.shipping_choice:
 
-                        radio_button=INPUT(_type='radio', _name='shipping', _value=shipment.rates[i].service)
+                            radio_button=INPUT(_type='radio', _name='shipping', _checked='checked', _value=shipment.rates[i].service)
 
-                    shipping_option_dict=dict(
-                            carrier=shipment.rates[i].carrier,
-                            service=camelcaseToUnderscore(shipment.rates[i].service),
-                            rate=shipment.rates[i].rate,
-                            rate_id=shipment.rates[i].id,
-                            shipment_id=shipment.rates[i].shipment_id,
-                            delivery_days=shipment.rates[i].delivery_days,
-                        )
+                        else:
 
-                    shipping_options_LOD.append(shipping_option_dict)
+                            radio_button=INPUT(_type='radio', _name='shipping', _value=shipment.rates[i].service)
 
-        error_status=False
-        error_message=None
-        return json.dumps(dict(error_status=error_status, error_message=error_message, shipping_options_LOD=shipping_options_LOD))
+                        shipping_option_dict=dict(
+                                carrier=shipment.rates[i].carrier,
+                                service=camelcaseToUnderscore(shipment.rates[i].service),
+                                rate=shipment.rates[i].rate,
+                                rate_id=shipment.rates[i].id,
+                                shipment_id=shipment.rates[i].shipment_id,
+                                delivery_days=shipment.rates[i].delivery_days,
+                            )
+
+                        shipping_options_LOD.append(shipping_option_dict)
+
+            error_status=False
+            error_message=None
+            return json.dumps(dict(error_status=error_status, error_message=error_message, shipping_options_LOD=shipping_options_LOD))
 
     except easypost.Error:
         error_status=True

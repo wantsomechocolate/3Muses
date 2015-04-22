@@ -283,8 +283,10 @@ def create_purchase_history_dict(
     ):
 
     import json
+    import easypost
 
-    easypost_response=json.loads(address_data['easypost_api_response'])
+    ## easypost_response=json.loads(address_data['easypost_api_response'])
+    easypost_response=easypost.Shipment.retrieve(address_data['easypost_shipping_id'])
 
     rates=easypost_response['rates']
 
@@ -307,8 +309,8 @@ def create_purchase_history_dict(
         muses_email_address=user_data.email,
         # muses_name=user_data.first_name,
 
-        shipping_name_first=address_data['shipping_name_first'],
-        shipping_name_last=address_data['shipping_name_last'],
+        shipping_name_first=address_data['first_name'],
+        shipping_name_last=address_data['last_name'],
         shipping_street_address_line_1=address_data['street_address_line_1'],
         shipping_street_address_line_2=address_data['street_address_line_2'],
         shipping_municipality=address_data['municipality'],
@@ -335,3 +337,141 @@ def create_purchase_history_dict(
     return purchase_history_data_dict
 
 
+
+
+def generate_confirmation_email_html(
+    muses_email_addres, 
+    purchase_history_data_row,
+    purchase_history_products_rows,
+    ):
+
+
+    ###########################################
+    #########-----PRODUCT INFORMATION-----#####
+    ###########################################
+    product_header_row=['Product','Total Weight (oz)','Total Cost($)']
+    product_table_row_LOL=[]
+    product_total_weight=0
+    product_total_cost=0
+
+    ## change this so that you don't have to go into the product database to get this data
+    ## It should all be available in the other purchase history tables. 
+    ## I'm doing this because the product table has all editable stuff
+    ## And I want a more permanent record of the transaction. 
+    for row in purchase_history_products_rows:
+        #product_data=db(db.product.id==row.product_id).select().first()
+
+        line_item_weight_oz=int(row.product_qty)*int(row.weight_oz)
+        line_item_cost_usd=int(row.product_qty)*int(row.cost_USD)
+
+        product_table_row=[
+            row.product_name,
+            line_item_weight_oz,
+            line_item_cost_usd,
+        ]
+
+        product_total_weight+=line_item_weight_oz
+        product_total_cost+=line_item_cost_usd
+
+        product_table_row_LOL.append(product_table_row)
+
+    product_totals_row=['Total',product_total_weight,product_total_cost,]
+
+    product_table_row_LOL.append(product_totals_row)
+
+    confirmation_product_grid=table_generation(product_header_row,product_table_row_LOL,'confirmation_product')
+
+
+
+    ###########################################
+    #########-----ADDRESS INFORMATION-----#####
+    ###########################################
+    address_header_row=['Street Address Info', 'Local Address Info', 'Country']
+    address_table_row_LOL=[[
+        purchase_history_data_row.shipping_street_address_line_1+" "+purchase_history_data_row.shipping_street_address_line_2,
+        purchase_history_data_row.shipping_municipality+", "+purchase_history_data_row.shipping_administrative_area+" "+purchase_history_data_row.shipping_postal_code,
+        purchase_history_data_row.shipping_country,
+    ]]
+
+    confirmation_address_grid=table_generation(address_header_row,address_table_row_LOL,"confirmation_address")
+
+
+
+    ###########################################
+    #########-----SHIPPING INFORMATION----#####
+    ###########################################
+    shipping_header_row=['Carrier-Rate', 'Shipping Weight (Oz)', 'Estimated Shipping Cost ($)']
+    shipping_table_row_LOL=[[
+        purchase_history_data_row.easypost_shipping_carrier + " - " + purchase_history_data_row.easypost_shipping_service,
+        product_total_weight,
+        purchase_history_data_row.easypost_rate,
+    ]]
+
+    confirmation_shipping_grid=table_generation(shipping_header_row,shipping_table_row_LOL,"confirmation_shipping")
+
+
+    ###########################################
+    #########-----PAYMENT INFORMATION-----#####
+    ###########################################
+    if purchase_history_data_row['payment_service']=='stripe':
+
+        payment_information=stripe.Charge.retrieve(purchase_history_data_row.payment_confirmation_id)
+
+
+        ##Card Table
+        card_header_row=['Name', 'Brand-Last4', 'Expiration(mm/yyyy)']
+        card_table_row_LOL=[[
+            str(payment_information['card']['name']),
+            str(payment_information['card']['brand']) + " - " + str(payment_information['card']['last4']),
+            str(payment_information['card']['exp_month']) + " / " + str(payment_information['card']['exp_year']),
+        ]]
+
+        confirmation_card_grid=table_generation(card_header_row,card_table_row_LOL,"confirmation_card")
+
+
+
+    elif purchase_history_data_row['payment_service']=='paypal':
+
+        payment_information=paymentrestsdk.Payment.retrieve(purchase_history_data_row.payment_confirmation_id)
+
+        ##Paypal Info
+        card_header_row=['Paypal Name', 'Paypal Email', 'Paypal Invoice Number']
+        card_table_row_LOL=[[
+            payment['payer']['payer_info']['first_name']+payment['payer']['payer_info']['last_name'],
+            payment['payer']['payer_info']['email'],
+            'invoice_number',
+        ]]
+
+        confirmation_card_grid=table_generation(card_header_row,card_table_row_LOL,"confirmation_card")
+
+
+
+    ###########################################
+    #########-----SUMMARY INFORMATION-----#####
+    ###########################################
+    summary_header_row=['Shipping Cost ($)', 'Product Cost ($)', 'Total Cost ($)']
+    summary_table_row_LOL=[[
+        purchase_history_data_row.easypost_rate,
+        product_total_cost,
+        float(purchase_history_data_row.easypost_rate)+product_total_cost,
+    ]]
+
+    confirmation_summary_grid=table_generation(summary_header_row,summary_table_row_LOL,"confirmation_summary")
+
+
+    ###########################################
+    #########-------HTML GENERATION-------#####
+    ###########################################
+    final_div=DIV(_class="muses_pay")
+    final_div.append(DIV("Product Details",_class="confirmation_heading"))
+    final_div.append(confirmation_product_grid)
+    final_div.append(DIV("Address Details",_class="confirmation_heading"))
+    final_div.append(confirmation_address_grid)
+    final_div.append(DIV("Shipping Details",_class="confirmation_heading"))
+    final_div.append(confirmation_shipping_grid)
+    final_div.append(DIV("Payment Details",_class="confirmation_heading"))
+    final_div.append(confirmation_card_grid)
+    final_div.append(DIV("Summary",_class="confirmation_heading"))
+    final_div.append(confirmation_summary_grid)
+
+    return final_div

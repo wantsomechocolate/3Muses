@@ -45,6 +45,8 @@ function update_target(click_class_name_or_all, selected_class_name, view_name, 
             
             var obj=jQuery.parseJSON(shipping_information);
 
+            // alert(obj);
+
             /*This is not page load*/
             // if ( ($("#"+target_div_id).html()=="") || (obj.change==true) ) {
 
@@ -53,6 +55,8 @@ function update_target(click_class_name_or_all, selected_class_name, view_name, 
             // }; 
 
             // alert(obj['shipping_options_LOD']);
+            // alert(obj['error_status']);
+            // alert(obj['error_message']);
 
 
             var newHtml=[]
@@ -163,7 +167,10 @@ function update_target(click_class_name_or_all, selected_class_name, view_name, 
 
             
         }).error( function (error_message) {
-            alert( "There was an error, your address has not been set." )});
+            alert( "There was an error, your address has not been set." )
+            alert(error_message);
+
+        });
 };
 
 
