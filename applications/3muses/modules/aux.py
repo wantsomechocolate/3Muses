@@ -337,13 +337,52 @@ def create_purchase_history_dict(
     return purchase_history_data_dict
 
 
+def table_generation(grid_header_list, grid_row_lists, basename):
+
+    from gluon.html import DIV
+    
+    grid=DIV()
+
+    grid['_class']=str(basename)+'_grid_container'
+
+    if grid_header_list!=None:
+
+        grid_header_row=DIV()
+
+        grid_header_row['_class']=str(basename)+'_grid_header_row grid_header_row'
+
+        for i in range(len(grid_header_list)):
+
+            grid_header_row.append(DIV(DIV(grid_header_list[i]), _class=str(basename)+"_grid_header_cell grid_header_cell "+str(basename)+"_grid_col grid_col "+str(basename)+"_grid_col_"+str(i+1)))
+        
+        grid.append(grid_header_row)
+
+    else:
+
+        pass
+
+    for grid_row_list in grid_row_lists:
+
+        grid_table_row=DIV(_class=str(basename)+"_grid_table_row grid_table_row")
+
+        for i in range(len(grid_row_list)):
+
+            grid_table_row.append(DIV(grid_row_list[i],_class=str(basename)+"_grid_table_cell grid_table_cell "+str(basename)+"_grid_col grid_col "+str(basename)+"_grid_col_"+str(i+1)))
+
+        grid.append(grid_table_row)
+
+    return grid
+
+
 
 
 def generate_confirmation_email_html(
-    muses_email_addres, 
-    purchase_history_data_row,
-    purchase_history_products_rows,
+    muses_email_address=None, 
+    purchase_history_data_row=None,
+    purchase_history_products_rows=None,
     ):
+
+    import stripe
 
 
     ###########################################
@@ -462,16 +501,49 @@ def generate_confirmation_email_html(
     ###########################################
     #########-------HTML GENERATION-------#####
     ###########################################
-    final_div=DIV(_class="muses_pay")
-    final_div.append(DIV("Product Details",_class="confirmation_heading"))
-    final_div.append(confirmation_product_grid)
-    final_div.append(DIV("Address Details",_class="confirmation_heading"))
-    final_div.append(confirmation_address_grid)
-    final_div.append(DIV("Shipping Details",_class="confirmation_heading"))
-    final_div.append(confirmation_shipping_grid)
-    final_div.append(DIV("Payment Details",_class="confirmation_heading"))
-    final_div.append(confirmation_card_grid)
-    final_div.append(DIV("Summary",_class="confirmation_heading"))
-    final_div.append(confirmation_summary_grid)
+    # final_div=DIV(_class="muses_pay")
+    # final_div.append(DIV("Product Details",_class="confirmation_heading"))
+    # final_div.append(confirmation_product_grid)
+    # final_div.append(DIV("Address Details",_class="confirmation_heading"))
+    # final_div.append(confirmation_address_grid)
+    # final_div.append(DIV("Shipping Details",_class="confirmation_heading"))
+    # final_div.append(confirmation_shipping_grid)
+    # final_div.append(DIV("Payment Details",_class="confirmation_heading"))
+    # final_div.append(confirmation_card_grid)
+    # final_div.append(DIV("Summary",_class="confirmation_heading"))
+    # final_div.append(confirmation_summary_grid)
 
-    return final_div
+
+    # final_div_html=final_div.xml()
+
+
+    email_icons=dict(
+        products_icon_url="https://s3.amazonaws.com/threemusesglass/icons/ProductIcon.png",
+        address_icon_url="https://s3.amazonaws.com/threemusesglass/icons/AddressIcon.png",
+        shipping_icon_url="https://s3.amazonaws.com/threemusesglass/icons/ShippingIcon.png",
+        payment_icon_url="https://s3.amazonaws.com/threemusesglass/icons/PaymentIcon.png",
+        summary_icon_url="https://s3.amazonaws.com/threemusesglass/icons/SummaryIcon.png",
+        )
+
+    #purchase_history_dict
+    #purchase_history_products_LOD
+
+    ## Try to overwrite the date with a string and convert back later using dateutil if necessary
+
+    receipt_context=dict(
+        email_icons=email_icons,
+        #purchase_details=purchase_history_dict,
+        #product_details=purchase_history_products_LOD,
+        product_info=product_table_row_LOL,
+        address_info=address_table_row_LOL,
+        shipping_info=shipping_table_row_LOL,
+        card_info=card_table_row_LOL,
+        summary_info=summary_table_row_LOL,
+        )
+
+    #receipt_message_html = response.render('receipt.html', receipt_context)
+    #receipt_message_html = response.render('default/receipt.html', receipt_context)
+
+
+    #return receipt_message_html
+    return receipt_context
