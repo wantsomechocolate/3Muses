@@ -376,13 +376,14 @@ def table_generation(grid_header_list, grid_row_lists, basename):
 
 
 
-def generate_confirmation_email_html(
+def generate_confirmation_email_receipt_context(
     muses_email_address=None, 
     purchase_history_data_row=None,
     purchase_history_products_rows=None,
     ):
 
     import stripe
+    import paypalrestsdk
 
 
     ###########################################
@@ -471,7 +472,7 @@ def generate_confirmation_email_html(
 
     elif purchase_history_data_row['payment_service']=='paypal':
 
-        payment_information=paymentrestsdk.Payment.retrieve(purchase_history_data_row.payment_confirmation_id)
+        payment_information=paypalrestsdk.Payment.find(purchase_history_data_row.payment_confirmation_id)
 
         ##Paypal Info
         card_header_row=['Paypal Name', 'Paypal Email', 'Paypal Invoice Number']
