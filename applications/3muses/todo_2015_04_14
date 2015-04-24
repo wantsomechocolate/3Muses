@@ -21,6 +21,7 @@ Cart Page
 	General
 	Add edit icon to all popovers
 	format contents of all popovers
+	Prices can't be more than 4 significant figures
 
 	Shipping
 	Get dates in shipping options to format properly using moment.js - done
@@ -57,6 +58,8 @@ Add functionality to handle someone cancelling a paypal payment. ("I'm thinking 
 
 Login Page
 No error when incorrect credentials are entered. Just page refresh.
+
+When a gimp user is created, web2py allows me to change the email of the user to one that already exists in the database. This should not be allowed to happen. I need to put something in place that tells the user they need to choose a different email address. 
 
 View Purchase History Page
 This page no longer works because of db changes. 

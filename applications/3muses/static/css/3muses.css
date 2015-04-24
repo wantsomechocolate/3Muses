@@ -248,6 +248,15 @@ h2{
 	
 }
 
+.display-view-empty-row{
+	font-size: 2em;
+	text-align: center;
+	margin: auto;
+	width: 80%;
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
+
 @media screen and (min-width: 992px) {
 
 	.display-view-header-row{

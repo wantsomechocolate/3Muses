@@ -928,7 +928,7 @@ def checkout():
             experience_profile_id=experience_profile_id,
             redirect_urls=dict(
                 return_url="https://threemusesglass.herokuapp.com/paypal_confirmation",
-                cancel_url="https://threemusesglass.herokuapp.com"),
+                cancel_url="https://threemusesglass.herokuapp.com/cart"),
             cost_dict=dict(
                 shipping_cost_USD=shipping_cost_USD,
                 cart_cost_USD=cart_cost_USD,
@@ -1036,7 +1036,7 @@ def pay():
     ## Presenting the confirmation screen is done later using the database
     import json
     from aux import create_purchase_history_dict
-    from aux import generate_confirmation_email_html
+    from aux import generate_confirmation_email_receipt_context
 
     ## Get customer_id from stripe data in db. They should have one, if they don't at this point
     ## something went wrong.
@@ -1195,6 +1195,7 @@ def pay():
 def confirmation():
 
     import json
+    import paypalrestsdk
     ## This function has a problem with deleting a user
     ## And then someone reusing the same email when they sign up
     ## FIX IT. 

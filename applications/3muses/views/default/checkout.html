@@ -1,19 +1,69 @@
 {{extend 'layout.html'}}
 
-<div class="conatiner-fluid style1">
+
+<!--###############-->
+<!-- CHECKOUT CART -->
+<!--###############-->
+
+<div class="container-fluid style1">
 
 	<div class='container'>
 
-		<div class='muses_checkout' id = "checkout_cart">
-			<h1>Cart Contents</h1>
-			{{=cart_information}}
+{{ if cart_information['error']==False: }}
+
+	{{ for i in range(len(cart_information['cart_information_LOD'])): }}
+
+		<div class="row cart-view-cart-row">
+
+			<div class="col-md-1 col-md-offset-2 cart-view-cart-item-tn">
+				{{ =cart_information['cart_information_LOD'][i]['product_image_url'] }}
+			</div>
+
+						
+			<div class="col-xs-8 col-md-5 cart-view-cart-item-name cart-view-cart-row-child">
+
+				<div> <!-- For vertically centering -->
+					{{ =cart_information['cart_information_LOD'][i]['product_name'] }}
+				</div>
+
+			</div>
+
+			<div class="col-xs-4 col-md-1 cart-view-cart-item-cost cart-view-cart-row-child">
+
+				<div> <!-- For vertically centering -->
+					{{ =cart_information['cart_information_LOD'][i]['product_cost'] }}
+				</div>
+
+			</div>
+
 		</div>
+
+
+	{{pass}}
+
+{{ else: }}
+
+		<div class="row">
+
+			<div class="col-md-8 col-md-offset-2 align-hcenter cart-view-error-text-container">
+
+				{{ =cart_information['error_message'] }}
+
+			</div>
+
+		</div>
+
+{{ pass }}
 
 	</div>
 
 </div>
 
 
+
+
+
+<!-- 
 <div class="conatiner-fluid style2">
 
 	<div class='container'>
@@ -26,6 +76,88 @@
 	</div>
 
 </div>
+ -->
+
+
+
+
+
+<!--##################-->
+<!-- CHECKOUT ADDRESS -->
+<!--##################-->
+
+<div class="container-fluid style2">
+
+	<div class='container'>
+
+{{ if address_information['error']==False: }}
+
+	{{ for i in range(len(address_information['address_information_LOD'])): }}
+
+		<div class="row cart-view-address-info-container">
+
+			<div class="col-md-offset-2 col-md-7 cart-view-address-info" id="{{ =address_information['address_information_LOD'][i]['id'] }}">
+
+	  			<div class="cart-view-address-info-child">
+	          	{{ =address_information['address_information_LOD'][i]['first_name'] }}
+	          	{{ =address_information['address_information_LOD'][i]['last_name'] }}
+	          	</div>
+					          	
+	          	<div class="cart-view-address-info-child">
+	          	{{ =address_information['address_information_LOD'][i]['street_address_line_1'] }}
+	          	{{ =address_information['address_information_LOD'][i]['street_address_line_2'] }}
+	          	</div>
+
+	          	<div class="cart-view-address-info-child">
+	          	{{ =address_information['address_information_LOD'][i]['municipality'] }},
+	          	{{ =address_information['address_information_LOD'][i]['administrative_area'] }}
+	          	{{ =address_information['address_information_LOD'][i]['postal_code'] }}
+	          	</div>
+
+	          	<div class="cart-view-address-info-child">
+	          	{{ =address_information['address_information_LOD'][i]['country'] }}
+	          	</div>
+
+
+		    </div> <!-- Close the div that can be clicked to pick shipping address -->
+
+		</div>			
+						<br/>
+						<br/>
+
+	{{pass}}  <!--For the for loop-->
+
+{{ else: }}
+
+
+		<div class="row">
+
+			<div class="col-md-8 col-md-offset-2 align-hcenter cart-view-error-text-container">
+
+				{{ =address_information['error_message'] }}
+
+			</div>
+
+		</div>
+
+{{ pass }}
+
+	</div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 <div class="conatiner-fluid style1">
@@ -40,6 +172,27 @@
 	</div>
 
 </div>
+
+<!--###################-->
+<!-- CHECKOUT SHIPPING -->
+<!--###################-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 <div class="conatiner-fluid style2">

@@ -477,8 +477,8 @@ def generate_confirmation_email_receipt_context(
         ##Paypal Info
         card_header_row=['Paypal Name', 'Paypal Email', 'Paypal Invoice Number']
         card_table_row_LOL=[[
-            payment['payer']['payer_info']['first_name']+payment['payer']['payer_info']['last_name'],
-            payment['payer']['payer_info']['email'],
+            payment_information['payer']['payer_info']['first_name']+payment_information['payer']['payer_info']['last_name'],
+            payment_information['payer']['payer_info']['email'],
             'invoice_number',
         ]]
 
