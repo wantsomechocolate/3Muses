@@ -15,6 +15,7 @@ In mobile view the picture carousels collapse to 0 height if the page is scrolle
 Product Page
 Fix image heights on non-default active images - LOW PRIORITY
 In mobile view the picture carousels collapse to 0 height if the page is scrolled after any carousel is invoked. 
+Make it more obvious when a user adds something to their cart!
 
 Cart Page
 

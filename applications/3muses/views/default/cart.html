@@ -97,114 +97,127 @@
 
 
 
-<!--The Address Container-->
-
-<div class="container-fluid style2">
-
-	<div class='container'>
 
 
+{{ if cart_information['error']==True: }}
+
+{{else:}}
+
+		<!--The Address Container-->
+
+		<div class="container-fluid style2">
+
+			<div class='container'>
 
 
 
-{{ if address_information['error']==False: }}
 
-	{{ for i in range(len(address_information['address_information_LOD'])): }}
 
-		<div class="row cart-view-address-info-container">
+		{{ if address_information['error']==False: }}
 
-			<div class="col-md-offset-2 col-md-7 cart-view-address-info" id="{{ =address_information['address_information_LOD'][i]['id'] }}">
+			{{ for i in range(len(address_information['address_information_LOD'])): }}
 
-		{{ if address_information['address_information_LOD'][i]['default_address']: }}
-				{{ =INPUT(_type='radio', _name='address', _value=address_information['address_information_LOD'][i]['id'], _checked='checked') }}
+				<div class="row cart-view-address-info-container">
+
+					<div class="col-md-offset-2 col-md-7 cart-view-address-info" id="{{ =address_information['address_information_LOD'][i]['id'] }}">
+
+				{{ if address_information['address_information_LOD'][i]['default_address']: }}
+						{{ =INPUT(_type='radio', _name='address', _value=address_information['address_information_LOD'][i]['id'], _checked='checked') }}
+				{{ else: }}
+						{{ =INPUT(_type='radio', _name='address', _value=address_information['address_information_LOD'][i]['id']) }}
+				{{ pass }}
+
+			  			<div class="cart-view-address-info-child">
+			          	{{ =address_information['address_information_LOD'][i]['first_name'] }}
+			          	{{ =address_information['address_information_LOD'][i]['last_name'] }}
+			          	</div>
+							          	
+			          	<div class="cart-view-address-info-child">
+			          	{{ =address_information['address_information_LOD'][i]['street_address_line_1'] }}
+			          	{{ =address_information['address_information_LOD'][i]['street_address_line_2'] }}
+			          	</div>
+
+			          	<div class="cart-view-address-info-child">
+			          	{{ =address_information['address_information_LOD'][i]['municipality'] }},
+			          	{{ =address_information['address_information_LOD'][i]['administrative_area'] }}
+			          	{{ =address_information['address_information_LOD'][i]['postal_code'] }}
+			          	</div>
+
+			          	<div class="cart-view-address-info-child">
+			          	{{ =address_information['address_information_LOD'][i]['country'] }}
+			          	</div>
+
+
+				    </div> <!-- Close the div that can be clicked to pick shipping address -->
+
+
+				    <div class="col-xs-offset-8 col-xs-4 col-md-offset-0 col-md-1 cart-view-address-controls">
+
+
+						<button type="button" 
+							class="btn btn-default cart-view-address-controls-popover" 
+							data-container="body" 
+							data-toggle="popover" 
+							data-placement="left" 
+							data-trigger="focus" 
+							data-html="true" 
+							data-content="<div class='col-xs-6 col-md-12'>
+				            {{ =A('Edit', _href=URL('edit_address', vars=dict(pri_key=address_information['address_information_LOD'][i]['id'])), _class='btn btn-primary cart-view-address-controls-button').xml() }}
+				            </div>
+
+				          	<div class='col-xs-6 col-md-12'>
+				            {{ =A('Delete', _href=URL('delete_address', vars=dict(pri_key=address_information['address_information_LOD'][i]['id'],redirect_url=URL('cart'))), _class='btn btn-danger cart-view-address-controls-button').xml() }}
+				            </div>
+				            ">
+							
+							<span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+							
+						</button>
+
+				    </div>
+
+
+				</div>			
+								<br/>
+								<br/>
+
+			{{pass}}  <!--For the for loop-->
+
 		{{ else: }}
-				{{ =INPUT(_type='radio', _name='address', _value=address_information['address_information_LOD'][i]['id']) }}
+
+
+				<div class="row">
+
+					<div class="col-md-8 col-md-offset-2 align-hcenter cart-view-error-text-container">
+
+						{{ =address_information['error_message'] }}
+
+					</div>
+
+				</div>
+
+
 		{{ pass }}
 
-	  			<div class="cart-view-address-info-child">
-	          	{{ =address_information['address_information_LOD'][i]['first_name'] }}
-	          	{{ =address_information['address_information_LOD'][i]['last_name'] }}
-	          	</div>
-					          	
-	          	<div class="cart-view-address-info-child">
-	          	{{ =address_information['address_information_LOD'][i]['street_address_line_1'] }}
-	          	{{ =address_information['address_information_LOD'][i]['street_address_line_2'] }}
-	          	</div>
-
-	          	<div class="cart-view-address-info-child">
-	          	{{ =address_information['address_information_LOD'][i]['municipality'] }},
-	          	{{ =address_information['address_information_LOD'][i]['administrative_area'] }}
-	          	{{ =address_information['address_information_LOD'][i]['postal_code'] }}
-	          	</div>
-
-	          	<div class="cart-view-address-info-child">
-	          	{{ =address_information['address_information_LOD'][i]['country'] }}
-	          	</div>
-
-
-		    </div> <!-- Close the div that can be clicked to pick shipping address -->
-
-
-		    <div class="col-xs-offset-8 col-xs-4 col-md-offset-0 col-md-1 cart-view-address-controls">
-
-
-				<button type="button" 
-					class="btn btn-default cart-view-address-controls-popover" 
-					data-container="body" 
-					data-toggle="popover" 
-					data-placement="left" 
-					data-trigger="focus" 
-					data-html="true" 
-					data-content="<div class='col-xs-6 col-md-12'>
-		            {{ =A('Edit', _href=URL('edit_address', vars=dict(pri_key=address_information['address_information_LOD'][i]['id'])), _class='btn btn-primary cart-view-address-controls-button').xml() }}
-		            </div>
-
-		          	<div class='col-xs-6 col-md-12'>
-		            {{ =A('Delete', _href=URL('delete_address', vars=dict(pri_key=address_information['address_information_LOD'][i]['id'],redirect_url=URL('cart'))), _class='btn btn-danger cart-view-address-controls-button').xml() }}
-		            </div>
-		            ">
-					
-					<span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
-					
-				</button>
-
-		    </div>
-
-
-		</div>			
-						<br/>
-						<br/>
-
-	{{pass}}  <!--For the for loop-->
-
-{{ else: }}
-
-
-		<div class="row">
-
-			<div class="col-md-8 col-md-offset-2 align-hcenter cart-view-error-text-container">
-
-				{{ =address_information['error_message'] }}
-
-			</div>
-
-		</div>
-
-
-{{ pass }}
 
 
 
+				<div class="row">
 
-		<div class="row">
+					<div class="col-md-3 col-md-offset-7 align-right cart-view-btn-container">
 
-			<div class="col-md-3 col-md-offset-7 align-right cart-view-btn-container">
+						<form action="{{=URL('default','add_new_address')}}">
 
-				<form action="{{=URL('default','add_new_address')}}">
+						    <input type="submit" value="Add New Address" class="btn btn-info cart-view-btn">
 
-				    <input type="submit" value="Add New Address" class="btn btn-info cart-view-btn">
+						</form>
 
-				</form>
+					</div>
+
+				</div>
+
+
+
 
 			</div>
 
@@ -213,251 +226,252 @@
 
 
 
-	</div>
-
-</div>
+		{{ if address_information['error']==True: }}
 
 
+		{{ else: }}
 
 
+				<!--The Shipping Container-->
+
+				<div class="container-fluid style1">
+
+					<div class='container' id='shipping_target'>
 
 
-<!--The Shipping Container-->
-
-<div class="container-fluid style1">
-
-	<div class='container' id='shipping_target'>
-
-
-		<!-- All styles and classes are done server side for the shipping-->
-		<div class="row">
-			<div class="col-md-offset-2 col-md-8 align-hcenter cart-view-error-text-container">	
-				{{=shipping_information['error_message']}}
-			</div>
-		</div>
-
-
-	</div>
-
-</div>
-
-
-<!--The Payment Container-->
-
-<div class="container-fluid style2">
-
-	<div class='container'>
-
-		<div class='row'>
-			<!--<h1>How You Are Paying</h1>-->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="panel-group col-md-offset-2 col-md-8" id="accordion" role="tablist" aria-multiselectable="true">
-
-  <div class="panel panel-default">
-    <div class="panel-heading" role="tab" id="headingOne">
-      <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-          Pay With Card
-        </a>
-      </h4>
-    </div>
-    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
-      <div class="panel-body">
-
-				<div class="align-hcenter cart-view-card-container">
-
-					{{ if card_information['error']: }}
-
-						<div class="cart-view-error-text-container">
-
-							{{ =card_information['error_message'] }}
-
+						<!-- All styles and classes are done server side for the shipping-->
+						<div class="row">
+							<div class="col-md-offset-2 col-md-8 align-hcenter cart-view-error-text-container">	
+								{{=shipping_information['error_message']}}
+							</div>
 						</div>
 
 
-					{{ else: }}
+					</div>
 
-						{{ for i in range(len(card_information['card_information_LOD'])): }}
+				</div>
 
-						<div>
-							<div id= "{{ =card_information['card_information_LOD'][i]['cart_id'] }}" class="col-md-offset-3 col-md-6 cart-view-payment-card-container cart-view-payment-option">
 
-								<div class="cart-view-payment-card-cardnumber">
-									XXXX-XXXX-XXXX-{{ =card_information['card_information_LOD'][i]['card_last4'] }}
+				<!--The Payment Container-->
+
+				<div class="container-fluid style2">
+
+					<div class='container'>
+
+						<div class='row'>
+							<!--<h1>How You Are Paying</h1>-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				<div class="panel-group col-md-offset-2 col-md-8" id="accordion" role="tablist" aria-multiselectable="true">
+
+				  <div class="panel panel-default">
+				    <div class="panel-heading" role="tab" id="headingOne">
+				      <h4 class="panel-title">
+				        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+				          Pay With Card
+				        </a>
+				      </h4>
+				    </div>
+				    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+				      <div class="panel-body">
+
+								<div class="align-hcenter cart-view-card-container">
+
+									{{ if card_information['error']: }}
+
+										<div class="cart-view-error-text-container">
+
+											{{ =card_information['error_message'] }}
+
+										</div>
+
+
+									{{ else: }}
+
+										{{ for i in range(len(card_information['card_information_LOD'])): }}
+
+										<div>
+											<div id= "{{ =card_information['card_information_LOD'][i]['cart_id'] }}" class="col-md-offset-3 col-md-6 cart-view-payment-card-container cart-view-payment-option">
+
+												<div class="cart-view-payment-card-cardnumber">
+													XXXX-XXXX-XXXX-{{ =card_information['card_information_LOD'][i]['card_last4'] }}
+												</div>
+
+												<div class="cart-view-payment-card-expiration">
+													{{ =card_information['card_information_LOD'][i]['card_exp_mo'] }} /
+													{{ =card_information['card_information_LOD'][i]['card_exp_yr'] }}
+												</div>
+
+												<div class="col-xs-6 cart-view-payment-card-cardname">
+													{{ =card_information['card_information_LOD'][i]['card_name'] }}
+												</div>
+
+												<div class="cart-view-payment-card-cardbrand">
+													{{ =card_information['card_information_LOD'][i]['card_brand'] }}
+												</div>
+
+											</div> <!--Close cart-view-payment-card-container-->
+
+
+											<div class="col-xs-offset-6 col-xs-6 col-md-offset-7 col-md-2 cart-view-payment-card-controls-container">
+
+
+												<button type="button" 
+													class="btn btn-default cart-view-card-controls-popover" 
+													data-container="body" 
+													data-toggle="popover" 
+													data-placement="left" 
+													data-trigger="focus" 
+													data-html="true" 
+													data-content="<div class='cart-view-payment-card-carddelete'>
+														{{ =card_information['card_information_LOD'][i]['card_delete'].xml() }}
+														</div>">
+
+													<span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+
+												</button>
+
+											</div>
+
+										</div>
+
+										<br/>
+										<br/>
+
+										{{ pass }}
+
+
+									{{ pass }}
+
 								</div>
 
-								<div class="cart-view-payment-card-expiration">
-									{{ =card_information['card_information_LOD'][i]['card_exp_mo'] }} /
-									{{ =card_information['card_information_LOD'][i]['card_exp_yr'] }}
+
+								<div class="align-right cart-view-btn-container">
+									
+									<form action="{{=URL('default','add_new_card')}}">
+									    <input type="submit" value="Add New Card" class="btn btn-info cart-view-btn">
+									</form>
+
 								</div>
 
-								<div class="col-xs-6 cart-view-payment-card-cardname">
-									{{ =card_information['card_information_LOD'][i]['card_name'] }}
+
+
+
+
+
+
+				      </div>
+				    </div>
+				  </div>
+				  <div class="panel panel-default">
+				    <div class="panel-heading" role="tab" id="headingTwo">
+				      <h4 class="panel-title">
+				        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+				          Other Payment Options
+				        </a>
+				      </h4>
+				    </div>
+				    <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+				      <div class="panel-body">
+
+
+
+
+								<div class="cart_payment_sub_options_container">
+
+									<div id="paypal" class="align-hcenter col-md-offset-3 col-md-6 cart-view-payment-paypal-container cart-view-payment-option">
+
+										<div>
+											Paypal
+										</div>
+
+									</div>
+
+									<div id="Bitcoin" class="align-hcenter col-md-offset-3 col-md-6 cart-view-payment-bitcoin-container cart-view-payment-option">
+
+										<div>
+											Bitcoin
+										</div>
+										
+									</div>
+
+
 								</div>
 
-								<div class="cart-view-payment-card-cardbrand">
-									{{ =card_information['card_information_LOD'][i]['card_brand'] }}
+
+
+
+
+				      </div>
+				    </div>
+				  </div>
+
+				</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+						</div>
+
+					</div>
+
+				</div>
+
+
+				<div class="container-fliud style1">
+
+					<div class='container'>
+
+
+							<div class="row">
+
+								<div class="col-md-3 col-md-offset-7 align-right">
+
+									<!--<a class="btn btn-sucess" href=" cbcb =URL('checkout') cbcb ">Checkout</a>-->
+
+									<form action="{{=URL('checkout')}}">
+									    <input type="submit" value="Review and Pay" class="btn btn-success cart-view-btn">
+									</form>
+
 								</div>
-
-							</div> <!--Close cart-view-payment-card-container-->
-
-
-							<div class="col-xs-offset-6 col-xs-6 col-md-offset-7 col-md-2 cart-view-payment-card-controls-container">
-
-
-								<button type="button" 
-									class="btn btn-default cart-view-card-controls-popover" 
-									data-container="body" 
-									data-toggle="popover" 
-									data-placement="left" 
-									data-trigger="focus" 
-									data-html="true" 
-									data-content="<div class='cart-view-payment-card-carddelete'>
-										{{ =card_information['card_information_LOD'][i]['card_delete'].xml() }}
-										</div>">
-
-									<span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
-
-								</button>
 
 							</div>
 
-						</div>
-
-						<br/>
-						<br/>
-
-						{{ pass }}
-
-
-					{{ pass }}
-
-				</div>
-
-
-				<div class="align-right cart-view-btn-container">
-					
-					<form action="{{=URL('default','add_new_card')}}">
-					    <input type="submit" value="Add New Card" class="btn btn-info cart-view-btn">
-					</form>
-
-				</div>
-
-
-
-
-
-
-
-      </div>
-    </div>
-  </div>
-  <div class="panel panel-default">
-    <div class="panel-heading" role="tab" id="headingTwo">
-      <h4 class="panel-title">
-        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-          Other Payment Options
-        </a>
-      </h4>
-    </div>
-    <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
-      <div class="panel-body">
-
-
-
-
-				<div class="cart_payment_sub_options_container">
-
-					<div id="paypal" class="align-hcenter col-md-offset-3 col-md-6 cart-view-payment-paypal-container cart-view-payment-option">
-
-						<div>
-							Paypal
-						</div>
 
 					</div>
 
-					<div id="Bitcoin" class="align-hcenter col-md-offset-3 col-md-6 cart-view-payment-bitcoin-container cart-view-payment-option">
-
-						<div>
-							Bitcoin
-						</div>
-						
-					</div>
-
-
 				</div>
 
+		{{ pass }} <!-- This ends the check to see if the address sections has an error, which would not load the remaining checkout components. It wraps up shipping and payment information.-->
 
-
-
-
-      </div>
-    </div>
-  </div>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		</div>
-
-	</div>
-
-</div>
-
-
-<div class="container-fliud style1">
-
-	<div class='container'>
-
-
-			<div class="row">
-
-				<div class="col-md-3 col-md-offset-7 align-right">
-
-					<!--<a class="btn btn-sucess" href=" cbcb =URL('checkout') cbcb ">Checkout</a>-->
-
-					<form action="{{=URL('checkout')}}">
-					    <input type="submit" value="Review and Pay" class="btn btn-success cart-view-btn">
-					</form>
-
-				</div>
-
-			</div>
-
-
-	</div>
-
-</div>
+{{pass}} <!--This Ends the check to see if the cart had an error, which would not load the remaining checkout components it basically wraps up evertyihing except the cart-->

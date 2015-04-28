@@ -638,6 +638,138 @@ def cart_only():
 ###########----------------------------Cart Logic--------------------------------############
 #############################################################################################
 
+    current_cart_cost=0
+
+    cart_information_LOD=[]
+    cart_information=dict(error=False,error_message=None,cart_information_LOD=cart_information_LOD)
+
+    ## Retrieve the current items from the users cart)
+    ## There is no check here to not include items that are sold out or no
+    ## longer active, That happens later.
+    cart_db=db(db.muses_cart.user_id==auth.user_id).select()
+
+    ## If cart turns out to be empty, set cart_grid so the view can have
+    ## something to display. but now cart_grid_table_row_LOL will be empty,
+    ## which should disallow the user from pressing the checkout button. 
+    if not cart_db:
+
+        cart_information['error']=True
+        cart_information['error_message']="You have not yet added anything to your cart"
+        cart_is_empty=True
+
+    ## If the cart is not empty
+    else:
+        
+        cart_is_empty=False
+        ## For each product in the cart
+        for row in cart_db:
+
+            ## Retreive product info from the db
+            product=db(db.product.id==row.product_id).select().first()
+
+            image=db(db.image.product_name==row.product_id).select().first()
+
+            if not image:
+                srcattr=URL('static','img/no_images.png')
+            else:
+
+                ## If using a local db get the product image locally
+                if sqlite_tf:
+                    # # image=db(db.image.product_name==row.product_id).select().first()
+                    # if len(images)==0:
+                    #     srcattr=URL('static','img/no_images.png')
+                    # else:
+                    srcattr=URL('download', image.s3_url)
+                    # print ("sqlite")
+                
+                ## For the more common case, get the image from aws s3
+                else:
+                    # srcattr=S3_BUCKET_PREFIX+str(db(db.image.product_name==row.product_id).select().first().s3_url)
+                    srcattr=S3_BUCKET_PREFIX+str(image.s3_url)
+
+            ## Create the product_image_url
+            product_image_url=A(IMG(_src=srcattr, _class='img-thumbnail cart-view-cart-tn'), _href=URL('default','product',args=[row.product_id]))
+
+            ## Create a delete button for the item
+            delete_button=A('X', _href=URL('delete_item_from_cart', vars=dict(pri_key=row.id,redirect_url=URL('cart'))), _class="btn btn-danger cart-view-cart-item-remove")
+
+            ## Populate a list with the current product info
+            cart_grid_table_row_list=[
+                product_image_url, 
+                product.product_name, 
+                product.cost_USD, 
+                #row.product_qty, This was used when qty could be over 1,
+                delete_button
+            ]
+
+            cart_item_dict=dict(
+                product_image_url=product_image_url,
+                product_name=product.product_name,
+                product_cost=product.cost_USD,
+                product_delete_button=delete_button,
+                product_active=product.is_active,
+                )
+
+            cart_information_LOD.append(cart_item_dict)
+
+            ## If the item is no longer active, remove it from the cart.
+            if not product.is_active:
+                db(db.muses_cart.product_id==product.id).delete()
+            else:
+                current_cart_cost+=product.cost_USD
+
+        session.current_cart_cost=current_cart_cost
+#############################################################################################
+###########--------------------------------Final---------------------------------############
+#############################################################################################
+
+    return dict(
+
+        cart_information=cart_information,
+
+        )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def cart_sample():
+
+#############################################################################################
+###########--------------------------Initial Logic-------------------------------############
+#############################################################################################
+
+    ## If someone tries to mess with the URL in the browser by going to 
+    ## cart/arg, It will reload the page without the arg
+    if request.args(0) is not None:
+        redirect(URL('cart_only'))
+    else:
+        pass
+
+    ## If you try to visit this page while you are not logged in, you get logged in as a handicapped user. 
+    ## but the nav option don't change. 
+    if auth.is_logged_in():
+        pass
+    else:
+        create_gimp_user()
+
+
+    print (request.env.web2py_original_uri)
+
+#############################################################################################
+###########----------------------------Cart Logic--------------------------------############
+#############################################################################################
+
     cart_information_LOD=[]
     cart_information=dict(error=False,error_message=None,cart_information_LOD=cart_information_LOD)
 
@@ -724,6 +856,19 @@ def cart_only():
         cart_information=cart_information,
 
         )
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2394,6 +2539,7 @@ def default_address_2():
 
 def ajax_shipping_information():
 
+
     ## Imports
     import easypost
     import json
@@ -2402,6 +2548,14 @@ def ajax_shipping_information():
 
     ## This is the address_id in the DB of the clicked address
     default_address_id=int(request.vars.new_choice)
+
+    
+    if session.shipping_rates:
+        if default_address_id in session.shipping_rates.keys():
+
+            return json.dumps(dict(error_status=False, error_message=None, shipping_options_LOD=session.shipping_rates[default_address_id]))
+
+    
     
     ## Add to session for easy retrieval? - I don't think this is necessary anymore as I'm storing in db
     # session.default_address_id=default_address_id
@@ -2475,6 +2629,9 @@ def ajax_shipping_information():
         error_message=error_message,
         )
 
+
+
+
     ## Now we have the address that was chosen, the address info for the address that was chosen
     ## the cart info, and the combined weight of our package. Let's make a call
     try:
@@ -2541,7 +2698,14 @@ def ajax_shipping_information():
 
             error_status=False
             error_message=None
+
+            if not session.shipping_rates:
+                session.shipping_rates={}
+
+            session.shipping_rates[address.id]=shipping_options_LOD
+
             return json.dumps(dict(error_status=error_status, error_message=error_message, shipping_options_LOD=shipping_options_LOD))
+
 
     except easypost.Error:
         error_status=True
