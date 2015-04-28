@@ -593,7 +593,146 @@ def cart():
 
         )
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
+def cart_only():
+
+#############################################################################################
+###########--------------------------Initial Logic-------------------------------############
+#############################################################################################
+
+    ## If someone tries to mess with the URL in the browser by going to 
+    ## cart/arg, It will reload the page without the arg
+    if request.args(0) is not None:
+        redirect(URL('cart_only'))
+    else:
+        pass
+
+    ## If you try to visit this page while you are not logged in, you get logged in as a handicapped user. 
+    ## but the nav option don't change. 
+    if auth.is_logged_in():
+        pass
+    else:
+        create_gimp_user()
+
+
+    print (request.env.web2py_original_uri)
+
+#############################################################################################
+###########----------------------------Cart Logic--------------------------------############
+#############################################################################################
+
+    cart_information_LOD=[]
+    cart_information=dict(error=False,error_message=None,cart_information_LOD=cart_information_LOD)
+
+    ## Retrieve the current items from the users cart)
+    ## There is no check here to not include items that are sold out or no
+    ## longer active, That happens later.
+    cart_db=db(db.muses_cart.user_id==auth.user_id).select()
+
+    ## If cart turns out to be empty, set cart_grid so the view can have
+    ## something to display. but now cart_grid_table_row_LOL will be empty,
+    ## which should disallow the user from pressing the checkout button. 
+    if not cart_db:
+
+        cart_information['error']=True
+        cart_information['error_message']="You have not yet added anything to your cart"
+        cart_is_empty=True
+
+    ## If the cart is not empty
+    else:
+        
+        cart_is_empty=False
+        ## For each product in the cart
+        for row in cart_db:
+
+            ## Retreive product info from the db
+            product=db(db.product.id==row.product_id).select().first()
+
+            image=db(db.image.product_name==row.product_id).select().first()
+
+            if not image:
+                srcattr=URL('static','img/no_images.png')
+            else:
+
+                ## If using a local db get the product image locally
+                if sqlite_tf:
+                    # # image=db(db.image.product_name==row.product_id).select().first()
+                    # if len(images)==0:
+                    #     srcattr=URL('static','img/no_images.png')
+                    # else:
+                    srcattr=URL('download', image.s3_url)
+                    # print ("sqlite")
+                
+                ## For the more common case, get the image from aws s3
+                else:
+                    # srcattr=S3_BUCKET_PREFIX+str(db(db.image.product_name==row.product_id).select().first().s3_url)
+                    srcattr=S3_BUCKET_PREFIX+str(image.s3_url)
+
+            ## Create the product_image_url
+            product_image_url=A(IMG(_src=srcattr, _class='img-thumbnail cart-view-cart-tn'), _href=URL('default','product',args=[row.product_id]))
+
+            ## Create a delete button for the item
+            delete_button=A('X', _href=URL('delete_item_from_cart', vars=dict(pri_key=row.id,redirect_url=URL('cart'))), _class="btn btn-danger cart-view-cart-item-remove")
+
+            ## Populate a list with the current product info
+            cart_grid_table_row_list=[
+                product_image_url, 
+                product.product_name, 
+                product.cost_USD, 
+                #row.product_qty, This was used when qty could be over 1,
+                delete_button
+            ]
+
+            cart_item_dict=dict(
+                product_image_url=product_image_url,
+                product_name=product.product_name,
+                product_cost=product.cost_USD,
+                product_delete_button=delete_button,
+                product_active=product.is_active,
+                )
+
+            cart_information_LOD.append(cart_item_dict)
+
+            ## If the item is no longer active, remove it from the cart.
+            if not product.is_active:
+                db(db.muses_cart.product_id==product.id).delete()
+
+
+#############################################################################################
+###########--------------------------------Final---------------------------------############
+#############################################################################################
+
+    return dict(
+
+        cart_information=cart_information,
+
+        )
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1684,10 +1823,18 @@ def user():
 
     #grid=SQLFORM.smartgrid(db.purchase_history_data, linked_tables=['purchase_history_products'])
 
+    #print "anything"
+
+    user_page=request.args[0]
+    #2if 
                                                                                                                                                                                                     
 
     return dict(form=auth())
 
+
+# def mylogin(): return dict(form=auth.login())
+# def myregister(): return dict(form=auth.register())
+# def myprofile(): return dict(form=auth.profile())
 
 
 @cache.action()

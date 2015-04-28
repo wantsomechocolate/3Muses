@@ -505,7 +505,17 @@ h2{
 
 
 
+/* cart_only view cart styles */
+#cart_only{
+	background-color: #C3C3E5;
+}
 
+
+/*
+body#register{
+	background-color: #C3C3E5;
+}
+*/
 
 
 /*Address stuff*/

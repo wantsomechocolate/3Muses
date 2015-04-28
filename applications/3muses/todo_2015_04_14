@@ -74,3 +74,32 @@ Does not reliably accept edits to information complaining that the email address
 Misc.
 Make a function for adding purchase info to the database since it is done in two different controller functions
 
+
+
+
+Checkout Flow
+
+Show the cart contents and total cart cost on one page
+User can enter minimum shipping information and choose a shipping method to get shipping costs and a total cost
+All on the cart page?
+
+A new page is used for checkout purposes
+If the user wants to pay with a card they must enter shipping information first, followed by billing information
+
+If they want to pay with paypal they don't have to enter any further information, but what happens if the minimum shipping info they entered earlier doesn't match the shipping address they picked in paypal? At that point I have already authorized the charge for a given amount. Maybe I just keep it the way it is for now.
+
+I GOT IT!
+
+At first the cart page only shows the cart, then there is a button to add shipping information
+Once an address is added, it becomes visible! more than one address can be added/selected?
+
+Once an address is chosen, shipping information becomes visible, for a given address the shipping information is stored in session to limit calls to the shipping API EVEN THOUGH IT HAS MY FUCKING KEYS IN IT. 
+
+Once a shipping method is chosen, the true final amount is given and can then be charged.
+
+Two Choices
+Have the option to choose a payment method pop up, if they choose paypal, then they can complete checkout np,
+if they choose to pay with a card, they enter the information in a secure looking model letting them know that the info is not saved on threemusesglass.com servers. 
+
+How would this work on mobile?
+On mobile everything should be a new page?  :/

@@ -1,0 +1,98 @@
+{{extend 'layout.html'}}
+
+<div class="container-fluid style1">
+
+	<div class='container'>
+
+{{ if cart_information['error']==False: }}
+
+	{{ for i in range(len(cart_information['cart_information_LOD'])): }}
+
+		<div class="row cart-view-cart-row">
+
+			<div class="col-md-1 col-md-offset-2 cart-view-cart-item-tn">
+				{{ =cart_information['cart_information_LOD'][i]['product_image_url'] }}
+			</div>
+
+						
+			<div class="col-xs-8 col-md-5 cart-view-cart-item-name cart-view-cart-row-child">
+
+				<div> <!-- For vertically centering -->
+					{{ =cart_information['cart_information_LOD'][i]['product_name'] }}
+				</div>
+
+			</div>
+
+			<div class="col-xs-4 col-md-1 cart-view-cart-item-cost cart-view-cart-row-child">
+
+				<div> <!-- For vertically centering -->
+					{{ =cart_information['cart_information_LOD'][i]['product_cost'] }}
+				</div>
+
+			</div>
+
+
+
+ 
+
+			<div class="col-xs-offset-8 col-xs-4 col-md-offset-0 col-md-1 cart-view-cart-item-remove-container cart-view-cart-row-child">
+
+			<button type="button" 
+				class="btn btn-default cart-view-cart-controls-popover" 
+				data-container="body" 
+				data-toggle="popover" 
+				data-placement="left" 
+				data-trigger="focus" 
+				data-html="true" 
+				data-content="{{ =cart_information['cart_information_LOD'][i]['product_delete_button'].xml() }}">
+			 
+				<span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+
+			</button>
+				
+
+			</div>
+
+		</div>
+
+
+	{{pass}}
+
+{{ else: }}
+
+		<div class="row">
+
+			<div class="col-md-8 col-md-offset-2 align-hcenter cart-view-error-text-container">
+
+				{{ =cart_information['error_message'] }}
+
+			</div>
+
+		</div>
+
+{{ pass }}
+
+
+
+		<div class="row">
+
+			<div class="col-md-3 col-md-offset-7 align-right cart-view-btn-container">
+
+				<form action="{{=URL('default','categories')}}">
+
+					<input type="submit" value="Back to Shopping" class="btn btn-info cart-view-btn">
+
+				</form>
+
+			</div>
+
+		</div>
+
+
+
+
+	</div>
+
+</div>
+
+

@@ -30,7 +30,11 @@
 
         <script src="{{ =URL('static', 'js/vendor/modernizr-2.8.3-respond-1.4.2.min.js') }}"></script>
     </head>
-    <body id="{{=request.args(0)}}">
+    {{ if request.args(0)==None: }}
+    <body id="{{ =request.env.web2py_original_uri[1:] }}">
+    {{ else: }}
+    <body id="{{ =request.args(0) }}">
+    {{ pass}}
         <!--[if lt IE 8]>
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
