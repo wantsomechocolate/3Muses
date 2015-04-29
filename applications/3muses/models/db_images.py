@@ -257,7 +257,8 @@ db.stripe_customers.id.readable=False
 db.define_table('muses_cart',
 	Field('user_id', 'reference auth_user'),
 	Field('product_id', 'reference product'),
-	Field('product_qty', requires=IS_INT_IN_RANGE(0,10))
+	Field('product_qty', requires=IS_INT_IN_RANGE(0,10)),
+	Field('time_added', 'datetime'),
 	)
 
 db.muses_cart.id.writable=db.muses_cart.id.readable=False

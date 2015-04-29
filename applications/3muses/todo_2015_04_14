@@ -104,3 +104,22 @@ if they choose to pay with a card, they enter the information in a secure lookin
 
 How would this work on mobile?
 On mobile everything should be a new page?  :/
+
+
+
+
+
+For the shipping charges, if someone adds an address and then adds a new item, the shipping rate isn't retrieved again! So I need to check to see if the address last modified time OR the cart last modified time is more recent than the shipping rates time associated with the address. 
+
+I now have a time associated with adding an item to a cart. I also realized that I should not delete items from a cart, just deactivate them, so that later we can send customized emails to people that put something in their cart, but removed it. 
+
+so anyway....
+
+I have a time for each item in the cart
+I have a time for the last time the address was added or edited
+I have a time for the last time the shipping options were retrieved.
+
+Everytime the shipping info is being generated, I need to check that the time that the shipping info was requested is always newer than
+
+the most recent address time
+the newest addition to the cart

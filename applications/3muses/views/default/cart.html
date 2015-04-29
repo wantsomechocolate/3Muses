@@ -151,12 +151,12 @@
 				    </div> <!-- Close the div that can be clicked to pick shipping address -->
 
 
-				    <div class="col-xs-offset-8 col-xs-4 col-md-offset-0 col-md-1 cart-view-address-controls">
+				    <div class="col-xs-offset-8 col-xs-4 col-md-offset-0 col-md-1 cart-view-address-controls" id="cart-view-address-controls-{{ =i }}">
 
 
 						<button type="button" 
 							class="btn btn-default cart-view-address-controls-popover" 
-							data-container="body" 
+							data-container="#cart-view-address-controls-{{ =i }}"
 							data-toggle="popover" 
 							data-placement="left" 
 							data-trigger="focus" 
@@ -267,7 +267,7 @@
 									<!--<a class="btn btn-sucess" href=" cbcb =URL('checkout') cbcb ">Checkout</a>-->
 
 									<form action="{{=URL('checkout')}}">
-									    <input type="submit" value="Review and Pay" class="btn btn-success cart-view-btn">
+									    <input type="submit" value="Proceed to Payment Options" class="btn btn-success cart-view-btn">
 									</form>
 
 								</div>

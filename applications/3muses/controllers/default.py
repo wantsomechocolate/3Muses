@@ -100,6 +100,8 @@ def display():
 
 def product():
 
+    from datetime import datetime
+
     product_id=request.args[0]
 
     product_row=db(db.product.id==product_id).select()
@@ -161,6 +163,7 @@ def product():
                     user_id=auth.user_id,
                     product_id=product_id,
                     product_qty=cart_form.vars.qty,
+                    time_added=datetime.now(),
                 )
 
             cart_form[2]['_value']="Remove from Cart"
@@ -305,6 +308,8 @@ def add_new_card():
 @auth.requires_login()
 def add_new_address(): #http://codepen.io/Angelfire/pen/dJhyr
 
+    from datetime import datetime
+
     add_address_form=FORM(
 
         DIV ( LABEL ( 'First Name', ) , DIV ( INPUT ( _type='text' , _name='first_name' , _class='form-control' , ) , ) , ) ,
@@ -343,6 +348,7 @@ def add_new_address(): #http://codepen.io/Angelfire/pen/dJhyr
             postal_code=add_address_form.vars.postal_code,
             country=add_address_form.vars.country,
             default_address=True,
+            last_modified=datetime.now(),
         )
 
         redirect(URL('cart'))
@@ -2374,6 +2380,7 @@ def edit_db_address():
 
 def edit_address():
 
+    from datetime import datetime
 
     if auth.is_logged_in():
         address_pre_changes_dict=db(db.addresses.id==request.vars['pri_key']).select()[0]
@@ -2506,6 +2513,7 @@ def edit_address():
                 postal_code=edit_address_form.vars.postal_code,
                 country=edit_address_form.vars.country,
                 default_address=True,
+                last_modified=datetime.now()
                 )
 
         if auth.is_logged_in():
@@ -2877,15 +2885,22 @@ def ajax_choose_shipping_option():
 
 
 
-    I need to know the address id, and then I can retrieve the appropriate rates dict, then I need to know the rate id so I can edit the appropriate rate.
+    #I need to know the address id, and then I can retrieve the appropriate rates dict, then I need to know the rate id so I can edit the appropriate rate.
 
-    session.shipping_rates[default_address.id][default_address.]
+    #print (session.shipping_rates[default_address.id])
 
-    session.shipping_rates[address.id]=shipping_options_LOD
+    for rate_index in range(len(session.shipping_rates[default_address.id])):
 
+        print ("hello?")
+        print session.shipping_rates[default_address.id][rate_index]['rate_id']
+        print default_address.easypost_default_shipping_rate_id
 
+        if session.shipping_rates[default_address.id][rate_index]['rate_id']==default_address.easypost_default_shipping_rate_id:
 
+            print ("setting the default shipping option in the session")
+            session.shipping_rates[default_address.id][rate_index]['selected_shipping_option']=True
 
+    print session.shipping_rates
 
     return json.dumps(dict(msg="no error"))
 

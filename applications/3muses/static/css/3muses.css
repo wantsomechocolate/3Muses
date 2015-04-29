@@ -575,8 +575,12 @@ input[type=radio]{
 
 	.cart-view-address-controls-button{
 		width:100%;
-		height:5em;
-		line-height: 4em;
+		/*height:5em;
+		line-height: 4em;*/
+	}
+
+	.cart-view-address-controls .popover{
+		padding-bottom:15px;
 	}
 
 	.selected_address{
