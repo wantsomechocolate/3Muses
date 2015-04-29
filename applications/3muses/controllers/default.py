@@ -2678,12 +2678,20 @@ def ajax_shipping_information():
                     if shipping_rates_for_sorting[j]==float(shipment.rates[i].rate):
 
                         if shipment.rates[i].service==session.shipping_choice:
-
                             radio_button=INPUT(_type='radio', _name='shipping', _checked='checked', _value=shipment.rates[i].service)
-
                         else:
-
                             radio_button=INPUT(_type='radio', _name='shipping', _value=shipment.rates[i].service)
+
+
+                        print "shipment rate"
+                        print shipment.rates[i].id
+                        print "address db shipping rate id"
+                        print address.easypost_default_shipping_rate_id
+
+                        if shipment.rates[i].id==address.easypost_default_shipping_rate_id:
+                            selected_shipping_option=True
+                        else:
+                            selected_shipping_option=False
 
                         shipping_option_dict=dict(
                                 carrier=shipment.rates[i].carrier,
@@ -2692,6 +2700,7 @@ def ajax_shipping_information():
                                 rate_id=shipment.rates[i].id,
                                 shipment_id=shipment.rates[i].shipment_id,
                                 delivery_days=shipment.rates[i].delivery_days,
+                                selected_shipping_option=selected_shipping_option,
                             )
 
                         shipping_options_LOD.append(shipping_option_dict)
@@ -2862,6 +2871,21 @@ def ajax_choose_shipping_option():
     default_address.update(easypost_default_shipping_rate_id=easypost_default_shipping_rate_id)
 
     default_address.update_record()
+
+    ## Also update the session variable so that the client side can more easily know what the default shipping choice is
+
+
+
+
+    I need to know the address id, and then I can retrieve the appropriate rates dict, then I need to know the rate id so I can edit the appropriate rate.
+
+    session.shipping_rates[default_address.id][default_address.]
+
+    session.shipping_rates[address.id]=shipping_options_LOD
+
+
+
+
 
     return json.dumps(dict(msg="no error"))
 

@@ -109,7 +109,18 @@ function update_target(click_class_name_or_all, selected_class_name, view_name, 
 
                     newHtml.push('<div class="row cart-view-shipping-row">');
 
-                        newHtml.push('<div class="col-md-offset-2 col-md-8 cart-view-shipping-row-wrapper" id="'+obj['shipping_options_LOD'][i]['rate_id']+'">')
+                        // alert(obj['shipping_options_LOD'][i]['selected_shipping_option']);
+
+                        if (obj['shipping_options_LOD'][i]['selected_shipping_option']===true){
+
+                            newHtml.push('<div class="col-md-offset-2 col-md-8 cart-view-shipping-row-wrapper cart-view-shipping-row-wrapper-selected" id="'+obj['shipping_options_LOD'][i]['rate_id']+'">');
+
+                        } else {
+
+                            newHtml.push('<div class="col-md-offset-2 col-md-8 cart-view-shipping-row-wrapper" id="'+obj['shipping_options_LOD'][i]['rate_id']+'">');
+
+                        };
+                        
 
                             newHtml.push('<div class="col-xs-7 col-md-7 cart-view-shipping-row-subset">');
 
