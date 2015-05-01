@@ -259,8 +259,11 @@ db.define_table('muses_cart',
 	Field('product_id', 'reference product'),
 	Field('product_qty', requires=IS_INT_IN_RANGE(0,10)),
 	Field('time_added', 'datetime'),
+	Field('is_active','boolean'),
+	Field('time_removed', 'datetime'),
 	)
 
+db.muses_cart.is_active.default==True
 db.muses_cart.id.writable=db.muses_cart.id.readable=False
 db.muses_cart.user_id.writable=db.muses_cart.user_id.readable=False
 # the line below was for when I had the row name as a link instead of just having a seperate link

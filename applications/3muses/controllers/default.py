@@ -123,7 +123,7 @@ def product():
     )
 
 
-    if len(cart_row)==1:
+    if len(cart_row)==1 and cart_row[0].is_active==True:
 
         cart_form[2]['_value']="Remove from Cart"
 
@@ -135,12 +135,22 @@ def product():
     if cart_form.accepts(request, session):
 
         ## If the cart was full when you pressed the button, remove the item
-        if len(cart_row)==1:
+        if len(cart_row)==1 and cart_row[0].is_active==True:
 
             #cart_row=db((db.muses_cart.product_id==product_row[j].id)&(db.muses_cart.user_id==auth.user_id)).select()
-            existing_cart_entry_id=db((db.muses_cart.product_id==product_id)&(db.muses_cart.user_id==auth.user_id)).select()[0].id
+            
+            #existing_cart_entry_id=db((db.muses_cart.product_id==product_id)&(db.muses_cart.user_id==auth.user_id)).select()[0].id
 
-            del db.muses_cart[existing_cart_entry_id]
+            #del db.muses_cart[existing_cart_entry_id]
+
+            existing_cart_entry=db((db.muses_cart.product_id==product_id)&(db.muses_cart.user_id==auth.user_id)).select()[0]
+
+            db.muses_cart[existing_cart_entry.id]=dict(is_active=False,time_removed=datetime.now())
+
+            # existing_cart_entry.update(is_active=False)
+            # existing_cart_entry.update(time_removed=datetime.now())
+            # existing_cart_entry.update_record()
+            
 
             cart_form[2]['_value']="Add to Cart"
 
@@ -155,7 +165,7 @@ def product():
 
             try:
                 existing_cart_entry=db((db.muses_cart.product_id==product_id)&(db.muses_cart.user_id==auth.user_id)).select()[0]
-                db.muses_cart[existing_cart_entry.id]=dict(product_qty=cart_form.vars.qty)
+                db.muses_cart[existing_cart_entry.id]=dict(product_qty=cart_form.vars.qty, time_added=datetime.now(), is_active=True)
 
             except IndexError:
 
@@ -164,6 +174,7 @@ def product():
                     product_id=product_id,
                     product_qty=cart_form.vars.qty,
                     time_added=datetime.now(),
+                    is_active=True,
                 )
 
             cart_form[2]['_value']="Remove from Cart"
@@ -376,6 +387,10 @@ def add_new_address(): #http://codepen.io/Angelfire/pen/dJhyr
 
 def cart():
 
+
+    from aux import retrieve_cart_contents
+
+
 #############################################################################################
 ###########--------------------------Initial Logic-------------------------------############
 #############################################################################################
@@ -404,7 +419,10 @@ def cart():
     ## Retrieve the current items from the users cart)
     ## There is no check here to not include items that are sold out or no
     ## longer active, That happens later.
-    cart_db=db(db.muses_cart.user_id==auth.user_id).select()
+
+    #cart_db=db(db.muses_cart.user_id==auth.user_id).select()
+
+    cart_db=retrieve_cart_contents(auth,db)
 
     ## If cart turns out to be empty, set cart_grid so the view can have
     ## something to display. but now cart_grid_table_row_LOL will be empty,
@@ -652,7 +670,9 @@ def cart_only():
     ## Retrieve the current items from the users cart)
     ## There is no check here to not include items that are sold out or no
     ## longer active, That happens later.
-    cart_db=db(db.muses_cart.user_id==auth.user_id).select()
+    #cart_db=db(db.muses_cart.user_id==auth.user_id).select()
+
+    cart_db=retrieve_cart_contents(auth,db)
 
     ## If cart turns out to be empty, set cart_grid so the view can have
     ## something to display. but now cart_grid_table_row_LOL will be empty,
@@ -782,7 +802,9 @@ def cart_sample():
     ## Retrieve the current items from the users cart)
     ## There is no check here to not include items that are sold out or no
     ## longer active, That happens later.
-    cart_db=db(db.muses_cart.user_id==auth.user_id).select()
+    #cart_db=db(db.muses_cart.user_id==auth.user_id).select()
+
+    cart_db=retrieve_cart_contents(auth,db)
 
     ## If cart turns out to be empty, set cart_grid so the view can have
     ## something to display. but now cart_grid_table_row_LOL will be empty,
@@ -922,7 +944,9 @@ def checkout():
     ## Retrieve the current items from the users cart)
     ## There is no check here to not include items that are sold out or no
     ## longer active, That happens later.
-    cart_db=db(db.muses_cart.user_id==auth.user_id).select()
+    #cart_db=db(db.muses_cart.user_id==auth.user_id).select()
+
+    cart_db=retrieve_cart_contents(auth,db)
 
     ## If cart turns out to be empty, set cart_grid so the view can have
     ## something to display. but now cart_grid_table_row_LOL will be empty,
@@ -1327,6 +1351,7 @@ def pay():
     import json
     from aux import create_purchase_history_dict
     from aux import generate_confirmation_email_receipt_context
+    from aux import retrieve_cart_contents
 
     ## Get customer_id from stripe data in db. They should have one, if they don't at this point
     ## something went wrong.
@@ -1401,7 +1426,9 @@ def pay():
     ## For every item in the cart, insert a record with the id of the purchase history, the product id and the qty.
     purchase_history_products_LOD=[]
 
-    cart=db(db.muses_cart.user_id==auth.user_id).select()
+    #cart=db(db.muses_cart.user_id==auth.user_id).select()
+
+    cart=retrieve_cart_contents(auth,db)
     
     ## For item in cart, add id from record above with product and qty and all info about the product,
     ## then deal with inventory by removing the item from the cart.
@@ -2033,12 +2060,22 @@ def data():
 ## Random CRUD operations
 def delete_item_from_cart():
 
+    from datetime import datetime
+
     ## pri_key is the primary key referencing the muses_cart db table, which holds records for 
     ## every user and every item that user has in their cart. This function can only delete a single item at a time
-    if auth.is_logged_in():
-        del db.muses_cart[request.vars['pri_key']]
-    else:
-        dummy=session.cart.pop(request.vars['pri_key'])
+    # if auth.is_logged_in():
+    #     del db.muses_cart[request.vars['pri_key']]
+    # else:
+    #     dummy=session.cart.pop(request.vars['pri_key'])
+
+
+    cart_row=db(db.muses_cart.id==request.vars['pri_key']).select()[0]
+    print cart_row
+
+    cart_row.update(is_active=False,time_removed=datetime.now())
+    cart_row.update_record()
+
 
     redirect(request.vars['redirect_url'])
 
@@ -2552,18 +2589,13 @@ def ajax_shipping_information():
     import easypost
     import json
     from aux import create_shipment
+    from aux import retrieve_cart_contents
     from datetime import datetime
+    from datetime import timedelta
 
     ## This is the address_id in the DB of the clicked address
     default_address_id=int(request.vars.new_choice)
 
-    
-    if session.shipping_rates:
-        if default_address_id in session.shipping_rates.keys():
-
-            return json.dumps(dict(error_status=False, error_message=None, shipping_options_LOD=session.shipping_rates[default_address_id]))
-
-    
     
     ## Add to session for easy retrieval? - I don't think this is necessary anymore as I'm storing in db
     # session.default_address_id=default_address_id
@@ -2599,7 +2631,10 @@ def ajax_shipping_information():
 
 
     ## As part of the request to easypost we need to know the cart contents - get from the DB
-    cart=db(db.muses_cart.user_id==auth.user_id).select()
+    #cart=db(db.muses_cart.user_id==auth.user_id).select()
+
+    cart=retrieve_cart_contents(auth,db)
+
 
     ## If the cart is empty!
     if not cart:
@@ -2611,11 +2646,15 @@ def ajax_shipping_information():
     cart_for_shipping_calculations=[]
     cart_weight_oz=0
     cart_cost_USD=0
+    cart_last_modified_list=[]
 
     for row in cart:
         product=db(db.product.id==row.product_id).select().first()
         cart_weight_oz+=float(product.weight_oz)*float(row.product_qty)
         cart_cost_USD+=float(product.cost_USD)*float(row.product_qty)
+        cart_last_modified_list.append(row.time_added)
+        cart_last_modified_list.append(row.time_removed)
+        print cart_last_modified_list
 
         cart_for_shipping_calculations.append(dict(
             product_name=product.product_name,
@@ -2636,6 +2675,37 @@ def ajax_shipping_information():
         error_status=error_status,
         error_message=error_message,
         )
+
+
+
+
+
+
+
+    ## Get the time of when shit happened 
+    easypost_last_retrieved_time=address.easypost_api_datetime
+
+    address_last_modified_time=address.last_modified
+    cart_last_modified_time=max(cart_last_modified_list)
+    threshold_time=datetime.now()-timedelta(hours=24)
+
+    master_last_modified_time=max([address_last_modified_time,cart_last_modified_time,threshold_time])
+
+    print "api time"
+    print easypost_last_retrieved_time
+    print "last modified time"
+    print master_last_modified_time
+
+    ## After getting the address from the db, check to see if the address id is already associated with a session variable for shipping rates
+    if session.shipping_rates:
+        if default_address_id in session.shipping_rates.keys():
+            if easypost_last_retrieved_time<master_last_modified_time:
+
+                return json.dumps(dict(error_status=False, error_message=None, shipping_options_LOD=session.shipping_rates[default_address_id]))
+
+
+
+
 
 
 
@@ -3407,6 +3477,7 @@ def paypal_confirmation():
     import json
     from aux import create_purchase_history_dict
     from aux import generate_confirmation_email_receipt_context
+    from aux import retrieve_cart_contents
        
     PAYPAL_CLIENT_ID=get_env_var('paypal', PRODUCTION_STATUS,'PAYPAL_CLIENT_ID')
     PAYPAL_CLIENT_SECRET=get_env_var('paypal', PRODUCTION_STATUS,'PAYPAL_CLIENT_SECRET')
@@ -3644,7 +3715,9 @@ def paypal_confirmation():
             ## If logged in, get the cart information from the database
             #if auth.is_logged_in():
 
-            cart=db(db.muses_cart.user_id==auth.user_id).select()
+            #cart=db(db.muses_cart.user_id==auth.user_id).select()
+
+            cart=retrieve_cart_contents(auth,db)
 
             
             ## For item in cart, add id from record above with product and qty and all info about the product,
