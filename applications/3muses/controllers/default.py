@@ -629,6 +629,245 @@ def cart():
 
 
 
+def cart_backup():
+
+
+    from aux import retrieve_cart_contents
+
+
+#############################################################################################
+###########--------------------------Initial Logic-------------------------------############
+#############################################################################################
+
+    ## If someone tries to mess with the URL in the browser by going to 
+    ## cart/arg, It will reload the page without the arg
+    if request.args(0) is not None:
+        redirect(URL('cart'))
+    else:
+        pass
+
+    ## If you try to visit this page while you are not logged in, you get logged in as a handicapped user. 
+    ## but the nav option don't change. 
+    if auth.is_logged_in():
+        pass
+    else:
+        create_gimp_user()
+
+#############################################################################################
+###########----------------------------Cart Logic--------------------------------############
+#############################################################################################
+
+    cart_information_LOD=[]
+    cart_information=dict(error=False,error_message=None,cart_information_LOD=cart_information_LOD)
+
+    ## Retrieve the current items from the users cart)
+    ## There is no check here to not include items that are sold out or no
+    ## longer active, That happens later.
+
+    #cart_db=db(db.muses_cart.user_id==auth.user_id).select()
+
+    cart_db=retrieve_cart_contents(auth,db)
+
+    ## If cart turns out to be empty, set cart_grid so the view can have
+    ## something to display. but now cart_grid_table_row_LOL will be empty,
+    ## which should disallow the user from pressing the checkout button. 
+    if not cart_db:
+
+        cart_information['error']=True
+        cart_information['error_message']="You have not yet added anything to your cart"
+        cart_is_empty=True
+
+    ## If the cart is not empty
+    else:
+        
+        cart_is_empty=False
+        ## For each product in the cart
+        for row in cart_db:
+
+            ## Retreive product info from the db
+            product=db(db.product.id==row.product_id).select().first()
+
+            image=db(db.image.product_name==row.product_id).select().first()
+
+            if not image:
+                srcattr=URL('static','img/no_images.png')
+            else:
+
+                ## If using a local db get the product image locally
+                if sqlite_tf:
+                    # # image=db(db.image.product_name==row.product_id).select().first()
+                    # if len(images)==0:
+                    #     srcattr=URL('static','img/no_images.png')
+                    # else:
+                    srcattr=URL('download', image.s3_url)
+                    # print ("sqlite")
+                
+                ## For the more common case, get the image from aws s3
+                else:
+                    # srcattr=S3_BUCKET_PREFIX+str(db(db.image.product_name==row.product_id).select().first().s3_url)
+                    srcattr=S3_BUCKET_PREFIX+str(image.s3_url)
+
+            ## Create the product_image_url
+            product_image_url=A(IMG(_src=srcattr, _class='img-thumbnail cart-view-cart-tn'), _href=URL('default','product',args=[row.product_id]))
+
+            ## Create a delete button for the item
+            delete_button=A('X', _href=URL('delete_item_from_cart', vars=dict(pri_key=row.id,redirect_url=URL('cart'))), _class="btn btn-danger cart-view-cart-item-remove")
+
+            ## Populate a list with the current product info
+            cart_grid_table_row_list=[
+                product_image_url, 
+                product.product_name, 
+                product.cost_USD, 
+                #row.product_qty, This was used when qty could be over 1,
+                delete_button
+            ]
+
+            cart_item_dict=dict(
+                product_image_url=product_image_url,
+                product_name=product.product_name,
+                product_cost=product.cost_USD,
+                product_delete_button=delete_button,
+                product_active=product.is_active,
+                )
+
+            cart_information_LOD.append(cart_item_dict)
+
+            ## If the item is no longer active, remove it from the cart.
+            if not product.is_active:
+                db(db.muses_cart.product_id==product.id).delete()
+
+
+
+#############################################################################################
+###########-----------------Address Logic (User and Non User)--------------------############
+#############################################################################################
+
+    address_information_LOD=[]
+    address_information=dict(error=False,error_message=None,address_information_LOD=address_information_LOD)
+
+    address_list=db(db.addresses.user_id==auth.user_id).select(orderby=db.addresses.street_address_line_1)
+
+    if not address_list:
+
+        address_list_is_empty=True
+        address_information['error']=True
+        address_information['error_message']="Please add an address to continue with your purchase"
+
+    else:
+
+        address_list_is_empty=False
+
+        for j in range(len(address_list)):
+
+            address_information_LOD.append(dict(
+                first_name=address_list[j].first_name,
+                last_name=address_list[j].last_name,
+                street_address_line_1=address_list[j].street_address_line_1, 
+                street_address_line_2=address_list[j].street_address_line_2, 
+                municipality=address_list[j].municipality, 
+                administrative_area=address_list[j].administrative_area, 
+                postal_code=address_list[j].postal_code, 
+                country=address_list[j].country,
+                id=address_list[j].id,
+                default_address=address_list[j].default_address,
+            ))
+
+
+#############################################################################################
+###########---------------Shipping Logic (User and Non User)---------------------############
+#############################################################################################
+
+    if cart_is_empty:
+        shipping_information=dict(error=True, error_message="Please add something to your cart to continue", shipping_options_LOD=[])
+    elif address_list_is_empty:
+        shipping_information=dict(error=True, error_message="Please add an address to continue", shipping_options_LOD=[])
+    else:
+        shipping_information=dict(error=True, error_message="Generating shipping costs", shipping_options_LOD=[])
+
+
+#############################################################################################
+###########-------------------Card Logic (User and Non User)---------------------############
+#############################################################################################
+
+
+    card_information_LOD=[]
+
+    ## See if the user has any card information on stripe. 
+    try:
+
+        ## get stripe id from the db
+        stripe_customer_token=db(db.stripe_customers.muses_id==auth.user_id).select()[0].stripe_id
+
+        ## get stripe info using stripe api
+        stripe_customer=stripe.Customer.retrieve(stripe_customer_token)
+
+        ## put all stripe card info into a variable
+        ## this will only hold the first 10 cards a person has. If they have more cards
+        ## then they need help. 
+        stripe_cards=stripe_customer.cards.all()
+
+        for i in range(len(stripe_cards['data'])):
+
+            if stripe_cards['data'][i]['id']==db(db.stripe_customers.muses_id==auth.user_id).select().first().stripe_next_card_id:
+                radio_button=INPUT(_type='radio', _name='card', _value=stripe_cards['data'][i]['id'], _checked='checked')
+            else:
+                radio_button=INPUT(_type='radio', _name='card', _value=stripe_cards['data'][i]['id'])
+
+            delete_button=A('X', _href=URL('delete_item_from_db_card', vars=dict(customer_id=stripe_customer_token, card_id=stripe_cards['data'][i]['id'])), _class="btn btn-danger cart-view-payment-card-deletebutton")
+
+            card_information_LOD.append(dict(
+                card_radio=radio_button, 
+                card_name=stripe_cards['data'][i]['name'], 
+                card_last4=stripe_cards['data'][i]['last4'], 
+                card_brand=stripe_cards['data'][i]['brand'], 
+                card_exp_mo=stripe_cards['data'][i]['exp_month'], 
+                card_exp_yr=stripe_cards['data'][i]['exp_year'], 
+                cart_id=stripe_cards['data'][i]['id'], 
+                card_delete=delete_button,
+            ))
+
+        card_information=dict(error=False, error_message=None, card_information_LOD=card_information_LOD)
+
+
+    except IndexError:
+
+        #the current user does not yet have a stripe customer token
+        card_information=dict(error=True, error_message="You do not have any cards", card_information_LOD=[])
+
+    except AttributeError:
+
+        #the current user does not yet have a stripe customer token
+        card_information=dict(error=True, error_message="You do not have any cards yet, or there was a problem accessing your cards.", card_information_LOD=[])
+
+    except stripe.error.APIConnectionError, stripe.error.APIError:
+
+        #No access to the internet, probably
+        card_information=dict(error=True, error_message="There was a problem connecting to stripe", card_information_LOD=[])
+
+
+#############################################################################################
+###########--------------------------------Final---------------------------------############
+#############################################################################################
+
+    return dict(
+
+        cart_information=cart_information,
+
+        address_information=address_information,
+
+        shipping_information=shipping_information,
+
+        card_information=card_information,
+
+        )
+
+
+
+
+
+
+
+
 
 
 
@@ -770,6 +1009,8 @@ def cart_only():
 
 
 def cart_sample():
+
+    from aux import retrieve_cart_contents
 
 #############################################################################################
 ###########--------------------------Initial Logic-------------------------------############
@@ -2633,7 +2874,7 @@ def ajax_shipping_information():
     ## As part of the request to easypost we need to know the cart contents - get from the DB
     #cart=db(db.muses_cart.user_id==auth.user_id).select()
 
-    cart=retrieve_cart_contents(auth,db)
+    cart=retrieve_cart_contents(auth,db, is_active=True)
 
 
     ## If the cart is empty!
@@ -2646,15 +2887,19 @@ def ajax_shipping_information():
     cart_for_shipping_calculations=[]
     cart_weight_oz=0
     cart_cost_USD=0
-    cart_last_modified_list=[]
+
 
     for row in cart:
         product=db(db.product.id==row.product_id).select().first()
         cart_weight_oz+=float(product.weight_oz)*float(row.product_qty)
         cart_cost_USD+=float(product.cost_USD)*float(row.product_qty)
-        cart_last_modified_list.append(row.time_added)
-        cart_last_modified_list.append(row.time_removed)
-        print cart_last_modified_list
+
+        # cart_last_modified_list.append(row.time_added)
+
+        # if row.time_removed is not None:
+        #     cart_last_modified_list.append(row.time_removed)
+
+        # print cart_last_modified_list
 
         cart_for_shipping_calculations.append(dict(
             product_name=product.product_name,
@@ -2665,6 +2910,21 @@ def ajax_shipping_information():
             ))
 
     # print cart
+
+    cart_last_modified_list=[]
+    cart_for_last_modified_time=retrieve_cart_contents(auth,db,is_active=False)
+
+
+    for row in cart_for_last_modified_time:
+
+        cart_last_modified_list.append(row.time_added)
+
+        if row.time_removed is not None:
+            cart_last_modified_list.append(row.time_removed)
+
+        print cart_last_modified_list
+
+
 
     shipping_options_LOD=[]
     error_status=False
@@ -2699,7 +2959,7 @@ def ajax_shipping_information():
     ## After getting the address from the db, check to see if the address id is already associated with a session variable for shipping rates
     if session.shipping_rates:
         if default_address_id in session.shipping_rates.keys():
-            if easypost_last_retrieved_time<master_last_modified_time:
+            if easypost_last_retrieved_time>master_last_modified_time:
 
                 return json.dumps(dict(error_status=False, error_message=None, shipping_options_LOD=session.shipping_rates[default_address_id]))
 

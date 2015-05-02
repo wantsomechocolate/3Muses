@@ -550,10 +550,12 @@ def generate_confirmation_email_receipt_context(
     return receipt_context
 
 
-def retrieve_cart_contents(auth,db):
+def retrieve_cart_contents(auth,db,is_active=True):
 
     # cart=db((db.muses_cart.user_id==auth.user_id)&(db.muses_cart.is_active==True)).select()
-
-    cart=db((db.muses_cart.user_id==auth.user_id)&(db.muses_cart.is_active==True)).select()
+    if is_active:
+        cart=db((db.muses_cart.user_id==auth.user_id)&(db.muses_cart.is_active==True)).select()
+    else:
+        cart=db(db.muses_cart.user_id==auth.user_id).select()
 
     return cart
