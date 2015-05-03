@@ -1,252 +1,199 @@
 {{extend 'layout.html'}}
 
+<!--The Payment Container-->
 
-<!--###############-->
-<!-- CHECKOUT CART -->
-<!--###############-->
-
-<div class="container-fluid style1">
-
-	<div class='container'>
-
-{{ if cart_information['error']==False: }}
-
-	{{ for i in range(len(cart_information['cart_information_LOD'])): }}
-
-		<div class="row cart-view-cart-row">
-
-			<div class="col-md-1 col-md-offset-2 cart-view-cart-item-tn">
-				{{ =cart_information['cart_information_LOD'][i]['product_image_url'] }}
-			</div>
-
-						
-			<div class="col-xs-8 col-md-5 cart-view-cart-item-name cart-view-cart-row-child">
-
-				<div> <!-- For vertically centering -->
-					{{ =cart_information['cart_information_LOD'][i]['product_name'] }}
-				</div>
-
-			</div>
-
-			<div class="col-xs-4 col-md-1 cart-view-cart-item-cost cart-view-cart-row-child">
-
-				<div> <!-- For vertically centering -->
-					{{ =cart_information['cart_information_LOD'][i]['product_cost'] }}
-				</div>
-
-			</div>
-
-		</div>
-
-
-	{{pass}}
-
-{{ else: }}
-
-		<div class="row">
-
-			<div class="col-md-8 col-md-offset-2 align-hcenter cart-view-error-text-container">
-
-				{{ =cart_information['error_message'] }}
-
-			</div>
-
-		</div>
-
-{{ pass }}
-
-	</div>
-
-</div>
-
-
-
-
-
-<!-- 
-<div class="conatiner-fluid style2">
-
-	<div class='container'>
-
-		<div class='muses_checkout' id = "checkout_addresses">
-			<h1>Shipping Address</h1>
-			{{=address_information}}
-		</div>
-
-	</div>
-
-</div>
- -->
-
-
-
-
-
-<!--##################-->
-<!-- CHECKOUT ADDRESS -->
-<!--##################-->
+{{ payment_method = session.payment_method }}
+{{ print payment_method}}
 
 <div class="container-fluid style2">
 
 	<div class='container'>
 
-{{ if address_information['error']==False: }}
+		<div class='row'>
+			<!--<h1>How You Are Paying</h1>-->
 
-	{{ for i in range(len(address_information['address_information_LOD'])): }}
+			<div class="panel-group col-md-offset-2 col-md-8" id="accordion" role="tablist" aria-multiselectable="true">
 
-		<div class="row cart-view-address-info-container">
+				  <div class="panel panel-default">
 
-			<div class="col-md-offset-2 col-md-7 cart-view-address-info" id="{{ =address_information['address_information_LOD'][i]['id'] }}">
+				    <div class="panel-heading" role="tab" id="headingOne">
 
-	  			<div class="cart-view-address-info-child">
-	          	{{ =address_information['address_information_LOD'][i]['first_name'] }}
-	          	{{ =address_information['address_information_LOD'][i]['last_name'] }}
-	          	</div>
-					          	
-	          	<div class="cart-view-address-info-child">
-	          	{{ =address_information['address_information_LOD'][i]['street_address_line_1'] }}
-	          	{{ =address_information['address_information_LOD'][i]['street_address_line_2'] }}
-	          	</div>
+				      <h4 class="panel-title">
 
-	          	<div class="cart-view-address-info-child">
-	          	{{ =address_information['address_information_LOD'][i]['municipality'] }},
-	          	{{ =address_information['address_information_LOD'][i]['administrative_area'] }}
-	          	{{ =address_information['address_information_LOD'][i]['postal_code'] }}
-	          	</div>
+				        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
 
-	          	<div class="cart-view-address-info-child">
-	          	{{ =address_information['address_information_LOD'][i]['country'] }}
-	          	</div>
+				          Pay With Card
 
+				        </a>
 
-		    </div> <!-- Close the div that can be clicked to pick shipping address -->
+				      </h4>
 
-		</div>			
-						<br/>
-						<br/>
+				    </div>
 
-	{{pass}}  <!--For the for loop-->
+				    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+				      
+				      <div class="panel-body">
 
-{{ else: }}
+						<div class="align-hcenter cart-view-card-container">
+
+							{{ if card_information['error']: }}
+
+								<div class="cart-view-error-text-container">
+
+									{{ =card_information['error_message'] }}
+
+								</div>
 
 
-		<div class="row">
+							{{ else: }}
 
-			<div class="col-md-8 col-md-offset-2 align-hcenter cart-view-error-text-container">
+								{{ for i in range(len(card_information['card_information_LOD'])): }}
 
-				{{ =address_information['error_message'] }}
+								{{ payment_id = card_information['card_information_LOD'][i]['cart_id']}}
+
+								{{ selected_class = "cart-view-payment-option-selected" if payment_method == payment_id else "" }}
+
+								<div>
+									<div id= "{{ =payment_id }}" class="col-md-offset-3 col-md-6 cart-view-payment-card-container cart-view-payment-option {{ =selected_class }} ">
+
+										<div class="cart-view-payment-card-cardnumber">
+											XXXX-XXXX-XXXX-{{ =card_information['card_information_LOD'][i]['card_last4'] }}
+										</div>
+
+										<div class="cart-view-payment-card-expiration">
+											{{ =card_information['card_information_LOD'][i]['card_exp_mo'] }} /
+											{{ =card_information['card_information_LOD'][i]['card_exp_yr'] }}
+										</div>
+
+										<div class="col-xs-6 cart-view-payment-card-cardname">
+											{{ =card_information['card_information_LOD'][i]['card_name'] }}
+										</div>
+
+										<div class="cart-view-payment-card-cardbrand">
+											{{ =card_information['card_information_LOD'][i]['card_brand'] }}
+										</div>
+
+									</div> <!--Close cart-view-payment-card-container-->
+
+
+									<div class="col-xs-offset-6 col-xs-6 col-md-offset-7 col-md-2 cart-view-payment-card-controls-container">
+
+
+										<button type="button" 
+											class="btn btn-default cart-view-card-controls-popover" 
+											data-container="body" 
+											data-toggle="popover" 
+											data-placement="left" 
+											data-trigger="focus" 
+											data-html="true" 
+											data-content="<div class='cart-view-payment-card-carddelete'>
+												{{ =card_information['card_information_LOD'][i]['card_delete'].xml() }}
+												</div>">
+
+											<span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+
+										</button>
+
+									</div>
+
+								</div>
+
+								<br/>
+								<br/>
+
+								{{ pass }}
+
+							{{ pass }}
+
+						</div>
+
+
+						<div class="align-right cart-view-btn-container">
+							
+							<form action="{{=URL('default','add_new_card')}}">
+							    <input type="submit" value="Add New Card" class="btn btn-info cart-view-btn">
+							</form>
+
+						</div>
+
+
+				      </div>
+				    </div>
+				  </div>
+				  <div class="panel panel-default">
+				    <div class="panel-heading" role="tab" id="headingTwo">
+				      <h4 class="panel-title">
+				        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+				          Other Payment Options
+				        </a>
+				      </h4>
+				    </div>
+				    <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+				      <div class="panel-body">
+
+						<div class="cart_payment_sub_options_container">
+
+							{{ payment_id = "paypal"}}
+
+							{{ selected_class = "cart-view-payment-option-selected" if payment_method == payment_id else "" }}
+							<div id="paypal" class="align-hcenter col-md-offset-3 col-md-6 cart-view-payment-paypal-container cart-view-payment-option {{ =selected_class }} ">
+
+								<div>
+									Paypal
+								</div>
+
+							</div>
+
+
+							{{ payment_id = "bitcoin"}}
+
+							{{ selected_class = "cart-view-payment-option-selected" if payment_method == payment_id else "" }}
+
+							<div id="Bitcoin" class="align-hcenter col-md-offset-3 col-md-6 cart-view-payment-bitcoin-container cart-view-payment-option {{ =selected_class }} ">
+
+								<div>
+									Bitcoin
+								</div>
+								
+							</div>
+
+
+						</div>
+
+				      </div>
+				    </div>
+				  </div>
+
+				</div>
 
 			</div>
 
 		</div>
 
-{{ pass }}
-
 	</div>
 
-</div>
+
+	<div class="container-fliud style1">
+
+		<div class='container'>
 
 
+				<div class="row">
 
+					<div class="col-md-3 col-md-offset-7 align-right">
 
+						<!--<a class="btn btn-sucess" href=" cbcb =URL('checkout') cbcb ">Checkout</a>-->
 
+						<form action="{{=URL('review')}}">
+						    <input type="submit" value="Review Order Details" class="btn btn-success cart-view-btn">
+						</form>
 
+					</div>
 
+				</div>
 
-
-
-
-
-
-
-
-<div class="conatiner-fluid style1">
-
-	<div class='container'>
-
-		<div class='muses_checkout' id = "checkout_shipping">
-			<h1>Shipping Method</h1>
-			{{ =shipping_information }}
-		</div>
-
-	</div>
-
-</div>
-
-<!--###################-->
-<!-- CHECKOUT SHIPPING -->
-<!--###################-->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="conatiner-fluid style2">
-
-	<div class='container'>
-
-		<div class='muses_checkout' id = "checkout_card">
-			<h1>Payment Information</h1>
-			{{ =payment_information }}
 
 		</div>
 
 	</div>
 
-</div>
-
-
-<div class="conatiner-fluid style1">
-
-	<div class='container'>
-
-		<div class='muses_checkout' id = "checkout_summary">
-			<h1>Summary Info</h1>
-			
-			{{ =summary_information }}
-
-		</div>
-
-	</div>
-
-</div>
-
-
-
-<div class="conatiner-fluid style2">
-
-	<div class='container'>
-
-		<div class='muses_checkout' id = 'checkout_pay_button_div'>
-
-			<div>
-			{{ if payment_information['information_LOD'][0]['payment_method']=='stripe':}}
-				<a class="btn btn-success" href="{{=payment_information['information_LOD'][0]['approval_url']}}">Pay</a>
-			{{elif payment_information['information_LOD'][0]['payment_method']=='paypal':}}
-				<a class="btn btn-success" href="{{=payment_information['information_LOD'][0]['approval_url']}}" target="_blank">Pay with Paypal</a>
-			{{ else: }}
-				<a class="btn btn-success" href="#">Something is wrong!</a>
-			{{pass}}
-			
-
-			</div>
-
-		</div>
-
-	</div>
-
-</div>
