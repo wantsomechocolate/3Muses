@@ -47,7 +47,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="{{ =URL('default', 'index') }}">ThreeMusesGlass</a>
+          <a class="navbar-brand navbar-brand-tmg" href="{{ =URL('default', 'index') }}">ThreeMusesGlass</a>
         </div>
 
 
@@ -55,7 +55,7 @@
         <div id="navbar" class="navbar-collapse collapse">
 
 
-      <ul class="nav navbar-nav navbar-right">
+      <ul class="nav navbar-nav navbar-right navbar-right-tmg">
         
 
     {{if auth.has_membership('admin'):}}
@@ -143,14 +143,115 @@
             {{include}}
             {{end}}
 
+
+
+<!-- Modal -->
+<div class="modal fade" id="powered_by_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Powered By</h4>
+      </div>
+      <div class="modal-body">
+        Powered By <a href="http://www.web2py.com">Web2py</a>, <a href="https://www.heroku.com">Heroku</a>, <a href="http://bootstrap.com">Bootstrap</a>, HTML5 BoilerPlate, Initializr
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="contact_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Powered By</h4>
+      </div>
+      <div class="modal-body">
+        <p>
+          For inquires about the current product selection or custom product requests, please contact Rebecca using Rebecca@threemuses.glass
+        </p>
+        <p>
+          For inquires about the site or to report bugs/problems please contact James using James@threemuses.glass
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="privacy_policy_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Privacy Policy</h4>
+      </div>
+      <div class="modal-body">
+        <h3> General User Information </h3>
+        <p>
+          ThreeMusesGlass collects information necessary for ecommerce. We will never sell or give your information to any other parties (unless legally bound).
+        </p>
+
+        <h3> Sensative User Information </h3>
+        <p>
+          Payment information is stored and processed by either Paypal or Stripe. Both of these services are PCI compliant and data is sent to them using a secure connection. Once data is entered here and sent to the corresponding payment service, only a code is saved on our servers which can be used to retrieve payment details. None of the supported payment services support returning the full card number or any of the secrect pins programatically. 
+        </p>
+
+        <h3> Email Marketing </h3>
+        <p>
+          ThreeMusesGlass sends payment confirmation emails automatically after purchase completion. Emails addresses are required in case of problems with the order so that the customer can be contacted. After the intial payment confirmation email, you will not recieve any automated (marketing or otherwise) emails from ThreeMusesGlass. We may manually send coupon codes or other updates occasionaly that are easily opted out from. 
+        </p>
+
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
     <footer>
       <div class="container">
 
           <p class="pull-right" style="font-size: 85%;">
               <a href="/Store/Purchase_Terms" style="margin-right: 20px">Purchase terms and conditions</a>
-              <a href="/Home/Privacy_Policy" style="margin-right: 20px">Privacy policy</a>
-              <a href="/contact">Contact</a>
-              <a href="/contact">Powered By Web2py, Heroku, Bootstrap, HTML5 BoilerPlate, Initializr</a>
+
+              
+              <button type="button" class="btn" data-toggle="modal" data-target="#contact_modal">
+                Contact
+              </button>
+
+              <button type="button" class="btn" data-toggle="modal" data-target="#privacy_policy_modal">
+                Privacy Policy
+              </button>
+              
+              <button type="button" class="btn" data-toggle="modal" data-target="#powered_by_modal">
+                Powered By
+              </button>
+
+
+
+
+
+
+
+
 
          </p>
          <p style="font-size: 85%; line-height: 180%">ThreeMusesGlass - Copyright &copy; 2015</p>

@@ -32,33 +32,33 @@ Cart Page
 
 	payment
 	Add email to database while processing paypal purchase information - working on it
-	remember payment option after page refresh
+	remember payment option after page refresh - done (for existing payment opitons)
 	Adding billing zip to card creation for stripe
 	get bitcoin working?
 
 
 Checkout page
-There is absolutely no formatting or cosmetics on this page at all right now.
+There is absolutely no formatting or cosmetics on this page at all right now. - there is some now
 
 
 
 Confirmation page
 There is absolutely no formatting or cosmetics on thei page at all right now.
-DB changes need to be propegated to this page.  
+DB changes need to be propegated to this page. - done?
 
 
 Pay
 Stopped working due to some db changes.
 It's most likely related to the function I'm making to handle putting purchase info in the db. 
 
-Add functionality to handle someone cancelling a paypal payment. ("I'm thinking I just bring them back to the cart page")
+Add functionality to handle someone cancelling a paypal payment. ("I'm thinking I just bring them back to the cart page") - yes this is fine for now. I checked and it does go to the cart page - I'll add a message, should be easy because paypal sends users back with a token. So for now I'll just check if there is a var named token and flash something that says you cancelled your payment on paypal - or I can just add something at the top of the page?
 
 
 
 
 
 Login Page
-No error when incorrect credentials are entered. Just page refresh.
+No error when incorrect credentials are entered. Just page refresh. - big priority
 
 When a gimp user is created, web2py allows me to change the email of the user to one that already exists in the database. This should not be allowed to happen. I need to put something in place that tells the user they need to choose a different email address. 
 
@@ -69,11 +69,11 @@ I'm thinking that the user can click on a link to see specific stripe, shipping,
 
 
 Profile Page
-Does not reliably accept edits to information complaining that the email address is already in use. l
+Does not reliably accept edits to information complaining that the email address is already in use.
 
 
 Misc.
-Make a function for adding purchase info to the database since it is done in two different controller functions
+Make a function for adding purchase info to the database since it is done in two different controller functions - done I believe
 
 
 

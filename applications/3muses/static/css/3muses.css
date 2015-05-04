@@ -115,6 +115,19 @@ h2{
 
 
 /* home page styles */
+
+.navbar-brand-tmg{
+	font-size: 25px !important;
+}
+
+.navbar-right-tmg{
+	font-size:20px;
+}
+
+.jumbotron-tmg{
+	height:45vmin !important;
+}
+
 .jumbotron .container{
 
 }
@@ -125,6 +138,11 @@ h2{
 }
 
 #welcome-header{
+
+	/**/
+	display:none;
+	/**/
+
 	text-align: center;
 	color: antiquewhite;
 	background: rgba(0, 0, 0, 0.5);
@@ -141,6 +159,17 @@ h2{
 	transform: translate(-50%, -50%);*/
 }
 
+
+.index-view-panel-2{
+	/*height: 45vmin;*/
+}
+
+
+
+
+
+
+/*some general stuff */
 .style1{
 	background:#C3C3E5;
 }
