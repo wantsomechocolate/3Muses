@@ -97,27 +97,6 @@ h2{
 }
 
 
-/* WEB2PY AUTH STYLES */
-#web2py_user_form{
-	text-align: center;
-}
-
-.display_inline_block_class{
-	display:inline-block;
-}
-
-.display_none_class{
-	display:none;
-}
-
-#web2py_user_form form table{
-	width:100%;
-}
-
-.user-view-button-width-50-percent{
-	width:50%;
-}
-
 
 /* Bootstrap overrides */
 .carousel-caption{
@@ -130,11 +109,11 @@ h2{
 /* home page styles */
 
 .navbar-brand-tmg{
-	font-size: 25px !important;
+	/*font-size: 25px !important;*/
 }
 
 .navbar-right-tmg{
-	font-size:20px;
+	/*font-size:20px;*/
 }
 
 .jumbotron-tmg{
@@ -1056,20 +1035,13 @@ footer {
 
 .footer-modal-btn{
 	width:100%;
-	/*margin-right:5px;*/
-	/*margin-left:5px;*/
+	color:#666;
+	font-weight: bolder;
 }
 
 
 
 @media screen and (min-width: 992px) {
-
-	.footer-modal-btn-wrapper{
-		padding-right:5px;
-		padding-left:5px;
-		margin-top:3px;
-		margin-bottom:3px;
-	}
 
 	footer{
 		/*
@@ -1084,6 +1056,24 @@ footer {
 		margin-top:2em;
 	}
 
+	.footer-row-child-1{
+		float:right !important;
+	}
+
+	.footer-modal-btn-wrapper{
+		padding-right:5px;
+		padding-left:5px;
+		margin-top:3px;
+		margin-bottom:3px;
+	}
+
+	.footer-modal-copy-wrapper{
+		padding-right:5px;
+		padding-left:5px;
+		margin-top:3px;
+		margin-bottom:3px;
+	}
+
 }
 
 
@@ -1095,6 +1085,10 @@ footer {
 		height: 20em;
 	}
 
+	.footer-row{
+		margin-top:2em;
+	}
+
 	.footer-modal-btn-wrapper{
 		padding-right:5px;
 		padding-left:5px;
@@ -1102,13 +1096,9 @@ footer {
 		margin-bottom:0px;
 	}
 
-	.footer-row{
-		margin-top:2em;
-	}
-
 	.footer-modal-copy-wrapper{
-		padding-right:20px;
-		padding-left:20px;
+		padding-right:5px;
+		padding-left:5px;
 		margin-top:10px;
 		margin-bottom:0px;
 	}

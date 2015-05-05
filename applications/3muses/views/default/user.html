@@ -29,6 +29,12 @@
 					
 					}}
 
+					{{if response.flash == auth.messages.invalid_login:}}
+					<div class="login-error-message">
+					Login Attempt Failed!
+					</div>
+					{{ pass }}
+
 				</div>
 
 				{{if request.args(0)=='profile':}}

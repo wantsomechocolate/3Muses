@@ -1,3 +1,39 @@
+/* WEB2PY AUTH STYLES */
+#web2py_user_form{
+	text-align: center;
+}
+
+.display_inline_block_class{
+	display:inline-block;
+}
+
+.display_none_class{
+	display:none;
+}
+
+#web2py_user_form form table{
+	width:100%;
+}
+
+.user-view-button-width-50-percent{
+	width:50%;
+}
+
+@media screen and (min-width: 992px) {
+
+	.user-view-button-width-50-percent{
+		margin-top:35px;
+	}
+
+}
+
+@media screen and (max-width: 992px) {
+
+}
+
+
+
+
 /* Register Page Styles */
 
 .register form table tbody tr td input{
@@ -361,6 +397,17 @@ body#login .error{
 	filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
 	background-repeat: repeat-x;
 	border-color: #b92c28;
+}
+
+
+.login-error-message{
+	border: 2px solid rgb(165, 0, 0);
+	margin-top: 20px;
+	height: 75px;
+	line-height: 75px;
+	font-size: 2em;
+	color: #444;
+	border-radius: 10px;
 }
 
 

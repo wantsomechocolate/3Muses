@@ -2502,14 +2502,17 @@ def user():
 
     #print "anything"
 
-    user_page=request.args[0]
+    # user_page=request.args[0]
     #2if 
                                                                                                                                                                                                     
 
     return dict(form=auth())
 
 
-# def mylogin(): return dict(form=auth.login())
+# def mylogin(): 
+#     return dict(form=auth.login())
+
+
 # def myregister(): return dict(form=auth.register())
 # def myprofile(): return dict(form=auth.profile())
 
