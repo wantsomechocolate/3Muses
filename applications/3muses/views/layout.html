@@ -151,10 +151,29 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Powered By</h4>
+        <h2 class="modal-title" id="myModalLabel">Powered By</h2>
       </div>
       <div class="modal-body">
-        Powered By <a href="http://www.web2py.com">Web2py</a>, <a href="https://www.heroku.com">Heroku</a>, <a href="http://bootstrap.com">Bootstrap</a>, HTML5 BoilerPlate, Initializr
+        <h3><a href="http://www.web2py.com">Web2py</a></h3> 
+          <p>
+            Python based server side framework that takes security seriously.
+          </p>
+        <h3><a href="https://www.heroku.com">Heroku</a></h3>
+          <p>
+            Heroku is a web hosting solution for projects with heavy backends.
+          </p>
+        <h3><a href="http://bootstrap.com">Bootstrap</a></h3>
+          <p>
+            Front end framework that turns hours of css and js into some additional html markup.
+          </p>
+        <h3><a href="https://html5boilerplate.com/">HTML5 BoilerPlate</a></h3>
+          <p>
+            Takes best practicies from hundreds of top developers and puts them in your project.
+          </p>
+        <h3><a href="http://www.initializr.com/">Initializr</a></h3>
+          <p>
+            Initializr makes it easy to set up a project skeleton. It made using html5 boilerplate and bootstrap3 even easier than it already is.  
+          </p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -171,12 +190,14 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Powered By</h4>
+        <h2 class="modal-title" id="myModalLabel">Contact</h2>
       </div>
       <div class="modal-body">
+        <h3> Product Inquiries </h3>
         <p>
           For inquires about the current product selection or custom product requests, please contact Rebecca using Rebecca@threemuses.glass
         </p>
+        <h3> Technical Inquiries </h3>
         <p>
           For inquires about the site or to report bugs/problems please contact James using James@threemuses.glass
         </p>
@@ -196,7 +217,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Privacy Policy</h4>
+        <h2 class="modal-title" id="myModalLabel">Privacy Policy</h2>
       </div>
       <div class="modal-body">
         <h3> General User Information </h3>
@@ -225,39 +246,85 @@
 </div>
 
 
+<!-- Modal -->
+<div class="modal fade" id="purchase_policy_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h2 class="modal-title" id="myModalLabel">Purchase Policy</h2>
+      </div>
+      <div class="modal-body">
+        <h3> General Return Policy </h3>
+        <p>
+          We do not generally support the return of purchased items. If you are considering buying an item and want to see more detail, or a specific angle, please ask! For specific cases were returns are accomodated, read below. 
+        </p>
 
-    <footer>
-      <div class="container">
+        <h3> Broken Items (Glass) </h3>
+        <p>
+          If an item arrives to you broken, please take a picture of it and send it to us. We will likely ask that the item be shipped back to us and you can request a refund or another item of similar value. Shipping charges for returns from broken items and resending items to replace broken products will be paid by ThreeMusesGlass.
+        </p>
 
-          <p class="pull-right" style="font-size: 85%;">
-              <a href="/Store/Purchase_Terms" style="margin-right: 20px">Purchase terms and conditions</a>
+        <h3> Broken Items (Other) </h3>
+        <p>
+          ThreeMusesGlass uses some third party products. For example, a bracelet consists of glass beads made by ThreeMusesGlass and a bracelet and clasp made by another company. If any of the auxillary items break in the first 90 days, please let us know. If something is damaged as a result of third party product failure within this window, we will send you a replacement item of your choice with similar value. 
+        </p>
 
-              
-              <button type="button" class="btn" data-toggle="modal" data-target="#contact_modal">
-                Contact
-              </button>
-
-              <button type="button" class="btn" data-toggle="modal" data-target="#privacy_policy_modal">
-                Privacy Policy
-              </button>
-              
-              <button type="button" class="btn" data-toggle="modal" data-target="#powered_by_modal">
-                Powered By
-              </button>
-
-
-
-
-
-
-
-
-
-         </p>
-         <p style="font-size: 85%; line-height: 180%">ThreeMusesGlass - Copyright &copy; 2015</p>
-    
 
       </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+    <footer>
+    
+      <div class="container-fluid">
+        <div class="row footer-row">
+          <div class="col-md-8" style="font-size: 85%;">
+
+            <div class="footer-modal-btn-wrapper col-md-3">
+              <button type="button" class="btn footer-modal-btn" data-toggle="modal" data-target="#purchase_policy_modal">
+                Purchase Terms
+              </button>
+            </div>
+
+            <div class="footer-modal-btn-wrapper col-md-3">
+              <button type="button" class="btn footer-modal-btn" data-toggle="modal" data-target="#contact_modal">
+                Contact
+              </button>
+            </div>
+
+            <div class="footer-modal-btn-wrapper col-md-3">
+              <button type="button" class="btn footer-modal-btn" data-toggle="modal" data-target="#privacy_policy_modal">
+                Privacy Policy
+              </button>
+            </div>
+
+            <div class="footer-modal-btn-wrapper col-md-3">
+              <button type="button" class="btn footer-modal-btn" data-toggle="modal" data-target="#powered_by_modal">
+                Powered By
+              </button>
+            </div>
+
+         </div>
+
+         <div class="col-md-4" style="font-size: 85%; line-height: 180%">
+          <div class="col-md-12 footer-modal-copy-wrapper">
+            <button class="btn footer-modal-btn">
+              ThreeMusesGlass - Copyright &copy; 2015
+            </button>
+          </div>
+         </div>
+      
+        </div>
+      </div>
+
     </footer>
 
 
