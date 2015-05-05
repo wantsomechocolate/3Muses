@@ -4626,3 +4626,11 @@ def new_hotness():
     return dict(
         category_rows=category_rows,
         )
+
+
+
+def drop_muses_cart_table():
+
+    db.muses_cart.drop()
+
+    return dict("The cart table is has been did dropped. ")

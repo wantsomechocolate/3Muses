@@ -100852,3 +100852,69 @@ success!
 success!
 success!
 success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+timestamp: 2015-05-04T17:51:18.453435
+ALTER TABLE muses_cart ADD is_active CHAR(1);
+timestamp: 2015-05-04T17:51:19.363377
+ALTER TABLE muses_cart ADD is_active CHAR(1);
+timestamp: 2015-05-04T18:05:03.675355
+ALTER TABLE muses_cart ADD time_removed TIMESTAMP;
+timestamp: 2015-05-04T18:05:14.716649
+ALTER TABLE muses_cart ADD time_removed TIMESTAMP;
+timestamp: 2015-05-04T18:05:31.906797
+ALTER TABLE muses_cart ADD time_removed TIMESTAMP;
+timestamp: 2015-05-04T18:05:32.515820
+ALTER TABLE muses_cart ADD time_removed TIMESTAMP;
+timestamp: 2015-05-04T18:06:22.461572
+ALTER TABLE muses_cart ADD time_added TIMESTAMP;
+timestamp: 2015-05-04T18:06:22.862303
+ALTER TABLE muses_cart ADD time_added TIMESTAMP;
+timestamp: 2015-05-04T18:08:18.677697
+ALTER TABLE muses_cart ADD time_added TIMESTAMP;
+timestamp: 2015-05-04T18:08:19.907976
+ALTER TABLE muses_cart ADD time_added TIMESTAMP;
+timestamp: 2015-05-04T18:13:10.626247
+ALTER TABLE muses_cart ADD time_added TIMESTAMP;
+timestamp: 2015-05-04T18:13:16.665761
+ALTER TABLE muses_cart ADD time_added TIMESTAMP;
+timestamp: 2015-05-05T01:54:30.161772
+ALTER TABLE muses_cart ADD is_active CHAR(1);
+timestamp: 2015-05-05T01:54:30.500775
+ALTER TABLE muses_cart ADD is_active CHAR(1);
+timestamp: 2015-05-05T01:54:58.972452
+ALTER TABLE muses_cart ADD is_active CHAR(1);
+timestamp: 2015-05-05T01:54:59.167386
+ALTER TABLE muses_cart ADD is_active CHAR(1);
+DROP TABLE muses_cart ;
+success!
+timestamp: 2015-05-05T02:03:13.713062
+CREATE TABLE muses_cart(
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    product_id INTEGER REFERENCES product (id) ON DELETE CASCADE,
+    product_qty VARCHAR(512)
+);
+success!
+DROP TABLE muses_cart ;
+success!
+timestamp: 2015-05-05T02:03:31.984801
+CREATE TABLE muses_cart(
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    product_id INTEGER REFERENCES product (id) ON DELETE CASCADE,
+    product_qty VARCHAR(512)
+);
+success!
+timestamp: 2015-05-05T02:05:54.544508
+ALTER TABLE muses_cart ADD is_active CHAR(1);
+timestamp: 2015-05-05T02:05:54.569865
+ALTER TABLE muses_cart ADD time_removed TIMESTAMP;
+timestamp: 2015-05-05T02:05:54.592290
+ALTER TABLE muses_cart ADD time_added TIMESTAMP;
+success!
