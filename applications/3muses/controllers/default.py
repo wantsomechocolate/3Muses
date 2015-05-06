@@ -309,7 +309,7 @@ def add_new_card():
             except stripe.error.APIConnectionError:
                 customer=None
 
-        redirect(URL('cart'))
+        redirect(URL('checkout'))
 
     else:
         
