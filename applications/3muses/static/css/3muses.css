@@ -157,6 +157,10 @@ h2{
 }
 
 
+.index-view-text-pane-header{
+	text-align: center;
+}
+
 
 
 
@@ -547,9 +551,9 @@ body#register{
 
 /* Checkout view styles */
 .checkout-view-hr{
-	background-color:#666;
-	border-color:#666;
-	color:#666;
+	background-color:#888;
+	border-color:#888;
+	color:#888;
 	clear:both;
 }
 
@@ -557,6 +561,23 @@ body#register{
 	box-shadow: 5px 5px 2px #999;
 	background-color: #F7F7F7;
 	padding: 10px;
+	border: 1px solid #555;
+
+
+	background: #ededed; /* Old browsers */
+	background: -moz-linear-gradient(-45deg,  #ededed 0%, #ececec 0%, #b9b9b9 100%, #e4e4e4 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, right bottom, color-stop(0%,#ededed), color-stop(0%,#ececec), color-stop(100%,#b9b9b9), color-stop(100%,#e4e4e4)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(-45deg,  #ededed 0%,#ececec 0%,#b9b9b9 100%,#e4e4e4 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(-45deg,  #ededed 0%,#ececec 0%,#b9b9b9 100%,#e4e4e4 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(-45deg,  #ededed 0%,#ececec 0%,#b9b9b9 100%,#e4e4e4 100%); /* IE10+ */
+	background: linear-gradient(135deg,  #ededed 0%,#ececec 0%,#b9b9b9 100%,#e4e4e4 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ededed', endColorstr='#e4e4e4',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+
+}
+
+
+.checkout-view-payment-group-header{
+	color:#445;
 }
 
 @media screen and (min-width: 992px) {
@@ -785,6 +806,8 @@ input[type=radio]{
 	font-size: 1.3em;
 	background-color: #eee;
 	box-shadow:2px 2px 5px #888;
+	
+	/*margin:auto;*/
 }
 
 .cart-view-payment-card-cardnumber{
@@ -825,6 +848,7 @@ input[type=radio]{
 
 .cart-view-card-controls-popover{
 	width:100%;
+
 }
 
 
@@ -869,6 +893,33 @@ input[type=radio]{
 }
 
 
+@media screen and (min-width: 992px) {
+
+	.cart-view-payment-card-controls-container{
+		
+	}
+
+	.cart-view-card-controls-popover{
+
+
+	}
+
+}
+
+@media screen and (max-width: 992px) {
+
+	.cart-view-payment-card-controls-container{
+		float: none;
+		margin: auto;
+		max-width: 350px;
+	}
+
+	.cart-view-card-controls-popover{
+
+
+	}
+
+}
 
 
 

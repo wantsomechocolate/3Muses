@@ -164,14 +164,105 @@
 
 	<div class='container'>
 
-		<div class='muses_checkout' id = "checkout_shipping">
+		<div class="row cart-view-shipping-row">
+
 			<h1>Shipping Method</h1>
-			{{ =shipping_information }}
+
+
+                <div class="col-md-offset-2 col-md-8 cart-view-shipping-row-wrapper cart-view-shipping-row-wrapper-selected" id="'+obj['shipping_options_LOD'][i]['rate_id']+'">
+
+
+
+                    <div class="col-md-offset-2 col-md-8 cart-view-shipping-row-wrapper" id="'+obj['shipping_options_LOD'][i]['rate_id']+'">
+
+
+                        
+
+                        <div class="col-xs-7 col-md-7 cart-view-shipping-row-subset">
+
+
+                            <div class="col-md-5 vert-hori-center-parent">
+                                <div class="vert-hori-center-child">
+                                    {{ =shipping_information['information_LOD'][0]['carrier'] }}
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-7">
+                                <div class="vert-hori-center-child">
+                                    {{ =shipping_information['information_LOD'][0]['service'] }}
+                                </div>
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="col-xs-5 col-md-5 cart-view-shipping-row-subset">
+
+
+                            <div class="col-md-4">
+                                <div class="vert-hori-center-child">
+                                    {{ =shipping_information['information_LOD'][0]['cost'] }}
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-8">
+                                <div class="vert-hori-center-child">
+                                    {{ =shipping_information['information_LOD'][0]['delivery_date'] }}
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+               	</div>
+
+     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		</div>
 
 	</div>
 
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <!--###################-->
 <!-- CHECKOUT SHIPPING -->

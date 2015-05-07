@@ -2621,7 +2621,7 @@ def delete_item_from_db_card():
     customer = stripe.Customer.retrieve(request.vars['customer_id'])
     customer.cards.retrieve(request.vars['card_id']).delete()
 
-    redirect(URL('cart'))
+    redirect(URL('checkout'))
 
 ## removes customer from stripe and current session
 def delete_item_from_session_card():
