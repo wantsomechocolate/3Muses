@@ -253,9 +253,54 @@
 
 
 
-
-
 				<div class="container-fliud style2">
+
+					<div class='container'>
+
+
+							<div class="row">
+
+								<div class="col-md-8 col-md-offset-2 checkout-view-payment-group-container">
+
+									<!--<a class="btn btn-sucess" href=" cbcb =URL('checkout') cbcb ">Checkout</a>-->
+									<h2 class="checkout-view-payment-group-header">Total Cost</h2>
+									<hr class="checkout-view-hr">
+
+									<div class="col-md-4">
+										<h3 class="align-right">Cart Subtotal</h3>
+										<div class="align-right">{{ =cart_information['cart_cost_USD'] }}</div>
+									</div>
+
+									<div class="col-md-4">
+										<h3 class="align-right">Shipping Costs</h3>
+										<div id="cart-view-summary-shipping-cost-div" class="align-right">Select Shipping</div>
+									</div>
+
+									<div class="col-md-4">
+										<h2 class="align-right">Final Cost</h2>
+										<div id="cart-view-summary-total-cost-div" class="align-right">Select Shipping</div>
+									</div>
+
+
+									<hr class="checkout-view-hr">
+									<br>
+
+								</div>
+
+							</div>
+
+
+					</div>
+
+				</div>
+
+
+
+
+
+
+				<!-- Button to move to checkout -->
+				<div class="container-fliud style1">
 
 					<div class='container'>
 
@@ -278,6 +323,11 @@
 					</div>
 
 				</div>
+
+
+
+
+
 
 		{{ pass }} <!-- This ends the check to see if the address sections has an error, which would not load the remaining checkout components. It wraps up shipping and payment information.-->
 

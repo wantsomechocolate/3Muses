@@ -142,3 +142,15 @@ Deleting the last card on the checkout page doesn't put an error message :/
 
 
 Create a card, create card with same stuff, delete one of them, try to proceed to payment screen.
+
+
+Pressing back after entering card info brings you back to the payment info screen with data still entered. Change form to a modal popup and send data to stripe via ajax so the user can't press back and get to the screen. But still refresh afterwards because I can't handle so many ajax shit
+
+
+Entering a card doesn't auto select after coming back to checkout screen - fix that ish. 
+
+
+When session expires on the confirmation screen a refresh causes an error, because the session variable for the allowable confirmation page is gone. fix?
+
+
+When there are multiple addresses 

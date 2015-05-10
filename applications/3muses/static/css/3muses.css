@@ -580,6 +580,17 @@ body#register{
 	color:#445;
 }
 
+
+.checkout-view-payment-btn{
+
+	width:100%;
+
+}
+
+.checkout-view-paypal-btn{
+
+}
+
 @media screen and (min-width: 992px) {
 
 	.checkout-view-payment-group-header{
@@ -895,18 +906,27 @@ input[type=radio]{
 
 @media screen and (min-width: 992px) {
 
+	.cart-view-payment-card-container{
+
+	}
+
+
 	.cart-view-payment-card-controls-container{
 		
 	}
 
 	.cart-view-card-controls-popover{
 
-
 	}
 
 }
 
 @media screen and (max-width: 992px) {
+
+	.cart-view-payment-card-container{
+		margin: auto;
+		max-width: 350px;
+	}
 
 	.cart-view-payment-card-controls-container{
 		float: none;

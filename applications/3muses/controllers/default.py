@@ -17,6 +17,8 @@ PRODUCTION_STATUS='test'
 PAYPAL_MODE='sandbox' #sandbox or live
 S3_BUCKET_PREFIX='https://s3.amazonaws.com/threemusesglass/site_images/'
 
+auth.settings.expiration = 999999999
+
 
 ## Functions that should be moved to their own module
 from aux import get_env_var
@@ -414,7 +416,8 @@ def cart():
 #############################################################################################
 
     cart_information_LOD=[]
-    cart_information=dict(error=False,error_message=None,cart_information_LOD=cart_information_LOD)
+    cart_cost_USD=0
+    cart_information=dict(error=False,error_message=None,cart_information_LOD=cart_information_LOD,cart_cost_USD=cart_cost_USD)
 
     ## Retrieve the current items from the users cart)
     ## There is no check here to not include items that are sold out or no
@@ -489,8 +492,16 @@ def cart():
             cart_information_LOD.append(cart_item_dict)
 
             ## If the item is no longer active, remove it from the cart.
+            ## Acutally, I want to just deactivate the item and keep it in the cart. Fool. 
             if not product.is_active:
                 db(db.muses_cart.product_id==product.id).delete()
+            else:
+                cart_cost_USD+=product.cost_USD
+                print cart_cost_USD
+
+        cart_information['cart_cost_USD']=cart_cost_USD
+
+        session.cart_cost_USD=cart_cost_USD
 
 
 
@@ -1421,6 +1432,7 @@ def review():
     import json
 
     from aux import retrieve_cart_contents
+    #from aux import camelcaseToUnderscore
 
     cart_for_shipping_calculations=[]
 
@@ -1579,34 +1591,42 @@ def review():
 
 
     #shipment=json.loads(address.easypost_api_response)
+    try:
+        shipment=easypost.Shipment.retrieve(address.easypost_shipping_id)
 
-    shipment=easypost.Shipment.retrieve(address.easypost_shipping_id)
+        shipping_option_id=address.easypost_default_shipping_rate_id
 
-    shipping_option_id=address.easypost_default_shipping_rate_id
+        shipping_cost_USD=0
 
-    shipping_cost_USD=0
+        error=False
+        error_message=None
+        shipping_information_LOD=[]
 
-    error=False
-    error_message=None
-    shipping_information_LOD=[]
+        for rate in shipment['rates']:
+            if rate['id']==shipping_option_id:
 
-    for rate in shipment['rates']:
-        if rate['id']==shipping_option_id:
-            shipping_information_LOD.append(dict(
-                carrier=rate['carrier'],
-                service=rate['service'],
-                cost=rate['rate'],
-                delivery_date=rate['delivery_date'],
-                ))
-            shipping_cost_USD=float(rate['rate'])
-        else:
-            pass
+                #carrier=camelcaseToUnderscore(rate['carrier'])
+                carrier=rate['carrier']
 
-    if len(shipping_information_LOD)==0:
-        error=True
-        error_message="Please go back to the cart and select an address"
+                shipping_information_LOD.append(dict(
+                    carrier=carrier,
+                    service=rate['service'],
+                    cost=rate['rate'],
+                    delivery_date=rate['delivery_date'],
+                    ))
+                shipping_cost_USD=float(rate['rate'])
+            else:
+                pass
 
-    shipping_information=dict(error=error, error_message=error_message, information_LOD=shipping_information_LOD)
+        if len(shipping_information_LOD)==0:
+            error=True
+            error_message="Please go back to the cart and select an address"
+
+        shipping_information=dict(error=error, error_message=error_message, information_LOD=shipping_information_LOD)
+
+    ## Try to retreive from session instead?
+    except easypost.Error:
+        shipping_information=dict(error=True, error_message="Unexpected error communicating with EasyPost", information_LOD=None)
 
     ## I should put some logic here to pick the cheaper or more expensive rate if somehow there is an issue where a single rateid is used on multple option in the api resonse. 
     # elif len(shipping_information)>1:
@@ -1617,6 +1637,7 @@ def review():
     # session.summary_data['shipping_cost_USD']=shipping_cost_USD
 
     total_cost_USD=cart_cost_USD+shipping_cost_USD
+    session.total_cost_USD=total_cost_USD
 
     # session.summary_data['total_cost_USD']=total_cost_USD
 
@@ -2016,19 +2037,22 @@ def confirmation():
     ## And then someone reusing the same email when they sign up
     ## FIX IT. 
 
+
     #What confirmation thing are you trying to view?
-    
+
 
     # try:
     #     active_purchase_history_data_id=int(session.session_purchase_history_data_id)
     # except TypeError:
     #     active_purchase_history_data_id=-10
 
-
+    #########################
     # try:
+    ######################### 
+
     purchase_history_data_id=request.args[0]
     #Try to convert and compare the url arg with the session arg that the user is allowed to view. 
-    if int(purchase_history_data_id)==int(session.session_purchase_history_data_id):
+    if int(purchase_history_data_id)==int(session.session_purchase_history_data_id if session.session_purchase_history_data_id is not None else 0):
 
         ## if success, then get the corresponding db info
         purchase_history_data_row=db(db.purchase_history_data.id==purchase_history_data_id).select().first()
@@ -2167,7 +2191,9 @@ def confirmation():
         return dict(
             purchase_history_data_row = "SessionError",
             purchase_history_products_rows = None,
+
         )
+
 
     # ## If the url arg is not convertible to an integer, than you get this error.
     # ## just return same stuff. 
@@ -2188,6 +2214,23 @@ def confirmation():
     #             purchase_history_data_row = "IndexError",
     #             purchase_history_products_rows = None,
     #         )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -3132,6 +3175,10 @@ def ajax_shipping_information():
     )
 
 
+    ## I need the default shipping rate id
+    easypost_default_shipping_rate_id=address.easypost_default_shipping_rate_id
+
+
     ## As part of the request to easypost we need to know the cart contents - get from the DB
     #cart=db(db.muses_cart.user_id==auth.user_id).select()
 
@@ -3210,7 +3257,13 @@ def ajax_shipping_information():
     cart_last_modified_time=max(cart_last_modified_list)
     threshold_time=datetime.now()-timedelta(hours=24)
 
-    master_last_modified_time=max([address_last_modified_time,cart_last_modified_time,threshold_time])
+    time_list=[address_last_modified_time,cart_last_modified_time,threshold_time]
+    time_list_no_none=[x for x in time_list if x is not None]
+
+    if len(time_list_no_none)==0:
+        time_list_no_none=[datetime.now()]
+
+    master_last_modified_time=max(time_list_no_none)
 
     print "api time"
     print easypost_last_retrieved_time
@@ -3218,9 +3271,21 @@ def ajax_shipping_information():
     print master_last_modified_time
 
     ## After getting the address from the db, check to see if the address id is already associated with a session variable for shipping rates
+    print session.shipping_rates
     if session.shipping_rates:
         if default_address_id in session.shipping_rates.keys():
             if easypost_last_retrieved_time>master_last_modified_time:
+
+                shipping_rates=session.shipping_rates
+
+                for key,value in shipping_rates.iteritems():
+
+                    for rate in shipping_rates[key]:
+                        rate['selected_shipping_option']=False
+                        if rate['rate_id']==easypost_default_shipping_rate_id:
+                            rate['selected_shipping_option']=True
+
+                session.shipping_rates=shipping_rates
 
                 return json.dumps(dict(error_status=False, error_message=None, shipping_options_LOD=session.shipping_rates[default_address_id]))
 
@@ -3482,18 +3547,36 @@ def ajax_choose_shipping_option():
 
     for rate_index in range(len(session.shipping_rates[default_address.id])):
 
-        print ("hello?")
-        print session.shipping_rates[default_address.id][rate_index]['rate_id']
-        print default_address.easypost_default_shipping_rate_id
+        # print ("hello?")
+        # print session.shipping_rates[default_address.id][rate_index]['rate_id']
+        # print default_address.easypost_default_shipping_rate_id
 
         if session.shipping_rates[default_address.id][rate_index]['rate_id']==default_address.easypost_default_shipping_rate_id:
 
             print ("setting the default shipping option in the session")
+            shipping_cost_USD=session.shipping_rates[default_address.id][rate_index]['rate']
+            print (shipping_cost_USD)
             session.shipping_rates[default_address.id][rate_index]['selected_shipping_option']=True
 
-    print session.shipping_rates
 
-    return json.dumps(dict(msg="no error"))
+    print session.cart_cost_USD
+
+    # print session.shipping_rates
+
+    try:
+
+        total_cost_USD=float(shipping_cost_USD)+float(session.cart_cost_USD)
+        total_cost_USD="{0:.2f}".format(total_cost_USD)
+
+    except:
+
+        total_cost_USD="There was a problem"
+
+
+    return json.dumps(dict(
+        shipping_cost_USD=shipping_cost_USD,
+        total_cost_USD=total_cost_USD,#total_cost_USD,
+        ))
 
 def ajax_choose_payment_option():
 

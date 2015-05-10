@@ -1,39 +1,51 @@
 {{('message' in globals())}}
 {{extend 'layout.html'}}
 
-<div id="main" class="wrapper style4">
+<div class="container-fluid style4">
 
-	<div id='content' class='container confirmation_container'>
+	<div class='container confirmation_container'>
 
-		{{if purchase_history_data_row=="SessionError":}}
-			Please go to your purchase history or email to view past purchase information
+		<div class="row cart-view-payment-row">
 
-		{{elif purchase_history_data_row=="ValueError":}}
-			That URL does not correspond to a purchase history record (VALUE ERROR)
+			<div class="col-md-offset-2 col-md-8 checkout-view-payment-group-container">
 
-		{{elif purchase_history_data_row=="TypeError":}}
-			That URL does not correspond to a purchase history record (TYPE ERROR)
+				{{if purchase_history_data_row=="SessionError":}}
 
-		{{elif purchase_history_data_row=="IndexError":}}
-			That URL does not correspond to a purchase history record (INDEX ERROR)
+					Please go to your purchase history or email to view past purchase information
 
-		{{else:}}
+				{{elif purchase_history_data_row=="ValueError":}}
 
-			<h1>Thank you for shopping at 3MusesGlass!</h1>
+					That URL does not correspond to a purchase history record (VALUE ERROR)
 
-				<br/>
-				<br/>
+				{{elif purchase_history_data_row=="TypeError":}}
 
-			<h3>You should recieve a confirmation email shortly at {{=purchase_history_data_row.muses_email_address}}.</h3>
-			<h3>Please allow one day for processing. Below are the details of your order:</h3>
+					That URL does not correspond to a purchase history record (TYPE ERROR)
 
-				<br/>
+				{{elif purchase_history_data_row=="IndexError":}}
 
-			{{=final_div}}
+					That URL does not correspond to a purchase history record (INDEX ERROR)
 
-				<br/>
+				{{else:}}
 
-		{{pass}}
+					<h1>Thank you for shopping at 3MusesGlass!</h1>
+
+					<br/>
+					<br/>
+
+					<h3>You should recieve a confirmation email shortly at {{=purchase_history_data_row.muses_email_address}}.</h3>
+					<h3>Please allow one day for processing. Below are the details of your order:</h3>
+
+						<br/>
+
+					{{=final_div}}
+
+						<br/>
+
+				{{pass}}
+
+			</div>
+
+		</div>
 
 	</div>
 

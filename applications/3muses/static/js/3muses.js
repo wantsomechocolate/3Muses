@@ -39,7 +39,7 @@ function update_target(click_class_name_or_all, selected_class_name, view_name, 
             type:"POST",
             url:view_name,
             data:{new_choice: new_choice},
-            //async:false,
+            async:false,
 
         }).done(function( shipping_information ){
             
@@ -167,22 +167,42 @@ function update_target(click_class_name_or_all, selected_class_name, view_name, 
 
                     newHtml.push('<br/>');                          
                          
-                };
+                }; //For loop closing
                     
                 target_html=newHtml.join('');
 
                 $("#"+"shipping_target").html( target_html );
-                //$("#"+"shipping_target").html( shipping_information );
 
-             };
+                var current_shipping_div_id=$('.cart-view-shipping-row-wrapper-selected').attr('id');
+                $("#"+current_shipping_div_id).trigger('click');                
 
-            
+             }; // Should be the else closing
+
+        // Closing the initial ajax call
         }).error( function (error_message) {
-            alert( "There was an error, your address has not been set." )
-            alert(error_message);
+            // alert( "There was an error, your shipping option has not been set." )
+            // alert(error_message);
+            var newHtml=[]
 
-        });
-};
+            newHtml.push('<div class="row cart-view-shipping-row">');
+                 newHtml.push('<div class="col-md-offset-2 col-md-8 cart-view-shipping-row-error">')
+
+                     newHtml.push("There was an error retrieving the shipping information. I should use estimates in this case!");
+
+                 newHtml.push('</div>');
+             newHtml.push('</div>');
+
+             target_html=newHtml.join('');
+
+             $("#"+target_div_id).html( target_html );
+
+
+
+
+
+        }); // Close the error clause of the ajax call
+
+}; // Closes the function
 
 
 function update_shipping_option(value_one_or_all, value_two){
@@ -210,10 +230,15 @@ function update_shipping_option(value_one_or_all, value_two){
             type:"POST",
             url:"ajax_choose_shipping_option.html",
             data:{shipping_choice_rate_id: shipping_choice_rate_id},
+            // async=false,
 
         }).done(function( obj_json ){
 
             var obj=jQuery.parseJSON( obj_json );
+            // alert(obj['shipping_cost_USD'])
+            $("#cart-view-summary-shipping-cost-div").html( obj['shipping_cost_USD'] );
+            $("#cart-view-summary-total-cost-div").html( obj['total_cost_USD'] );
+
 
             // alert( obj['msg'] );
 
@@ -509,6 +534,7 @@ $(document).ready(function(){
 
 
 
+
 // for shipping options in the cart
 
     // $(".cart-view-shipping-row-wrapper").on('click',{
@@ -524,6 +550,16 @@ $(document).ready(function(){
         value_one:"value one",
         value_two:"value two",
     }, update_shipping_option );
+
+    // $('.cart-view-shipping-row-wrapper').on("click",{
+    //     value_one:"value one",
+    //     value_two:"value two",
+    // }, update_shipping_option );
+
+    var current_shipping_div_id=$('.cart-view-shipping-row-wrapper-selected').attr('id');
+    $("#"+current_shipping_div_id).trigger('click');
+
+
 
 
     $(document).on("click",".cart-view-payment-option",{

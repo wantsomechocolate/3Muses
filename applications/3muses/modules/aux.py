@@ -559,3 +559,56 @@ def retrieve_cart_contents(auth,db,is_active=True):
         cart=db(db.muses_cart.user_id==auth.user_id).select()
 
     return cart
+
+
+## the number of days is sometimes 0 or null
+def shipping_date_from_integer(number_of_days,shipping_method,shipping_company,shipping_country):
+
+    from datetime import datetime
+
+    shipping_time_estimates=dict(
+                            USPS=dict(
+                                regular_ground=dict(
+                                    number_of_days=7
+                                    )
+                                )
+                            )
+
+    holidays=[datetime(2015,4,19)]
+
+    handling_days=1
+
+    try:
+        if number_of_days>0 and isintance(number_of_days,int):
+            disclaimer="Shipping dates are estimations and can be off by a day or two."
+
+        else:
+            number_of_days=shipping_time_estimates[shipping_company][shipping_method]['number_of_days']
+            disclaimer="Shipping date calculation could not be performed, so a lookup was used to provide estimated delivery date based on the deliverer and the shipping option chosen."
+
+
+
+    except KeyError:
+        disclaimer="Shipping date calculation could not be performed for the current shipping option, the date here is an upper bound and does not represent actual delivery date."
+        ## This should be the max possible estimated shipping date for the given shipping_company and country
+        number_of_days=12
+
+
+    number_of_days+=handling_days
+    business_days_to_add = number_of_days
+    current_date = datetime.now()
+    transient_date=current_date
+    for i in range(number_of_days):
+        if current_date.weekeday>=5 or current_date in holdiays:
+            pass
+        else:
+            current_date += datetime.timedelta(days=1)
+        
+    
+    shipping_estimate_info_dict=dict(estimated_shipping_date=current_date,disclaimer=disclaimer)
+
+    return shipping_estimate_info_dict
+
+
+
+
