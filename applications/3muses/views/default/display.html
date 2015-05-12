@@ -159,9 +159,11 @@
 			</div>
 			-->
 
-			<div class = 'display-header radial-gradient'>
-				{{=product_rows[j].product_name}}
-			</div>
+			<a href="{{ =URL('product', args=[product_rows[j].id]) }}">
+				<div class = 'display-header radial-gradient'>
+					{{=product_rows[j].product_name}}
+				</div>
+			</a>
 
 		</div> <!-- close col-md-4 -->
 

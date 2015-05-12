@@ -29,9 +29,16 @@
 
 					{{ for i in range(len(card_information['card_information_LOD'])): }}
 
-					{{ payment_id = card_information['card_information_LOD'][i]['cart_id']}}
+					{{ payment_id = card_information['card_information_LOD'][i]['card_id']}}
+
+					{{print "payment_method"}}
+					{{print payment_method}}
+					{{print "payment_id"}}
+					{{print payment_id}}
 
 					{{ selected_class = "cart-view-payment-option-selected" if payment_method == payment_id else "" }}
+
+					{{ print selected_class }}
 
 
 					<!-- This hold the card and the popover with controls -->

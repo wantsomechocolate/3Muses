@@ -284,33 +284,60 @@
 
 				{{ else: }}
 
-					{{ for i in range(len(payment_information['information_LOD'])): }}
+					{{ if session.payment_method[:4]=='card': }}
 
-					<!-- This hold the card and the popover with controls -->
-					<div>
-						<div class="col-md-offset-3 col-md-6 cart-view-payment-card-container cart-view-payment-option">
+						{{ for i in range(len(payment_information['information_LOD'])): }}
 
-							<div class="cart-view-payment-card-cardnumber">
-								XXXX-XXXX-XXXX-{{ =payment_information['information_LOD'][i]['card_last4'] }}
-							</div>
+						<!-- This hold the card and the popover with controls -->
+						<div>
+							<div class="col-md-offset-3 col-md-6 cart-view-payment-card-container cart-view-payment-option">
 
-							<div class="cart-view-payment-card-expiration">
-								{{ =payment_information['information_LOD'][i]['card_exp_mo'] }} /
-								{{ =payment_information['information_LOD'][i]['card_exp_year'] }}
-							</div>
+								<div class="cart-view-payment-card-cardnumber">
+									XXXX-XXXX-XXXX-{{ =payment_information['information_LOD'][i]['card_last4'] }}
+								</div>
 
-							<div class="col-xs-6 cart-view-payment-card-cardname">
-								{{ =payment_information['information_LOD'][i]['card_name'] }}
-							</div>
+								<div class="cart-view-payment-card-expiration">
+									{{ =payment_information['information_LOD'][i]['card_exp_mo'] }} /
+									{{ =payment_information['information_LOD'][i]['card_exp_year'] }}
+								</div>
 
-							<div class="cart-view-payment-card-cardbrand">
-								{{ =payment_information['information_LOD'][i]['card_brand'] }}
-							</div>
+								<div class="col-xs-6 cart-view-payment-card-cardname">
+									{{ =payment_information['information_LOD'][i]['card_name'] }}
+								</div>
 
-						</div> <!--Close cart-view-payment-card-container-->
+								<div class="cart-view-payment-card-cardbrand">
+									{{ =payment_information['information_LOD'][i]['card_brand'] }}
+								</div>
+
+							</div> <!--Close cart-view-payment-card-container-->
 
 
-					</div>
+						</div>
+
+						{{ pass }}
+
+					{{ elif session.payment_method=='paypal': }}
+
+						<div>
+							<div class="col-md-offset-3 col-md-6 cart-view-payment-card-container cart-view-payment-option">
+
+								Paypal
+
+							</div> <!--Close cart-view-payment-card-container-->
+
+						</div>
+
+
+					{{ else: }}
+
+						<div>
+							<div class="col-md-offset-3 col-md-6 cart-view-payment-card-container cart-view-payment-option">
+
+								Please go back to the payment screen and select a valid payment
+
+							</div> <!--Close cart-view-payment-card-container-->
+
+						</div>
 
 					{{ pass }}
 

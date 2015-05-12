@@ -154,3 +154,14 @@ When session expires on the confirmation screen a refresh causes an error, becau
 
 
 When there are multiple addresses 
+
+
+
+
+Dealing with user uniqueness after a purchase
+
+I think I am going to add an email_for_correspondance type field. I can either extend auth_user and limit it to one address or I can make another table and reference the auth table so that a user can add multiple addresses for a purchase reciept to go to. 
+
+If that functionality is there, then when someone buys something with a certain email address, than I can add the email they use to the correspondance email for that user. Then whenever I send an email I use that address list instead of the email field in auth. This makes it easier to deal with a user putting in an email of an existing user when making a purchase. 
+
+I have to do this for stripe and paypal. The paypal one currently checks to see if the user exists already but then sends the confirmation email to the wrong auto-created email address. 

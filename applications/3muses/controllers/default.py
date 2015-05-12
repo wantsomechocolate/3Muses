@@ -833,7 +833,7 @@ def checkout():
                 card_brand=stripe_cards['data'][i]['brand'], 
                 card_exp_mo=stripe_cards['data'][i]['exp_month'], 
                 card_exp_yr=stripe_cards['data'][i]['exp_year'], 
-                cart_id=stripe_cards['data'][i]['id'], 
+                card_id=stripe_cards['data'][i]['id'], 
                 card_delete=delete_button,
             ))
 
@@ -4128,9 +4128,19 @@ def paypal_confirmation():
 
                 # print (user_record)
 
-                user_data.update(email=payment['payer']['payer_info']['email'])
 
-                user_data.update_record()
+                existing_user=db(db.auth_user.email==payment['payer']['payer_info']['email']).select().first()
+
+                if not existing_user:
+
+                    user_data.update(email=payment['payer']['payer_info']['email'])
+
+                    user_data.update_record()
+
+                else:
+
+                    pass
+
 
             # else:
 
