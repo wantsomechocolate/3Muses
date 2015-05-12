@@ -4134,12 +4134,24 @@ def paypal_confirmation():
                 if not existing_user:
 
                     user_data.update(email=payment['payer']['payer_info']['email'])
-
                     user_data.update_record()
+
+
+                    emails=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email)
+
+                    if payment['payer']['payer_info']['email'] in emails:
+                        pass
+                    else:
+                        db.email_correspondence.insert(user_id=auth.user_id,email=payment['payer']['payer_info']['email'], is_active=True)
 
                 else:
 
-                    pass
+                    emails=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email)
+
+                    if payment['payer']['payer_info']['email'] in emails:
+                        pass
+                    else:
+                        db.email_correspondence.insert(user_id=auth.user_id,email=payment['payer']['payer_info']['email'], is_active=True)
 
 
             # else:
@@ -4574,7 +4586,7 @@ def paypal_confirmation():
             #receipt_message_html = response.render('receipt.html', receipt_context)
             receipt_message_html = response.render('default/receipt.html', receipt_context)
 
-
+            findme
             from postmark import PMMail
             message = PMMail(api_key=POSTMARK_API_KEY,
                 subject="Order Confirmation",

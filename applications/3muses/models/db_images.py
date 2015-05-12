@@ -310,6 +310,19 @@ db.addresses.user_id.writable=False
 db.addresses.user_id.default=auth.user_id
 
 
+db.define_table('email_correspondence',
+	Field('user_id', 'reference auth_user'),
+	Field('email'),
+	Field('is_active', 'boolean'),
+	)
+
+db.email_correspondence.email.requires = IS_EMAIL(error_message='invalid email!')
+db.email_correspondence.is_active.default=True
+
+
+
+
+
 
 ## Keeping track of purchases:
 ## Purchase table
