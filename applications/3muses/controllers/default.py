@@ -248,10 +248,11 @@ def add_new_card():
         ## it will be unable to find one and raise an index error. 
 
         try:
+            ## If the user has already gone through this process, they already have some email associated with their account, so I can just proceed for now. 
             stripe_customer_token=db(db.stripe_customers.muses_id==auth.user_id).select()[0].stripe_id
-            print ("I should not be able to get here from a gimp user")
+
             customer=stripe.Customer.retrieve(stripe_customer_token)
-            ## This is failing because customer is none I think?
+
             if customer==None:
                 pass
             else:
@@ -265,6 +266,7 @@ def add_new_card():
                     )
                 )
 
+
         # if there is no stripe customer token for the current user, the there will be an index error
         # this means that the user doesn't have a token in the database
         except IndexError:
@@ -274,21 +276,56 @@ def add_new_card():
 
             try:
 
-                print ("Hello, we made it to the part where the use doesn't have any cards")
+                print ("Hello, we made it to the part where the user doesn't have any cards")
+                ## And if they are gimp, also means they have no email correspondence yet. 
+
+
 
                 if auth.has_membership('gimp'):
-                    muses_email=stripe_form.vars.email
 
-                    product_record=db(db.auth_user.id==auth.user_id).select().first()
 
-                    print (product_record)
 
-                    product_record.update(email=muses_email)
-                    product_record.update_record()
+
+                    email_from_user=stripe_form.vars.email
+
+                    existing_user=db(db.auth_user.email==email_from_user).select().first()
+
+                    if not existing_user:
+
+                        user_data.update(email=email_from_user)
+                        user_data.update_record()
+
+
+                        emails=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email)
+
+                        if email_from_user in emails:
+                            pass
+                        else:
+                            db.email_correspondence.insert(user_id=auth.user_id,email=email_from_user, is_active=True)
+
+                    else:
+
+                        emails=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email)
+
+                        if email_from_user in emails:
+                            pass
+                        else:
+                            db.email_correspondence.insert(user_id=auth.user_id,email=email_from_user, is_active=True)
+
+
+
+                    # muses_email=stripe_form.vars.email
+
+                    # product_record=db(db.auth_user.id==auth.user_id).select().first()
+
+                    # print (product_record)
+
+                    # product_record.update(email=muses_email)
+                    # product_record.update_record()
 
 
                 customer = stripe.Customer.create(
-                    email=muses_email,
+                    email=email_from_user,
                     card=dict(
                         name=stripe_form.vars.name,
                         number=stripe_form.vars.number,
@@ -303,7 +340,7 @@ def add_new_card():
                     muses_id=auth.user_id,
                     stripe_id=customer.id,
                     ## might want to add some logic here to get a better email address when using a gimp user!
-                    stripeEmail=muses_email,
+                    stripeEmail=email_from_user,
                     stripe_next_card_id=customer.default_source
                 )
 
@@ -2010,11 +2047,17 @@ def pay():
 
     receipt_message_html = response.render('default/receipt.html', receipt_context)
 
+
+
+    email_address_query=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email).first()
+    email_address=list(email_address_query.as_dict().values())[0]
+
     from postmark import PMMail
     message = PMMail(api_key=POSTMARK_API_KEY,
         subject="Order Confirmation",
         sender="confirmation@threemuses.glass",
-        to=user_data.email,
+        # to=user_data.email,
+        to=email_address,
         #html_body=final_div_html,
         html_body=receipt_message_html,
         tag="confirmation")
@@ -2177,7 +2220,11 @@ def confirmation():
         final_div.append(confirmation_summary_grid)
         
 
+        email_address_query=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email).first()
+        email_address=list(email_address_query.as_dict().values())[0]
+
         return dict(
+            email_address=email_address,
             final_div=final_div,
             purchase_history_data_row = purchase_history_data_row,
             purchase_history_products_rows = purchase_history_products_rows,
@@ -4104,8 +4151,6 @@ def paypal_confirmation():
         ## Use the paymentId to retrieve payment object
         payment=paypalrestsdk.Payment.find(payment_id)
 
-        # print "one"
-        
 
         ## Try to execute the payment with the payer_id
         if payment.execute({"payer_id":payer_id}) or skip:
@@ -4114,7 +4159,6 @@ def paypal_confirmation():
             status="success"
             session.expect_paypal_webhook=False
 
-            # print "two"
             ## Get user information
             # if auth.is_logged_in():
 
@@ -4123,11 +4167,8 @@ def paypal_confirmation():
             if auth.has_membership('gimp'):
 
                 #muses_email_address=payment['payer']['payer_info']['email']
-
                 # user_record=db(db.auth_user.id==auth.user_id).select().first()
-
                 # print (user_record)
-
 
                 existing_user=db(db.auth_user.email==payment['payer']['payer_info']['email']).select().first()
 
@@ -4154,143 +4195,8 @@ def paypal_confirmation():
                         db.email_correspondence.insert(user_id=auth.user_id,email=payment['payer']['payer_info']['email'], is_active=True)
 
 
-            # else:
-
-            # user_data=db(db.auth_user.id==auth.user_id).select().first()
-
-                # muses_email_address=user_data.email
-
-            # muses_id=user_data.id
-
-            # muses_name=user_data.first_name
-
-
-
-
 
             address_data=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select().first()
-
-            # # else:
-            # #     ## If anonymous user,
-            # #     muses_id=None
-            # #     muses_name=None
-            # #     muses_email_address=payment['payer']['payer_info']['email']
-
-            # payment_service='paypal'
-            # payment_confirmation_id=payment.id
-
-
-
-
-            # payment_data=dict(payment_method='paypal', payment_details=payment.to_dict())
-
-            # response_data=dict(
-            #     session_id_3muses=response.session_id_3muses,
-            #     session_db_table=response.session_db_table,
-            #     session_db_record_id=response.session_db_record_id,
-            #     )
-
-            # # print "three"
-
-            # ## Populating the purchase history dict
-            # ## This is used in the next view to show the user the purchase details. 
-
-
-            # default_address=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select().first()
-
-            # # print default_address
-
-            # easypost_response=json.loads(default_address['easypost_api_response'])
-
-            # rates=easypost_response['rates']
-
-            # default_rate=default_address['easypost_default_shipping_rate_id']
-
-            # rate_info={}
-
-            # for rate in rates:
-            #     if rate['id']==default_rate:
-            #         rate_info=rate
-
-            # purchase_history_dict=dict(
-
-            #     muses_id=muses_id,
-            #     muses_email_address=muses_email_address,
-            #     muses_name=muses_name,
-
-            #     # user_data=json.dumps(user_data, default=lambda x: None),
-
-
-               
-
-            #     ## Session Fields (These actually come from response not session)
-            #     session_id_3muses=response.session_id_3muses,
-            #     session_db_table=response.session_db_table,
-            #     session_db_record_id=response.session_db_record_id,
-
-            #     # response_data=json.dumps(response_data, default=lambda x: None),
-
-            #     ## Shipping Fields
-            #     shipping_street_address_line_1=session.address_information['information_LOD'][0]['street_address_line_1'],
-            #     shipping_street_address_line_2=session.address_information['information_LOD'][0]['street_address_line_2'],
-            #     shipping_municipality=session.address_information['information_LOD'][0]['municipality'],
-            #     shipping_administrative_area=session.address_information['information_LOD'][0]['administrative_area'],
-            #     shipping_postal_code=session.address_information['information_LOD'][0]['postal_code'],
-            #     shipping_country=session.address_information['information_LOD'][0]['country'],
-
-            #     ## Easypost Fields?
-            #     easypost_shipping_service=rate_info['service'],
-
-            #     easypost_shipping_carrier=rate_info['carrier'],
-            #     easypost_shipment_id=rate_info['shipment_id'],
-            #     easypost_rate_id=rate_info['id'],
-            #     easypost_rate=rate_info['rate'],
-            #     easypost_api_response=rates,
-
-            #     ## This includes all the address data and the shipping api response with all shipping options, and the shipping id of the chosen option
-            #     # address_data=json.dumps(address_data, default=lambda x: None),
-
-            #     # payment_data=json.dumps(payment_data, default=lambda x: None),
-
-            #     payment_service='paypal',
-            #     payment_confirmation_dictionary=json.dumps(payment.to_dict(), default=lambda x: None),
-
-            #     # ## Legacy Fields
-            #     payment_method='paypal',
-            #     payment_stripe_name=None,
-            #     payment_stripe_user_id=None,
-            #     payment_stripe_last_4=None,
-            #     payment_stripe_brand=None,
-            #     payment_stripe_exp_month=None,
-            #     payment_stripe_exp_year=None,
-            #     payment_stripe_card_id=None,
-            #     payment_stripe_transaction_id=None,
-
-            #     #payment_paypal_name=,
-            #     #payment_paypal_id=,
-            #     #payment_paypal_etc=,
-
-            #     # payment_paypal_intent=payment['intent'],
-
-
-
-            #     # payment_paypal_transaction_id=payment['id'],
-            #     # payment_paypal_create_time=payment['create_time'],
-            #     # payment_paypal_state=payment['state'],
-
-
-            #     ## Cart Details
-            #     # summary_data=json.dumps(session.summary_information, default=lambda x: None),
-
-            #     cart_base_cost=session.summary_information['information_LOD'][0]['cart_cost_USD'],
-            #     cart_shipping_cost=session.summary_information['information_LOD'][0]['shipping_cost_USD'],
-            #     cart_total_cost=session.summary_information['information_LOD'][0]['total_cost_USD'],
-
-            # )
-
-
-
-
 
 
             purchase_history_dict=create_purchase_history_dict(
@@ -4313,23 +4219,8 @@ def paypal_confirmation():
 
                 )
 
-
-
-
-            # print "four"
-
             ## place data in the database. 
             purchase_history_data_id=db.purchase_history_data.bulk_insert([purchase_history_dict])[0]
-
-            # db.commit()
-
-            # purchase_history_data_test=db(db.purchase_history_data.id==purchase_history_data_id).select().first()
-
-            # print purchase_history_data_test
-
-            # print purchase_history_dict
-
-            # print purchase_history_data_id
 
             ## Add id of most recent purchase to the session for viewing purposes.
             session.session_purchase_history_data_id=purchase_history_data_id
@@ -4337,11 +4228,6 @@ def paypal_confirmation():
 
             ## For every item in the cart, insert a record with the id of the purchase history, the product id and the qty.
             purchase_history_products_LOD=[]
-
-            ## If logged in, get the cart information from the database
-            #if auth.is_logged_in():
-
-            #cart=db(db.muses_cart.user_id==auth.user_id).select()
 
             cart=retrieve_cart_contents(auth,db)
 
@@ -4393,187 +4279,8 @@ def paypal_confirmation():
                     product_record.update(qty_in_stock=new_qty)
                     product_record.update_record()
 
-            # ## If the user is not logged in, get the cart information from session. 
-            # else:
-
-
-            #     for product_id, qty in session.cart.iteritems():
-            #         product_record=db(db.product.id==product_id).select().first()
-            #         current_qty=int(product_record.qty_in_stock)
-            #         qty_purchased=int(qty)
-            #         new_qty=current_qty-qty_purchased
-
-
-            #         purchase_history_product_dict=dict(
-
-            #             purchase_history_data_id=purchase_history_data_id,
-            #             product_id=product_record.id,
-            #             product_qty=qty_purchased,
-
-            #             category_name=product_record.category_name,
-            #             product_name=product_record.product_name,
-            #             description=product_record.description,
-            #             cost_USD=product_record.cost_USD,
-            #             qty_in_stock=new_qty,
-            #             is_active=product_record.is_active,
-            #             display_order=product_record.display_order,
-            #             shipping_description=product_record.shipping_description,
-            #             weight_oz=product_record.weight_oz,
-
-            #         )
-
-            #         ## Generate a list of dicts to use bulk insert
-            #         purchase_history_products_LOD.append(purchase_history_product_dict)
-
-
-            #         if new_qty<=0:
-            #             product_record.update(qty_in_stock=0)
-            #             product_record.update_record()
-            #             product_record.update(is_active=False)
-            #             product_record.update_record()
-            #         else:
-            #             product_record.update(qty_in_stock=new_qty)
-            #             product_record.update_record()
-
-            #     session.cart=None
-
-
 
             purchase_history_products_ids=db.purchase_history_products.bulk_insert(purchase_history_products_LOD)
-
-
-
-
-
-
-
-        # ##   try:
-        #     #Try to convert and compare the url arg with the session arg that the user is allowed to view. 
-        #     # if True: #int(purchase_history_data_id)==int(session.session_purchase_history_data_id):
-
-        #     ## if success, then get the corresponding db info
-        #     purchase_history_data_row=db(db.purchase_history_data.id==purchase_history_data_id).select().first()
-
-        #     purchase_history_products_rows=db(db.purchase_history_products.purchase_history_data_id==purchase_history_data_id).select()
-
-        #     ## product table
-        #     product_header_row=['Product','Total Weight (oz)','Total Cost($)']
-        #     product_table_row_LOL=[]
-        #     product_total_weight=0
-        #     product_total_cost=0
-
-        #     ## change this so that you don't have to go into the product database to get this data
-        #     ## It should all be available in the other purchase history tables. 
-        #     ## I'm doing this because the product table has all editable stuff
-        #     ## And I want a more permanent record of the transaction. 
-        #     for row in purchase_history_products_rows:
-        #         #product_data=db(db.product.id==row.product_id).select().first()
-
-        #         line_item_weight_oz=int(row.product_qty)*int(row.weight_oz)
-        #         line_item_cost_usd=int(row.product_qty)*int(row.cost_USD)
-
-        #         product_table_row=[
-        #             row.product_name,
-        #             line_item_weight_oz,
-        #             line_item_cost_usd,
-        #         ]
-
-        #         product_total_weight+=line_item_weight_oz
-        #         product_total_cost+=line_item_cost_usd
-
-        #         product_table_row_LOL.append(product_table_row)
-
-        #     product_totals_row=['Total',product_total_weight,product_total_cost,]
-
-        #     product_table_row_LOL.append(product_totals_row)
-
-        #     confirmation_product_grid=table_generation(product_header_row,product_table_row_LOL,'confirmation_product')
-
-
-        #     ##Shipping Address Table
-        #     address_header_row=['Street Address Info', 'Local Address Info', 'Country']
-        #     address_table_row_LOL=[[
-        #         purchase_history_data_row.shipping_street_address_line_1+" "+purchase_history_data_row.shipping_street_address_line_2,
-        #         purchase_history_data_row.shipping_municipality+", "+purchase_history_data_row.shipping_administrative_area+" "+purchase_history_data_row.shipping_postal_code,
-        #         purchase_history_data_row.shipping_country,
-        #     ]]
-
-        #     confirmation_address_grid=table_generation(address_header_row,address_table_row_LOL,"confirmation_address")
-
-
-        #     ##Shipping Info Table
-        #     shipping_header_row=['Carrier-Rate', 'Shipping Weight (Oz)', 'Estimated Shipping Cost ($)']
-        #     shipping_table_row_LOL=[[
-        #         purchase_history_data_row.easypost_shipping_carrier + " - " + purchase_history_data_row.easypost_shipping_service,
-        #         product_total_weight,
-        #         purchase_history_data_row.easypost_rate,
-        #     ]]
-
-        #     confirmation_shipping_grid=table_generation(shipping_header_row,shipping_table_row_LOL,"confirmation_shipping")
-
-
-        #     ##Card Table
-        #     card_header_row=['Paypal Name', 'Paypal Email', 'Paypal Invoice Number']
-        #     card_table_row_LOL=[[
-        #         payment['payer']['payer_info']['first_name']+payment['payer']['payer_info']['last_name'],
-        #         payment['payer']['payer_info']['email'],
-        #         'invoice_number',
-        #     ]]
-
-        #     confirmation_card_grid=table_generation(card_header_row,card_table_row_LOL,"confirmation_card")
-
-
-        #     ##Summary Table
-
-        #     summary_header_row=['Shipping Cost ($)', 'Product Cost ($)', 'Total Cost ($)']
-        #     summary_table_row_LOL=[[
-        #         purchase_history_data_row.easypost_rate,
-        #         product_total_cost,
-        #         float(purchase_history_data_row.easypost_rate)+product_total_cost,
-        #     ]]
-
-        #     confirmation_summary_grid=table_generation(summary_header_row,summary_table_row_LOL,"confirmation_summary")
-
-        #     final_div=DIV(_class="muses_pay")
-        #     final_div.append(DIV("Product Details",_class="confirmation_heading"))
-        #     final_div.append(confirmation_product_grid)
-        #     final_div.append(DIV("Address Details",_class="confirmation_heading"))
-        #     final_div.append(confirmation_address_grid)
-        #     final_div.append(DIV("Shipping Details",_class="confirmation_heading"))
-        #     final_div.append(confirmation_shipping_grid)
-        #     final_div.append(DIV("Payment Details",_class="confirmation_heading"))
-        #     final_div.append(confirmation_card_grid)
-        #     final_div.append(DIV("Summary",_class="confirmation_heading"))
-        #     final_div.append(confirmation_summary_grid)
-                
-
-        #     final_div_html=final_div.xml()
-
-
-        #     email_icons=dict(
-        #         products_icon_url="https://s3.amazonaws.com/threemusesglass/icons/ProductIcon.png",
-        #         address_icon_url="https://s3.amazonaws.com/threemusesglass/icons/AddressIcon.png",
-        #         shipping_icon_url="https://s3.amazonaws.com/threemusesglass/icons/ShippingIcon.png",
-        #         payment_icon_url="https://s3.amazonaws.com/threemusesglass/icons/PaymentIcon.png",
-        #         summary_icon_url="https://s3.amazonaws.com/threemusesglass/icons/SummaryIcon.png",
-        #         )
-
-        #     #purchase_history_dict
-        #     #purchase_history_products_LOD
-
-        #     ## Try to overwrite the date with a string and convert back later using dateutil if necessary
-
-        #     receipt_context=dict(
-        #         email_icons=email_icons,
-        #         #purchase_details=purchase_history_dict,
-        #         #product_details=purchase_history_products_LOD,
-        #         product_info=product_table_row_LOL,
-        #         address_info=address_table_row_LOL,
-        #         shipping_info=shipping_table_row_LOL,
-        #         card_info=card_table_row_LOL,
-        #         summary_info=summary_table_row_LOL,
-        #         )
-
 
 
             receipt_context=generate_confirmation_email_receipt_context(
@@ -4586,12 +4293,16 @@ def paypal_confirmation():
             #receipt_message_html = response.render('receipt.html', receipt_context)
             receipt_message_html = response.render('default/receipt.html', receipt_context)
 
-            findme
+            email_address_query=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email).first()
+            email_address=list(email_address_query.as_dict().values())[0]
+            #print email_address
+            
             from postmark import PMMail
             message = PMMail(api_key=POSTMARK_API_KEY,
                 subject="Order Confirmation",
                 sender="confirmation@threemuses.glass",
-                to=user_data.email,
+                #to=user_data.email,
+                to=email_address,
                 #html_body=final_div_html,
                 html_body=receipt_message_html,
                 tag="confirmation")
@@ -4629,6 +4340,9 @@ def paypal_confirmation():
             payer_id=None, 
             payment_id=None,
             payment=None,)
+
+
+
 
 
 def get_current_default_address_id():

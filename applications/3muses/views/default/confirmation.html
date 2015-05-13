@@ -27,12 +27,14 @@
 
 				{{else:}}
 
-					<h1>Thank you for shopping at 3MusesGlass!</h1>
+					<h1>Thank you for shopping at Three Muses Glass!</h1>
 
 					<br/>
 					<br/>
 
-					<h3>You should recieve a confirmation email shortly at {{=purchase_history_data_row.muses_email_address}}.</h3>
+					<!-- <h3>You should recieve a confirmation email shortly at {-{=purchase_history_data_row.muses_email_address }-}.</h3> -->
+
+					<h3>You should recieve a confirmation email shortly at {{=email_address}}.</h3>
 					<h3>Please allow one day for processing. Below are the details of your order:</h3>
 
 						<br/>
