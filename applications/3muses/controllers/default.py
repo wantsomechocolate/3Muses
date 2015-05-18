@@ -4164,20 +4164,25 @@ def paypal_confirmation():
 
             user_data=db(db.auth_user.id==auth.user_id).select().first()
 
+            ## If you get from paypal and the user isn't full flegged
+            ## you have to add their email to the list of correspondence
             if auth.has_membership('gimp'):
 
                 #muses_email_address=payment['payer']['payer_info']['email']
                 # user_record=db(db.auth_user.id==auth.user_id).select().first()
                 # print (user_record)
 
+                ## Even though they are gimp user, check to see if the email they used for paypal exists in the db
                 existing_user=db(db.auth_user.email==payment['payer']['payer_info']['email']).select().first()
 
+                ## If the email does not exixt it means you can change the user's email to the one the used in paypal
                 if not existing_user:
 
                     user_data.update(email=payment['payer']['payer_info']['email'])
                     user_data.update_record()
 
-
+                    ## This tries to get a list of emails from the db but I'm pretty sure it is failing and that is 
+                    ## it still adds the email to the correspondence even though the logic is here to prevent that. 
                     emails=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email)
 
                     if payment['payer']['payer_info']['email'] in emails:
@@ -4189,6 +4194,7 @@ def paypal_confirmation():
 
                     emails=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email)
 
+                    ## Same here as above comment. 
                     if payment['payer']['payer_info']['email'] in emails:
                         pass
                     else:

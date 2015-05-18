@@ -43,6 +43,17 @@
 
 				{{pass}}
 
+
+				<br>
+
+				<div>
+				{{if request.args(0)=='profile':}}
+
+				    {{ =auth.change_password(next=URL('user', 'profile')) }}
+
+				{{pass}}
+				</div>
+
 				
 
 			</div>
