@@ -5,12 +5,15 @@ Update background image to a relevant photo
 Ask mom about a powered by modal
 Figure out what else can go in the footer
 
+Footer
+Populate footer with real text
+
 Category page
-I like this page
-Update the colors, but other than that I like it
+Has Judy approval for now. 
 
 Display Page
 In mobile view the picture carousels collapse to 0 height if the page is scrolled after any carousel is invoked. 
+I have no idea how to solve this problem
 
 Product Page
 Fix image heights on non-default active images - LOW PRIORITY
