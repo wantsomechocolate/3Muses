@@ -41,9 +41,15 @@
 			<!--  Carousel - consult the Twitter Bootstrap docs at 
 			      http://twitter.github.com/bootstrap/javascript.html#carousel -->
 			<div id="display-carousel-{{=j}}" class="carousel slide display-carousel" data-interval="false"><!-- class of slide for animation -->
+
+			  {{ if product_rows[j].id in active_items: }}
+			  <div class="in-cart-ribbon"><span>In Cart</span></div>
+			  {{ else: }}
+			  {{ pass }}
 			  
+
 				<div class="display-view-product-cost">
-					${{ =product_rows[j].cost_USD }}
+					${{ ="%.2f" % product_rows[j].cost_USD }}
 				</div>
 
 

@@ -168,3 +168,13 @@ I think I am going to add an email_for_correspondance type field. I can either e
 If that functionality is there, then when someone buys something with a certain email address, than I can add the email they use to the correspondance email for that user. Then whenever I send an email I use that address list instead of the email field in auth. This makes it easier to deal with a user putting in an email of an existing user when making a purchase. 
 
 I have to do this for stripe and paypal. The paypal one currently checks to see if the user exists already but then sends the confirmation email to the wrong auto-created email address. 
+
+
+Checkout flow:
+add items to cart
+Go to cart and add address and select shipping option. 
+Go to checkout and select payment option. 
+At this point if the user wanted to checkout using paypal they could theoretically be sent straight there. 
+
+Give ability for user to put a correspondence email. They will be emailed their reciepts at that email address/ addresses?
+The emails I get from paypal will be added

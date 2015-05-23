@@ -35,7 +35,7 @@
 			<div class="col-xs-4 col-md-1 cart-view-cart-item-cost cart-view-cart-row-child">
 
 				<div> <!-- For vertically centering -->
-					{{ =cart_information['information_LOD'][i]['product_cost'] }}
+					{{ ="%.2f" % cart_information['information_LOD'][i]['product_cost'] }}
 				</div>
 
 			</div>
@@ -101,38 +101,38 @@
 
 	{{ for i in range(len(address_information['information_LOD'])): }}
 
-		<div class="row cart-view-payment-row">
+		<div class="row review-view-payment-row">
 
-			<div class="col-md-offset-2 col-md-8 checkout-view-payment-group-container">
+			<div class="col-md-offset-2 col-md-8 review-view-payment-group-container">
 
-				<h2 class="checkout-view-payment-group-header">Address Details</h2>
-				<hr class="checkout-view-hr">
+				<h2 class="review-view-payment-group-header">Address Details</h2>
+				<hr class="review-view-hr">
 
-				<div class="align-hcenter cart-view-card-container">
+				<div class="align-hcenter review-view-card-container">
 
-		  			<div class="cart-view-address-info-child">
+		  			<div class="review-view-address-info-child">
 		          	{{ =address_information['information_LOD'][i]['first_name'] }}
 		          	{{ =address_information['information_LOD'][i]['last_name'] }}
 		          	</div>
 						          	
-		          	<div class="cart-view-address-info-child">
+		          	<div class="review-view-address-info-child">
 		          	{{ =address_information['information_LOD'][i]['street_address_line_1'] }}
 		          	{{ =address_information['information_LOD'][i]['street_address_line_2'] }}
 		          	</div>
 
-		          	<div class="cart-view-address-info-child">
+		          	<div class="review-view-address-info-child">
 		          	{{ =address_information['information_LOD'][i]['municipality'] }},
 		          	{{ =address_information['information_LOD'][i]['administrative_area'] }}
 		          	{{ =address_information['information_LOD'][i]['postal_code'] }}
 		          	</div>
 
-		          	<div class="cart-view-address-info-child">
+		          	<div class="review-view-address-info-child">
 		          	{{ =address_information['information_LOD'][i]['country'] }}
 		          	</div>
 
 		        </div>
 
-		        <hr class="checkout-view-hr">
+		        <hr class="review-view-hr">
 		        <br>
 		        <br>
 
@@ -148,7 +148,7 @@
 
 		<div class="row">
 
-			<div class="col-md-8 col-md-offset-2 align-hcenter cart-view-error-text-container">
+			<div class="col-md-8 col-md-offset-2 align-hcenter review-view-error-text-container">
 
 				{{ =address_information['error_message'] }}
 
@@ -182,20 +182,20 @@
 
 	<div class='container'>
 
-		<div class='row cart-view-payment-row' id = "checkout_summary"> 
+		<div class='row review-view-payment-row' id = "checkout_summary"> 
 
-			<div class="col-md-offset-2 col-md-8 checkout-view-payment-group-container">
+			<div class="col-md-offset-2 col-md-8 review-view-payment-group-container">
 
-				<h2 class="checkout-view-payment-group-header">Shipping Details</h2>
-				<hr class="checkout-view-hr">
+				<h2 class="review-view-payment-group-header">Shipping Details</h2>
+				<hr class="review-view-hr">
 
-				<div class="align-hcenter cart-view-card-container">
+				<div class="align-hcenter review-view-card-container">
 
 
                 {{ if shipping_information['error']==False: }}
                         
 
-                    <div class="col-xs-7 col-md-7 cart-view-shipping-row-subset">
+                    <div class="col-xs-7 col-md-7 review-view-shipping-row-subset">
 
 
                         <div class="col-md-5 vert-hori-center-parent">
@@ -215,7 +215,7 @@
                     </div>
 
 
-                    <div class="col-xs-5 col-md-5 cart-view-shipping-row-subset">
+                    <div class="col-xs-5 col-md-5 review-view-shipping-row-subset">
 
 
                         <div class="col-md-4">
@@ -242,7 +242,7 @@
 
                	</div>
 
-               	<hr class="checkout-view-hr">
+               	<hr class="review-view-hr">
                	<br>
                	<br>
 
@@ -267,18 +267,18 @@
 	<div class='container'>
 
 		<!-- This holds the card options -->
-		<div class='row cart-view-payment-row'> 
+		<div class='row review-view-payment-row'> 
 
 			<div class="col-md-offset-2 col-md-8 checkout-view-payment-group-container">
 
 				<h2 class="checkout-view-payment-group-header">Payment Details</h2>
 				<hr class="checkout-view-hr">
 
-				<div class="align-hcenter cart-view-card-container">
+				<div class="align-hcenter review-view-card-container">
 
 				{{ if payment_information['error']: }}
 
-					<div class="cart-view-error-text-container">
+					<div class="review-view-error-text-container">
 						{{ =payment_information['error_message'] }}
 					</div>
 
@@ -290,26 +290,26 @@
 
 						<!-- This hold the card and the popover with controls -->
 						<div>
-							<div class="col-md-offset-3 col-md-6 cart-view-payment-card-container cart-view-payment-option">
+							<div class="col-md-offset-3 col-md-6 review-view-payment-card-container review-view-payment-option">
 
-								<div class="cart-view-payment-card-cardnumber">
+								<div class="review-view-payment-card-cardnumber">
 									XXXX-XXXX-XXXX-{{ =payment_information['information_LOD'][i]['card_last4'] }}
 								</div>
 
-								<div class="cart-view-payment-card-expiration">
+								<div class="review-view-payment-card-expiration">
 									{{ =payment_information['information_LOD'][i]['card_exp_mo'] }} /
 									{{ =payment_information['information_LOD'][i]['card_exp_year'] }}
 								</div>
 
-								<div class="col-xs-6 cart-view-payment-card-cardname">
+								<div class="col-xs-6 review-view-payment-card-cardname">
 									{{ =payment_information['information_LOD'][i]['card_name'] }}
 								</div>
 
-								<div class="cart-view-payment-card-cardbrand">
+								<div class="review-view-payment-card-cardbrand">
 									{{ =payment_information['information_LOD'][i]['card_brand'] }}
 								</div>
 
-							</div> <!--Close cart-view-payment-card-container-->
+							</div> <!--Close review-view-payment-card-container-->
 
 
 						</div>
@@ -319,11 +319,11 @@
 					{{ elif session.payment_method=='paypal': }}
 
 						<div>
-							<div class="col-md-offset-3 col-md-6 cart-view-payment-card-container cart-view-payment-option">
+							<div class="col-md-offset-3 col-md-6 review-view-payment-card-container review-view-payment-option">
 
 								Paypal
 
-							</div> <!--Close cart-view-payment-card-container-->
+							</div> <!--Close review-view-payment-card-container-->
 
 						</div>
 
@@ -331,11 +331,11 @@
 					{{ else: }}
 
 						<div>
-							<div class="col-md-offset-3 col-md-6 cart-view-payment-card-container cart-view-payment-option">
+							<div class="col-md-offset-3 col-md-6 review-view-payment-card-container review-view-payment-option">
 
 								Please go back to the payment screen and select a valid payment
 
-							</div> <!--Close cart-view-payment-card-container-->
+							</div> <!--Close review-view-payment-card-container-->
 
 						</div>
 
@@ -366,20 +366,20 @@
 
 	<div class='container'>
 
-		<div class='row cart-view-payment-row' id = "checkout_summary"> 
+		<div class='row review-view-payment-row' id = "checkout_summary"> 
 
 			<div class="col-md-offset-2 col-md-8 checkout-view-payment-group-container">
 
 				<h2 class="checkout-view-payment-group-header">Summary Details</h2>
 				<hr class="checkout-view-hr">
 
-				<div class="align-hcenter cart-view-card-container">
+				<div class="align-hcenter review-view-card-container">
 			
-					{{ =summary_information['information_LOD'][0]['cart_cost_USD'] }}
+					{{ ="%.2f" % summary_information['information_LOD'][0]['cart_cost_USD'] }}
 
-					{{ =summary_information['information_LOD'][0]['shipping_cost_USD'] }}
+					{{ ="%.2f" % summary_information['information_LOD'][0]['shipping_cost_USD'] }}
 
-					{{ =summary_information['information_LOD'][0]['total_cost_USD'] }}
+					{{ ="%.2f" % summary_information['information_LOD'][0]['total_cost_USD'] }}
 
 				</div>
 

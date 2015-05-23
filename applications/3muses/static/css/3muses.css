@@ -1,3 +1,16 @@
+
+/*Blue-Violet Bossanova  #443266
+Periwinkle Gray  #C3C3E5
+Titan White  #F1F0FF
+Purple-Violet Affair  #8C489F
+
+Black  #000000
+Bahama Blue  #006699
+Pacific Blue  #0099CC*/
+
+
+
+
 @mixin vertical-align {
   position: relative;
   top: 50%;
@@ -357,11 +370,17 @@ h2{
 	position: absolute;
 	right: 0px;
 	bottom: 0px;
-	margin: 5px;
-	margin-right: 10px;
+	/*margin: 5px;*/
+	/*margin-right: 10px;*/
 	font-size: 2em;
 	font-weight: bold;
 	z-index: 10;
+
+	background-color: rgba(255,255,255,.5);
+	margin: 0;
+	padding: 5px;
+	margin-right:2 	px;
+
  }
 
 @media screen and (min-width: 992px) {

@@ -83,7 +83,9 @@ def categories():
 
 
 def display():
-    
+
+    from aux import retrieve_cart_contents
+
     category_name=request.args[0].replace("_"," ")
 
     category_id=int(db(db.categories.category_name==category_name).select().first()['id'])
@@ -92,10 +94,22 @@ def display():
 
     category_rows=db(db.categories.is_active==True).select(orderby=db.categories.display_order)
 
+    muses_cart=retrieve_cart_contents(auth,db)
+
+    print "muses_cart"
+    print muses_cart
+    active_items=[]
+    for row in muses_cart:
+        active_items.append(row.product_id)
+
+    print "product_rows"
+    print product_rows
+
     return dict(
         category_id=category_id,
         product_rows=product_rows,
         category_rows=category_rows,
+        active_items=active_items,
         )
 
 
@@ -128,10 +142,12 @@ def product():
     if len(cart_row)==1 and cart_row[0].is_active==True:
 
         cart_form[2]['_value']="Remove from Cart"
+        in_cart_ribbon=True
 
     else:
 
         cart_form[2]['_value']="Add to Cart"
+        in_cart_ribbon=False
 
 
     if cart_form.accepts(request, session):
@@ -155,6 +171,7 @@ def product():
             
 
             cart_form[2]['_value']="Add to Cart"
+            in_cart_ribbon=False
 
         ## If the cart was empty when you pressed the button
         else:
@@ -180,6 +197,7 @@ def product():
                 )
 
             cart_form[2]['_value']="Remove from Cart"
+            in_cart_ribbon=True
 
 
     category_rows=db(db.categories.is_active==True).select(orderby=db.categories.display_order)
@@ -191,6 +209,7 @@ def product():
         product_row=product_row,
         cart_form=cart_form,
         category_rows=category_rows,
+        in_cart_ribbon=in_cart_ribbon,
         )
 
 
@@ -256,7 +275,7 @@ def add_new_card():
             if customer==None:
                 pass
             else:
-                customer.cards.create(
+                default_card=customer.cards.create(
                     card=dict(
                         name=stripe_form.vars.name,
                         number=stripe_form.vars.number,
@@ -265,6 +284,8 @@ def add_new_card():
                         exp_year=stripe_form.vars.exp_year,     
                     )
                 )
+
+            session.payment_method=default_card.id
 
 
         # if there is no stripe customer token for the current user, the there will be an index error
@@ -334,6 +355,10 @@ def add_new_card():
                         exp_year=stripe_form.vars.exp_year,     
                     )
                 )
+
+                # print customer
+
+                session.payment_method=customer.default_source
 
                 # add the fact the current customer is now a stripe customer to the db. 
                 db.stripe_customers.insert(

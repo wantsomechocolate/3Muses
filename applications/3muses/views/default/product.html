@@ -12,10 +12,20 @@
 
 		<!--  Carousel - consult the Twitter Bootstrap docs at 
 		      http://twitter.github.com/bootstrap/javascript.html#carousel -->
-		<div id="product-carousel-{{=j}}" class="carousel slide product-view-carousel"><!-- class of slide for animation -->
+
+
+
+
+		<div id="product-carousel-{{=j}}" class="carousel slide product-view-carousel {{ ='in-cart-box' if in_cart_ribbon else '' }}"><!-- class of slide for animation -->
+
+			{{ if in_cart_ribbon: }}
+			<div class="in-cart-ribbon"><span>In Cart</span></div>
+			{{ else: }}
+			{{ pass }}
+
 		  
 		  	<div class="product-view-product-cost">
-				${{ =product_row[j].cost_USD }}
+				${{ ="%.2f" % product_row[j].cost_USD }}
 			</div>
 
 		  <!-- Indicators -->
