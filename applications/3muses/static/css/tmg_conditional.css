@@ -10,9 +10,13 @@
   z-index: 1;
   overflow: hidden;
   width: 75px; height: 75px;
+  /*width: 200px; height: 200px;*/
   text-align: right;
 }
 .in-cart-ribbon span {
+
+  /*original*/
+
   font-size: 10px;
   font-weight: bold;
   color: #FFF;
@@ -27,6 +31,23 @@
   box-shadow: 0 3px 10px -5px rgba(0, 0, 0, 1);
   position: absolute;
   top: 19px; left: -21px;
+
+  /*bigger*/
+  /*font-size: 20px;
+  font-weight: bold;
+  color: #FFF;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 45px;
+  transform: rotate(-45deg);
+  width: 283px;
+  display: block;
+  background: #79A70A;
+  background: linear-gradient(#006699 0%, #0099CC 100%);
+  box-shadow: 0 3px 10px -5px rgba(0, 0, 0, 1);
+  position: absolute;
+  top: 63px;
+  left: -56px;*/
 }
 .in-cart-ribbon span::before {
   content: "";

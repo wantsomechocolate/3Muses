@@ -426,7 +426,7 @@ h2{
 /*Cart view cart styles for greater than 992*/
 
 .cart-view-cart-row{
-	height:5em;
+	height:7em;
 	padding-left:15px;
 	padding-right:15px;
 	margin-bottom:10px;
@@ -437,8 +437,8 @@ h2{
 }
 
 .cart-view-cart-item-name, .cart-view-cart-item-cost{
-	font-size: 2em;
-	line-height:2.5em;
+	font-size: 1.1em;
+	line-height:6em;
 }
 
 
@@ -448,7 +448,7 @@ h2{
 	left: 50%;
 	transform: translate(-50%, -50%);
 	padding:0px !important;
-
+	border:none;
 }
 
 .cart-view-cart-item-tn{
@@ -459,23 +459,26 @@ h2{
 }
 
 .cart-view-cart-row-child{
-	
+	background-color: #F1F0FF;
+	box-shadow: 2px 2px 5px #888888;
 }
 
 .cart-view-cart-item-name{
-	background-color: paleturquoise;
+
+}
+
+.cart-view-cart-item-name-child{
+	background-color: #F1F0FF;
 	box-shadow:2px 2px 5px #888888;
 }
 
 .cart-view-cart-item-cost{
-	background-color: paleturquoise;
+	background-color: #F1F0FF;
 	box-shadow:2px 2px 5px #888888;
 	border-left:1px solid #888888;
 }
 
 .cart-view-cart-item-remove{
-	width:100%;
-	height:100%;
 
 }
 
@@ -490,6 +493,8 @@ h2{
 }
 
 
+/* Cart view cart styles for more than 992*/
+
 @media screen and (min-width: 992px) {
 
 	.cart-view-cart-row div{
@@ -501,6 +506,27 @@ h2{
 	.cart-view-cart-controls-popover{
 		margin-left:4px;
 		width:100%;
+	}
+
+	.cart-view-cart-item-tn{
+		/*margin-right:10px;*/
+	}
+
+	.cart-view-cart-item-name-child{
+		background-color: #F1F0FF;
+		box-shadow:2px 2px 5px #888888;
+	}
+
+	.cart-view-cart-row-sub-container{
+		padding:0;
+	}
+
+	.cart-view-cart-item-remove{
+		position: absolute;
+		/* transform: translate(-50%, -50%); */
+		right: -15px;
+		top: -15px;
+		z-index: 1;
 	}
 
 }
@@ -522,6 +548,15 @@ h2{
 		margin-bottom: 20px
 	}
 
+	.cart-view-cart-row-child{
+		
+	}
+
+	.cart-view-cart-row-sub-container{
+		padding:0;
+	}
+
+
 	.cart-view-cart-tn{
 		position: inherit;
 		top: inherit;
@@ -542,15 +577,19 @@ h2{
 		font-size: 1em;
 		height:4em !important;
 		position:relative;
-
 		
+	}
+
+	.cart-view-cart-item-name-child{
+		height: 100%;
+		width: 100% !important;
 	}
 
 	.cart-view-cart-item-cost{
 		font-size: 1em;
 		height:4em !important;
 		position:relative;
-		border-left:2px solid antiquewhite;
+		
 
 
 	}
@@ -579,6 +618,16 @@ h2{
 		width:100%;
 		/*margin-top:10px;*/
 	}
+
+
+	.cart-view-cart-item-remove{
+		position: absolute;
+		/* transform: translate(-50%, -50%); */
+		right: -15px;
+		top: -15px;
+		z-index: 1;
+	}
+
 
 }
 
