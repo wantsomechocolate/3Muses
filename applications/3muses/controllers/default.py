@@ -426,7 +426,7 @@ def add_new_address(): #http://codepen.io/Angelfire/pen/dJhyr
             last_modified=datetime.now(),
         )
 
-        redirect(URL('cart'))
+        redirect(URL('cart#address-information'))
 
     else:
         
@@ -532,7 +532,7 @@ def cart():
             product_image_url=A(IMG(_src=srcattr, _class='img-thumbnail cart-view-cart-tn'), _href=URL('default','product',args=[row.product_id]))
 
             ## Create a delete button for the item
-            delete_button=A('X', _href=URL('delete_item_from_cart', vars=dict(pri_key=row.id,redirect_url=URL('cart'))), _class="btn btn-danger cart-view-cart-item-remove")
+            delete_button=A('X', _href=URL('delete_item_from_cart', vars=dict(pri_key=row.id,redirect_url=URL('cart'))), _class="btn btn-danger cart-view-item-remove cart-view-cart-item-remove")
 
             ## Populate a list with the current product info
             cart_grid_table_row_list=[
@@ -3176,7 +3176,7 @@ def edit_address():
         else:
             session.address=address_post_changes_dict
 
-        redirect(URL('cart'))
+        redirect(URL('cart#address-information'))
 
     else:
         

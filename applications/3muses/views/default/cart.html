@@ -1,16 +1,37 @@
 {{extend 'layout.html'}}
 
-<div class="container-fluid style1">
+<div class="container-fluid style1" id="cart-information">
 
 	<div class='container'>
+
+
+
+		<div class="row cart-view-address-title cart-view-title">
+
+			<div class="cart-view-address-title2 cart-view-title2 col-md-8 col-md-offset-2">
+
+				<div class="cart-view-address-title3 cart-view-title3 col-xs-12 col-md-6">
+
+					<div>
+
+						<span class="glyphicon glyphicon-shopping-cart"></span>CART
+
+					</div>
+
+				</div>
+
+			</div>
+
+		</div>
+
 
 {{ if cart_information['error']==False: }}
 
 	{{ for i in range(len(cart_information['cart_information_LOD'])): }}
 
-		<div class="row cart-view-cart-row">
+		<div class="row cart-view-row cart-view-cart-row">
 
-			<div class="cart-view-cart-row-sub-container col-md-8 col-md-offset-2">
+			<div class="col-md-8 col-md-offset-2 cart-view-row2 cart-view-cart-row2">
 
 				{{ =cart_information['cart_information_LOD'][i]['product_delete_button'] }}
 
@@ -19,7 +40,7 @@
 				</div>
 
 							
-				<div class="col-xs-8 col-md-8 cart-view-cart-item-name cart-view-cart-row-child">
+				<div class="col-xs-8 col-md-8 cart-view-cart-row-child cart-view-cart-item-name">
 
 					<div> <!-- For vertically centering -->
 						{{ =cart_information['cart_information_LOD'][i]['product_name'] }}
@@ -27,36 +48,13 @@
 
 				</div>
 
-				<div class="col-xs-4 col-md-2 cart-view-cart-item-cost cart-view-cart-row-child">
+				<div class="col-xs-4 col-md-2 cart-view-cart-row-child cart-view-cart-item-cost">
 
 					<div> <!-- For vertically centering -->
-						{{ ="%.2f" % cart_information['cart_information_LOD'][i]['product_cost'] }}
+						${{ ="%.2f" % cart_information['cart_information_LOD'][i]['product_cost'] }}
 					</div>
 
 				</div>
-
-				<!-- 
-				<div class="col-xs-offset-8 col-xs-4 col-md-offset-0 col-md-1 cart-view-cart-item-remove-container cart-view-cart-row-child">
-				 -->
-
-					
-
-					<!-- 			
-					<button type="button" 
-						class="btn btn-default cart-view-cart-controls-popover" 
-						data-container="body" 
-						data-toggle="popover" 
-						data-placement="left" 
-						data-trigger="focus" 
-						data-html="true" 
-						data-content="{###{ =cart_information['cart_information_LOD'][i]['product_delete_button'].xml() }###}">
-						<span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
-					</button> 
-					-->
-					
-				<!-- 
-				</div>
-				 -->
 
 			</div>
 
@@ -69,11 +67,15 @@
 
 {{ else: }}
 
-		<div class="row">
+		<div class="row cart-view-row cart-view-cart-row">
 
-			<div class="col-md-8 col-md-offset-2 align-hcenter cart-view-error-text-container">
+			<div class="col-md-8 col-md-offset-2 cart-view-row2 cart-view-cart-row2">
 
-				{{ =cart_information['error_message'] }}
+				<div class="col-md-8 col-md-offset-2 align-hcenter cart-view-error-text-container">
+
+					{{ =cart_information['error_message'] }}
+
+				</div>
 
 			</div>
 
@@ -83,15 +85,23 @@
 
 
 
-		<div class="row">
+		<div class="row cart-view-row cart-view-cart-row">
 
-			<div class="col-md-3 col-md-offset-7 align-right cart-view-btn-container">
+			<div class="cart-view-row2 cart-view-cart-row2 col-md-8 col-md-offset-2">
 
-				<form action="{{=URL('default','categories')}}">
+				<div class="col-md-4 col-md-offset-8 cart-view-btn-container">
 
-					<input type="submit" value="Back to Shopping" class="btn btn-info cart-view-btn">
+					<div>
 
-				</form>
+						<form action="{{=URL('default','categories')}}">
+
+							<input type="submit" value="Back to Shopping" class="btn btn-info cart-view-btn">
+
+						</form>
+
+					</div>
+
+				</div>
 
 			</div>
 
@@ -108,16 +118,50 @@
 
 
 
+
+
+
+<!--
+
+move popover
+
+
+-->
+
+
+
+
+
 {{ if cart_information['error']==True: }}
 
 {{else:}}
 
 		<!--The Address Container-->
 
-		<div class="container-fluid style2">
+		<div class="container-fluid style2" id="address-information">
 
 			<div class='container'>
 
+
+
+
+				<div class="row cart-view-title cart-view-address-title">
+
+					<div class="col-md-8 col-md-offset-2 cart-view-title2 cart-view-address-title2">
+
+						<div class="col-xs-12 col-md-6 cart-view-title3 cart-view-cart-title3">
+
+							<div>
+
+								<span class="glyphicon glyphicon-home"></span> ADDRESS
+
+							</div>
+
+						</div>
+
+					</div>
+
+				</div>
 
 
 
@@ -126,9 +170,18 @@
 
 			{{ for i in range(len(address_information['address_information_LOD'])): }}
 
-				<div class="row cart-view-address-info-container">
 
-					<div class="col-md-offset-2 col-md-7 cart-view-address-info" id="{{ =address_information['address_information_LOD'][i]['id'] }}">
+			<div class="row cart-view-row cart-view-address-row">
+
+				<div class="col-md-8 col-md-offset-2 cart-view-row2 cart-view-address-row2">
+
+					{{ =A('X', _href=URL('delete_address', vars=dict(pri_key=address_information['address_information_LOD'][i]['id'],redirect_url=URL('cart'))), _class='btn btn-danger cart-view-item-remove cart-view-address-item-remove') }}
+
+
+					{{ =A('Edit', _href=URL('edit_address', vars=dict(pri_key=address_information['address_information_LOD'][i]['id'])), _class='btn btn-primary cart-view-item-edit cart-view-address-item-edit') }}
+
+
+					<div class="col-md-12 cart-view-address-info" id="{{ =address_information['address_information_LOD'][i]['id'] }}">
 
 				{{ if address_information['address_information_LOD'][i]['default_address']: }}
 						{{ =INPUT(_type='radio', _name='address', _value=address_information['address_information_LOD'][i]['id'], _checked='checked') }}
@@ -157,10 +210,14 @@
 			          	</div>
 
 
-				    </div> <!-- Close the div that can be clicked to pick shipping address -->
+				    </div> 
+				    <!-- Close the div that can be clicked to pick shipping address -->
+
+				    
 
 
-				    <div class="col-xs-offset-8 col-xs-4 col-md-offset-0 col-md-1 cart-view-address-controls" id="cart-view-address-controls-{{ =i }}">
+						<!-- 
+						<div class="col-xs-offset-8 col-xs-4 col-md-offset-0 col-md-1 cart-view-address-controls" id="cart-view-address-controls-{{ =i }}">
 
 
 						<button type="button" 
@@ -183,27 +240,35 @@
 							
 						</button>
 
-				    </div>
+				    </div> -->
 
+				</div>		
 
-				</div>			
-								<br/>
-								<br/>
+			</div>	
+
+			<br/>
+								
 
 			{{pass}}  <!--For the for loop-->
 
 		{{ else: }}
 
 
-				<div class="row">
+				<div class="row cart-view-row cart-view-address-row">
 
-					<div class="col-md-8 col-md-offset-2 align-hcenter cart-view-error-text-container">
+					<div class="col-md-8 col-md-offset-2 cart-view-row2 cart-view-address-row2">
 
-						{{ =address_information['error_message'] }}
+						<div class="col-md-8 col-md-offset-2 align-hcenter cart-view-error-text-container">
+
+							{{ =address_information['error_message'] }}
+
+						</div>
 
 					</div>
 
 				</div>
+
+
 
 
 		{{ pass }}
@@ -211,15 +276,24 @@
 
 
 
-				<div class="row">
 
-					<div class="col-md-3 col-md-offset-7 align-right cart-view-btn-container">
+				<div class="row cart-view-row cart-view-address-row">
 
-						<form action="{{=URL('default','add_new_address')}}">
+					<div class="col-md-8 col-md-offset-2 cart-view-row2 cart-view-address-row2">
 
-						    <input type="submit" value="Add New Address" class="btn btn-info cart-view-btn">
+						<div class="col-md-4 col-md-offset-8 cart-view-btn-container">
 
-						</form>
+							<div>
+
+								<form action="{{=URL('default','add_new_address')}}">
+
+								    <input type="submit" value="Add New Address" class="btn btn-info cart-view-btn">
+
+								</form>
+
+							</div>
+
+						</div>
 
 					</div>
 
@@ -228,9 +302,23 @@
 
 
 
+
 			</div>
 
 		</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -243,18 +331,43 @@
 
 				<!--The Shipping Container-->
 
-				<div class="container-fluid style1">
-
-					<div class='container' id='shipping_target'>
+				<div class="container-fluid style1" id="shipping-information">
 
 
-						<!-- All styles and classes are done server side for the shipping-->
-						<div class="row">
-							<div class="col-md-offset-2 col-md-8 align-hcenter cart-view-error-text-container">	
-								{{=shipping_information['error_message']}}
+				    <div class='container'>
+
+
+						<div class="row cart-view-title cart-view-address-title">
+
+							<div class="col-md-8 col-md-offset-2 cart-view-title2 cart-view-address-title2">
+
+								<div class="col-xs-12 col-md-6 cart-view-title3 cart-view-cart-title3">
+
+									<div>
+
+										<span class="glyphicon glyphicon-globe"></span> SHIPPING
+
+									</div>
+
+								</div>
+
 							</div>
+
 						</div>
 
+
+
+
+						<div id='shipping_target'>
+
+							<!-- All styles and classes are done server side for the shipping-->
+							<div class="row">
+								<div class="col-md-offset-2 col-md-8 align-hcenter cart-view-error-text-container">	
+									{{=shipping_information['error_message']}}
+								</div>
+							</div>
+
+						</div>
 
 					</div>
 
@@ -332,6 +445,11 @@
 					</div>
 
 				</div>
+
+
+
+
+
 
 
 

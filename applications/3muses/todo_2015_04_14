@@ -26,6 +26,7 @@ Cart Page
 	Add edit icon to all popovers
 	format contents of all popovers
 	Prices can't be more than 4 significant figures
+	Cancel button on add and edit pages
 
 	Shipping
 	Get dates in shipping options to format properly using moment.js - done
