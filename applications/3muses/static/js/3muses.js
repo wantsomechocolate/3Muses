@@ -192,7 +192,7 @@ function update_target(click_class_name_or_all, selected_class_name, view_name, 
 
                                 newHtml.push('<div class="col-md-4">')
                                     newHtml.push('<div class="vert-hori-center-child">');
-                                        newHtml.push(obj['shipping_options_LOD'][i]['rate']);
+                                        newHtml.push("$"+obj['shipping_options_LOD'][i]['rate']);
                                     newHtml.push('</div>');
                                 newHtml.push('</div>');
 
@@ -281,8 +281,8 @@ function update_shipping_option(value_one_or_all, value_two){
 
             var obj=jQuery.parseJSON( obj_json );
             // alert(obj['shipping_cost_USD'])
-            $("#cart-view-summary-shipping-cost-div").html( obj['shipping_cost_USD'] );
-            $("#cart-view-summary-total-cost-div").html( obj['total_cost_USD'] );
+            $("#cart-view-summary-shipping-cost-div").html( "$"+obj['shipping_cost_USD'] );
+            $("#cart-view-summary-total-cost-div").html( "$"+obj['total_cost_USD'] );
 
 
             // alert( obj['msg'] );

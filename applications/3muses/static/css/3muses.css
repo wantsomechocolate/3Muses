@@ -432,6 +432,13 @@ h2{
 
 
 
+.cart-view-title{
+	font-size: 4em;
+	margin-top:20px;
+	/*height: 7em;*/
+}
+
+
 .cart-view-row{
 	/*height:7em;*/
 	padding-left:15px;
@@ -1061,6 +1068,77 @@ input[type=radio]{
 	}
 
 }
+
+
+
+/*###############################################*/
+/*###############################################*/
+/*###############################################*/
+/* summary stuff all widths */
+
+#summary-information{
+	background-color: #8C489F;
+}
+
+
+.cart-view-summary-row2 div div{
+	background-color: #F1F0FF;
+}
+
+@media screen and (min-width: 992px) {
+
+	.cart-view-summary-row2 > div:nth-child(2){
+		padding-left: 5px;
+		padding-right: 5px;
+	}
+
+	.cart-view-summary-row2 > div:nth-child(1){
+		padding-left: 0;
+		padding-right: 10px;
+	}
+
+	.cart-view-summary-row2 > div:nth-child(3){
+		padding-left: 10px;
+		padding-right: 0;
+	}
+
+	.cart-view-summary-header{
+		font-size:1.3em;
+		font-weight:bold;
+		height:2em;
+	}
+
+	.cart-view-summary-data{
+		font-size:1.2em;
+		font-weight:bold;
+		height:2em;
+	}
+
+}
+
+@media screen and (max-width: 992px) {
+
+	.cart-view-summary-row2 > div{
+		padding-left: 0;
+		padding-right: 0;
+	}
+
+	.cart-view-summary-header{
+
+		height:2em;
+	}
+
+	.cart-view-summary-data{
+
+		height:2em;
+	}
+
+}
+
+
+
+
+
 
 
 

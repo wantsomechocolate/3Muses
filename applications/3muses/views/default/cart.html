@@ -153,7 +153,7 @@ move popover
 
 							<div>
 
-								<span class="glyphicon glyphicon-home"></span> ADDRESS
+								<span class="glyphicon glyphicon-home"></span>ADDRESS
 
 							</div>
 
@@ -339,7 +339,7 @@ move popover
 							<div class="col-md-8 col-md-offset-2 cart-view-title2 cart-view-address-title2">
 								<div class="col-xs-12 col-md-6 cart-view-title3 cart-view-cart-title3">
 									<div>
-										<span class="glyphicon glyphicon-globe"></span> SHIPPING
+										<span class="glyphicon glyphicon-globe"></span>SHIPPING
 									</div>
 								</div>
 							</div>
@@ -361,17 +361,66 @@ move popover
 
 
 
+				<!--The Shipping Container-->
+
+				<div class="container-fluid style2" id="summary-information">
+				    <div class='container'>
+
+
+						<div class="row cart-view-title cart-view-summary-title">
+							<div class="col-md-8 col-md-offset-2 cart-view-title2 cart-view-summary-title2">
+								<div class="col-xs-12 col-md-6 cart-view-title3 cart-view-summary-title3">
+									<div>
+										<span class="glyphicon glyphicon-certificate"></span>SUMMARY
+									</div>
+								</div>
+							</div>
+						</div>
+
+
+						<div class="row cart-view-row cart-view-summary-row">
+							<div class="col-md-8 col-md-offset-2 cart-view-row2 cart-view-summary-row2">
+
+								<div class="col-md-4">
+								  <div>
+									<div class="col-xs-6 col-md-12 align-right cart-view-summary-header">Cart Subtotal</div>
+									<div class="col-xs-6 col-md-12 align-right cart-view-summary-data">${{ ="%.2f" % cart_information['cart_cost_USD'] }}</div>
+								  </div>
+								</div>
+								<div class="col-md-4">
+								  <div>
+									<div class="col-xs-6 col-md-12 align-right cart-view-summary-header">Shipping Costs</div>
+									<div id="cart-view-summary-shipping-cost-div" class="col-xs-6 col-md-12 align-right cart-view-summary-data">Select Shipping</div>
+								  </div>
+								</div>
+								<div class="col-md-4">
+								  <div>
+									<div class="col-xs-6 col-md-12 align-right cart-view-summary-header">Final Cost</div>
+									<div id="cart-view-summary-total-cost-div" class="col-xs-6 col-md-12 align-right cart-view-summary-data">Select Shipping</div>
+								  </div>
+								</div>
+
+							</div>
+						</div>
+
+
+					</div>
+				</div>
+
+
+
+
 				<!-- Hydrogen -->
+				<!-- 
 				<div class="container-fliud style2">
 					<div class='container'>
 						<div class="row">
 							<div class="col-md-8 col-md-offset-2 checkout-view-payment-group-container">
-								<!--<a class="btn btn-sucess" href=" cbcb =URL('checkout') cbcb ">Checkout</a>-->
 								<h2 class="checkout-view-payment-group-header">Summary</h2>
 								<hr class="checkout-view-hr">
 								<div class="col-md-4">
 									<h3 class="align-right">Cart Subtotal</h3>
-									<div class="align-right">{{ ="%.2f" % cart_information['cart_cost_USD'] }}</div>
+									<div class="align-right">{##{ ="%.2f" % cart_information['cart_cost_USD'] }##}</div>
 								</div>
 								<div class="col-md-4">
 									<h3 class="align-right">Shipping Costs</h3>
@@ -387,7 +436,7 @@ move popover
 						</div>
 					</div>
 				</div>
-
+				-->
 
 
 
