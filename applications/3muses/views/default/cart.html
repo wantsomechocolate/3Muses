@@ -332,88 +332,60 @@ move popover
 				<!--The Shipping Container-->
 
 				<div class="container-fluid style1" id="shipping-information">
-
-
 				    <div class='container'>
 
 
 						<div class="row cart-view-title cart-view-address-title">
-
 							<div class="col-md-8 col-md-offset-2 cart-view-title2 cart-view-address-title2">
-
 								<div class="col-xs-12 col-md-6 cart-view-title3 cart-view-cart-title3">
-
 									<div>
-
 										<span class="glyphicon glyphicon-globe"></span> SHIPPING
-
 									</div>
-
 								</div>
-
 							</div>
-
 						</div>
 
 
-
-
 						<div id='shipping_target'>
-
 							<!-- All styles and classes are done server side for the shipping-->
-							<div class="row">
+							<div class="row cart-view-row cart-view-shipping-row">
 								<div class="col-md-offset-2 col-md-8 align-hcenter cart-view-error-text-container">	
 									{{=shipping_information['error_message']}}
 								</div>
 							</div>
-
 						</div>
 
-					</div>
 
+					</div>
 				</div>
 
 
 
+				<!-- Hydrogen -->
 				<div class="container-fliud style2">
-
 					<div class='container'>
-
-
-							<div class="row">
-
-								<div class="col-md-8 col-md-offset-2 checkout-view-payment-group-container">
-
-									<!--<a class="btn btn-sucess" href=" cbcb =URL('checkout') cbcb ">Checkout</a>-->
-									<h2 class="checkout-view-payment-group-header">Total Cost</h2>
-									<hr class="checkout-view-hr">
-
-									<div class="col-md-4">
-										<h3 class="align-right">Cart Subtotal</h3>
-										<div class="align-right">{{ ="%.2f" % cart_information['cart_cost_USD'] }}</div>
-									</div>
-
-									<div class="col-md-4">
-										<h3 class="align-right">Shipping Costs</h3>
-										<div id="cart-view-summary-shipping-cost-div" class="align-right">Select Shipping</div>
-									</div>
-
-									<div class="col-md-4">
-										<h2 class="align-right">Final Cost</h2>
-										<div id="cart-view-summary-total-cost-div" class="align-right">Select Shipping</div>
-									</div>
-
-
-									<hr class="checkout-view-hr">
-									<br>
-
+						<div class="row">
+							<div class="col-md-8 col-md-offset-2 checkout-view-payment-group-container">
+								<!--<a class="btn btn-sucess" href=" cbcb =URL('checkout') cbcb ">Checkout</a>-->
+								<h2 class="checkout-view-payment-group-header">Summary</h2>
+								<hr class="checkout-view-hr">
+								<div class="col-md-4">
+									<h3 class="align-right">Cart Subtotal</h3>
+									<div class="align-right">{{ ="%.2f" % cart_information['cart_cost_USD'] }}</div>
 								</div>
-
+								<div class="col-md-4">
+									<h3 class="align-right">Shipping Costs</h3>
+									<div id="cart-view-summary-shipping-cost-div" class="align-right">Select Shipping</div>
+								</div>
+								<div class="col-md-4">
+									<h2 class="align-right">Final Cost</h2>
+									<div id="cart-view-summary-total-cost-div" class="align-right">Select Shipping</div>
+								</div>
+								<hr class="checkout-view-hr">
+								<br>
 							</div>
-
-
+						</div>
 					</div>
-
 				</div>
 
 

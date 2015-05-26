@@ -84,6 +84,51 @@ function update_target(click_class_name_or_all, selected_class_name, view_name, 
                 //alert(obj['shipping_options_LOD'].length);
                 //alert(obj['shipping_options_LOD'][0]['rate_id']);
 
+                newHtml.push('<div class="row cart-view-row cart-view-shipping-title">');
+                    newHtml.push('<div class="col-md-offset-2 col-md-8 cart-view-shipping-title-2">');
+
+
+                        newHtml.push('<div class="col-xs-7 col-md-7 cart-view-shipping-title-3">');
+
+                            newHtml.push('<div class="col-md-5 vert-hori-center-parent">');
+                                newHtml.push('<div class="vert-hori-center-child">');
+                                    newHtml.push("Carrier");
+                                newHtml.push('</div>');
+                            newHtml.push('</div>');
+
+
+                            newHtml.push('<div class="col-md-7">')
+                                newHtml.push('<div class="vert-hori-center-child">');
+                                    newHtml.push("Service Type");
+                                newHtml.push('</div>');
+                            newHtml.push('</div>');
+
+                        newHtml.push('</div>');
+
+
+                        newHtml.push('<div class="col-xs-5 col-md-5 cart-view-shipping-title-3">');
+
+                            newHtml.push('<div class="col-md-4">')
+                                newHtml.push('<div class="vert-hori-center-child">');
+                                    newHtml.push("Rate");
+                                newHtml.push('</div>');
+                            newHtml.push('</div>');
+
+
+                            newHtml.push('<div class="col-md-8">')
+                                newHtml.push('<div class="vert-hori-center-child">');
+                                    newHtml.push("Estimated Delivery Date");
+                                newHtml.push('</div>');
+                            newHtml.push('</div>');
+
+                        newHtml.push('</div>');
+
+
+                    newHtml.push('</div>');
+                newHtml.push('</div>');
+
+
+
                 for (i=obj['shipping_options_LOD'].length-1;i>=0;i--){
 
                     //Try to get the upper bound estimated delivery date
@@ -107,7 +152,7 @@ function update_target(click_class_name_or_all, selected_class_name, view_name, 
                     // alert(formatted_date);
                     
 
-                    newHtml.push('<div class="row cart-view-shipping-row">');
+                    newHtml.push('<div class="row cart-view-row cart-view-shipping-row">');
 
                         // alert(obj['shipping_options_LOD'][i]['selected_shipping_option']);
 

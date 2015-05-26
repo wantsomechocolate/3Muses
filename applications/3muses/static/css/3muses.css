@@ -931,46 +931,48 @@ input[type=radio]{
 }
 
 
+
+
+/*###############################################*/
+/*###############################################*/
+/*###############################################*/
+
 /*shipping stuff both*/
 
-.cart-view-shipping-row-wrapper{
+.cart-view-shipping-title{
+	padding-right:15px;
+	padding-left:15px;
+	z-index: 10;
+	text-align:center;
+	margin-bottom: 0 !important;
+}
+
+.cart-view-shipping-title-2{
 	background-color: #F1F0FF;
 	box-shadow:2px 2px 5px #888888;
 	display:inline-block;
-	cursor:pointer;
+
+	font-weight: bold;
+	font-size: 1.1em;
+	padding-bottom: 0;
+	border-bottom: 2px solid black;
+	margin-bottom: 5px;
+
+	background-color: rgb(70, 72, 73);
+	color: rgb(184, 184, 184);
 }
 
-.cart-view-shipping-row-wrapper-selected{
-	border:2px solid #888;
-	background-color:#C3C3E5 !important;
-}
-
-.cart-view-shipping-row-subset{
+.cart-view-shipping-title-3{
 	padding-left:0;
 	padding-right:0;
 }
 
+	.cart-view-shipping-title-3 div{
+		text-align: center;
+		height:3em;
+	}
 
-.cart-view-shipping-row-subset div{
-	text-align: center;
-	height:3em;
 
-}
-
-.vert-hori-center-parent{
-	position:relative;
-}
-
-.vert-hori-center-child{
-
-	height:initial !important;
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	width:100%;
-
-}
 
 .cart-view-shipping-row{
 	padding-right:15px;
@@ -979,9 +981,49 @@ input[type=radio]{
 	text-align:center;
 }
 
-.cart-view-selected-shipping-option{
-	background-color:#C3C3E5 !important;
+.cart-view-shipping-row-wrapper{
+	background-color: #F1F0FF;
+	box-shadow:2px 2px 5px #888888;
+	display:inline-block;
+	cursor:pointer;
 }
+
+	.cart-view-shipping-row-wrapper-selected{
+		border:2px solid #888;
+		background-color:#C3C3E5 !important;
+	}
+
+
+.cart-view-shipping-row-subset{
+	padding-left:0;
+	padding-right:0;
+}
+
+	.cart-view-shipping-row-subset div{
+		text-align: center;
+		height:3em;
+	}
+
+
+
+.vert-hori-center-parent{
+	position:relative;
+}
+
+.vert-hori-center-child{
+	height:initial !important;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width:100%;
+}
+
+
+
+/*.cart-view-selected-shipping-option{
+	background-color:#C3C3E5 !important;
+}*/
 
 
 
@@ -990,7 +1032,9 @@ input[type=radio]{
 
 @media screen and (min-width: 992px) {
 
-
+	.cart-view-shipping-title-2{
+		margin-bottom: 5px;
+	}
 
 }
 
@@ -999,7 +1043,11 @@ input[type=radio]{
 
 @media screen and (max-width: 992px) {
 
-	.cart-view-shipping-row-wrapper{
+	.cart-view-shipping-title-2{
+		margin-bottom: 0;
+	}
+
+	.cart-view-shipping-row-wrapper, .cart-view-shipping-title-2{
 		width:100%;
 	}
 
@@ -1018,7 +1066,9 @@ input[type=radio]{
 
 
 
-
+/*###############################################*/
+/*###############################################*/
+/*###############################################*/
 /* payment stuff all widths */
 
 .cart-view-card-container{
@@ -1162,6 +1212,9 @@ input[type=radio]{
 
 
 
+/*###############################################*/
+/*###############################################*/
+/*###############################################*/
 
 /*Admin Page Styles*/
 
@@ -1352,6 +1405,11 @@ input[type=radio]{
 }
 
 
+
+/*###############################################*/
+/*###############################################*/
+/*###############################################*/
+
 /* FOOTER STYLES */
 
 footer {
@@ -1510,8 +1568,11 @@ footer {
 
 
 
-/* Test CSS */
+/*###############################################*/
+/*###############################################*/
+/*###############################################*/
 
+/* Test CSS */
 .slider-size {
 	height: 300px; /* This is your slider height */
 }
