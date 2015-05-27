@@ -10,7 +10,7 @@
 
 			<div class="cart-view-address-title2 cart-view-title2 col-md-8 col-md-offset-2">
 
-				<div class="cart-view-address-title3 cart-view-title3 col-xs-12 col-md-6">
+				<div class="cart-view-address-title3 cart-view-title3 col-xs-12 col-md-12">
 
 					<div>
 
@@ -149,7 +149,7 @@ move popover
 
 					<div class="col-md-8 col-md-offset-2 cart-view-title2 cart-view-address-title2">
 
-						<div class="col-xs-12 col-md-6 cart-view-title3 cart-view-cart-title3">
+						<div class="col-xs-12 col-md-12 cart-view-title3 cart-view-cart-title3">
 
 							<div>
 
@@ -178,7 +178,7 @@ move popover
 					{{ =A('X', _href=URL('delete_address', vars=dict(pri_key=address_information['address_information_LOD'][i]['id'],redirect_url=URL('cart'))), _class='btn btn-danger cart-view-item-remove cart-view-address-item-remove') }}
 
 
-					{{ =A('Edit', _href=URL('edit_address', vars=dict(pri_key=address_information['address_information_LOD'][i]['id'])), _class='btn btn-primary cart-view-item-edit cart-view-address-item-edit') }}
+					{{ =A(SPAN('Edit',_class='glyphicon glyphicon-pencil'), _href=URL('edit_address', vars=dict(pri_key=address_information['address_information_LOD'][i]['id'])), _class='btn cart-view-item-edit cart-view-address-item-edit') }}
 
 
 					<div class="col-md-12 cart-view-address-info" id="{{ =address_information['address_information_LOD'][i]['id'] }}">
@@ -335,9 +335,9 @@ move popover
 				    <div class='container'>
 
 
-						<div class="row cart-view-title cart-view-address-title">
-							<div class="col-md-8 col-md-offset-2 cart-view-title2 cart-view-address-title2">
-								<div class="col-xs-12 col-md-6 cart-view-title3 cart-view-cart-title3">
+						<div class="row cart-view-title cart-view-shipping-title">
+							<div class="col-md-8 col-md-offset-2 cart-view-title2 cart-view-shipping-title2">
+								<div class="col-xs-12 col-md-12 cart-view-title3 cart-view-shipping-title3">
 									<div>
 										<span class="glyphicon glyphicon-globe"></span>SHIPPING
 									</div>
@@ -369,7 +369,7 @@ move popover
 
 						<div class="row cart-view-title cart-view-summary-title">
 							<div class="col-md-8 col-md-offset-2 cart-view-title2 cart-view-summary-title2">
-								<div class="col-xs-12 col-md-6 cart-view-title3 cart-view-summary-title3">
+								<div class="col-xs-12 col-md-12 cart-view-title3 cart-view-summary-title3">
 									<div>
 										<span class="glyphicon glyphicon-certificate"></span>SUMMARY
 									</div>
@@ -383,25 +383,80 @@ move popover
 
 								<div class="col-md-4">
 								  <div>
-									<div class="col-xs-6 col-md-12 align-right cart-view-summary-header">Cart Subtotal</div>
-									<div class="col-xs-6 col-md-12 align-right cart-view-summary-data">${{ ="%.2f" % cart_information['cart_cost_USD'] }}</div>
+
+									<div class="col-xs-6 col-md-12 vert-hori-center-parent cart-view-summary-header">
+
+										<div class="vert-hori-center-child">
+											Cart Subtotal
+										</div>
+
+									</div>
+
+									<div class="col-xs-6 col-md-12 vert-hori-center-parent cart-view-summary-data">
+
+										<div class="vert-hori-center-child">
+											${{ ="%.2f" % cart_information['cart_cost_USD'] }}
+										</div>
+
+									</div>
+
+								  </div>
+
+								</div>
+
+								<div class="col-md-4">
+								  <div>
+									<div class="col-xs-6 col-md-12 vert-hori-center-parent cart-view-summary-header">
+										<div class="vert-hori-center-child">
+											Shipping Costs
+										</div>
+									</div>
+									<div class="col-xs-6 col-md-12 vert-hori-center-parent cart-view-summary-data">
+										<div id="cart-view-summary-shipping-cost-div" class="vert-hori-center-child">
+											Select Shipping
+										</div>
+									</div>
 								  </div>
 								</div>
 								<div class="col-md-4">
 								  <div>
-									<div class="col-xs-6 col-md-12 align-right cart-view-summary-header">Shipping Costs</div>
-									<div id="cart-view-summary-shipping-cost-div" class="col-xs-6 col-md-12 align-right cart-view-summary-data">Select Shipping</div>
-								  </div>
-								</div>
-								<div class="col-md-4">
-								  <div>
-									<div class="col-xs-6 col-md-12 align-right cart-view-summary-header">Final Cost</div>
-									<div id="cart-view-summary-total-cost-div" class="col-xs-6 col-md-12 align-right cart-view-summary-data">Select Shipping</div>
+									<div class="col-xs-6 col-md-12 vert-hori-center-parent cart-view-summary-header cart-view-summary-total-cost-header">
+										<div class="vert-hori-center-child">
+											Total Cost
+										</div>
+									</div>
+
+									<div class="col-xs-6 col-md-12 vert-hori-center-parent cart-view-summary-data cart-view-summary-total-cost-data">
+										<div id="cart-view-summary-total-cost-div" class="vert-hori-center-child">
+											Select Shipping
+										</div>
+									</div>
 								  </div>
 								</div>
 
 							</div>
 						</div>
+
+
+
+						<br>
+
+						<div class="row">
+
+							<div class="col-md-5 col-md-offset-5 align-right">
+
+								<!--<a class="btn btn-sucess" href=" cbcb =URL('checkout') cbcb ">Checkout</a>-->
+
+								<form action="{{=URL('checkout')}}">
+								    <input type="submit" value="Proceed to Payment Options" class="btn btn-success cart-view-btn">
+								</form>
+
+							</div>
+
+						</div>
+
+
+
 
 
 					</div>
@@ -443,29 +498,22 @@ move popover
 
 
 				<!-- Button to move to checkout -->
+				<!--
 				<div class="container-fliud style1">
-
 					<div class='container'>
 
-
 							<div class="row">
-
-								<div class="col-md-3 col-md-offset-7 align-right">
-
-									<!--<a class="btn btn-sucess" href=" cbcb =URL('checkout') cbcb ">Checkout</a>-->
-
-									<form action="{{=URL('checkout')}}">
+								<div class="col-md-5 col-md-offset-5 align-right">
+									<form action="{#{=URL('checkout')}#}">
 									    <input type="submit" value="Proceed to Payment Options" class="btn btn-success cart-view-btn">
 									</form>
-
 								</div>
-
 							</div>
 
 
 					</div>
-
-				</div>
+				</div> 
+				-->
 
 
 

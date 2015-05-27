@@ -403,7 +403,7 @@ def add_new_address(): #http://codepen.io/Angelfire/pen/dJhyr
 
         DIV ( LABEL ( 'Country',),DIV(INPUT(_type='text', _name='country', _class='form-control', ),),),
 
-        INPUT(_type='submit', _class="btn btn-info add-new-address-view-button"),
+        INPUT(_type='submit', _class="btn btn-info form-submit-btn add-new-address-view-button"),
             
         _class='form-horizontal',
 
@@ -2869,7 +2869,7 @@ def edit_session_address():
             ),
         ),
    
-        INPUT(_type='submit', _class="btn btn-default"),
+        INPUT(_type='submit', _class="btn btn-default form-submit-btn"),
             
     _class='form-horizontal',
     _role='form').process()
@@ -3150,7 +3150,7 @@ def edit_address():
             ),
         ),
    
-        INPUT(_type='submit', _class="btn btn-default"),
+        INPUT(_type='submit', _class="btn btn-info form-submit-btn"),
             
     _class='form-horizontal',
     _role='form').process()
