@@ -2121,6 +2121,17 @@ def pay_stripe():
     from aux import generate_confirmation_email_receipt_context
     from aux import retrieve_cart_contents
 
+    import stripe
+
+    stripe_keys = {
+        'secret_key': os.environ['STRIPE_SECRET'],
+        'publishable_key': os.environ['STRIPE_PUBLISHABLE']
+    }
+
+    stripe.api_key = stripe_keys['secret_key']
+
+
+
     ## Get customer_id from stripe data in db. They should have one, if they don't at this point
     ## something went wrong.
 
@@ -2129,6 +2140,7 @@ def pay_stripe():
 
     ## From Session ##
     total_cost_USD=session.summary_information['information_LOD'][0]['total_cost_USD']
+
 
     ## To try and charge the card with the stripe id (defualt card should already be set within stripe)
     ## Otherwise something else went wrong
@@ -2144,20 +2156,20 @@ def pay_stripe():
     # Get the credit card details submitted by the form
     token = request.vars['stripeToken']
 
+    print "The token:"
+    print token
+
+
     # Create the charge on Stripe's servers - this will charge the user's card
     try:
         charge = stripe.Charge.create(
             amount=int(float(total_cost_USD)*100), # amount in cents, again
             currency="usd",
             source=token,
-            description="Purchase from ThreeMusesGlass"
+            description="Purchase from ThreeMusesGlass",
         )
 
-
-
-
-
-
+        
 
         ##################################################
         ################------USER INFO-------############

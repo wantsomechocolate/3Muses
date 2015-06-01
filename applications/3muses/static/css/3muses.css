@@ -1896,10 +1896,34 @@ footer {
 	background-color:#0099CC;
 }
 
+#order-summary{
+	background-color:#8C489F;
+}
 
+.checkout-summary-payment-section-header{
+	padding:0;
+}
 
 .checkout-summary-header{
 	padding:0;
+}
+
+.checkout-summary-stripe-header, .checkout-summary-paypal-header{
+	padding:0;
+}
+
+.checkout-summary-stripe-description, .checkout-summary-paypal-description{
+/*	padding:0;*/
+	text-align: justify;
+}
+
+
+.checkout-summary-payment-button-line-stripe-1{
+	margin-top:20px;
+}
+
+.checkout-summary-payment-button-line-paypal-1{
+	margin-top:20px;
 }
 
 
@@ -1990,7 +2014,7 @@ footer {
 
 .checkout-summary-item > div > div{
 	display:inline;
-	background-color:#0099CC;
+	background-color:#8C489F;
 }
 
 .checkout-summary-left > div > div{
@@ -2012,7 +2036,7 @@ footer {
 
 .checkout-summary-address-container > div > div:last-child{
 	display:inline;
-	background-color:#0099CC;
+	background-color:#8C489F;
 }
 
 
@@ -2026,5 +2050,5 @@ footer {
 }
 
 .checkout-summary-payment-button-line-stripe{
-	margin-top:30px;
+	margin-top:10px;
 }
