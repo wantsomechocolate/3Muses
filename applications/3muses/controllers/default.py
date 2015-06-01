@@ -2156,6 +2156,7 @@ def pay_stripe():
     # Get the credit card details submitted by the form
     token = request.vars['stripeToken']
 
+    stripe_email=request.vars['stripeEmail']
     print "The token:"
     print token
 
@@ -2178,6 +2179,65 @@ def pay_stripe():
         ## Get the information from the db about the user
         user_data=db(db.auth_user.id==auth.user_id).select().first()
 
+
+
+
+
+
+
+
+        ## If you get from paypal and the user isn't full flegged
+        ## you have to add their email to the list of correspondence
+        if auth.has_membership('gimp'):
+
+            #muses_email_address=payment['payer']['payer_info']['email']
+            # user_record=db(db.auth_user.id==auth.user_id).select().first()
+            # print (user_record)
+
+            ## Even though they are gimp user, check to see if the email they used for paypal exists in the db
+            existing_user=db(db.auth_user.email==stripe_email).select().first()
+
+            ## If the email does not exixt it means you can change the user's email to the one the used in paypal
+            if not existing_user:
+
+                user_data.update(email=stripe_email)
+                user_data.update_record()
+
+                ## This tries to get a list of emails from the db but I'm pretty sure it is failing and that is 
+                ## it still adds the email to the correspondence even though the logic is here to prevent that. 
+                emails=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email)
+
+                if stripe_email in emails:
+                    pass
+                else:
+                    db.email_correspondence.insert(user_id=auth.user_id,email=stripe_email, is_active=True)
+
+            else:
+
+                emails=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email)
+
+                ## Same here as above comment. 
+                if stripe_email in emails:
+                    pass
+                else:
+                    db.email_correspondence.insert(user_id=auth.user_id,email=stripe_email, is_active=True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         ##################################################
         ################-----ADDRESS AND------############
         ################----SHIPPING INFO-----############
@@ -2199,7 +2259,7 @@ def pay_stripe():
             
             payment_service='stripe',
 
-            payment_data=charge,
+            payment_data=token,
 
             summary_data=session.summary_information,
 
@@ -2282,7 +2342,7 @@ def pay_stripe():
         #################################################
 
         receipt_context=generate_confirmation_email_receipt_context(
-            muses_email_address=user_data.email, 
+            muses_email_address=request.vars['stripeEmail'], 
             purchase_history_data_row=db(db.purchase_history_data.id==purchase_history_data_id).select().first(),
             purchase_history_products_rows=db(db.purchase_history_products.purchase_history_data_id==purchase_history_data_id).select(),
         )
@@ -2312,26 +2372,6 @@ def pay_stripe():
         redirect(URL('confirmation', args=(purchase_history_data_id)))
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      #can't do this yet! a lot has to happen!
-      #redirect(URL('confirmation'))
 
     except stripe.error.CardError, e:
       # The card has been declined

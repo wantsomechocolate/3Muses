@@ -460,10 +460,16 @@ def generate_confirmation_email_receipt_context(
 
         ##Card Table
         card_header_row=['Name', 'Brand-Last4', 'Expiration(mm/yyyy)']
+        # card_table_row_LOL=[[
+        #     str(payment_information['card']['name']),
+        #     str(payment_information['card']['brand']) + " - " + str(payment_information['card']['last4']),
+        #     str(payment_information['card']['exp_month']) + " / " + str(payment_information['card']['exp_year']),
+        # ]]
+
         card_table_row_LOL=[[
-            str(payment_information['card']['name']),
-            str(payment_information['card']['brand']) + " - " + str(payment_information['card']['last4']),
-            str(payment_information['card']['exp_month']) + " / " + str(payment_information['card']['exp_year']),
+            'stripe name',
+            'stripe brand',
+            'stripe exp',
         ]]
 
         confirmation_card_grid=table_generation(card_header_row,card_table_row_LOL,"confirmation_card")

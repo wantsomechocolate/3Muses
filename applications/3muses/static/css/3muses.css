@@ -2052,3 +2052,17 @@ footer {
 .checkout-summary-payment-button-line-stripe{
 	margin-top:10px;
 }
+
+
+@media screen and (max-width: 992px) {
+
+	.checkout-summary-line-item-container{																								
+		width:100%;
+	}
+
+	.checkout-summary-paypal-button-line{
+		margin-top: 10px;
+		margin-bottom: 55px;																												
+	}
+
+}
