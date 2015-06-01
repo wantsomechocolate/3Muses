@@ -1274,6 +1274,25 @@ input[type=radio]{
 }
 
 
+.stripe-button-el{
+	width: 17em !important;
+	height: 3em !important;
+}
+
+.stripe-button-el span{
+	height: 5em !important;
+	line-height: 2.7em !important;
+}
+
+.checkout-view-paypal-btn{
+	width:17em;
+}
+
+.checkout-view-paypal-btn img{
+	width:17em;
+}
+
+
 @media screen and (min-width: 992px) {
 
 	.cart-view-payment-card-container{
@@ -1867,3 +1886,145 @@ footer {
 #F1F0FF
 #006699
 */
+
+
+
+
+
+
+#checkout{
+	background-color:#0099CC;
+}
+
+
+
+.checkout-summary-header{
+	padding:0;
+}
+
+
+.checkout-summary-line-item-container{
+	display:inline-block;
+	position:relative;
+	padding:0;
+	height:auto;
+	min-height:2em;
+}
+
+.checkout-summary-line-item-container > div{
+	
+}
+
+
+
+.checkout-summary-cost{
+	text-align: right;
+	position: absolute;
+	right: 5px;
+	bottom: 10px;
+}
+
+.checkout-summary-cost-tier-3{
+	padding-right: 10px !important;
+}
+
+
+.checkout-summary-cost-tier-2{
+	font-weight: bold;
+}
+
+.checkout-summary-left-tier-2{
+	font-weight:bold;
+}
+
+.checkout-summary-cost-tier-1{
+	font-weight: bold;
+}
+
+.checkout-summary-left-tier-1{
+	font-weight:bold;
+	font-size:20px;
+}
+
+.checkout-summary-shipping-cost{
+	bottom:20px;
+}
+
+.checkout-summary-total-cost{
+	bottom:5px;
+}
+
+
+
+.checkout-horizontal-dotted-line{
+    border: none;
+    border-top: 3px dotted black;
+
+	position: absolute;
+	width: 95%;
+	bottom: 15px;
+
+	margin:0;
+	padding:0;
+}
+
+.checkout-horizontal-dotted-line-shipping{
+	bottom:25px;
+}
+
+.checkout-horizontal-dotted-line-total{
+	bottom:8px;
+}
+
+.horizontal-dotted-line-container{
+	margin:0 auto;
+}
+
+.checkout-summary-item .vert-hori-center-child{
+	position:inherit;
+}
+
+.checkout-summary-item{
+	padding:0;
+}
+
+.checkout-summary-item > div > div{
+	display:inline;
+	background-color:#0099CC;
+}
+
+.checkout-summary-left > div > div{
+	padding-right:10px;
+}
+
+.checkout-summary-cost > div > div{
+	padding-left:10px;
+}
+
+
+.checkout-summary-address-container{
+	font-weight: 100;
+}
+
+.checkout-summary-address-container > div > div{
+	padding-left: 20px;
+}
+
+.checkout-summary-address-container > div > div:last-child{
+	display:inline;
+	background-color:#0099CC;
+}
+
+
+.checkout-summary-payment-button-line button, .checkout-summary-payment-button-line a{
+	float:right;
+}
+
+.checkout-summary-payment-button-line{
+	padding:0;
+	margin-bottom:10px;
+}
+
+.checkout-summary-payment-button-line-stripe{
+	margin-top:30px;
+}

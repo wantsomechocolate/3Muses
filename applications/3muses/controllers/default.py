@@ -27,9 +27,13 @@ from aux import camelcaseToUnderscore
 
 
 import stripe
-STRIPE_SECRET=get_env_var('stripe', PRODUCTION_STATUS , 'STRIPE_SECRET')
-STRIPE_PUBLISHABLE=get_env_var('stripe', PRODUCTION_STATUS , 'STRIPE_PUBLISHABLE')
-stripe.api_key = STRIPE_SECRET
+
+stripe_keys = {
+    'secret_key': os.environ['STRIPE_SECRET'],
+    'publishable_key': os.environ['STRIPE_PUBLISHABLE']
+}
+
+stripe.api_key = stripe_keys['secret_key']
 
 
 import easypost
@@ -702,7 +706,7 @@ def cart():
 
 
 
-def checkout():
+def checkout_1():
 
 
     from aux import retrieve_cart_contents
@@ -715,12 +719,12 @@ def checkout():
     ## If someone tries to mess with the URL in the browser by going to 
     ## cart/arg, It will reload the page without the arg
     if request.args(0) is not None:
-        redirect(URL('cart'))
+        redirect(URL('checkout'))
     else:
         pass
 
     ## If you try to visit this page while you are not logged in, you get logged in as a handicapped user. 
-    ## but the nav option don't change. 
+    ## but the nav options don't change. 
     if auth.is_logged_in():
         pass
     else:
@@ -1479,7 +1483,7 @@ def cart_sample():
 ## db entry. My plan is to make a giant dictionary with all of the stuff, then pass
 ## it as a var or arg to pay. then try to charge the card,
 ## if it works, I'll have all the info I need, if not I can decide what to do about it. 
-def review():
+def checkout():
 
 ## Currently checkout does, is logged in? then everything, then not logged in, and everything
 ## I figured out that I like the other method better. check for login on each thing you have to do.
@@ -1706,159 +1710,6 @@ def review():
     #shipping_grid=[shipment,shipping_option_id]
 
 
-#############################################################################################
-###########---------------------------Payment Logic -----------------------------############
-#############################################################################################
-
-
-    error=False
-    error_message=None
-    payment_information_LOD=[]
-
-
-    ## Should the invoice ID be generated here and put in session?
-    ## I only have one right now for paypal because they require one. 
-
-
-    if session.payment_method[:4]=='card':
-
-        ## This is the url attached to the pay button
-        ## for paypal it will be more complicated. 
-        approval_url=URL('pay')
-
-        ## Retrieve the default card for the current customer by:
-        ## Getting the stripe customer info from db with user_id
-        stripe_customer_row=db(db.stripe_customers.muses_id==auth.user_id).select().first()
-
-        # print stripe_customer_row
-
-        ## From that get the customer id and default card id
-        stripe_customer_token=stripe_customer_row.stripe_id
-        stripe_customer_card=stripe_customer_row.stripe_next_card_id
-
-        ## Use stripe API to retrieve customer and then to retrieve card from customer
-        stripe_customer=stripe.Customer.retrieve(stripe_customer_token)
-        
-        stripe_card=stripe_customer.cards.retrieve(stripe_customer_card)
-
-
-        payment_information_LOD.append(dict(
-            payment_method='stripe',
-            card_name=stripe_card['name'],
-            card_last4=stripe_card['last4'], 
-            card_brand=stripe_card['brand'], 
-            card_exp_mo=stripe_card['exp_month'], 
-            card_exp_year=stripe_card['exp_year'],
-            approval_url=approval_url,
-            ))
-
-        payment_information=dict(error=error, error_message=error_message, information_LOD=payment_information_LOD)
-
-
-    ## If not paying with stripe, then assume they are paying with Paypal
-    ## For a logged in user and a non logged in user, the functionality
-    ## right now is identical
-    elif session.payment_method=='paypal':
-
-        ## import all the helper stuff
-        import paypalrestsdk
-        from aux import get_env_var
-        from aux import id_generator
-        from aux import paypal_create_payment_dict
-
-        ## Get the paypal keys
-        PAYPAL_CLIENT_ID=get_env_var('paypal',PRODUCTION_STATUS,'PAYPAL_CLIENT_ID')
-        PAYPAL_CLIENT_SECRET=get_env_var('paypal',PRODUCTION_STATUS,'PAYPAL_CLIENT_SECRET')
-
-        ## configure paypal api with keys
-        paypalrestsdk.configure({
-            "mode": PAYPAL_MODE, # sandbox or live
-            "client_id": PAYPAL_CLIENT_ID,
-            "client_secret": PAYPAL_CLIENT_SECRET })
-
-
-        invoice_number=id_generator()
-
-
-
-        ## This will usually fail because of a namespace conflict
-        ## I"m just keeping it here so I can tweak the web experience 
-        ## everytime until I like it, then I will gray it out. 
-        web_profile = paypalrestsdk.WebProfile({
-            "name": "ThreeMusesGlass03",
-            "presentation": {
-                "brand_name": "ThreeMusesGlass",
-                "logo_image": "http://s3-ec.buzzfed.com/static/2014-07/18/8/enhanced/webdr02/anigif_enhanced-buzz-21087-1405685585-12.gif",
-                "locale_code": "US"
-            },
-            "input_fields": {
-                "allow_note": True,
-                "no_shipping": 1,
-                "address_override": 1
-            },
-            "flow_config": {
-                "landing_page_type": "Login",
-            }
-        })
-
-        if web_profile.create():
-            experience_profile_id=web_profile.id
-            print "Profile was created" 
-            print web_profile.id
-        else:
-            experience_profile_id='XP-SLXS-5VPC-DL2F-VE9X'
-            print "There was an error creating the profile - see below."
-            print web_profile.error
-
-
-        ## cart_for_paypal_LOD is from the cart logic section
-        payment_dict=paypal_create_payment_dict(
-            intent='sale',
-            payment_method='paypal', 
-            experience_profile_id=experience_profile_id,
-            redirect_urls=dict(
-                return_url="https://threemusesglass.herokuapp.com/paypal_confirmation",
-                cancel_url="https://threemusesglass.herokuapp.com/cart"),
-            cost_dict=dict(
-                shipping_cost_USD=shipping_cost_USD,
-                cart_cost_USD=cart_cost_USD,
-                total_cost_USD=total_cost_USD),
-            transaction_description='Purchase from ThreeMusesGlass',
-            invoice_number=invoice_number,
-            items_paypal_list_of_dicts=cart_for_paypal_LOD,)
-
-
-        payment=paypalrestsdk.Payment(payment_dict)
-
-        if payment.create():
-            status="Created successfully"
-            approval_url=payment['links'][1]['href']
-            session.expect_paypal_webhook=True
-            #session.payment_id=payment
-        else:
-            status=payment.error
-            approval_url=status
-            print status
-
-
-        payment_information_LOD.append(dict(
-
-            payment_method='paypal',
-            approval_url=approval_url,
-
-            ))
-
-        payment_information=dict(error=error, error_message=error_message, information_LOD=payment_information_LOD)
-
-       
-    ## If trying to use an unsupported payment method. 
-    else:
-
-        error=True
-        error_message="Go back and select a valid payment method"
-
-        payment_information=dict(error=error, error_message=error_message, information_LOD=[dict(payment_method=None)])
-
 
 #############################################################################################
 ###########-----------------Summary Logic (User and Non User)--------------------############
@@ -1875,6 +1726,169 @@ def review():
     ))
 
     summary_information=dict(error=error, error_message=error_message, information_LOD=summary_information_LOD)
+
+
+#############################################################################################
+###########---------------------------Payment Logic -----------------------------############
+#############################################################################################
+
+    import paypalrestsdk
+    from aux import get_env_var
+    from aux import id_generator
+    from aux import paypal_create_payment_dict
+
+    error=False
+    error_message=None
+    payment_information_LOD=[]
+
+    invoice_number=id_generator()
+
+
+    ## Should the invoice ID be generated here and put in session?
+    ## I only have one right now for paypal because they require one. 
+
+
+    # if session.payment_method[:4]=='card':
+
+    #     ## This is the url attached to the pay button
+    #     ## for paypal it will be more complicated. 
+    #     approval_url=URL('pay')
+
+    #     ## Retrieve the default card for the current customer by:
+    #     ## Getting the stripe customer info from db with user_id
+    #     stripe_customer_row=db(db.stripe_customers.muses_id==auth.user_id).select().first()
+
+    #     # print stripe_customer_row
+
+    #     ## From that get the customer id and default card id
+    #     stripe_customer_token=stripe_customer_row.stripe_id
+    #     stripe_customer_card=stripe_customer_row.stripe_next_card_id
+
+    #     ## Use stripe API to retrieve customer and then to retrieve card from customer
+    #     stripe_customer=stripe.Customer.retrieve(stripe_customer_token)
+        
+    #     stripe_card=stripe_customer.cards.retrieve(stripe_customer_card)
+
+
+    #     payment_information_LOD.append(dict(
+    #         payment_method='stripe',
+    #         card_name=stripe_card['name'],
+    #         card_last4=stripe_card['last4'], 
+    #         card_brand=stripe_card['brand'], 
+    #         card_exp_mo=stripe_card['exp_month'], 
+    #         card_exp_year=stripe_card['exp_year'],
+    #         approval_url=approval_url,
+    #         ))
+
+    #     payment_information=dict(error=error, error_message=error_message, information_LOD=payment_information_LOD)
+
+
+    # ## If not paying with stripe, then assume they are paying with Paypal
+    # ## For a logged in user and a non logged in user, the functionality
+    # ## right now is identical
+    # elif session.payment_method=='paypal':
+
+    ## STRIPE INFO
+    stripe_approval_url=URL('pay_stripe')
+
+
+    ## PAYPAL INFO
+
+    ## import all the helper stuff
+
+
+    ## Get the paypal keys
+    PAYPAL_CLIENT_ID=get_env_var('paypal',PRODUCTION_STATUS,'PAYPAL_CLIENT_ID')
+    PAYPAL_CLIENT_SECRET=get_env_var('paypal',PRODUCTION_STATUS,'PAYPAL_CLIENT_SECRET')
+
+    ## configure paypal api with keys
+    paypalrestsdk.configure({
+        "mode": PAYPAL_MODE, # sandbox or live
+        "client_id": PAYPAL_CLIENT_ID,
+        "client_secret": PAYPAL_CLIENT_SECRET })
+
+
+
+    ## This will usually fail because of a namespace conflict
+    ## I"m just keeping it here so I can tweak the web experience 
+    ## everytime until I like it, then I will gray it out. 
+    web_profile = paypalrestsdk.WebProfile({
+        "name": "ThreeMusesGlass03",
+        "presentation": {
+            "brand_name": "ThreeMusesGlass",
+            "logo_image": "http://s3-ec.buzzfed.com/static/2014-07/18/8/enhanced/webdr02/anigif_enhanced-buzz-21087-1405685585-12.gif",
+            "locale_code": "US"
+        },
+        "input_fields": {
+            "allow_note": True,
+            "no_shipping": 1,
+            "address_override": 1
+        },
+        "flow_config": {
+            "landing_page_type": "Login",
+        }
+    })
+
+    if web_profile.create():
+        experience_profile_id=web_profile.id
+        print "Profile was created" 
+        print web_profile.id
+    else:
+        experience_profile_id='XP-SLXS-5VPC-DL2F-VE9X'
+        print "There was an error creating the profile - see below."
+        print web_profile.error
+
+
+    ## cart_for_paypal_LOD is from the cart logic section
+    payment_dict=paypal_create_payment_dict(
+        intent='sale',
+        payment_method='paypal', 
+        experience_profile_id=experience_profile_id,
+        redirect_urls=dict(
+            return_url="https://threemusesglass.herokuapp.com/paypal_confirmation",
+            cancel_url="https://threemusesglass.herokuapp.com/cart"),
+        cost_dict=dict(
+            shipping_cost_USD=shipping_cost_USD,
+            cart_cost_USD=cart_cost_USD,
+            total_cost_USD=total_cost_USD),
+        transaction_description='Purchase from ThreeMusesGlass',
+        invoice_number=invoice_number,
+        items_paypal_list_of_dicts=cart_for_paypal_LOD,)
+
+
+    payment=paypalrestsdk.Payment(payment_dict)
+
+    if payment.create():
+        status="Created successfully"
+        paypal_approval_url=payment['links'][1]['href']
+        session.expect_paypal_webhook=True
+        #session.payment_id=payment
+    else:
+        status=payment.error
+        approval_url=status
+        print status
+
+
+    payment_information_LOD.append(dict(
+
+        stripe_approval_url=stripe_approval_url,
+        paypal_approval_url=paypal_approval_url,
+
+        ))
+
+    payment_information=dict(error=error, error_message=error_message, information_LOD=payment_information_LOD)
+
+       
+    # ## If trying to use an unsupported payment method. 
+    # else:
+
+    #     error=True
+    #     error_message="Go back and select a valid payment method"
+
+    #     payment_information=dict(error=error, error_message=error_message, information_LOD=[dict(payment_method=None)])
+
+
+
 
 
 #############################################################################################
@@ -2093,6 +2107,237 @@ def pay():
     ########----SEND TO CONFIMATION SCREEN-------####
     #################################################
     redirect(URL('confirmation', args=(purchase_history_data_id)))
+
+
+def pay_stripe():
+
+    ### This function is for paying with stripe only
+
+    ## The purpose of this function is to populate the database table purchase history with all 
+    ## of the info about the purchase and send an email using postmark. 
+    ## Presenting the confirmation screen is done later using the database
+    import json
+    from aux import create_purchase_history_dict
+    from aux import generate_confirmation_email_receipt_context
+    from aux import retrieve_cart_contents
+
+    ## Get customer_id from stripe data in db. They should have one, if they don't at this point
+    ## something went wrong.
+
+    ## Not True anymore
+    # customer_id=db(db.stripe_customers.muses_id==auth.user_id).select().first().stripe_id
+
+    ## From Session ##
+    total_cost_USD=session.summary_information['information_LOD'][0]['total_cost_USD']
+
+    ## To try and charge the card with the stripe id (defualt card should already be set within stripe)
+    ## Otherwise something else went wrong
+    ## TODO: Add description back in?
+    ## TODO: What if the charge fails or the user cancels?
+    # charge=stripe.Charge.create(
+    #     amount=int(float(total_cost_USD)*100),
+    #     currency='usd',
+    #     customer=customer_id,
+    #     #description='test purchase',
+    # )
+
+    # Get the credit card details submitted by the form
+    token = request.vars['stripeToken']
+
+    # Create the charge on Stripe's servers - this will charge the user's card
+    try:
+        charge = stripe.Charge.create(
+            amount=int(float(total_cost_USD)*100), # amount in cents, again
+            currency="usd",
+            source=token,
+            description="Purchase from ThreeMusesGlass"
+        )
+
+
+
+
+
+
+
+        ##################################################
+        ################------USER INFO-------############
+        ##################################################
+
+        ## Get the information from the db about the user
+        user_data=db(db.auth_user.id==auth.user_id).select().first()
+
+        ##################################################
+        ################-----ADDRESS AND------############
+        ################----SHIPPING INFO-----############
+        ##################################################
+        default_address=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select().first()
+
+
+        purchase_history_dict=create_purchase_history_dict(
+
+            ## This is probably really dangerous
+            session_data=response,
+
+            user_data=user_data,
+
+            address_data=default_address,
+
+            ## Consider putting shipping response in session and passing them here?
+            # shipping_data=rates,
+            
+            payment_service='stripe',
+
+            payment_data=charge,
+
+            summary_data=session.summary_information,
+
+            )
+
+
+
+        #################################################
+        ########----PUT PURCHASE INFO IN THE DB------####
+        #################################################
+
+        ## place data in the database. 
+        purchase_history_data_id=db.purchase_history_data.bulk_insert([purchase_history_dict])[0]
+
+        ## Add id of most recent purchase to the session for viewing purposes.
+        session.session_purchase_history_data_id=purchase_history_data_id
+
+
+        #################################################
+        ########----PUT PRODUCT INFO IN THE DB-------####
+        #################################################
+
+        ## For every item in the cart, insert a record with the id of the purchase history, the product id and the qty.
+        purchase_history_products_LOD=[]
+
+        #cart=db(db.muses_cart.user_id==auth.user_id).select()
+
+        cart=retrieve_cart_contents(auth,db)
+        
+        ## For item in cart, add id from record above with product and qty and all info about the product,
+        ## then deal with inventory by removing the item from the cart.
+        for row in cart:
+            product_record=db(db.product.id==row.product_id).select().first()
+            current_qty=int(product_record.qty_in_stock)
+            qty_purchased=int(row.product_qty)
+            new_qty=current_qty-qty_purchased
+
+            ## Remove item from the cart
+            db(db.muses_cart.product_id==product_record.id).delete()
+
+            ## Prepare dict for bulk insert
+            purchase_history_product_dict=dict(
+                purchase_history_data_id=purchase_history_data_id,
+                product_id=product_record.id,
+                product_qty=int(row.product_qty),
+                category_name=product_record.category_name,
+                product_name=product_record.product_name,
+                description=product_record.description,
+                cost_USD=product_record.cost_USD,
+                qty_in_stock=new_qty,
+                is_active=product_record.is_active,
+                display_order=product_record.display_order,
+                shipping_description=product_record.shipping_description,
+                weight_oz=product_record.weight_oz,
+            )
+
+            ## Generate a list of dicts to use bulk insert
+            purchase_history_products_LOD.append(purchase_history_product_dict)
+
+
+            ## If you lowered the qty to 0 or less, make qty 0 and deactivate item
+            if new_qty<=0:
+
+                product_record.update(qty_in_stock=0)
+                product_record.update_record()
+                product_record.update(is_active=False)
+                product_record.update_record()
+
+            ## If not, just lower the qty
+            else:
+                product_record.update(qty_in_stock=new_qty)
+                product_record.update_record()
+
+        ## Actually put everything in the db
+        purchase_history_products_ids=db.purchase_history_products.bulk_insert(purchase_history_products_LOD)
+
+
+        #################################################
+        ########----SENDING THE CONFIRMATION EMAIL---####
+        #################################################
+
+        receipt_context=generate_confirmation_email_receipt_context(
+            muses_email_address=user_data.email, 
+            purchase_history_data_row=db(db.purchase_history_data.id==purchase_history_data_id).select().first(),
+            purchase_history_products_rows=db(db.purchase_history_products.purchase_history_data_id==purchase_history_data_id).select(),
+        )
+
+        receipt_message_html = response.render('default/receipt.html', receipt_context)
+
+
+
+        email_address_query=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email).first()
+        email_address=list(email_address_query.as_dict().values())[0]
+
+        from postmark import PMMail
+        message = PMMail(api_key=POSTMARK_API_KEY,
+            subject="Order Confirmation",
+            sender="confirmation@threemuses.glass",
+            # to=user_data.email,
+            to=email_address,
+            #html_body=final_div_html,
+            html_body=receipt_message_html,
+            tag="confirmation")
+        message.send()
+
+
+        #################################################
+        ########----SEND TO CONFIMATION SCREEN-------####
+        #################################################
+        redirect(URL('confirmation', args=(purchase_history_data_id)))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      #can't do this yet! a lot has to happen!
+      #redirect(URL('confirmation'))
+
+    except stripe.error.CardError, e:
+      # The card has been declined
+      ## redirect to checkout, eventually add in the fact that card was declined. 
+      
+      redirect(URL('checkout'))
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -3640,6 +3885,8 @@ def ajax_choose_shipping_option():
         total_cost_USD=float(shipping_cost_USD)+float(session.cart_cost_USD)
         total_cost_USD="{0:.2f}".format(total_cost_USD)
 
+        session.total_cost_USC=int(float(total_cost_USD)*100)
+
     except:
 
         total_cost_USD="There was a problem"
@@ -4491,3 +4738,72 @@ def drop_muses_cart_table():
 
 def stripe():
     return dict()
+
+def stripe_index():
+
+    return dict(key=stripe_keys['publishable_key'])
+
+def stripe_charge():
+
+    amount = 500
+
+    customer = stripe.Customer.create(
+        email='wantsomechocolate@gmail.com',
+        card=request.form['stripeToken']
+    )
+
+    charge = stripe.Charge.create(
+        customer=customer.id,
+        amount=amount,
+        currency='usd',
+        description='Flask Charge'
+    )
+
+    return dict(amount=amount)
+
+
+def web_stripe():
+    from gluon.contrib.stripe import StripeForm
+
+    form = StripeForm(
+        pk=stripe_keys['publishable_key'],
+        sk=stripe_keys['secret_key'],
+        amount=150, # $1.5 (amount is in cents)
+        description="Nothing").process()
+    if form.accepted:
+        payment_id = form.response['id']
+        redirect(URL('thank_you'))
+    elif form.errors:
+        redirect(URL('pay_error'))
+    return dict(form=form)
+
+
+def checkout_stripe():
+
+    return dict(pk=stripe_keys['publishable_key'])
+
+def checkout_stripe_2():
+
+    # Set your secret key: remember to change this to your live secret key in production
+    # See your keys here https://dashboard.stripe.com/account/apikeys
+    import stripe
+    import os
+    stripe.api_key = stripe_keys['secret_key']
+
+    # Get the credit card details submitted by the form
+    token = request.vars['stripeToken']
+
+    # Create the charge on Stripe's servers - this will charge the user's card
+    try:
+      charge = stripe.Charge.create(
+          amount=1000, # amount in cents, again
+          currency="usd",
+          source=token,
+          description="Example charge"
+      )
+
+      redirect(URL('stripe_test','default','success'))
+
+    except stripe.error.CardError, e:
+      # The card has been declined
+      redirect(URL('stripe_test','default','fail'))
