@@ -2132,6 +2132,8 @@ def pay_stripe():
 
 
 
+    # try:
+
     ## Get customer_id from stripe data in db. They should have one, if they don't at this point
     ## something went wrong.
 
@@ -2146,6 +2148,7 @@ def pay_stripe():
     ## Otherwise something else went wrong
     ## TODO: Add description back in?
     ## TODO: What if the charge fails or the user cancels?
+
     # charge=stripe.Charge.create(
     #     amount=int(float(total_cost_USD)*100),
     #     currency='usd',
@@ -2154,23 +2157,91 @@ def pay_stripe():
     # )
 
     # Get the credit card details submitted by the form
-    token = request.vars['stripeToken']
-
-    stripe_email=request.vars['stripeEmail']
-    print "The token:"
-    print token
 
 
     # Create the charge on Stripe's servers - this will charge the user's card
     try:
+
+        token = request.vars['stripeToken']
+
+        stripe_email=request.vars['stripeEmail']
+        print "The token:"
+        print token
+        print "The email:"
+        print stripe_email
+
         charge = stripe.Charge.create(
             amount=int(float(total_cost_USD)*100), # amount in cents, again
             currency="usd",
             source=token,
             description="Purchase from ThreeMusesGlass",
-        )
+            )
 
-        
+        print charge
+
+        ## This is what charge looks like
+
+        # {
+        #   "amount": 4418, 
+        #   "amount_refunded": 0, 
+        #   "application_fee": null, 
+        #   "balance_transaction": "txn_169F6LBJewwJxtz7dWGPAux0", 
+        #   "captured": true, 
+        #   "created": 1433250401, 
+        #   "currency": "usd", 
+        #   "customer": null, 
+        #   "description": "Purchase from ThreeMusesGlass", 
+        #   "destination": null, 
+        #   "dispute": null, 
+        #   "failure_code": null, 
+        #   "failure_message": null, 
+        #   "fraud_details": {}, 
+        #   "id": "ch_169F6LBJewwJxtz7cmK1o7y4", 
+        #   "invoice": null, 
+        #   "livemode": false, 
+        #   "metadata": {}, 
+        #   "object": "charge", 
+        #   "paid": true, 
+        #   "receipt_email": null, 
+        #   "receipt_number": null, 
+        #   "refunded": false, 
+        #   "refunds": {
+        #     "data": [], 
+        #     "has_more": false, 
+        #     "object": "list", 
+        #     "total_count": 0, 
+        #     "url": "/v1/charges/ch_169F6LBJewwJxtz7cmK1o7y4/refunds"
+        #   }, 
+        #   "shipping": null, 
+        #   "source": {
+        #     "address_city": null, 
+        #     "address_country": null, 
+        #     "address_line1": null, 
+        #     "address_line1_check": null, 
+        #     "address_line2": null, 
+        #     "address_state": null, 
+        #     "address_zip": null, 
+        #     "address_zip_check": null, 
+        #     "brand": "Visa", 
+        #     "country": "US", 
+        #     "customer": null, 
+        #     "cvc_check": null, 
+        #     "dynamic_last4": null, 
+        #     "exp_month": 12, 
+        #     "exp_year": 2015, 
+        #     "fingerprint": "kCCBgxubKDsM9l5g", 
+        #     "funding": "credit", 
+        #     "id": "card_169F6FBJewwJxtz755zcGKcl", 
+        #     "last4": "4242", 
+        #     "metadata": {}, 
+        #     "name": "wantsomechocolate@gmail.com", 
+        #     "object": "card"
+        #   }, 
+        #   "statement_descriptor": null, 
+        #   "status": "succeeded"
+        # }
+
+
 
         ##################################################
         ################------USER INFO-------############
@@ -2178,11 +2249,6 @@ def pay_stripe():
 
         ## Get the information from the db about the user
         user_data=db(db.auth_user.id==auth.user_id).select().first()
-
-
-
-
-
 
 
 
@@ -2205,7 +2271,7 @@ def pay_stripe():
 
                 ## This tries to get a list of emails from the db but I'm pretty sure it is failing and that is 
                 ## it still adds the email to the correspondence even though the logic is here to prevent that. 
-                emails=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email)
+                emails=list(db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email))
 
                 if stripe_email in emails:
                     pass
@@ -2232,17 +2298,16 @@ def pay_stripe():
 
 
 
-
-
-
-
-
-
         ##################################################
         ################-----ADDRESS AND------############
         ################----SHIPPING INFO-----############
         ##################################################
         default_address=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select().first()
+
+        ## Fake payment
+        # from collections import namedtuple
+        # Test = namedtuple('Test', 'id foo bar')
+        # my_test = Test('af789d', 'foo_val', 'bar_val')
 
 
         purchase_history_dict=create_purchase_history_dict(
@@ -2259,7 +2324,7 @@ def pay_stripe():
             
             payment_service='stripe',
 
-            payment_data=token,
+            payment_data=charge,
 
             summary_data=session.summary_information,
 
@@ -2359,7 +2424,8 @@ def pay_stripe():
             subject="Order Confirmation",
             sender="confirmation@threemuses.glass",
             # to=user_data.email,
-            to=email_address,
+            # to=email_address,
+            to=stripe_email,
             #html_body=final_div_html,
             html_body=receipt_message_html,
             tag="confirmation")
@@ -2380,8 +2446,15 @@ def pay_stripe():
       redirect(URL('checkout'))
 
 
+    # except Exception, error:
+    #     print "An exception was thrown"
+    #     print  str(error)
 
+    # else:
+    #     print "Everything looks great!"
 
+    # finally:
+    #     redirect(URL('confirmation', args=(purchase_history_data_id)))
 
 
 
@@ -2426,7 +2499,8 @@ def confirmation():
 
         if purchase_history_data_row['payment_service']=='stripe':
 
-            payment_information=stripe.Charge.retrieve(purchase_history_data_row['payment_confirmation_id'])
+            #payment_information=stripe.Charge.retrieve(purchase_history_data_row['payment_confirmation_id'])
+            payment_infomation=[]
 
         elif purchase_history_data_row['payment_service']=='paypal':
 
@@ -2503,10 +2577,16 @@ def confirmation():
             #     purchase_history_data_row.payment_stripe_exp_month + " / " + purchase_history_data_row.payment_stripe_exp_year,
             # ]]
 
+            # card_table_row_LOL=[[
+            #     str(payment_information['card']['name']),
+            #     str(payment_information['card']['brand']) + " - " + str(payment_information['card']['last4']),
+            #     str(payment_information['card']['exp_month']) + " / " + str(payment_information['card']['exp_year']),
+            # ]]
+
             card_table_row_LOL=[[
-                str(payment_information['card']['name']),
-                str(payment_information['card']['brand']) + " - " + str(payment_information['card']['last4']),
-                str(payment_information['card']['exp_month']) + " / " + str(payment_information['card']['exp_year']),
+                'Name',
+                'Brand-Last4',
+                'Exp-Date',
             ]]
 
         elif purchase_history_data_row.payment_service=='paypal':

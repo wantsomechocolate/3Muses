@@ -413,6 +413,12 @@ h2{
 
 /*general cart styles*/
 
+
+#cart{
+	background-color: #0099CC;
+}
+
+
 .cart-view-btn-container{
 	/*margin-top:20px;*/
 	padding:0;

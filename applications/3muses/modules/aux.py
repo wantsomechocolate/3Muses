@@ -455,7 +455,7 @@ def generate_confirmation_email_receipt_context(
     ###########################################
     if purchase_history_data_row['payment_service']=='stripe':
 
-        payment_information=stripe.Charge.retrieve(purchase_history_data_row.payment_confirmation_id)
+        # payment_information=stripe.Charge.retrieve(purchase_history_data_row.payment_confirmation_id)
 
 
         ##Card Table
