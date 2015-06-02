@@ -455,11 +455,11 @@ def generate_confirmation_email_receipt_context(
     ###########################################
     if purchase_history_data_row['payment_service']=='stripe':
 
-        # payment_information=stripe.Charge.retrieve(purchase_history_data_row.payment_confirmation_id)
-
+        payment_information=stripe.Charge.retrieve(purchase_history_data_row['payment_confirmation_id'])
 
         ##Card Table
-        card_header_row=['Name', 'Brand-Last4', 'Expiration(mm/yyyy)']
+        card_header_row=['Stripe Email', 'Brand-Last4', 'Expiration(mm/yyyy)']
+
         # card_table_row_LOL=[[
         #     str(payment_information['card']['name']),
         #     str(payment_information['card']['brand']) + " - " + str(payment_information['card']['last4']),
@@ -467,10 +467,16 @@ def generate_confirmation_email_receipt_context(
         # ]]
 
         card_table_row_LOL=[[
-            'stripe name',
-            'stripe brand',
-            'stripe exp',
+            str(payment_information['source']['name']),
+            str(payment_information['source']['brand']) + " - " + str(payment_information['source']['last4']),
+            str(payment_information['source']['exp_month']) + " / " + str(payment_information['source']['exp_year']),
         ]]
+
+        # card_table_row_LOL=[[
+        #     'stripe name',
+        #     'stripe brand',
+        #     'stripe exp',
+        # ]]
 
         confirmation_card_grid=table_generation(card_header_row,card_table_row_LOL,"confirmation_card")
 

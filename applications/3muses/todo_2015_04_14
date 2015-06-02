@@ -1,4 +1,6 @@
 
+
+
 Main Page
 Add real text to the landing page
 Update background image to a relevant photo
@@ -179,3 +181,8 @@ At this point if the user wanted to checkout using paypal they could theoretical
 
 Give ability for user to put a correspondence email. They will be emailed their reciepts at that email address/ addresses?
 The emails I get from paypal will be added
+
+
+
+pay_stripe
+Need to fix the hanging UX experience that happens when you pay with Stripe
