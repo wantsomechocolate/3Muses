@@ -1,5 +1,4 @@
 
-
 /*Variable Declarations*/
 
 
@@ -674,6 +673,9 @@ $(document).ready(function(){
     $(function () {
       $('[data-toggle="popover"]').popover()
     })
+
+
+    // $("#demo01").animatedModal();
 
 
     // $(function() {

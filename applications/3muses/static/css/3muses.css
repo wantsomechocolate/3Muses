@@ -1902,6 +1902,18 @@ footer {
 	background-color:#0099CC;
 }
 
+#checkout .checkout-summary-stripe-description a{
+	color:#333;
+	font-weight:bold;
+	text-decoration: none;
+}
+
+#checkout .checkout-summary-paypal-description a{
+	color:#333;
+	font-weight:bold;
+	text-decoration: none;
+}
+
 #order-summary{
 	background-color:#8C489F;
 }
@@ -2036,6 +2048,8 @@ footer {
 	font-weight: 100;
 }
 
+
+
 .checkout-summary-address-container > div > div{
 	padding-left: 20px;
 }
@@ -2043,6 +2057,7 @@ footer {
 .checkout-summary-address-container > div > div:last-child{
 	display:inline;
 	background-color:#8C489F;
+	padding-right:10px;
 }
 
 
@@ -2079,3 +2094,15 @@ footer {
 #add_new_address{
 	background-color:#C3C3E5;
 }
+
+
+
+/* Modals */
+
+/*#please-wait-stripe .modal-header button.close {
+    visibility: hidden;
+}*/
+
+/*#please-wait-stripe .modal-footer button{
+    visibility: hidden;
+}*/

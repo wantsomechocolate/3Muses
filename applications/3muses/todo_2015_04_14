@@ -186,3 +186,34 @@ The emails I get from paypal will be added
 
 pay_stripe
 Need to fix the hanging UX experience that happens when you pay with Stripe
+
+
+
+Registering at the end of purchase
+
+Scenario 1:
+
+Gimp user pays with paypal
+Take the email they used for paypal and make it the main email on the account.
+Add the paypal email to the email dictionary in the user profile. There will be one paypal and one stripe email in this dictionary. 
+
+
+Check to see if the previous main email on the account was a real email or not. 
+If it was not, do nothing.
+If it was, add that email to the list of correspondence emails and make it inactive. 
+
+General Conclusions
+I have to set up a function that can take a user ID and see if they have a real email setup. 
+When a user pays with one of the payment services, I want to save that email associated with that payment service, also the time the email was last modified.
+If a user pays with the same payment service but uses a different email address. I want to save those as well, but only use the newest email address. 
+Then I need a way of retrieving the most recent email for a given payment service.
+
+I don't ever need to change the user email until the user says they want an account and they get to choose their email. 
+
+On the confirmation page I can say, set up an account to access purchase history and get a 10% coupon for the next purchase. 
+For right now the user will manually type in an email address and I will change the users email to that email address. The only thing is that the email can not be in the database already. 
+
+
+1.) When a purchase is made, add the email associated with that purchase to the user profile dictionary? Maybe I can repurpose the correspondence email table for this. Only save the most recent email used for each payment type for a given user. This emails can be the same for a given user and they can be the same accross users. 
+
+2.) When a user indicates that they would like to sign up at the end of a purchase. They have to type an email, password, and password verification. This email address must be unique across TMG as a login email. It can be the same as email addresses for the various payment methods. If the email checks out. I need to verify that the password fields match. If everything is good, the username and email for the particular user are changed to match the entered values and the user is stripped of their gimp status. 
