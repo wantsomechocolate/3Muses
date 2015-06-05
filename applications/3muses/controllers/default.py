@@ -475,7 +475,11 @@ def cart():
     if auth.is_logged_in():
         pass
     else:
-        create_gimp_user()
+        # create_gimp_user()
+        #response.flash=DIV("There are no items in your cart yet!",_class="flash_empty_cart")
+        response.flash="There are no items in your cart yet!"
+        session.flash=response.flash
+        redirect(URL('categories'))
 
 #############################################################################################
 ###########----------------------------Cart Logic--------------------------------############
@@ -1493,6 +1497,16 @@ def checkout():
 #############################################################################################
 
 
+
+    if auth.is_logged_in():
+        pass
+    else:
+        # create_gimp_user()
+        response.flash="There are no items in your cart yet!"
+        session.flash=response.flash
+        redirect(URL('categories'))
+
+
     # session.summary_data={}
 
     import json
@@ -1933,8 +1947,6 @@ def checkout():
         payment_information=payment_information,
         summary_information=summary_information,
         )
-
-
 
 
 
@@ -2616,11 +2628,21 @@ def confirmation():
         email_address_query=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email).first()
         email_address=list(email_address_query.as_dict().values())[0]
 
+
+        ##Create Account after purchase
+        form_username=auth.profile(next=URL('confirmation',args=(request.args[0])))
+        form_password_change=auth.change_password(next=URL('confirmation',args=(request.args[0])))
+
+        
+
         return dict(
             email_address=email_address,
             final_div=final_div,
             purchase_history_data_row = purchase_history_data_row,
             purchase_history_products_rows = purchase_history_products_rows,
+
+            form_username=form_username,
+            form_password_change=form_password_change,
             #confirmation_product_grid = confirmation_product_grid,
         )
 
@@ -2631,7 +2653,6 @@ def confirmation():
         return dict(
             purchase_history_data_row = "SessionError",
             purchase_history_products_rows = None,
-
         )
 
 
@@ -2941,55 +2962,55 @@ def handle_error():
 
 
 ## functions that come with the welcome app ##
-def user():
+# def user():
     
-    """
-    exposes:
-    http://..../[app]/default/user/login
-    http://..../[app]/default/user/logout
-    http://..../[app]/default/user/register
-    http://..../[app]/default/user/profile
-    http://..../[app]/default/user/retrieve_password
-    http://..../[app]/default/user/change_password
-    http://..../[app]/default/user/manage_users (requires membership in
-    use @auth.requires_login()
-        @auth.requires_membership('group name')
-        @auth.requires_permission('read','table name',record_id)
-    to decorate functions that need access control
-    """
+#     """
+#     exposes:
+#     http://..../[app]/default/user/login
+#     http://..../[app]/default/user/logout
+#     http://..../[app]/default/user/register
+#     http://..../[app]/default/user/profile
+#     http://..../[app]/default/user/retrieve_password
+#     http://..../[app]/default/user/change_password
+#     http://..../[app]/default/user/manage_users (requires membership in
+#     use @auth.requires_login()
+#         @auth.requires_membership('group name')
+#         @auth.requires_permission('read','table name',record_id)
+#     to decorate functions that need access control
+#     """
 
-    ## This is what I had in the user.html doc to do the purchase history
-    # <h2>Purchase History</h2>
-    # {{purchase_history=db(db.purchase_history_data.muses_id==auth.user_id).select()}}
-    # {{for purchase in purchase_history:}}
-    #     <h3>Purchase Details</h3>
-    #     {{=purchase}}
-    #     <h3>Purchase Products</h3>
-    #     {{purchase_history_products=db(db.purchase_history_products.purchase_history_data_id==purchase.id).select()}}
-    #     {{=purchase_history_products}}
+#     ## This is what I had in the user.html doc to do the purchase history
+#     # <h2>Purchase History</h2>
+#     # {{purchase_history=db(db.purchase_history_data.muses_id==auth.user_id).select()}}
+#     # {{for purchase in purchase_history:}}
+#     #     <h3>Purchase Details</h3>
+#     #     {{=purchase}}
+#     #     <h3>Purchase Products</h3>
+#     #     {{purchase_history_products=db(db.purchase_history_products.purchase_history_data_id==purchase.id).select()}}
+#     #     {{=purchase_history_products}}
 
-    # {{pass}}
+#     # {{pass}}
 
 
-    #purchase_history=db(db.purchase_history_data.muses_id==auth.user_id).select()
-    #for purchase in purchase_history:
-        #purchase_history_products=db(db.purchase_history_products.purchase_history_data_id==purchase.id).select()
+#     #purchase_history=db(db.purchase_history_data.muses_id==auth.user_id).select()
+#     #for purchase in purchase_history:
+#         #purchase_history_products=db(db.purchase_history_products.purchase_history_data_id==purchase.id).select()
 
-    ## create a table with a row for each purchase and a link to each purchases' corresponding products.
-    ## Have the ability to be able to look at all products. 
+#     ## create a table with a row for each purchase and a link to each purchases' corresponding products.
+#     ## Have the ability to be able to look at all products. 
 
-    ## Use custom tables or web2py tables for this? With web2py tables user can export
-    ## filter, sort. I'm going to try using web2py tables first. 
+#     ## Use custom tables or web2py tables for this? With web2py tables user can export
+#     ## filter, sort. I'm going to try using web2py tables first. 
 
-    #grid=SQLFORM.smartgrid(db.purchase_history_data, linked_tables=['purchase_history_products'])
+#     #grid=SQLFORM.smartgrid(db.purchase_history_data, linked_tables=['purchase_history_products'])
 
-    #print "anything"
+#     #print "anything"
 
-    # user_page=request.args[0]
-    #2if 
+#     # user_page=request.args[0]
+#     #2if 
                                                                                                                                                                                                     
 
-    return dict(form=auth())
+#     return dict(form=auth())
 
 
 # def mylogin(): 
@@ -4813,11 +4834,13 @@ def create_gimp_user():
     if auth.is_logged_in():
         return dict()
     else:
-        temp_password=str(id_generator())+str(time())
+        # temp_password=str(id_generator())+str(time())
+        temp_password='guestuser'
 
-        temp_email=str(time())+'@'+str(id_generator())+'.com'
+        # temp_email=str(time())+'@'+str(id_generator())+'.com'
+        temp_email="GUEST_USER"+'@'+str(int(time()*100))+'.'+str(id_generator())
 
-        user_id=db.auth_user.insert(first_name="Session", last_name="User", email=temp_email, password=db.auth_user.password.requires[0](temp_password)[0])
+        user_id=db.auth_user.insert(first_name="Guest", last_name="User", email=temp_email, password=db.auth_user.password.requires[0](temp_password)[0])
         
         auth.add_membership('gimp',db.auth_user(user_id))
 
@@ -4930,3 +4953,57 @@ def checkout_stripe_2():
     except stripe.error.CardError, e:
       # The card has been declined
       redirect(URL('stripe_test','default','fail'))
+
+
+
+@auth.requires_login()
+def profile():
+
+    if auth.has_membership('gimp'):
+
+        response.flash="Log in to access your profile"
+        session.flash=response.flash
+        redirect(URL('login', vars=dict(_next='profile')))
+
+
+    else:
+        pass
+
+    return dict(form=auth.profile())
+
+
+
+def login():
+    return dict(form=auth.login())
+
+def request_reset_password():
+    return dict(form=auth.request_reset_password(next=URL('default','index')))
+
+# def set_reset_message(form):
+#     user = db.auth_user(email=form.vars.email)
+#     username = user.username if user else ''
+#     auth.messages.reset_password = 'Hey %s, click on the link %%(link)s to reset your password' % username
+# auth.settings.reset_password_onvalidation = set_reset_message
+
+
+def reset_password():
+    return dict(form=auth.reset_password())
+
+def logout():
+    return dict(form=auth.logout(next=URL('categories')))
+
+def register():
+    return dict(form=auth.register())
+
+# def custom_auth_form():
+#     return dict(form=auth())
+
+
+def change_password():
+
+    if auth.has_membership('gimp'):
+        response.flash="You don't have a password to change!"
+        session.flash=response.flash
+        redirect(URL('categories'))
+
+    return dict(form=auth.change_password(next=URL('profile')))

@@ -379,7 +379,7 @@ body#profile .error{
 }*/
 
 body#login{
-	background-color: #C3C3E5;
+	background-color: #0099CC;;
 }
 
 
@@ -526,7 +526,7 @@ body#login .error{
 }*/
 
 body#request_reset_password{
-	background-color: #C3C3E5;;
+	background-color:#0099CC;
 }
 
 

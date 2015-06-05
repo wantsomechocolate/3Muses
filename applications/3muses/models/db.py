@@ -104,14 +104,24 @@ auth.define_tables(username=False, signature=False)
 
 ## configure email
 mail = auth.settings.mailer
-mail.settings.server = 'logging' or 'smtp.gmail.com:587'
-mail.settings.sender = 'you@gmail.com'
-mail.settings.login = 'username:password'
+mail.settings.server = 'smtp.postmarkapp.com:587'
+# mail.settings.server = 'logging' or 'smtp.postmarkapp.com'
+mail.settings.sender = 'confirmation@threemuses.glass'
+mail.settings.login = os.environ['POSTMARK_API_KEY']+':'+os.environ['POSTMARK_API_KEY']
+# mail.settings.login = 'username:password'
+
+auth.messages.reset_password = 'Click on the link %s/%%(key)s to reset your password' % URL('reset_password', scheme=True)
+
 
 ## configure auth policy
 auth.settings.registration_requires_verification = False
 auth.settings.registration_requires_approval = False
 auth.settings.reset_password_requires_verification = True
+
+## Other Auth Settings
+auth.settings.login_url = URL('login')
+auth.settings.logged_url = URL('profile')
+auth.settings.remember_me_form = False
 
 ## if you need to use OpenID, Facebook, MySpace, Twitter, Linkedin, etc.
 ## register with janrain.com, write your domain:api_key in private/janrain.key

@@ -737,6 +737,17 @@ $(document).ready(function(){
 
 
 
+  var flashBox = jQuery(".flash"), flashTimer;
+  flashBox.click(function(){
+      if (flashTimer) clearTimeout(flashTimer);
+      flashBox.fadeOut(400, function(){jQuery(".flash").html('')});
+  });
+  flashTimer = setTimeout(function(){flashBox.fadeOut(400, function(){jQuery(".flash").html('')});}, 3500);
+
+
+/*Make this conditional for the confirmation page*/
+$("input[name=old_password]").val("guestuser")
+
 
 
 });
