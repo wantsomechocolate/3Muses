@@ -104,9 +104,9 @@ auth.define_tables(username=False, signature=False)
 
 ## configure email
 mail = auth.settings.mailer
-# mail.settings.server = 'smtp.postmarkapp.com:587'
-mail.settings.server = 'logging' or 'smtp.postmarkapp.com:587'
-mail.settings.sender = 'confirmation@threemuses.glass'
+mail.settings.server = 'smtp.postmarkapp.com:587'
+# mail.settings.server = 'logging' or 'smtp.postmarkapp.com:587'
+mail.settings.sender = 'admin@threemuses.glass'
 mail.settings.login = os.environ['POSTMARK_API_KEY']+':'+os.environ['POSTMARK_API_KEY']
 # mail.settings.login = 'username:password'
 
