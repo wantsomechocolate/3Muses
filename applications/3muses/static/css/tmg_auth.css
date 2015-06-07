@@ -587,3 +587,18 @@ body#request_reset_password .error{
 	}
 
 }*/
+
+
+/* User After Purchase Forms */
+#confirmation #auth_user_first_name__row{
+	display:none;
+}
+
+#confirmation #auth_user_last_name__row{
+	display:none;
+}
+
+/*#confirmation #no_table_old_password__row{
+	display:none;
+}*/
+

@@ -60,6 +60,9 @@ else:
     sqlite_tf=False
 
 
+## Auth settings that need functions that are defined in this file
+#auth.settings.reset_password_onaccept = [reset_password_callback]
+
 ## The static views (index, categories, display, product, meet the artist.)
 
 def index():
@@ -100,14 +103,14 @@ def display():
 
     muses_cart=retrieve_cart_contents(auth,db)
 
-    print "muses_cart"
-    print muses_cart
+    # print "muses_cart"
+    # print muses_cart
     active_items=[]
     for row in muses_cart:
         active_items.append(row.product_id)
 
-    print "product_rows"
-    print product_rows
+    # print "product_rows"
+    # print product_rows
 
     return dict(
         category_id=category_id,
@@ -481,6 +484,10 @@ def cart():
         session.flash=response.flash
         redirect(URL('categories'))
 
+
+
+
+
 #############################################################################################
 ###########----------------------------Cart Logic--------------------------------############
 #############################################################################################
@@ -496,6 +503,13 @@ def cart():
     #cart_db=db(db.muses_cart.user_id==auth.user_id).select()
 
     cart_db=retrieve_cart_contents(auth,db)
+
+    if len(cart_db)==0:
+        response.flash="There are no items in your cart yet!"
+        session.flash=response.flash
+        redirect(URL('categories'))
+    else:
+        pass
 
     ## If cart turns out to be empty, set cart_grid so the view can have
     ## something to display. but now cart_grid_table_row_LOL will be empty,
@@ -567,7 +581,7 @@ def cart():
                 db(db.muses_cart.product_id==product.id).delete()
             else:
                 cart_cost_USD+=product.cost_USD
-                print cart_cost_USD
+                # print cart_cost_USD
 
         cart_information['cart_cost_USD']=cart_cost_USD
 
@@ -1226,7 +1240,7 @@ def cart_only():
         create_gimp_user()
 
 
-    print (request.env.web2py_original_uri)
+    # print (request.env.web2py_original_uri)
 
 #############################################################################################
 ###########----------------------------Cart Logic--------------------------------############
@@ -1362,7 +1376,7 @@ def cart_sample():
         create_gimp_user()
 
 
-    print (request.env.web2py_original_uri)
+    # print (request.env.web2py_original_uri)
 
 #############################################################################################
 ###########----------------------------Cart Logic--------------------------------############
@@ -1532,6 +1546,13 @@ def checkout():
     #cart_db=db(db.muses_cart.user_id==auth.user_id).select()
 
     cart_db=retrieve_cart_contents(auth,db)
+
+    if len(cart_db)==0:
+        response.flash="There are no items in your cart yet!"
+        session.flash=response.flash
+        redirect(URL('categories'))
+    else:
+        pass
 
     ## If cart turns out to be empty, set cart_grid so the view can have
     ## something to display. but now cart_grid_table_row_LOL will be empty,
@@ -1755,6 +1776,7 @@ def checkout():
     error_message=None
     payment_information_LOD=[]
 
+
     invoice_number=id_generator()
 
 
@@ -1880,13 +1902,14 @@ def checkout():
     else:
         status=payment.error
         approval_url=status
-        print status
+        # print status
 
 
     payment_information_LOD.append(dict(
 
         stripe_approval_url=stripe_approval_url,
         paypal_approval_url=paypal_approval_url,
+        invoice_number=invoice_number,
 
         ))
 
@@ -1934,11 +1957,11 @@ def checkout():
     ## dictionary of summary info
     session.summary_information=summary_information
 
-    print "cart_information"
-    print cart_information
+    # print "cart_information"
+    # print cart_information
 
-    print "address_information"
-    print address_information
+    # print "address_information"
+    # print address_information
 
     return dict(
         cart_information=cart_information,
@@ -2177,10 +2200,10 @@ def pay_stripe():
         token = request.vars['stripeToken']
 
         stripe_email=request.vars['stripeEmail']
-        print "The token:"
-        print token
-        print "The email:"
-        print stripe_email
+        # print "The token:"
+        # print token
+        # print "The email:"
+        # print stripe_email
 
         charge = stripe.Charge.create(
             amount=int(float(total_cost_USD)*100), # amount in cents, again
@@ -2189,7 +2212,7 @@ def pay_stripe():
             description="Purchase from ThreeMusesGlass",
             )
 
-        print charge
+        # print charge
 
         ## This is what charge looks like
 
@@ -2263,48 +2286,43 @@ def pay_stripe():
         user_data=db(db.auth_user.id==auth.user_id).select().first()
 
 
+        ## Decided against doing this for now
 
-        ## If you get from paypal and the user isn't full flegged
-        ## you have to add their email to the list of correspondence
-        if auth.has_membership('gimp'):
+        # ## If you get from paypal and the user isn't full flegged
+        # ## you have to add their email to the list of correspondence
+        # if auth.has_membership('gimp'):
 
-            #muses_email_address=payment['payer']['payer_info']['email']
-            # user_record=db(db.auth_user.id==auth.user_id).select().first()
-            # print (user_record)
+        #     #muses_email_address=payment['payer']['payer_info']['email']
+        #     # user_record=db(db.auth_user.id==auth.user_id).select().first()
+        #     # print (user_record)
 
-            ## Even though they are gimp user, check to see if the email they used for paypal exists in the db
-            existing_user=db(db.auth_user.email==stripe_email).select().first()
+        #     ## Even though they are gimp user, check to see if the email they used for paypal exists in the db
+        #     existing_user=db(db.auth_user.email==stripe_email).select().first()
 
-            ## If the email does not exixt it means you can change the user's email to the one the used in paypal
-            if not existing_user:
+        #     ## If the email does not exixt it means you can change the user's email to the one the used in paypal
+        #     if not existing_user:
 
-                user_data.update(email=stripe_email)
-                user_data.update_record()
+        #         user_data.update(email=stripe_email)
+        #         user_data.update_record()
 
-                ## This tries to get a list of emails from the db but I'm pretty sure it is failing and that is 
-                ## it still adds the email to the correspondence even though the logic is here to prevent that. 
-                emails=list(db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email))
+        #         ## This tries to get a list of emails from the db but I'm pretty sure it is failing and that is 
+        #         ## it still adds the email to the correspondence even though the logic is here to prevent that. 
+        #         emails=list(db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email))
 
-                if stripe_email in emails:
-                    pass
-                else:
-                    db.email_correspondence.insert(user_id=auth.user_id,email=stripe_email, is_active=True)
+        #         if stripe_email in emails:
+        #             pass
+        #         else:
+        #             db.email_correspondence.insert(user_id=auth.user_id,email=stripe_email, is_active=True)
 
-            else:
+        #     else:
 
-                emails=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email)
+        #         emails=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email)
 
-                ## Same here as above comment. 
-                if stripe_email in emails:
-                    pass
-                else:
-                    db.email_correspondence.insert(user_id=auth.user_id,email=stripe_email, is_active=True)
-
-
-
-
-
-
+        #         ## Same here as above comment. 
+        #         if stripe_email in emails:
+        #             pass
+        #         else:
+        #             db.email_correspondence.insert(user_id=auth.user_id,email=stripe_email, is_active=True)
 
 
 
@@ -2337,6 +2355,8 @@ def pay_stripe():
             payment_service='stripe',
 
             payment_data=charge,
+
+            payment_invoice_number=session.payment_information['information_LOD'][0]['invoice_number'],
 
             summary_data=session.summary_information,
 
@@ -2419,7 +2439,7 @@ def pay_stripe():
         #################################################
 
         receipt_context=generate_confirmation_email_receipt_context(
-            muses_email_address=request.vars['stripeEmail'], 
+            muses_email_address=stripe_email, 
             purchase_history_data_row=db(db.purchase_history_data.id==purchase_history_data_id).select().first(),
             purchase_history_products_rows=db(db.purchase_history_products.purchase_history_data_id==purchase_history_data_id).select(),
         )
@@ -2428,8 +2448,8 @@ def pay_stripe():
 
 
 
-        email_address_query=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email).first()
-        email_address=list(email_address_query.as_dict().values())[0]
+        # email_address_query=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email).first()
+        # email_address=list(email_address_query.as_dict().values())[0]
 
 
         from postmark import PMMail
@@ -2474,9 +2494,87 @@ def pay_stripe():
 
 
 
+def create_user_after_purchase_callback(form):
+    ## This guys is the man
+    ## https://groups.google.com/forum/#!topic/web2py/gka0Mg05I44
+
+    from time import time
+    from utils import web2py_uuid
+    # print "We got called back!"
+
+    user = db.auth_user(auth.user_id)  
+
+    max_time=time()+3600
+
+    reset_password_key = str(int(max_time)) + '-' + web2py_uuid()
+
+    user.update_record(reset_password_key=reset_password_key)
+
+    link = URL(reset_password,
+                args=(reset_password_key),
+                scheme=True)
+
+    print link
+    print user.email
+
+    mail.send(to=user.email,subject='Thanks for signing up!',
+             message='Click this link to complete the signup process %s'%link)
+
+
+def test_callback_no_args():
+    from time import time
+    from utils import web2py_uuid
+    print "We got called back!"
+
+    user = db.auth_user(auth.user_id)  
+
+    max_time=time()+3600
+
+    reset_password_key = str(int(max_time)) + '-' + web2py_uuid()
+
+    user.update_record(reset_password_key=reset_password_key)
+
+    link = URL(reset_password,
+                args=(reset_password_key),
+                scheme=True)
+
+    print link
+
+    mail.send(to='wantsomechocolate@gmail.com',subject='Thanks for signing up!',
+             message='Click this link to complete the signup process %s'%link)  
+
+    return dict()
 
 
 
+
+def reset_password_callback(form):
+    print "reset_password_got a callback!"
+
+    if auth.has_membership(11,auth.user_id):
+        auth.del_membership(11,auth.user_id)
+        new_group_id=auth.add_group('user_%s'%str(auth.user_id), 'Group uniquely assigned to user %s'%str(auth.user_id))
+        auth.add_membership(new_group_id,auth.user_id)
+
+    else:
+        print "this was a just a regular ol' user resetting their password"
+
+    # auth.del_membership(group_id, user_id)
+    # auth.add_membership(group_id, user_id)
+    # auth.add_group('role', 'description')
+
+def reset_password_callback_no_arg():
+    print "reset_password got a callback!"
+
+    if auth.has_membership(11,auth.user_id):
+        auth.del_membership(11,auth.user_id)
+        new_group_id=auth.add_group('user_%s'%str(auth.user_id), 'Group uniquely assigned to user %s'%str(auth.user_id))
+        auth.add_membership(new_group_id,auth.user_id)
+
+    else:
+        print "this was a just a regular ol' user resetting their password"
+
+    return dict()
 
 
 
@@ -2485,6 +2583,9 @@ def confirmation():
     import json
     import paypalrestsdk
     import stripe
+
+    auth.settings.profile_onaccept = [create_user_after_purchase_callback]
+
     ## This function has a problem with deleting a user
     ## And then someone reusing the same email when they sign up
     ## FIX IT. 
@@ -2591,12 +2692,18 @@ def confirmation():
                 str(payment_information['source']['exp_month']) + " / " + str(payment_information['source']['exp_year']),
             ]]
 
+            email_address=payment_information['source']['name']
+
 
         elif purchase_history_data_row.payment_service=='paypal':
             card_header_row=['Name', 'Paypal Email', 'Something Else']
             card_table_row_LOL=[[
                 'Name', 'Email', 'Else'
             ]]
+
+            # print payment_information
+
+            email_address=payment_information['payer']['payer_info']['email']
 
         confirmation_card_grid=table_generation(card_header_row,card_table_row_LOL,"confirmation_card")
 
@@ -2625,8 +2732,8 @@ def confirmation():
         final_div.append(confirmation_summary_grid)
         
 
-        email_address_query=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email).first()
-        email_address=list(email_address_query.as_dict().values())[0]
+        # email_address_query=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email).first()
+        # email_address=list(email_address_query.as_dict().values())[0]
 
 
         ##Create Account after purchase
@@ -3077,7 +3184,7 @@ def delete_item_from_cart():
 
 
     cart_row=db(db.muses_cart.id==request.vars['pri_key']).select()[0]
-    print cart_row
+    # print cart_row
 
     cart_row.update(is_active=False,time_removed=datetime.now())
     cart_row.update_record()
@@ -3691,7 +3798,7 @@ def ajax_shipping_information():
         if row.time_removed is not None:
             cart_last_modified_list.append(row.time_removed)
 
-        print cart_last_modified_list
+        # print cart_last_modified_list
 
 
 
@@ -3726,13 +3833,13 @@ def ajax_shipping_information():
 
     master_last_modified_time=max(time_list_no_none)
 
-    print "api time"
-    print easypost_last_retrieved_time
-    print "last modified time"
-    print master_last_modified_time
+    # print "api time"
+    # print easypost_last_retrieved_time
+    # print "last modified time"
+    # print master_last_modified_time
 
     ## After getting the address from the db, check to see if the address id is already associated with a session variable for shipping rates
-    print session.shipping_rates
+    # print session.shipping_rates
     if session.shipping_rates:
         if default_address_id in session.shipping_rates.keys():
             if easypost_last_retrieved_time>master_last_modified_time:
@@ -3808,10 +3915,10 @@ def ajax_shipping_information():
                             radio_button=INPUT(_type='radio', _name='shipping', _value=shipment.rates[i].service)
 
 
-                        print "shipment rate"
-                        print shipment.rates[i].id
-                        print "address db shipping rate id"
-                        print address.easypost_default_shipping_rate_id
+                        # print "shipment rate"
+                        # print shipment.rates[i].id
+                        # print "address db shipping rate id"
+                        # print address.easypost_default_shipping_rate_id
 
                         if shipment.rates[i].id==address.easypost_default_shipping_rate_id:
                             selected_shipping_option=True
@@ -4014,13 +4121,13 @@ def ajax_choose_shipping_option():
 
         if session.shipping_rates[default_address.id][rate_index]['rate_id']==default_address.easypost_default_shipping_rate_id:
 
-            print ("setting the default shipping option in the session")
+            # print ("setting the default shipping option in the session")
             shipping_cost_USD=session.shipping_rates[default_address.id][rate_index]['rate']
-            print (shipping_cost_USD)
+            # print (shipping_cost_USD)
             session.shipping_rates[default_address.id][rate_index]['selected_shipping_option']=True
 
 
-    print session.cart_cost_USD
+    # print session.cart_cost_USD
 
     # print session.shipping_rates
 
@@ -4567,6 +4674,8 @@ def paypal_confirmation():
         ## Use the paymentId to retrieve payment object
         payment=paypalrestsdk.Payment.find(payment_id)
 
+        email_address=payment['payer']['payer_info']['email']
+
 
         ## Try to execute the payment with the payer_id
         if payment.execute({"payer_id":payer_id}) or skip:
@@ -4580,41 +4689,44 @@ def paypal_confirmation():
 
             user_data=db(db.auth_user.id==auth.user_id).select().first()
 
-            ## If you get from paypal and the user isn't full flegged
-            ## you have to add their email to the list of correspondence
-            if auth.has_membership('gimp'):
 
-                #muses_email_address=payment['payer']['payer_info']['email']
-                # user_record=db(db.auth_user.id==auth.user_id).select().first()
-                # print (user_record)
+            ## Decided against this for now:
 
-                ## Even though they are gimp user, check to see if the email they used for paypal exists in the db
-                existing_user=db(db.auth_user.email==payment['payer']['payer_info']['email']).select().first()
+            # ## If you get from paypal and the user isn't full flegged
+            # ## you have to add their email to the list of correspondence
+            # if auth.has_membership('gimp'):
 
-                ## If the email does not exixt it means you can change the user's email to the one the used in paypal
-                if not existing_user:
+            #     #muses_email_address=payment['payer']['payer_info']['email']
+            #     # user_record=db(db.auth_user.id==auth.user_id).select().first()
+            #     # print (user_record)
 
-                    user_data.update(email=payment['payer']['payer_info']['email'])
-                    user_data.update_record()
+            #     ## Even though they are gimp user, check to see if the email they used for paypal exists in the db
+            #     existing_user=db(db.auth_user.email==payment['payer']['payer_info']['email']).select().first()
 
-                    ## This tries to get a list of emails from the db but I'm pretty sure it is failing and that is 
-                    ## it still adds the email to the correspondence even though the logic is here to prevent that. 
-                    emails=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email)
+            #     ## If the email does not exixt it means you can change the user's email to the one the used in paypal
+            #     if not existing_user:
 
-                    if payment['payer']['payer_info']['email'] in emails:
-                        pass
-                    else:
-                        db.email_correspondence.insert(user_id=auth.user_id,email=payment['payer']['payer_info']['email'], is_active=True)
+            #         user_data.update(email=payment['payer']['payer_info']['email'])
+            #         user_data.update_record()
 
-                else:
+            #         ## This tries to get a list of emails from the db but I'm pretty sure it is failing and that is 
+            #         ## it still adds the email to the correspondence even though the logic is here to prevent that. 
+            #         emails=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email)
 
-                    emails=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email)
+            #         if payment['payer']['payer_info']['email'] in emails:
+            #             pass
+            #         else:
+            #             db.email_correspondence.insert(user_id=auth.user_id,email=payment['payer']['payer_info']['email'], is_active=True)
 
-                    ## Same here as above comment. 
-                    if payment['payer']['payer_info']['email'] in emails:
-                        pass
-                    else:
-                        db.email_correspondence.insert(user_id=auth.user_id,email=payment['payer']['payer_info']['email'], is_active=True)
+            #     else:
+
+            #         emails=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email)
+
+            #         ## Same here as above comment. 
+            #         if payment['payer']['payer_info']['email'] in emails:
+            #             pass
+            #         else:
+            #             db.email_correspondence.insert(user_id=auth.user_id,email=payment['payer']['payer_info']['email'], is_active=True)
 
 
 
@@ -4636,6 +4748,8 @@ def paypal_confirmation():
                 payment_service='paypal',
 
                 payment_data=payment,
+
+                payment_invoice_number=session.payment_information['information_LOD'][0]['invoice_number'],
 
                 summary_data=session.summary_information,
 
@@ -4706,7 +4820,7 @@ def paypal_confirmation():
 
 
             receipt_context=generate_confirmation_email_receipt_context(
-                muses_email_address=user_data.email, 
+                muses_email_address=email_address, 
                 purchase_history_data_row=db(db.purchase_history_data.id==purchase_history_data_id).select().first(),
                 purchase_history_products_rows=db(db.purchase_history_products.purchase_history_data_id==purchase_history_data_id).select(),
             )
@@ -4715,8 +4829,8 @@ def paypal_confirmation():
             #receipt_message_html = response.render('receipt.html', receipt_context)
             receipt_message_html = response.render('default/receipt.html', receipt_context)
 
-            email_address_query=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email).first()
-            email_address=list(email_address_query.as_dict().values())[0]
+            # email_address_query=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email).first()
+            # email_address=list(email_address_query.as_dict().values())[0]
             #print email_address
             
             from postmark import PMMail
@@ -4834,8 +4948,8 @@ def create_gimp_user():
     if auth.is_logged_in():
         return dict()
     else:
-        # temp_password=str(id_generator())+str(time())
-        temp_password='guestuser'
+        temp_password=str(id_generator())+str(time())
+        # temp_password='guestuser'
 
         # temp_email=str(time())+'@'+str(id_generator())+'.com'
         temp_email="GUEST_USER"+'@'+str(int(time()*100))+'.'+str(id_generator())
@@ -4987,7 +5101,21 @@ def request_reset_password():
 
 
 def reset_password():
-    return dict(form=auth.reset_password())
+    #auth.settings.reset_password_onvalidation = [reset_password_callback]
+    auth.settings.reset_password_onaccept = [reset_password_callback]
+
+    # reset_password_callback('arg')
+
+    form=auth.reset_password()
+
+    # if form.accepted:
+    #     print "WTF"
+    #     reset_password_callback(form)
+    # else:
+    #     print "not accepted, betch"
+    #     pass
+
+    return dict(form=form)
 
 def logout():
     return dict(form=auth.logout(next=URL('categories')))

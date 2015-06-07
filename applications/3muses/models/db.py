@@ -10,7 +10,7 @@ import os,ast
 # request.requires_https()
 
 
-sqlite_tf=True
+sqlite_tf=False
 
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
@@ -104,8 +104,8 @@ auth.define_tables(username=False, signature=False)
 
 ## configure email
 mail = auth.settings.mailer
-mail.settings.server = 'smtp.postmarkapp.com:587'
-# mail.settings.server = 'logging' or 'smtp.postmarkapp.com'
+# mail.settings.server = 'smtp.postmarkapp.com:587'
+mail.settings.server = 'logging' or 'smtp.postmarkapp.com:587'
 mail.settings.sender = 'confirmation@threemuses.glass'
 mail.settings.login = os.environ['POSTMARK_API_KEY']+':'+os.environ['POSTMARK_API_KEY']
 # mail.settings.login = 'username:password'
@@ -122,6 +122,9 @@ auth.settings.reset_password_requires_verification = True
 auth.settings.login_url = URL('login')
 auth.settings.logged_url = URL('profile')
 auth.settings.remember_me_form = False
+auth.settings.profile_onaccept = []
+auth.settings.reset_password_onaccept = []
+
 
 ## if you need to use OpenID, Facebook, MySpace, Twitter, Linkedin, etc.
 ## register with janrain.com, write your domain:api_key in private/janrain.key

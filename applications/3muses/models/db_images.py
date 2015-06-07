@@ -97,6 +97,7 @@ db.define_table('purchase_history_data',
 	## Payment Fields
 	Field('payment_service'),
 	Field('payment_confirmation_id'),
+	Field('payment_invoice_number'),
 
 	## Cart Summary Details
 	Field('cart_base_cost'), ## Probably don't need this field

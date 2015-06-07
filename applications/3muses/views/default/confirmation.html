@@ -36,6 +36,8 @@
 
 					<h3>You should recieve a confirmation email shortly at {{=email_address}}.</h3>
 					<h3>Please allow one day for processing. Below are the details of your order:</h3>
+					
+					<h3>You Order ID #: {{ =purchase_history_data_row.payment_invoice_number }}</h3>
 
 						<br/>
 
@@ -53,7 +55,10 @@
 
 </div>
 
+<h3> Make an account to keep track of your purchases</h3>
+
+<br>
 
 {{=form_username}}
 
-{{=form_password_change}}
+<br>

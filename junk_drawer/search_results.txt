@@ -1,0 +1,84 @@
+
+/home/wantsomechocolate/Code/3Muses/applications/3muses/controllers/default.py:
+   62  
+   63  ## Auth settings that need functions that are defined in this file
+   64: #auth.settings.reset_password_onaccept = [reset_password_callback]
+   65  
+   66  ## The static views (index, categories, display, product, meet the artist.)
+   ..
+ 5103  def reset_password():
+ 5104      #auth.settings.reset_password_onvalidation = [reset_password_callback]
+ 5105:     auth.settings.reset_password_onaccept = [reset_password_callback]
+ 5106  
+ 5107      # reset_password_callback('arg')
+
+/home/wantsomechocolate/Code/3Muses/env/lib/python2.7/site-packages/gluon/tools.py:
+ 1125              profile_next = url_index,
+ 1126              profile_onvalidation = [],
+ 1127:             profile_onaccept = [],
+ 1128              retrieve_username_next = url_index,
+ 1129              retrieve_password_next = url_index,
+ ....
+ 2679              onvalidation = self.settings.profile_onvalidation
+ 2680          if onaccept is DEFAULT:
+ 2681:             onaccept = self.settings.profile_onaccept
+ 2682          if log is DEFAULT:
+ 2683              log = self.messages.profile_log
+
+/home/wantsomechocolate/Code/3Muses/gluon/tools.py:
+ 1249              profile_next = url_index,
+ 1250              profile_onvalidation = [],
+ 1251:             profile_onaccept = [],
+ 1252              retrieve_username_next = url_index,
+ 1253              retrieve_password_next = url_index,
+ ....
+ 3111              onvalidation = self.settings.profile_onvalidation
+ 3112          if onaccept is DEFAULT:
+ 3113:             onaccept = self.settings.profile_onaccept
+ 3114          if log is DEFAULT:
+ 3115              log = self.messages['profile_log']
+
+
+
+
+
+/home/wantsomechocolate/Code/3Muses/applications/3muses/controllers/default.py:
+   62  
+   63  ## Auth settings that need functions that are defined in this file
+   64: #auth.settings.reset_password_onaccept = [reset_password_callback]
+   65  
+   66  ## The static views (index, categories, display, product, meet the artist.)
+   ..
+ 5103  def reset_password():
+ 5104      #auth.settings.reset_password_onvalidation = [reset_password_callback]
+ 5105:     auth.settings.reset_password_onaccept = [reset_password_callback]
+ 5106  
+ 5107      # reset_password_callback('arg')
+
+ /home/wantsomechocolate/Code/3Muses/env/lib/python2.7/site-packages/gluon/tools.py:
+ 1135              retrieve_password_onvalidation = [],
+ 1136              reset_password_onvalidation = [],
+ 1137:             reset_password_onaccept = [],
+ 1138              hmac_key = hmac_key,
+ 1139              )
+ ....
+ 2515              onvalidation = self.settings.reset_password_onvalidation
+ 2516          if onaccept is DEFAULT:
+ 2517:             onaccept = self.settings.reset_password_onaccept
+ 2518          if log is DEFAULT:
+ 2519              log = self.messages.reset_password_log
+
+/home/wantsomechocolate/Code/3Muses/gluon/tools.py:
+ 1259              retrieve_password_onvalidation = [],
+ 1260              reset_password_onvalidation = [],
+ 1261:             reset_password_onaccept = [],
+ 1262              hmac_key = hmac_key,
+ 1263          )
+ ....
+ 2934              onvalidation = self.settings.reset_password_onvalidation
+ 2935          if onaccept is DEFAULT:
+ 2936:             onaccept = self.settings.reset_password_onaccept
+ 2937          if log is DEFAULT:
+ 2938              log = self.messages['reset_password_log']
+
+

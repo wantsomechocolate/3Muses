@@ -43,11 +43,16 @@
 
         <script src="{{ =URL('static', 'js/vendor/modernizr-2.8.3-respond-1.4.2.min.js') }}"></script>
     </head>
-    {{ if request.args(0)==None: }}
-    <body id="{{ =request.env.web2py_original_uri[1:] }}">
-    {{ else: }}
-    <body id="{{ =request.args(0) }}">
-    {{ pass}}
+
+    <!--
+    {#{ if request.args(0)==None: }#}
+    <body id="{#{ =request.env.web2py_original_uri[1:] }#}">
+    {#{ else: }#}
+    <body id="{#{ =request.args(0) }#}">
+    {#{ pass}#} 
+    -->
+
+    <body id="{{ =request.function }}">
 
     <div class="flash alert alert-dismissable">{{=response.flash or ''}}</div>
     

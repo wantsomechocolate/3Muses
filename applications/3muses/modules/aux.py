@@ -279,6 +279,7 @@ def create_purchase_history_dict(
     address_data,
     payment_service,
     payment_data,
+    payment_invoice_number,
     summary_data,
     ):
 
@@ -327,6 +328,7 @@ def create_purchase_history_dict(
 
         payment_service=payment_service,
         payment_confirmation_id=payment_data.id,
+        payment_invoice_number=payment_invoice_number,
 
         cart_base_cost=summary_data['information_LOD'][0]['cart_cost_USD'],
         cart_shipping_cost=summary_data['information_LOD'][0]['shipping_cost_USD'],

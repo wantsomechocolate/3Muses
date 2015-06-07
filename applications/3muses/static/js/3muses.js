@@ -746,8 +746,18 @@ $(document).ready(function(){
 
 
 /*Make this conditional for the confirmation page*/
-$("input[name=old_password]").val("guestuser")
+$("#confirmation input[name=old_password]").val("guestuser");
+
+// $("#confirmation input[name=first_name").val("");
+// $("#confirmation input[name=last_name").val("");
+$("#confirmation input[name=email").val("");
 
 
+// $("#confirmation input[name=first_name]").attr("placeholder", "Enter First Name");
+// $("#confirmation input[name=last_name]").attr("placeholder", "Enter Last Name");
+$("#confirmation input[name=email]").attr("placeholder", "Enter Email");
+
+// $("#confirmation input[name=new_password]").attr("placeholder", "Enter Password");
+// $("#confirmation input[name=new_password2]").attr("placeholder", "Verify Password");
 
 });

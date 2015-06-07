@@ -2866,6 +2866,17 @@ class Auth(object):
 
         if next is DEFAULT:
             next = self.get_vars_next() or self.settings.reset_password_next
+
+
+        ########################################################################
+        ## James McGlynn Added this Shit
+        if onvalidation is DEFAULT:
+            onvalidation = self.settings.reset_password_onvalidation
+        if onaccept is DEFAULT:
+            onaccept = self.settings.reset_password_onaccept
+        ########################################################################
+
+
         try:
             key = request.vars.key or getarg(-1)
             t0 = int(key.split('-')[0])
@@ -2901,6 +2912,14 @@ class Auth(object):
             session.flash = self.messages.password_changed
             if self.settings.login_after_password_change:
                 self.login_user(user)
+
+
+            ######################################################################
+            ## Added by James McGlynn
+            callback(onaccept, form)
+            ######################################################################
+
+
             redirect(next, client_side=self.settings.client_side)
         return form
 
