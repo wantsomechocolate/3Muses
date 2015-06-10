@@ -10,7 +10,7 @@ import os,ast
 # request.requires_https()
 
 
-sqlite_tf=False
+sqlite_tf=True
 
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
@@ -124,6 +124,24 @@ auth.settings.logged_url = URL('profile')
 auth.settings.remember_me_form = False
 auth.settings.profile_onaccept = []
 auth.settings.reset_password_onaccept = []
+auth.messages.profile_updated = 'Profile updated'
+auth.messages.invalid_reset_password = 'Invalid or expired link'
+
+#auth.messages.reset_password_subject = 'Password reset'
+#auth.settings.registration_requires_verification = True
+
+auth.settings.profile_next = URL('profile')
+auth.settings.register_next = URL('login')
+auth.settings.request_reset_password_next = URL('login')
+auth.settings.reset_password_next = URL('login')
+auth.settings.verify_email_next = URL('login')
+
+#auth.settings.login_next = URL('index')
+#auth.settings.logout_next = URL('index')
+#auth.settings.retrieve_username_next = URL('index')
+#auth.settings.retrieve_password_next = URL('index')
+#auth.settings.change_password_next = URL('index')
+
 
 
 ## if you need to use OpenID, Facebook, MySpace, Twitter, Linkedin, etc.

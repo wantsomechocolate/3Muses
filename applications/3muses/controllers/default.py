@@ -1561,6 +1561,9 @@ def create_user_after_purchase_callback(form):
                 args=(reset_password_key),
                 scheme=True)
 
+    auth.messages.profile_updated = 'Please check your email to activate your account!'
+    #auth.messages.reset_password_subject = 'Welcome!'
+
     print link
     print user.email
 
@@ -1631,7 +1634,7 @@ def confirmation():
     import paypalrestsdk
     import stripe
 
-    auth.settings.profile_onaccept = [create_user_after_purchase_callback]
+    
 
     ## This function has a problem with deleting a user
     ## And then someone reusing the same email when they sign up
@@ -1910,6 +1913,15 @@ def confirmation():
         form_profile=auth.profile(next=URL('confirmation',args=(request.args[0])))
         # form_password_change=auth.change_password(next=URL('confirmation',args=(request.args[0])))
 
+        
+
+        #submit_button=form_profile.elements('input[type=submit]')[0]
+
+        # print submit_button
+
+        ## Editing Auth Items
+        form_profile.elements('input[type=submit]')[0]['_value']="Sign Up"
+        auth.settings.profile_onaccept = [create_user_after_purchase_callback]
 
 
 

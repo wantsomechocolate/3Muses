@@ -2201,6 +2201,25 @@ body#confirmation #order-summary{
 }
 
 
+
+
+.confirmation-email{
+	font-weight: bolder;
+}
+
+body#confirmation .container{
+	padding-left:0;
+	padding-right:0;
+}
+
+body#confirmation #order-summary .container{
+	padding-left:15px;
+	padding-right:15px;
+}
+
+
+
+
 @media screen and (min-width: 992px) {
 
 	body#confirmation #auth_user_email{
@@ -2229,7 +2248,20 @@ body#confirmation #order-summary{
 		width: 40%;
 	}
 
+	.confirmation-signup-header{
+		font-size: 2.3em
+	}
+
+	.confirmation-signup-item-container > div {
+		text-align: center;
+		font-size:1.6em;
+		margin-top:10px;
+	}
+
 }
+
+
+
 
 @media screen and (max-width: 992px) {
 
@@ -2257,7 +2289,35 @@ body#confirmation #order-summary{
 	}
 
 	.confirmation-signup-header{
-		font-size: 1.2em
+		font-size: 2em
+	}
+
+	.confirmation-signup-item-container{
+		font-size:1.4em;
+	}
+
+	.confirmation-signup-item-container > div{
+		margin-bottom:10px;
+	}
+
+	.confirmation-thankyou{
+		font-size: 2.2em;
+	}
+
+	.confirmation-email{
+		overflow-x: scroll;
+		font-weight: bolder;
+		padding-bottom: 7px;
+	}
+
+	body#confirmation .container{
+		padding-left:0;
+		padding-right:0;
+	}
+
+	body#confirmation #order-summary .container{
+		padding-left:15px;
+		padding-right:15px;
 	}
 
 }

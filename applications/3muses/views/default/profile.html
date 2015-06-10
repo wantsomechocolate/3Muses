@@ -1,3 +1,35 @@
 {{extend 'layout.html'}}
 
-{{=form}}
+<div class="container-fluid style1 profile-container-fluid">
+
+	<div class='container'>
+
+		<h2 class="align-hcenter">Profile</h2>
+
+
+		<div class="row profile-row">
+
+			<div class="col-md-offset-4 col-md-4">
+
+				<div id="web2py_user_form" class="profile tmg_auth_form_container">
+
+					{{=form}}
+
+				</div>
+
+			</div>
+
+		</div>
+
+		<div>Put a link to the purchase history here</div>
+
+
+		<div class="row tmg-auth-button-row">
+			<div class="col-md-offset-4 col-md-4 tmg-auth-button-col">
+				<a href="{{ =URL('change_password') }}"><button class="btn btn-warning">Change Password</button></a>
+			</div>
+		</div>
+
+	</div>
+
+</div>

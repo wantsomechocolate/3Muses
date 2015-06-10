@@ -13,7 +13,11 @@
 
 				<h3 class="confirmation-orderid">Your Order # is: <strong>{{ =confirmation_information['information_LOD'][0]['invoice_number'] }}</strong></h3>
 
-				<h3 class="confirmation-email">You should recieve a confirmation email shortly at <br><strong>{{ =confirmation_information['information_LOD'][0]['email_address'] }}</strong></h3>
+				<h3 class="confirmation-email-msg">You should recieve a confirmation email shortly at 
+
+				<div class="confirmation-email">{{ =confirmation_information['information_LOD'][0]['email_address'] }}</div>
+
+				</h3>
 
 				<br>
 				<h4> Come back and shop again anytime, we're open 24/7! </h4>
@@ -48,18 +52,18 @@
 
 				<div class="confirmation-signup-header"> Want to make an account? </div>
 
-				<div class="confirmation-signup">
+				<div class="confirmation-signup-item-container">
 
 					<div>
 						Keep track of your purchases
 					</div>
 
 					<div>
-						Be the first to know about new items and sales (only if you want)
+						Be the first to know about new items and sales <br> (only if you want)
 					</div>
 
 					<div>
-						Get periodic offers and discounts (again, only if you want)
+						Get periodic offers and discounts <br> (again, only if you want)
 					</div>
 
 				</div>
