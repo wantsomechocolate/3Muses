@@ -67,7 +67,7 @@ body {
 
 	body {
 	  /* Margin bottom by footer height */
-	  margin-bottom: 10em !important;
+	  margin-bottom: 7em !important;
 	}
 
 }
@@ -355,6 +355,10 @@ h2{
 	letter-spacing: 0.05em;
 }
 
+.product-description{
+	text-align: justify;
+}
+
 
 .product-view-row{
 	padding-top:2em;
@@ -379,8 +383,8 @@ h2{
 	background-color: rgba(255,255,255,.5);
 	margin: 0;
 	padding: 5px;
-	margin-right:2 	px;
-
+	margin-right:2px;
+	border-top-left-radius: 20px 15px;
  }
 
 @media screen and (min-width: 992px) {
@@ -394,6 +398,10 @@ h2{
 
 
 @media screen and (max-width: 992px) {
+
+	.product-header{
+		margin-top: 20px;
+	}
 
 	.product-view-btn{
 		width:100%;
@@ -1553,17 +1561,39 @@ input[type=radio]{
 /* Conditional Footers */
 
 /* Category Footer Styles */
-.category-footer-header{
+
+.category-footer-header {
 	font-size: 2.3em;
 	text-align: center;
+	position: absolute;
+	top: 0;
+	/* right: 0; */
+	z-index: 1;
+	/*background-color: rgba(231, 231, 231, 0.79);*/
+	width: 100%;
+	/*margin: 0 auto;*/
+	/*text-align: center;*/
 }
+
+.category-footer-header > div{
+
+	background-color: rgba(231, 231, 231, 0.79);
+	margin-right:15px;
+	margin-left:15px;
+}
+
 
 .category-footer-image-container{
 	margin-bottom:20px;
+	padding-right:0 !important;
+	padding-left:0 !important;
 }
 
-.category-footer-image-container-child{
-	box-shadow: 5px 5px 8px #888;
+.category-footer-image-container-child {
+	box-shadow: 5px 5px 8px #333;
+	background-color: #FFF;
+	margin-left: 15px;
+	margin-right: 15px;
 }
 
 
@@ -1615,7 +1645,7 @@ footer {
 		margin-top:2em;
 		*/
 		margin-top:2em;
-		height: 10em;
+		height: 7em;
 	}
 
 	.footer-row{
@@ -2106,3 +2136,128 @@ footer {
 /*#please-wait-stripe .modal-footer button{
     visibility: hidden;
 }*/
+
+
+
+
+/*CONFIRMATION STYLES*/
+.confirmation-row{
+	text-align: center;
+}
+
+body#confirmation label#auth_user_email__label{
+	display:none;
+}
+
+.confirmation-thankyou{
+	font-size: 2.5em;
+}
+
+.confirmation-orderid{
+	background-color: rgba(0,0,0,.3);
+	padding-top: 10px;
+	padding-bottom: 10px;
+	border-radius: 10px;
+}
+
+body#confirmation #auth_user_email{
+	height: 3em;
+	border-radius: 5px;
+	border: 1px solid #888;
+}
+
+body#confirmation form table{  
+
+}
+
+
+body#confirmation table #submit_record__row{
+
+}
+
+body#confirmation table #submit_record__row .w2p_fw{
+
+}
+
+body#confirmation table #submit_record__row .w2p_fw input{
+
+}
+
+.confirmation-col-signup{
+/*	border: 1px solid #444;
+	box-shadow: 2px 2px 5px #444;*/
+}
+
+.confirmation-col-main{
+	margin-bottom: 20px;
+}
+
+h3.confirmation-signup{
+/*	font-size: 15px;*/
+}
+
+body#confirmation #order-summary{
+	margin-bottom:50px;
+}
+
+
+@media screen and (min-width: 992px) {
+
+	body#confirmation #auth_user_email{
+		width: 600px;
+		padding-left: 10px;
+		padding-right: 10px;
+	}
+
+	body#confirmation form table{  
+		margin: 0 auto;
+	}
+
+	body#confirmation table #submit_record__row{
+
+	}
+
+	body#confirmation table #submit_record__row .w2p_fw{
+		position: relative;
+		height: 34px;
+	}
+
+	body#confirmation table #submit_record__row .w2p_fw input{
+		position: absolute;
+		right: 0;
+		top: 0;
+		width: 40%;
+	}
+
+}
+
+@media screen and (max-width: 992px) {
+
+	body#confirmation #auth_user_email{
+		width: 100%;
+		padding-left: 10px;
+		padding-right: 10px;
+	}
+
+	body#confirmation form table{  
+		width:100%;
+	}
+
+	body#confirmation table #submit_record__row{
+
+	}
+
+	body#confirmation table #submit_record__row .w2p_fw{
+
+	}
+
+	body#confirmation table #submit_record__row .w2p_fw input{
+
+		width: 100%;
+	}
+
+	.confirmation-signup-header{
+		font-size: 1.2em
+	}
+
+}

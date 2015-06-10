@@ -1,51 +1,72 @@
 {{('message' in globals())}}
 {{extend 'layout.html'}}
 
-<div class="container-fluid style4">
+<div class="container-fluid style2">
 
-	<div class='container confirmation_container'>
+	<div class='container'>
 
-		<div class="row cart-view-payment-row">
+		<div class="row confirmation-row">
 
-			<div class="col-md-offset-2 col-md-8 checkout-view-payment-group-container">
+			<div class="col-md-offset-2 col-md-8 confirmation-col confirmation-col-main">
 
-				{{if purchase_history_data_row=="SessionError":}}
+				<h1 class="confirmation-thankyou">Thank you for shopping at <br>ThreeMusesGlass!</h1>
 
-					Please go to your purchase history or email to view past purchase information
+				<h3 class="confirmation-orderid">Your Order # is: <strong>{{ =confirmation_information['information_LOD'][0]['invoice_number'] }}</strong></h3>
 
-				{{elif purchase_history_data_row=="ValueError":}}
+				<h3 class="confirmation-email">You should recieve a confirmation email shortly at <br><strong>{{ =confirmation_information['information_LOD'][0]['email_address'] }}</strong></h3>
 
-					That URL does not correspond to a purchase history record (VALUE ERROR)
+				<br>
+				<h4> Come back and shop again anytime, we're open 24/7! </h4>
+				
+			</div>
 
-				{{elif purchase_history_data_row=="TypeError":}}
 
-					That URL does not correspond to a purchase history record (TYPE ERROR)
 
-				{{elif purchase_history_data_row=="IndexError":}}
+<!-- 			<div class="col-md-offset-2 col-md-8 confirmation-col">
+				
+				<h3 class="confirmation-finalmsg">Below are the details of your order:</h3>
 
-					That URL does not correspond to a purchase history record (INDEX ERROR)
+			</div> -->
 
-				{{else:}}
+		</div>
 
-					<h1>Thank you for shopping at Three Muses Glass!</h1>
+	</div>
 
-					<br/>
-					<br/>
+</div>
 
-					<!-- <h3>You should recieve a confirmation email shortly at {-{=purchase_history_data_row.muses_email_address }-}.</h3> -->
 
-					<h3>You should recieve a confirmation email shortly at {{=email_address}}.</h3>
-					<h3>Please allow one day for processing. Below are the details of your order:</h3>
-					
-					<h3>You Order ID #: {{ =purchase_history_data_row.payment_invoice_number }}</h3>
 
-						<br/>
 
-					{{=final_div}}
 
-						<br/>
+<div class="container-fluid style1">
 
-				{{pass}}
+	<div class='container'>
+
+		<div class="row confirmation-row">
+
+			<div class="col-md-offset-2 col-md-8 confirmation-col confirmation-col-signup">
+
+				<div class="confirmation-signup-header"> Want to make an account? </div>
+
+				<div class="confirmation-signup">
+
+					<div>
+						Keep track of your purchases
+					</div>
+
+					<div>
+						Be the first to know about new items and sales (only if you want)
+					</div>
+
+					<div>
+						Get periodic offers and discounts (again, only if you want)
+					</div>
+
+				</div>
+
+				<br>
+				{{=form_profile}}
+				<br>
 
 			</div>
 
@@ -55,10 +76,253 @@
 
 </div>
 
-<h3> Make an account to keep track of your purchases</h3>
 
-<br>
 
-{{=form_username}}
 
-<br>
+
+
+
+
+
+<!-- An order summary so customer can see while they pay -->
+<div class="container-fluid style1" id="order-summary">
+	<div class='container'>
+
+<!-- If there is no error in the cart then proceed (Otherwise show pretty much nothing here) -->
+{{ if cart_information['error']==False: }}
+
+		<div class="row checkout-row">
+		  	<div class="col-md-offset-2 col-md-8 checkout-summary-header">
+		  		<h2>Order Details</h2>
+		  	</div>
+		</div>
+
+	<!-- For each item in the cart -->
+	{{ for i in range(len(cart_information['information_LOD'])): }}
+				
+		<div class="row checkout-row">
+		  	<div class="col-md-offset-2 col-md-8 checkout-summary-line-item-container checkout-summary-product-container" >
+
+			  	<hr class="checkout-horizontal-dotted-line">
+
+				<div class="col-md-8 checkout-summary-item checkout-summary-left checkout-summary-left-tier-3">
+					<div > <!-- For vertically centering -->
+						<div> <!-- for background color -->
+							{{ =cart_information['information_LOD'][i]['product_name'] }}
+						</div>
+					</div>
+				</div>
+
+				<div class="col-md-offset-2 col-md-2 checkout-summary-item checkout-summary-cost checkout-summary-cost-tier-3">
+					<div > <!-- For vertically centering -->
+						<div>
+							${{ ="%.2f" % cart_information['information_LOD'][i]['product_cost'] }}
+						</div>
+					</div>
+				</div>
+
+		  	</div>
+		</div>
+
+	{{pass}} <!-- For the cart for loop -->
+
+		<!-- The cart subtotal row is next -->
+		<div class="row checkout-row">
+		  	<div class="col-md-offset-2 col-md-8 checkout-summary-line-item-container checkout-summary-subtotal-container" >
+
+			  	<hr class="checkout-horizontal-dotted-line">
+
+				<div class="col-md-8 checkout-summary-item checkout-summary-left checkout-summary-left-tier-2">
+					<div>
+						<div>
+							Item Subtotal
+						</div>
+					</div>
+				</div>
+
+				<div class="col-md-offset-2 col-md-2 checkout-summary-item checkout-summary-cost checkout-summary-cost-tier-2">
+
+					<div>
+						<div>
+							${{ ="%.2f" % session.summary_information['information_LOD'][0]['cart_cost_USD'] }}
+						</div>
+					</div>
+				</div>
+
+		  	</div>
+		</div>
+
+
+
+		<!-- This begins the mammouth shipping row -->
+		<div class="row checkout-row">
+		  <div class="col-md-offset-2 col-md-8 checkout-summary-line-item-container checkout-summary-subtotal-container" >
+
+	<!-- If there is not a problem with the shipping info -->				
+	{{ if shipping_information['error']==False: }}
+
+		<!-- Also not a problem with the address info, then proceed -->
+		{{ if address_information['error']==False: }}
+
+		  	<hr class="checkout-horizontal-dotted-line checkout-horizontal-dotted-line-shipping">
+
+			<div class="col-md-8 checkout-summary-item checkout-summary-left checkout-summary-left-tier-2">
+				<div>
+					<div>
+
+						<div>
+
+							{{ print shipping_information }}
+							{{ =shipping_information['information_LOD'][0]['carrier'] }} 
+							{{ =shipping_information['information_LOD'][0]['service'] }}
+							Shipping (Est. {{ =shipping_information['information_LOD'][0]['delivery_date'] }}) To:
+						</div>
+
+			<!-- This should only ever have one address in it -->
+			{{ for i in range(len(address_information['information_LOD'])): }}
+
+						<div class="checkout-summary-address-container">
+							<div >
+
+					  			<div >
+						          	{{ =address_information['information_LOD'][i]['first_name'] }}
+						          	{{ =address_information['information_LOD'][i]['last_name'] }}
+					          	</div>
+									          	
+					          	<div >
+						          	{{ =address_information['information_LOD'][i]['street_address_line_1'] }}
+						          	{{ =address_information['information_LOD'][i]['street_address_line_2'] }}
+					          	</div>
+
+					          	<div >
+						          	{{ =address_information['information_LOD'][i]['municipality'] }},
+						          	{{ =address_information['information_LOD'][i]['administrative_area'] }}
+						          	{{ =address_information['information_LOD'][i]['postal_code'] }}
+					          	</div>
+
+					          	<div >
+					          		{{ =address_information['information_LOD'][i]['country'] }}
+					          	</div>
+
+					        </div>
+					    </div>	
+					
+			{{pass}}  <!--For the for loop that 'loops' through the addresses-->
+
+
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-offset-2 col-md-2 checkout-summary-item checkout-summary-cost checkout-summary-cost-tier-2 checkout-summary-shipping-cost">
+				<div>
+					<div>
+						${{ ="%.2f" % session.summary_information['information_LOD'][0]['shipping_cost_USD'] }}
+					</div>
+				</div>
+			</div>
+
+
+
+		{{ else: }} <!-- For the address error if -->
+			<div >
+				{{ =address_information['error_message'] }}
+			</div>
+		{{ pass }} <!-- For the address error if -->
+
+
+	{{ else: }} <!-- For the shipping error if -->
+			<div >
+				{{ =shipping_information['error_message']}}
+			</div>
+	{{ pass }} <!-- For the shipping error if -->
+
+
+		  </div>
+		</div> <!-- This ends the mammouth shipping row -->
+
+
+
+		<!-- Start the grand total row -->
+		<div class="row checkout-row">
+		  <div class="col-md-offset-2 col-md-8 checkout-summary-line-item-container checkout-summary-subtotal-container" >
+
+			  	<hr class="checkout-horizontal-dotted-line checkout-horizontal-dotted-line-total">
+
+				<div class="col-md-8 checkout-summary-item checkout-summary-left checkout-summary-left-tier-1">
+					<div>
+						<div>
+							Total Cost
+						</div>
+					</div>
+				</div>
+
+				<div class="col-md-offset-2 col-md-2 checkout-summary-item checkout-summary-cost checkout-summary-cost-tier-1 checkout-summary-total-cost">
+					<div>
+						<div>
+							${{ ="%.2f" % session.summary_information['information_LOD'][0]['total_cost_USD'] }}
+						</div>
+					</div>
+				</div>
+
+		  </div>
+		</div> <!-- Close the total row -->
+
+
+
+		<!-- Start the payment method row -->
+		<div class="row checkout-row">
+		  <div class="col-md-offset-2 col-md-8 checkout-summary-line-item-container checkout-summary-subtotal-container" >
+
+			  	<hr class="checkout-horizontal-dotted-line checkout-horizontal-dotted-line-total">
+
+				<div class="col-md-8 checkout-summary-item checkout-summary-left checkout-summary-left-tier-1">
+					<div>
+						<div>
+							Payment Source
+						</div>
+					</div>
+				</div>
+
+				<div class="col-md-offset-2 col-md-2 checkout-summary-item checkout-summary-cost checkout-summary-cost-tier-1 checkout-summary-total-cost">
+					<div>
+						<div>
+							{{ if payment_information['information_LOD'][0]['payment_service']=='stripe': }}
+								{{ if payment_information['information_LOD'][0]['payment_object']=='card': }}
+
+									{{ =payment_information['information_LOD'][0]['card_brand'] }}
+									-
+									{{ =payment_information['information_LOD'][0]['card_last4'] }}
+
+								{{ else: }}
+
+									{{ =payment_information['information_LOD'][0]['payment_object'] }}
+
+								{{ pass }}
+
+							{{ else: }}
+
+								{ =payment_information['information_LOD'][0]['payment_service'] }}
+
+							{{ pass }}
+							
+						</div>
+					</div>
+				</div>
+
+		  </div>
+		</div> <!-- Close the payment method row -->
+
+
+
+{{ else: }}
+		<div class="row checkout-row">
+		  	<div class="col-md-offset-2 col-md-8 checkout-summary-error">
+				{{ =cart_information['error_message'] }}
+			</div>					
+		</div>
+{{ pass }}
+
+	</div> <!-- close container -->
+</div> <!-- close order detail summary fluid container -->
+

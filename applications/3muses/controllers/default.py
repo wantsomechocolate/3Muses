@@ -233,8 +233,8 @@ def product():
 
 
 ## Meet the artist is under construction
-def artist():
-    return dict()
+# def artist():
+#     return dict()
 
 
 
@@ -457,7 +457,6 @@ def add_new_address(): #http://codepen.io/Angelfire/pen/dJhyr
         ## if paypal, then no details to get really
 
 def cart():
-
 
     from aux import retrieve_cart_contents
 
@@ -711,786 +710,6 @@ def cart():
         card_information=card_information,
 
         )
-
-
-
-
-
-
-
-
-
-
-
-
-
-def checkout_1():
-
-
-    from aux import retrieve_cart_contents
-
-
-#############################################################################################
-###########--------------------------Initial Logic-------------------------------############
-#############################################################################################
-
-    ## If someone tries to mess with the URL in the browser by going to 
-    ## cart/arg, It will reload the page without the arg
-    if request.args(0) is not None:
-        redirect(URL('checkout'))
-    else:
-        pass
-
-    ## If you try to visit this page while you are not logged in, you get logged in as a handicapped user. 
-    ## but the nav options don't change. 
-    if auth.is_logged_in():
-        pass
-    else:
-        create_gimp_user()
-
-# #############################################################################################
-# ###########----------------------------Cart Logic--------------------------------############
-# #############################################################################################
-
-#     cart_information_LOD=[]
-#     cart_information=dict(error=False,error_message=None,cart_information_LOD=cart_information_LOD)
-
-#     ## Retrieve the current items from the users cart)
-#     ## There is no check here to not include items that are sold out or no
-#     ## longer active, That happens later.
-
-#     #cart_db=db(db.muses_cart.user_id==auth.user_id).select()
-
-#     cart_db=retrieve_cart_contents(auth,db)
-
-#     ## If cart turns out to be empty, set cart_grid so the view can have
-#     ## something to display. but now cart_grid_table_row_LOL will be empty,
-#     ## which should disallow the user from pressing the checkout button. 
-#     if not cart_db:
-
-#         cart_information['error']=True
-#         cart_information['error_message']="You have not yet added anything to your cart"
-#         cart_is_empty=True
-
-#     ## If the cart is not empty
-#     else:
-        
-#         cart_is_empty=False
-#         ## For each product in the cart
-#         for row in cart_db:
-
-#             ## Retreive product info from the db
-#             product=db(db.product.id==row.product_id).select().first()
-
-#             image=db(db.image.product_name==row.product_id).select().first()
-
-#             if not image:
-#                 srcattr=URL('static','img/no_images.png')
-#             else:
-
-#                 ## If using a local db get the product image locally
-#                 if sqlite_tf:
-#                     # # image=db(db.image.product_name==row.product_id).select().first()
-#                     # if len(images)==0:
-#                     #     srcattr=URL('static','img/no_images.png')
-#                     # else:
-#                     srcattr=URL('download', image.s3_url)
-#                     # print ("sqlite")
-                
-#                 ## For the more common case, get the image from aws s3
-#                 else:
-#                     # srcattr=S3_BUCKET_PREFIX+str(db(db.image.product_name==row.product_id).select().first().s3_url)
-#                     srcattr=S3_BUCKET_PREFIX+str(image.s3_url)
-
-#             ## Create the product_image_url
-#             product_image_url=A(IMG(_src=srcattr, _class='img-thumbnail cart-view-cart-tn'), _href=URL('default','product',args=[row.product_id]))
-
-#             ## Create a delete button for the item
-#             delete_button=A('X', _href=URL('delete_item_from_cart', vars=dict(pri_key=row.id,redirect_url=URL('cart'))), _class="btn btn-danger cart-view-cart-item-remove")
-
-#             ## Populate a list with the current product info
-#             cart_grid_table_row_list=[
-#                 product_image_url, 
-#                 product.product_name, 
-#                 product.cost_USD, 
-#                 #row.product_qty, This was used when qty could be over 1,
-#                 delete_button
-#             ]
-
-#             cart_item_dict=dict(
-#                 product_image_url=product_image_url,
-#                 product_name=product.product_name,
-#                 product_cost=product.cost_USD,
-#                 product_delete_button=delete_button,
-#                 product_active=product.is_active,
-#                 )
-
-#             cart_information_LOD.append(cart_item_dict)
-
-#             ## If the item is no longer active, remove it from the cart.
-#             if not product.is_active:
-#                 db(db.muses_cart.product_id==product.id).delete()
-
-
-
-# #############################################################################################
-# ###########-----------------Address Logic (User and Non User)--------------------############
-# #############################################################################################
-
-#     address_information_LOD=[]
-#     address_information=dict(error=False,error_message=None,address_information_LOD=address_information_LOD)
-
-#     address_list=db(db.addresses.user_id==auth.user_id).select(orderby=db.addresses.street_address_line_1)
-
-#     if not address_list:
-
-#         address_list_is_empty=True
-#         address_information['error']=True
-#         address_information['error_message']="Please add an address to continue with your purchase"
-
-#     else:
-
-#         address_list_is_empty=False
-
-#         for j in range(len(address_list)):
-
-#             address_information_LOD.append(dict(
-#                 first_name=address_list[j].first_name,
-#                 last_name=address_list[j].last_name,
-#                 street_address_line_1=address_list[j].street_address_line_1, 
-#                 street_address_line_2=address_list[j].street_address_line_2, 
-#                 municipality=address_list[j].municipality, 
-#                 administrative_area=address_list[j].administrative_area, 
-#                 postal_code=address_list[j].postal_code, 
-#                 country=address_list[j].country,
-#                 id=address_list[j].id,
-#                 default_address=address_list[j].default_address,
-#             ))
-
-
-# #############################################################################################
-# ###########---------------Shipping Logic (User and Non User)---------------------############
-# #############################################################################################
-
-#     if cart_is_empty:
-#         shipping_information=dict(error=True, error_message="Please add something to your cart to continue", shipping_options_LOD=[])
-#     elif address_list_is_empty:
-#         shipping_information=dict(error=True, error_message="Please add an address to continue", shipping_options_LOD=[])
-#     else:
-#         shipping_information=dict(error=True, error_message="Generating shipping costs", shipping_options_LOD=[])
-
-
-#############################################################################################
-###########-------------------Card Logic (User and Non User)---------------------############
-#############################################################################################
-
-
-    card_information_LOD=[]
-
-    ## See if the user has any card information on stripe. 
-    try:
-
-        ## get stripe id from the db
-        stripe_customer_token=db(db.stripe_customers.muses_id==auth.user_id).select()[0].stripe_id
-
-        ## get stripe info using stripe api
-        stripe_customer=stripe.Customer.retrieve(stripe_customer_token)
-
-        ## put all stripe card info into a variable
-        ## this will only hold the first 10 cards a person has. If they have more cards
-        ## then they need help. 
-        stripe_cards=stripe_customer.cards.all()
-
-        for i in range(len(stripe_cards['data'])):
-
-            if stripe_cards['data'][i]['id']==db(db.stripe_customers.muses_id==auth.user_id).select().first().stripe_next_card_id:
-                radio_button=INPUT(_type='radio', _name='card', _value=stripe_cards['data'][i]['id'], _checked='checked')
-            else:
-                radio_button=INPUT(_type='radio', _name='card', _value=stripe_cards['data'][i]['id'])
-
-            delete_button=A('X', _href=URL('delete_item_from_db_card', vars=dict(customer_id=stripe_customer_token, card_id=stripe_cards['data'][i]['id'])), _class="btn btn-danger cart-view-payment-card-deletebutton")
-
-            card_information_LOD.append(dict(
-                card_radio=radio_button, 
-                card_name=stripe_cards['data'][i]['name'], 
-                card_last4=stripe_cards['data'][i]['last4'], 
-                card_brand=stripe_cards['data'][i]['brand'], 
-                card_exp_mo=stripe_cards['data'][i]['exp_month'], 
-                card_exp_yr=stripe_cards['data'][i]['exp_year'], 
-                card_id=stripe_cards['data'][i]['id'], 
-                card_delete=delete_button,
-            ))
-
-        card_information=dict(error=False, error_message=None, card_information_LOD=card_information_LOD)
-
-
-    except IndexError:
-
-        #the current user does not yet have a stripe customer token
-        card_information=dict(error=True, error_message="You do not have any cards", card_information_LOD=[])
-
-    except AttributeError:
-
-        #the current user does not yet have a stripe customer token
-        card_information=dict(error=True, error_message="You do not have any cards yet, or there was a problem accessing your cards.", card_information_LOD=[])
-
-    except stripe.error.APIConnectionError, stripe.error.APIError:
-
-        #No access to the internet, probably
-        card_information=dict(error=True, error_message="There was a problem connecting to stripe", card_information_LOD=[])
-
-
-#############################################################################################
-###########--------------------------------Final---------------------------------############
-#############################################################################################
-
-    return dict(
-
-        # cart_information=cart_information,
-
-        # address_information=address_information,
-
-        # shipping_information=shipping_information,
-
-        card_information=card_information,
-
-        )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def cart_backup():
-
-
-    from aux import retrieve_cart_contents
-
-
-#############################################################################################
-###########--------------------------Initial Logic-------------------------------############
-#############################################################################################
-
-    ## If someone tries to mess with the URL in the browser by going to 
-    ## cart/arg, It will reload the page without the arg
-    if request.args(0) is not None:
-        redirect(URL('cart'))
-    else:
-        pass
-
-    ## If you try to visit this page while you are not logged in, you get logged in as a handicapped user. 
-    ## but the nav option don't change. 
-    if auth.is_logged_in():
-        pass
-    else:
-        create_gimp_user()
-
-#############################################################################################
-###########----------------------------Cart Logic--------------------------------############
-#############################################################################################
-
-    cart_information_LOD=[]
-    cart_information=dict(error=False,error_message=None,cart_information_LOD=cart_information_LOD)
-
-    ## Retrieve the current items from the users cart)
-    ## There is no check here to not include items that are sold out or no
-    ## longer active, That happens later.
-
-    #cart_db=db(db.muses_cart.user_id==auth.user_id).select()
-
-    cart_db=retrieve_cart_contents(auth,db)
-
-    ## If cart turns out to be empty, set cart_grid so the view can have
-    ## something to display. but now cart_grid_table_row_LOL will be empty,
-    ## which should disallow the user from pressing the checkout button. 
-    if not cart_db:
-
-        cart_information['error']=True
-        cart_information['error_message']="You have not yet added anything to your cart"
-        cart_is_empty=True
-
-    ## If the cart is not empty
-    else:
-        
-        cart_is_empty=False
-        ## For each product in the cart
-        for row in cart_db:
-
-            ## Retreive product info from the db
-            product=db(db.product.id==row.product_id).select().first()
-
-            image=db(db.image.product_name==row.product_id).select().first()
-
-            if not image:
-                srcattr=URL('static','img/no_images.png')
-            else:
-
-                ## If using a local db get the product image locally
-                if sqlite_tf:
-                    # # image=db(db.image.product_name==row.product_id).select().first()
-                    # if len(images)==0:
-                    #     srcattr=URL('static','img/no_images.png')
-                    # else:
-                    srcattr=URL('download', image.s3_url)
-                    # print ("sqlite")
-                
-                ## For the more common case, get the image from aws s3
-                else:
-                    # srcattr=S3_BUCKET_PREFIX+str(db(db.image.product_name==row.product_id).select().first().s3_url)
-                    srcattr=S3_BUCKET_PREFIX+str(image.s3_url)
-
-            ## Create the product_image_url
-            product_image_url=A(IMG(_src=srcattr, _class='img-thumbnail cart-view-cart-tn'), _href=URL('default','product',args=[row.product_id]))
-
-            ## Create a delete button for the item
-            delete_button=A('X', _href=URL('delete_item_from_cart', vars=dict(pri_key=row.id,redirect_url=URL('cart'))), _class="btn btn-danger cart-view-cart-item-remove")
-
-            ## Populate a list with the current product info
-            cart_grid_table_row_list=[
-                product_image_url, 
-                product.product_name, 
-                product.cost_USD, 
-                #row.product_qty, This was used when qty could be over 1,
-                delete_button
-            ]
-
-            cart_item_dict=dict(
-                product_image_url=product_image_url,
-                product_name=product.product_name,
-                product_cost=product.cost_USD,
-                product_delete_button=delete_button,
-                product_active=product.is_active,
-                )
-
-            cart_information_LOD.append(cart_item_dict)
-
-            ## If the item is no longer active, remove it from the cart.
-            if not product.is_active:
-                db(db.muses_cart.product_id==product.id).delete()
-
-
-
-#############################################################################################
-###########-----------------Address Logic (User and Non User)--------------------############
-#############################################################################################
-
-    address_information_LOD=[]
-    address_information=dict(error=False,error_message=None,address_information_LOD=address_information_LOD)
-
-    address_list=db(db.addresses.user_id==auth.user_id).select(orderby=db.addresses.street_address_line_1)
-
-    if not address_list:
-
-        address_list_is_empty=True
-        address_information['error']=True
-        address_information['error_message']="Please add an address to continue with your purchase"
-
-    else:
-
-        address_list_is_empty=False
-
-        for j in range(len(address_list)):
-
-            address_information_LOD.append(dict(
-                first_name=address_list[j].first_name,
-                last_name=address_list[j].last_name,
-                street_address_line_1=address_list[j].street_address_line_1, 
-                street_address_line_2=address_list[j].street_address_line_2, 
-                municipality=address_list[j].municipality, 
-                administrative_area=address_list[j].administrative_area, 
-                postal_code=address_list[j].postal_code, 
-                country=address_list[j].country,
-                id=address_list[j].id,
-                default_address=address_list[j].default_address,
-            ))
-
-
-#############################################################################################
-###########---------------Shipping Logic (User and Non User)---------------------############
-#############################################################################################
-
-    if cart_is_empty:
-        shipping_information=dict(error=True, error_message="Please add something to your cart to continue", shipping_options_LOD=[])
-    elif address_list_is_empty:
-        shipping_information=dict(error=True, error_message="Please add an address to continue", shipping_options_LOD=[])
-    else:
-        shipping_information=dict(error=True, error_message="Generating shipping costs", shipping_options_LOD=[])
-
-
-#############################################################################################
-###########-------------------Card Logic (User and Non User)---------------------############
-#############################################################################################
-
-
-    card_information_LOD=[]
-
-    ## See if the user has any card information on stripe. 
-    try:
-
-        ## get stripe id from the db
-        stripe_customer_token=db(db.stripe_customers.muses_id==auth.user_id).select()[0].stripe_id
-
-        ## get stripe info using stripe api
-        stripe_customer=stripe.Customer.retrieve(stripe_customer_token)
-
-        ## put all stripe card info into a variable
-        ## this will only hold the first 10 cards a person has. If they have more cards
-        ## then they need help. 
-        stripe_cards=stripe_customer.cards.all()
-
-        for i in range(len(stripe_cards['data'])):
-
-            if stripe_cards['data'][i]['id']==db(db.stripe_customers.muses_id==auth.user_id).select().first().stripe_next_card_id:
-                radio_button=INPUT(_type='radio', _name='card', _value=stripe_cards['data'][i]['id'], _checked='checked')
-            else:
-                radio_button=INPUT(_type='radio', _name='card', _value=stripe_cards['data'][i]['id'])
-
-            delete_button=A('X', _href=URL('delete_item_from_db_card', vars=dict(customer_id=stripe_customer_token, card_id=stripe_cards['data'][i]['id'])), _class="btn btn-danger cart-view-payment-card-deletebutton")
-
-            card_information_LOD.append(dict(
-                card_radio=radio_button, 
-                card_name=stripe_cards['data'][i]['name'], 
-                card_last4=stripe_cards['data'][i]['last4'], 
-                card_brand=stripe_cards['data'][i]['brand'], 
-                card_exp_mo=stripe_cards['data'][i]['exp_month'], 
-                card_exp_yr=stripe_cards['data'][i]['exp_year'], 
-                cart_id=stripe_cards['data'][i]['id'], 
-                card_delete=delete_button,
-            ))
-
-        card_information=dict(error=False, error_message=None, card_information_LOD=card_information_LOD)
-
-
-    except IndexError:
-
-        #the current user does not yet have a stripe customer token
-        card_information=dict(error=True, error_message="You do not have any cards", card_information_LOD=[])
-
-    except AttributeError:
-
-        #the current user does not yet have a stripe customer token
-        card_information=dict(error=True, error_message="You do not have any cards yet, or there was a problem accessing your cards.", card_information_LOD=[])
-
-    except stripe.error.APIConnectionError, stripe.error.APIError:
-
-        #No access to the internet, probably
-        card_information=dict(error=True, error_message="There was a problem connecting to stripe", card_information_LOD=[])
-
-
-#############################################################################################
-###########--------------------------------Final---------------------------------############
-#############################################################################################
-
-    return dict(
-
-        cart_information=cart_information,
-
-        address_information=address_information,
-
-        shipping_information=shipping_information,
-
-        card_information=card_information,
-
-        )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-def cart_only():
-
-#############################################################################################
-###########--------------------------Initial Logic-------------------------------############
-#############################################################################################
-
-    ## If someone tries to mess with the URL in the browser by going to 
-    ## cart/arg, It will reload the page without the arg
-    if request.args(0) is not None:
-        redirect(URL('cart_only'))
-    else:
-        pass
-
-    ## If you try to visit this page while you are not logged in, you get logged in as a handicapped user. 
-    ## but the nav option don't change. 
-    if auth.is_logged_in():
-        pass
-    else:
-        create_gimp_user()
-
-
-    # print (request.env.web2py_original_uri)
-
-#############################################################################################
-###########----------------------------Cart Logic--------------------------------############
-#############################################################################################
-
-    current_cart_cost=0
-
-    cart_information_LOD=[]
-    cart_information=dict(error=False,error_message=None,cart_information_LOD=cart_information_LOD)
-
-    ## Retrieve the current items from the users cart)
-    ## There is no check here to not include items that are sold out or no
-    ## longer active, That happens later.
-    #cart_db=db(db.muses_cart.user_id==auth.user_id).select()
-
-    cart_db=retrieve_cart_contents(auth,db)
-
-    ## If cart turns out to be empty, set cart_grid so the view can have
-    ## something to display. but now cart_grid_table_row_LOL will be empty,
-    ## which should disallow the user from pressing the checkout button. 
-    if not cart_db:
-
-        cart_information['error']=True
-        cart_information['error_message']="You have not yet added anything to your cart"
-        cart_is_empty=True
-
-    ## If the cart is not empty
-    else:
-        
-        cart_is_empty=False
-        ## For each product in the cart
-        for row in cart_db:
-
-            ## Retreive product info from the db
-            product=db(db.product.id==row.product_id).select().first()
-
-            image=db(db.image.product_name==row.product_id).select().first()
-
-            if not image:
-                srcattr=URL('static','img/no_images.png')
-            else:
-
-                ## If using a local db get the product image locally
-                if sqlite_tf:
-                    # # image=db(db.image.product_name==row.product_id).select().first()
-                    # if len(images)==0:
-                    #     srcattr=URL('static','img/no_images.png')
-                    # else:
-                    srcattr=URL('download', image.s3_url)
-                    # print ("sqlite")
-                
-                ## For the more common case, get the image from aws s3
-                else:
-                    # srcattr=S3_BUCKET_PREFIX+str(db(db.image.product_name==row.product_id).select().first().s3_url)
-                    srcattr=S3_BUCKET_PREFIX+str(image.s3_url)
-
-            ## Create the product_image_url
-            product_image_url=A(IMG(_src=srcattr, _class='img-thumbnail cart-view-cart-tn'), _href=URL('default','product',args=[row.product_id]))
-
-            ## Create a delete button for the item
-            delete_button=A('X', _href=URL('delete_item_from_cart', vars=dict(pri_key=row.id,redirect_url=URL('cart'))), _class="btn btn-danger cart-view-cart-item-remove")
-
-            ## Populate a list with the current product info
-            cart_grid_table_row_list=[
-                product_image_url, 
-                product.product_name, 
-                product.cost_USD, 
-                #row.product_qty, This was used when qty could be over 1,
-                delete_button
-            ]
-
-            cart_item_dict=dict(
-                product_image_url=product_image_url,
-                product_name=product.product_name,
-                product_cost=product.cost_USD,
-                product_delete_button=delete_button,
-                product_active=product.is_active,
-                )
-
-            cart_information_LOD.append(cart_item_dict)
-
-            ## If the item is no longer active, remove it from the cart.
-            if not product.is_active:
-                db(db.muses_cart.product_id==product.id).delete()
-            else:
-                current_cart_cost+=product.cost_USD
-
-        session.current_cart_cost=current_cart_cost
-#############################################################################################
-###########--------------------------------Final---------------------------------############
-#############################################################################################
-
-    return dict(
-
-        cart_information=cart_information,
-
-        )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def cart_sample():
-
-    from aux import retrieve_cart_contents
-
-#############################################################################################
-###########--------------------------Initial Logic-------------------------------############
-#############################################################################################
-
-    ## If someone tries to mess with the URL in the browser by going to 
-    ## cart/arg, It will reload the page without the arg
-    if request.args(0) is not None:
-        redirect(URL('cart_only'))
-    else:
-        pass
-
-    ## If you try to visit this page while you are not logged in, you get logged in as a handicapped user. 
-    ## but the nav option don't change. 
-    if auth.is_logged_in():
-        pass
-    else:
-        create_gimp_user()
-
-
-    # print (request.env.web2py_original_uri)
-
-#############################################################################################
-###########----------------------------Cart Logic--------------------------------############
-#############################################################################################
-
-    cart_information_LOD=[]
-    cart_information=dict(error=False,error_message=None,cart_information_LOD=cart_information_LOD)
-
-    ## Retrieve the current items from the users cart)
-    ## There is no check here to not include items that are sold out or no
-    ## longer active, That happens later.
-    #cart_db=db(db.muses_cart.user_id==auth.user_id).select()
-
-    cart_db=retrieve_cart_contents(auth,db)
-
-    ## If cart turns out to be empty, set cart_grid so the view can have
-    ## something to display. but now cart_grid_table_row_LOL will be empty,
-    ## which should disallow the user from pressing the checkout button. 
-    if not cart_db:
-
-        cart_information['error']=True
-        cart_information['error_message']="You have not yet added anything to your cart"
-        cart_is_empty=True
-
-    ## If the cart is not empty
-    else:
-        
-        cart_is_empty=False
-        ## For each product in the cart
-        for row in cart_db:
-
-            ## Retreive product info from the db
-            product=db(db.product.id==row.product_id).select().first()
-
-            image=db(db.image.product_name==row.product_id).select().first()
-
-            if not image:
-                srcattr=URL('static','img/no_images.png')
-            else:
-
-                ## If using a local db get the product image locally
-                if sqlite_tf:
-                    # # image=db(db.image.product_name==row.product_id).select().first()
-                    # if len(images)==0:
-                    #     srcattr=URL('static','img/no_images.png')
-                    # else:
-                    srcattr=URL('download', image.s3_url)
-                    # print ("sqlite")
-                
-                ## For the more common case, get the image from aws s3
-                else:
-                    # srcattr=S3_BUCKET_PREFIX+str(db(db.image.product_name==row.product_id).select().first().s3_url)
-                    srcattr=S3_BUCKET_PREFIX+str(image.s3_url)
-
-            ## Create the product_image_url
-            product_image_url=A(IMG(_src=srcattr, _class='img-thumbnail cart-view-cart-tn'), _href=URL('default','product',args=[row.product_id]))
-
-            ## Create a delete button for the item
-            delete_button=A('X', _href=URL('delete_item_from_cart', vars=dict(pri_key=row.id,redirect_url=URL('cart'))), _class="btn btn-danger cart-view-cart-item-remove")
-
-            ## Populate a list with the current product info
-            cart_grid_table_row_list=[
-                product_image_url, 
-                product.product_name, 
-                product.cost_USD, 
-                #row.product_qty, This was used when qty could be over 1,
-                delete_button
-            ]
-
-            cart_item_dict=dict(
-                product_image_url=product_image_url,
-                product_name=product.product_name,
-                product_cost=product.cost_USD,
-                product_delete_button=delete_button,
-                product_active=product.is_active,
-                )
-
-            cart_information_LOD.append(cart_item_dict)
-
-            ## If the item is no longer active, remove it from the cart.
-            if not product.is_active:
-                db(db.muses_cart.product_id==product.id).delete()
-
-
-#############################################################################################
-###########--------------------------------Final---------------------------------############
-#############################################################################################
-
-    return dict(
-
-        cart_information=cart_information,
-
-        )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1973,176 +1192,6 @@ def checkout():
 
 
 
-def pay():
-    ### This function is for paying with stripe only
-
-    ## The purpose of this function is to populate the database table purchase history with all 
-    ## of the info about the purchase and send an email using postmark. 
-    ## Presenting the confirmation screen is done later using the database
-    import json
-    from aux import create_purchase_history_dict
-    from aux import generate_confirmation_email_receipt_context
-    from aux import retrieve_cart_contents
-
-    ## Get customer_id from stripe data in db. They should have one, if they don't at this point
-    ## something went wrong.
-    customer_id=db(db.stripe_customers.muses_id==auth.user_id).select().first().stripe_id
-
-    ## From Session ##
-    total_cost_USD=session.summary_information['information_LOD'][0]['total_cost_USD']
-
-    ## To try and charge the card with the stripe id (defualt card should already be set within stripe)
-    ## Otherwise something else went wrong
-    ## TODO: Add description back in?
-    ## TODO: What if the charge fails or the user cancels?
-    charge=stripe.Charge.create(
-        amount=int(float(total_cost_USD)*100),
-        currency='usd',
-        customer=customer_id,
-        #description='test purchase',
-    )
-
-
-    ##################################################
-    ################------USER INFO-------############
-    ##################################################
-
-    ## Get the information from the db about the user
-    user_data=db(db.auth_user.id==auth.user_id).select().first()
-
-    ##################################################
-    ################-----ADDRESS AND------############
-    ################----SHIPPING INFO-----############
-    ##################################################
-    default_address=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select().first()
-
-
-    purchase_history_dict=create_purchase_history_dict(
-
-        ## This is probably really dangerous
-        session_data=response,
-
-        user_data=user_data,
-
-        address_data=default_address,
-
-        ## Consider putting shipping response in session and passing them here?
-        # shipping_data=rates,
-        
-        payment_service='stripe',
-
-        payment_data=charge,
-
-        summary_data=session.summary_information,
-
-        )
-
-
-
-    #################################################
-    ########----PUT PURCHASE INFO IN THE DB------####
-    #################################################
-
-    ## place data in the database. 
-    purchase_history_data_id=db.purchase_history_data.bulk_insert([purchase_history_dict])[0]
-
-    ## Add id of most recent purchase to the session for viewing purposes.
-    session.session_purchase_history_data_id=purchase_history_data_id
-
-
-    #################################################
-    ########----PUT PRODUCT INFO IN THE DB-------####
-    #################################################
-
-    ## For every item in the cart, insert a record with the id of the purchase history, the product id and the qty.
-    purchase_history_products_LOD=[]
-
-    #cart=db(db.muses_cart.user_id==auth.user_id).select()
-
-    cart=retrieve_cart_contents(auth,db)
-    
-    ## For item in cart, add id from record above with product and qty and all info about the product,
-    ## then deal with inventory by removing the item from the cart.
-    for row in cart:
-        product_record=db(db.product.id==row.product_id).select().first()
-        current_qty=int(product_record.qty_in_stock)
-        qty_purchased=int(row.product_qty)
-        new_qty=current_qty-qty_purchased
-
-        ## Remove item from the cart
-        db(db.muses_cart.product_id==product_record.id).delete()
-
-        ## Prepare dict for bulk insert
-        purchase_history_product_dict=dict(
-            purchase_history_data_id=purchase_history_data_id,
-            product_id=product_record.id,
-            product_qty=int(row.product_qty),
-            category_name=product_record.category_name,
-            product_name=product_record.product_name,
-            description=product_record.description,
-            cost_USD=product_record.cost_USD,
-            qty_in_stock=new_qty,
-            is_active=product_record.is_active,
-            display_order=product_record.display_order,
-            shipping_description=product_record.shipping_description,
-            weight_oz=product_record.weight_oz,
-        )
-
-        ## Generate a list of dicts to use bulk insert
-        purchase_history_products_LOD.append(purchase_history_product_dict)
-
-
-        ## If you lowered the qty to 0 or less, make qty 0 and deactivate item
-        if new_qty<=0:
-
-            product_record.update(qty_in_stock=0)
-            product_record.update_record()
-            product_record.update(is_active=False)
-            product_record.update_record()
-
-        ## If not, just lower the qty
-        else:
-            product_record.update(qty_in_stock=new_qty)
-            product_record.update_record()
-
-    ## Actually put everything in the db
-    purchase_history_products_ids=db.purchase_history_products.bulk_insert(purchase_history_products_LOD)
-
-
-    #################################################
-    ########----SENDING THE CONFIRMATION EMAIL---####
-    #################################################
-
-    receipt_context=generate_confirmation_email_receipt_context(
-        muses_email_address=user_data.email, 
-        purchase_history_data_row=db(db.purchase_history_data.id==purchase_history_data_id).select().first(),
-        purchase_history_products_rows=db(db.purchase_history_products.purchase_history_data_id==purchase_history_data_id).select(),
-    )
-
-    receipt_message_html = response.render('default/receipt.html', receipt_context)
-
-
-
-    email_address_query=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email).first()
-    email_address=list(email_address_query.as_dict().values())[0]
-
-    from postmark import PMMail
-    message = PMMail(api_key=POSTMARK_API_KEY,
-        subject="Order Confirmation",
-        sender="confirmation@threemuses.glass",
-        # to=user_data.email,
-        to=email_address,
-        #html_body=final_div_html,
-        html_body=receipt_message_html,
-        tag="confirmation")
-    message.send()
-
-
-    #################################################
-    ########----SEND TO CONFIMATION SCREEN-------####
-    #################################################
-    redirect(URL('confirmation', args=(purchase_history_data_id)))
-
 
 def pay_stripe():
 
@@ -2214,7 +1263,7 @@ def pay_stripe():
 
         # print charge
 
-        ## This is what charge looks like
+        ## This is what a stripe charge looks like
 
         # {
         #   "amount": 4418, 
@@ -2492,8 +1541,6 @@ def pay_stripe():
 
 
 
-
-
 def create_user_after_purchase_callback(form):
     ## This guys is the man
     ## https://groups.google.com/forum/#!topic/web2py/gka0Mg05I44
@@ -2614,23 +1661,29 @@ def confirmation():
 
         if purchase_history_data_row['payment_service']=='stripe':
 
-            payment_information=stripe.Charge.retrieve(purchase_history_data_row['payment_confirmation_id'])
+            payment_information_api=stripe.Charge.retrieve(purchase_history_data_row['payment_confirmation_id'])
 
         elif purchase_history_data_row['payment_service']=='paypal':
 
-            payment_information=paypalrestsdk.Payment.find(purchase_history_data_row['payment_confirmation_id'])
+            payment_information_api=paypalrestsdk.Payment.find(purchase_history_data_row['payment_confirmation_id'])
 
         else:
 
-            payment_information=None
+            payment_information=api
+
+        print payment_information_api
 
         purchase_history_products_rows=db(db.purchase_history_products.purchase_history_data_id==purchase_history_data_id).select()
 
         ## product table
-        product_header_row=['Product','Total Weight (oz)','Total Cost($)']
-        product_table_row_LOL=[]
+        # product_header_row=['Product','Total Weight (oz)','Total Cost($)']
+        # product_table_row_LOL=[]
+
         product_total_weight=0
         product_total_cost=0
+
+        cart_information_LOD=[]
+        cart_information=dict(error=False,error_message=None,information_LOD=cart_information_LOD)
 
         ## change this so that you don't have to go into the product database to get this data
         ## It should all be available in the other purchase history tables. 
@@ -2642,125 +1695,244 @@ def confirmation():
             line_item_weight_oz=int(row.product_qty)*int(row.weight_oz)
             line_item_cost_usd=int(row.product_qty)*int(row.cost_USD)
 
-            product_table_row=[
-                row.product_name,
-                line_item_weight_oz,
-                line_item_cost_usd,
-            ]
+            cart_information_LOD.append(
+                dict(
+                        # product_image_url=product_image_url,
+                        product_name=row.product_name,
+                        product_cost=row.cost_USD,
+                        #product_delete_button=delete_button,
+                        product_active=row.is_active,
+                    ))
+
+            # product_table_row=[
+            #     row.product_name,
+            #     line_item_weight_oz,
+            #     line_item_cost_usd,
+            # ]
 
             product_total_weight+=line_item_weight_oz
             product_total_cost+=line_item_cost_usd
 
-            product_table_row_LOL.append(product_table_row)
+            # product_table_row_LOL.append(product_table_row)
 
-        product_totals_row=['Total',product_total_weight,product_total_cost,]
+        # product_totals_row=['Total',product_total_weight,product_total_cost,]
 
-        product_table_row_LOL.append(product_totals_row)
+        # product_table_row_LOL.append(product_totals_row)
 
-        confirmation_product_grid=table_generation(product_header_row,product_table_row_LOL,'confirmation_product')
+        # confirmation_product_grid=table_generation(product_header_row,product_table_row_LOL,'confirmation_product')
+
 
 
         ##Shipping Address Table
-        address_header_row=['Street Address Info', 'Local Address Info', 'Country']
-        address_table_row_LOL=[[
-            purchase_history_data_row.shipping_street_address_line_1+" "+purchase_history_data_row.shipping_street_address_line_2,
-            purchase_history_data_row.shipping_municipality+", "+purchase_history_data_row.shipping_administrative_area+" "+purchase_history_data_row.shipping_postal_code,
-            purchase_history_data_row.shipping_country,
-        ]]
 
-        confirmation_address_grid=table_generation(address_header_row,address_table_row_LOL,"confirmation_address")
+#############################################################################################
+###########-----------------------------Address Logic----------------------------############
+#############################################################################################
+
+        # error=False
+        # error_message=None
+        address_information_LOD=[]
+
+        # address_header_row=['Street Address Info', 'Local Address Info', 'Country']
+
+        address_information_LOD.append(dict(
+            first_name=purchase_history_data_row.shipping_name_first,
+            last_name=purchase_history_data_row.shipping_name_last,
+            street_address_line_1=purchase_history_data_row.shipping_street_address_line_1, 
+            street_address_line_2=purchase_history_data_row.shipping_street_address_line_2, 
+            municipality=purchase_history_data_row.shipping_municipality, 
+            administrative_area=purchase_history_data_row.shipping_administrative_area, 
+            postal_code=purchase_history_data_row.shipping_postal_code, 
+            country=purchase_history_data_row.shipping_country,
+        ))
+
+        address_information=dict( error=False, error_message=None, information_LOD=address_information_LOD )
+
+
+
+        # address_table_row_LOL=[[
+        #     purchase_history_data_row.shipping_street_address_line_1+" "+purchase_history_data_row.shipping_street_address_line_2,
+        #     purchase_history_data_row.shipping_municipality+", "+purchase_history_data_row.shipping_administrative_area+" "+purchase_history_data_row.shipping_postal_code,
+        #     purchase_history_data_row.shipping_country,
+        # ]]
+
+        # confirmation_address_grid=table_generation(address_header_row,address_table_row_LOL,"confirmation_address")
+
 
 
         ##Shipping Info Table
-        shipping_header_row=['Carrier-Rate', 'Shipping Weight (Oz)', 'Estimated Shipping Cost ($)']
-        shipping_table_row_LOL=[[
-            purchase_history_data_row.easypost_shipping_carrier + " - " + purchase_history_data_row.easypost_shipping_service,
-            product_total_weight,
-            purchase_history_data_row.easypost_rate,
-        ]]
 
-        confirmation_shipping_grid=table_generation(shipping_header_row,shipping_table_row_LOL,"confirmation_shipping")
+#############################################################################################
+###########-----------------------------Shipping Logic---------------------------############
+#############################################################################################
 
+        shipping_information_LOD=[]
+
+        # address_header_row=['Street Address Info', 'Local Address Info', 'Country']
+
+        shipping_information_LOD.append(dict(
+            carrier=purchase_history_data_row.easypost_shipping_carrier,
+            service=purchase_history_data_row.easypost_shipping_service,
+            cost=purchase_history_data_row.easypost_rate,
+            #IF you want this you have to add it :/
+            delivery_date=None,
+        ))
+
+        shipping_information=dict( error=False, error_message=None, information_LOD=shipping_information_LOD )
+
+
+        # shipping_header_row=['Carrier-Rate', 'Shipping Weight (Oz)', 'Estimated Shipping Cost ($)']
+        # shipping_table_row_LOL=[[
+        #     purchase_history_data_row.easypost_shipping_carrier + " - " + purchase_history_data_row.easypost_shipping_service,
+        #     product_total_weight,
+        #     purchase_history_data_row.easypost_rate,
+        # ]]
+
+        # confirmation_shipping_grid=table_generation(shipping_header_row,shipping_table_row_LOL,"confirmation_shipping")
+
+
+
+#############################################################################################
+###########-----------------Summary Logic (User and Non User)--------------------############
+#############################################################################################
+
+        error=False
+        error_message=None
+        summary_information_LOD=[]
+
+        summary_information_LOD.append(dict(
+            cart_cost_USD=purchase_history_data_row.cart_base_cost,
+            shipping_cost_USD=purchase_history_data_row.cart_shipping_cost,
+            total_cost_USD=purchase_history_data_row.cart_total_cost,
+        ))
+
+        summary_information=dict(error=error, error_message=error_message, information_LOD=summary_information_LOD)
+
+
+        # summary_header_row=['Shipping Cost ($)', 'Product Cost ($)', 'Total Cost ($)']
+        # summary_table_row_LOL=[[
+        #     purchase_history_data_row.easypost_rate,
+        #     product_total_cost,
+        #     float(purchase_history_data_row.easypost_rate)+product_total_cost,
+        # ]]
+
+        # confirmation_summary_grid=table_generation(summary_header_row,summary_table_row_LOL,"confirmation_summary")
+
+
+#############################################################################################
+###########---------------------------Payment Information====--------------------############
+#############################################################################################
+
+        error=False
+        error_message=None
+        payment_information_LOD=[]
 
         ##Card Table
         if purchase_history_data_row.payment_service=='stripe':
-            card_header_row=['Stripe Email', 'Brand-Last4', 'Expiration(mm/yyyy)']
 
-            card_table_row_LOL=[[
-                str(payment_information['source']['name']),
-                str(payment_information['source']['brand']) + " - " + str(payment_information['source']['last4']),
-                str(payment_information['source']['exp_month']) + " / " + str(payment_information['source']['exp_year']),
-            ]]
+            if payment_information_api['source']['object']=='card':
 
-            email_address=payment_information['source']['name']
+                payment_information_LOD.append(
+                    dict(
+                        payment_service='stripe',
+                        payment_object='card',
+                        card_brand=payment_information_api['source']['brand'],
+                        card_last4=payment_information_api['source']['last4'],
+                        email=payment_information_api['source']['name'],
+                        ))
+
+                # payment_information=dict(error=False, error_message=None, information_LOD=payment_information_LOD)
+
+            else:
+                payment_information_LOD.append(
+                    dict(
+                        payment_service='stripe',
+                        email=payment_information_api['source']['name'],
+                        payment_object='other',
+                        ))
+
+
 
 
         elif purchase_history_data_row.payment_service=='paypal':
-            card_header_row=['Name', 'Paypal Email', 'Something Else']
-            card_table_row_LOL=[[
-                'Name', 'Email', 'Else'
-            ]]
 
-            # print payment_information
-
-            email_address=payment_information['payer']['payer_info']['email']
-
-        confirmation_card_grid=table_generation(card_header_row,card_table_row_LOL,"confirmation_card")
+            payment_information_LOD.append(
+                dict(
+                    payment_service='paypal',
+                    email=payment_information_api['email']
+                    ))
 
 
-        ##Summary Table
 
-        summary_header_row=['Shipping Cost ($)', 'Product Cost ($)', 'Total Cost ($)']
-        summary_table_row_LOL=[[
-            purchase_history_data_row.easypost_rate,
-            product_total_cost,
-            float(purchase_history_data_row.easypost_rate)+product_total_cost,
-        ]]
+        payment_information=dict(error=error, error_message=error_message, information_LOD=payment_information_LOD)
 
-        confirmation_summary_grid=table_generation(summary_header_row,summary_table_row_LOL,"confirmation_summary")
 
-        final_div=DIV()
-        final_div.append(DIV("Product Details",_class="confirmation_heading"))
-        final_div.append(confirmation_product_grid)
-        final_div.append(DIV("Address Details",_class="confirmation_heading"))
-        final_div.append(confirmation_address_grid)
-        final_div.append(DIV("Shipping Details",_class="confirmation_heading"))
-        final_div.append(confirmation_shipping_grid)
-        final_div.append(DIV("Payment Details",_class="confirmation_heading"))
-        final_div.append(confirmation_card_grid)
-        final_div.append(DIV("Summary",_class="confirmation_heading"))
-        final_div.append(confirmation_summary_grid)
+        # final_div=DIV()
+        # final_div.append(DIV("Product Details",_class="confirmation_heading"))
+        # final_div.append(confirmation_product_grid)
+        # final_div.append(DIV("Address Details",_class="confirmation_heading"))
+        # final_div.append(confirmation_address_grid)
+        # final_div.append(DIV("Shipping Details",_class="confirmation_heading"))
+        # final_div.append(confirmation_shipping_grid)
+        # final_div.append(DIV("Payment Details",_class="confirmation_heading"))
+        # final_div.append(confirmation_card_grid)
+        # final_div.append(DIV("Summary",_class="confirmation_heading"))
+        # final_div.append(confirmation_summary_grid)
         
 
         # email_address_query=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email).first()
         # email_address=list(email_address_query.as_dict().values())[0]
 
 
-        ##Create Account after purchase
-        form_username=auth.profile(next=URL('confirmation',args=(request.args[0])))
-        form_password_change=auth.change_password(next=URL('confirmation',args=(request.args[0])))
+#############################################################################################
+###########---------------------------Confirmation Information====--------------------############
+#############################################################################################
 
-        
+        confirmation_information_LOD=[]
+
+        if auth.has_membership('gimp'):
+            email_address=payment_information['information_LOD'][0]['email']
+        else:
+            email_address=auth.email
+
+        confirmation_information_LOD.append(dict(
+            email_address=email_address,
+            invoice_number=purchase_history_data_row.payment_invoice_number,
+            ))
+
+        confirmation_information=dict(error=False, error_message=None, information_LOD=confirmation_information_LOD)
+
+
+
+
+
+        ##Create Account after purchase
+        form_profile=auth.profile(next=URL('confirmation',args=(request.args[0])))
+        # form_password_change=auth.change_password(next=URL('confirmation',args=(request.args[0])))
+
+
+
 
         return dict(
-            email_address=email_address,
-            final_div=final_div,
-            purchase_history_data_row = purchase_history_data_row,
-            purchase_history_products_rows = purchase_history_products_rows,
+            confirmation_information=confirmation_information,
 
-            form_username=form_username,
-            form_password_change=form_password_change,
-            #confirmation_product_grid = confirmation_product_grid,
+            cart_information=cart_information,
+            address_information=address_information,
+            shipping_information=shipping_information,
+            payment_information=payment_information,
+            summary_information=summary_information,
+
+            form_profile=form_profile,
         )
 
     ## if not, they are trying to view something they don't have access to.
+    #redirect them!
     else:
         ## This is not the place for a user to be looking around past purchases. If it's not in session
         ## They can't see it here. 
-        return dict(
-            purchase_history_data_row = "SessionError",
-            purchase_history_products_rows = None,
-        )
+        response.flash="You aren't allowed to view the confirmation with that ID"
+        session.flash=response.flash
+        redirect(URL('categories'))
 
 
     # ## If the url arg is not convertible to an integer, than you get this error.
@@ -2789,74 +1961,8 @@ def confirmation():
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-# def sessions():
-#     session_db=db(db.web2py_session_3muses).select()[0].session_data
-#     return dict(session_db=session_db)
-
-
-
 ## Functions that require admin priveledges. These are so my mom can update products and stuff
 ## without bothering me. 
-
-# @auth.requires_membership('admin')
-# def manage():
-
-#     if not request.args:
-
-#         title="Manage Page"
-#         grid="List items for manage pages"
-
-#     elif request.args[0]=='products':
-
-#         grid=SQLFORM.grid(
-#             db.product, 
-#             maxtextlength=100,
-#             )
-#         grid.element('.web2py_counter', replace=None)
-
-#         title="Product Grid"
-
-#     elif request.args[0]=='product_images':
-
-#         grid=SQLFORM.grid(db.image,maxtextlength=100)
-#         return redirect(URL('cart'))
-
-#         grid.element('.web2py_counter', replace=None)
-
-#         title="Product Images Grid"
-
-
-#     elif request.args[0]=='test':
-#         title='test'
-#         grid='test'
-
-#     elif request.args[0]=='categories':
-
-#         grid=SQLFORM.grid(db.categories,
-#             maxtextlength=100,)
-#         grid.element('.web2py_counter', replace=None)
-
-#         title='categories'
-
-#     else:
-#         return redirect(URL('manage'))
-
-#     return dict(title=title, grid=grid)
-
-
 
 @auth.requires_membership('admin')
 def manage_products():
@@ -2971,7 +2077,9 @@ def reset_inventory():
 
 
 
-## pulled from a random place on the internet, currently is not being used. 
+
+
+## pulled from a random place on the internet
 def handle_error():
     """ Custom error handler that returns correct status codes."""
     
@@ -3052,8 +2160,6 @@ def handle_error():
             message.send()
 
 
-
-
         # Email a notice, etc:
        # mail.send(to=['admins@myapp.com '],
        #             subject="New Error",
@@ -3068,65 +2174,8 @@ def handle_error():
 
 
 
+
 ## functions that come with the welcome app ##
-# def user():
-    
-#     """
-#     exposes:
-#     http://..../[app]/default/user/login
-#     http://..../[app]/default/user/logout
-#     http://..../[app]/default/user/register
-#     http://..../[app]/default/user/profile
-#     http://..../[app]/default/user/retrieve_password
-#     http://..../[app]/default/user/change_password
-#     http://..../[app]/default/user/manage_users (requires membership in
-#     use @auth.requires_login()
-#         @auth.requires_membership('group name')
-#         @auth.requires_permission('read','table name',record_id)
-#     to decorate functions that need access control
-#     """
-
-#     ## This is what I had in the user.html doc to do the purchase history
-#     # <h2>Purchase History</h2>
-#     # {{purchase_history=db(db.purchase_history_data.muses_id==auth.user_id).select()}}
-#     # {{for purchase in purchase_history:}}
-#     #     <h3>Purchase Details</h3>
-#     #     {{=purchase}}
-#     #     <h3>Purchase Products</h3>
-#     #     {{purchase_history_products=db(db.purchase_history_products.purchase_history_data_id==purchase.id).select()}}
-#     #     {{=purchase_history_products}}
-
-#     # {{pass}}
-
-
-#     #purchase_history=db(db.purchase_history_data.muses_id==auth.user_id).select()
-#     #for purchase in purchase_history:
-#         #purchase_history_products=db(db.purchase_history_products.purchase_history_data_id==purchase.id).select()
-
-#     ## create a table with a row for each purchase and a link to each purchases' corresponding products.
-#     ## Have the ability to be able to look at all products. 
-
-#     ## Use custom tables or web2py tables for this? With web2py tables user can export
-#     ## filter, sort. I'm going to try using web2py tables first. 
-
-#     #grid=SQLFORM.smartgrid(db.purchase_history_data, linked_tables=['purchase_history_products'])
-
-#     #print "anything"
-
-#     # user_page=request.args[0]
-#     #2if 
-                                                                                                                                                                                                    
-
-#     return dict(form=auth())
-
-
-# def mylogin(): 
-#     return dict(form=auth.login())
-
-
-# def myregister(): return dict(form=auth.register())
-# def myprofile(): return dict(form=auth.profile())
-
 
 @cache.action()
 def download():
@@ -3137,7 +2186,6 @@ def download():
     return response.download(request, db)
 
 
-
 def call():
     """
     exposes services. for example:
@@ -3146,7 +2194,6 @@ def call():
     supports xml, json, xmlrpc, jsonrpc, amfrpc, rss, csv
     """
     return service()
-
 
 
 @auth.requires_signature()
@@ -3165,6 +2212,7 @@ def data():
       LOAD('default','data.load',args='tables',ajax=True,user_signature=True)
     """
     return dict(form=crud())
+
 
 
 
@@ -3201,343 +2249,358 @@ def delete_address():
     redirect(request.vars['redirect_url'])
 
 
-def delete_card():
-    if auth.is_logged_in():
-        ## This actually isn't deleting anything from the database. 
-        ## It collects the customer and card id passed to the function via request
-        ## and tells stripe to delete the card from the user.
-        customer = stripe.Customer.retrieve(request.vars['customer_id'])
-        customer.cards.retrieve(request.vars['card_id']).delete()
+# def delete_card():
+#     if auth.is_logged_in():
+#         ## This actually isn't deleting anything from the database. 
+#         ## It collects the customer and card id passed to the function via request
+#         ## and tells stripe to delete the card from the user.
+#         customer = stripe.Customer.retrieve(request.vars['customer_id'])
+#         customer.cards.retrieve(request.vars['card_id']).delete()
 
-        redirect(request.vars['redirect_url'])
+#         redirect(request.vars['redirect_url'])
 
-    else:
-        ## The add_new_card function adds the 'stripe_id' to the session.
-        ## Retrieve it here 
-        stripe_id=session.card_info['stripe_id']
+#     else:
+#         ## The add_new_card function adds the 'stripe_id' to the session.
+#         ## Retrieve it here 
+#         stripe_id=session.card_info['stripe_id']
 
-        ## To then retrieve that customer using stripe API and delete it
-        ## Need to add some code in here to handle when communication with Stripe is unavailable.
-        customer=stripe.Customer.retrieve(stripe_id)
-        customer.delete()
+#         ## To then retrieve that customer using stripe API and delete it
+#         ## Need to add some code in here to handle when communication with Stripe is unavailable.
+#         customer=stripe.Customer.retrieve(stripe_id)
+#         customer.delete()
 
-    redirect(request.vars['redirect_url'])
+#     redirect(request.vars['redirect_url'])
 
 
-def delete_item_from_db_card():
+# def delete_item_from_db_card():
 
-    ## This actually isn't deleting anything from the database. 
-    ## It collects the customer and card id passed to the function via request
-    ## and tells stripe to delete the card from the user.
-    customer = stripe.Customer.retrieve(request.vars['customer_id'])
-    customer.cards.retrieve(request.vars['card_id']).delete()
+#     ## This actually isn't deleting anything from the database. 
+#     ## It collects the customer and card id passed to the function via request
+#     ## and tells stripe to delete the card from the user.
+#     customer = stripe.Customer.retrieve(request.vars['customer_id'])
+#     customer.cards.retrieve(request.vars['card_id']).delete()
 
-    redirect(URL('checkout'))
+#     redirect(URL('checkout'))
 
-## removes customer from stripe and current session
-def delete_item_from_session_card():
 
-    ## The add_new_card function adds the 'stripe_id' to the session.
-    ## Retrieve it here 
-    stripe_id=session.card_info['stripe_id']
+# ## removes customer from stripe and current session
+# def delete_item_from_session_card():
 
-    ## To then retrieve that customer using stripe API and delete it
-    ## Need to add some code in here to handle when communication with Stripe is unavailable.
-    customer=stripe.Customer.retrieve(stripe_id)
-    customer.delete()
+#     ## The add_new_card function adds the 'stripe_id' to the session.
+#     ## Retrieve it here 
+#     stripe_id=session.card_info['stripe_id']
 
-    ## After deleting the customer from the stripe db remove the card info from the session.
-    dummy=session.pop('card_info')
+#     ## To then retrieve that customer using stripe API and delete it
+#     ## Need to add some code in here to handle when communication with Stripe is unavailable.
+#     customer=stripe.Customer.retrieve(stripe_id)
+#     customer.delete()
 
-    redirect(URL('cart'))
+#     ## After deleting the customer from the stripe db remove the card info from the session.
+#     dummy=session.pop('card_info')
 
+#     redirect(URL('cart'))
 
 
 
 
 ## Functions to edit items in session
 
-def edit_session_address():
+# def edit_session_address():
 
-    edit_address_form=FORM(
+#     edit_address_form=FORM(
 
-        DIV( 
-            LABEL( 'First Name',),
+#         DIV( 
+#             LABEL( 'First Name',),
             
-            DIV(
-                INPUT(
-                    _type='text', 
-                    _name='first_name', 
-                    _class='form-control',
-                    _value=session.address['first_name'],
-                ),
-            ),
-        ),
+#             DIV(
+#                 INPUT(
+#                     _type='text', 
+#                     _name='first_name', 
+#                     _class='form-control',
+#                     _value=session.address['first_name'],
+#                 ),
+#             ),
+#         ),
 
-        DIV( 
-            LABEL( 'Last Name',),
+#         DIV( 
+#             LABEL( 'Last Name',),
             
-            DIV(
-                INPUT(
-                    _type='text', 
-                    _name='last_name', 
-                    _class='form-control',
-                    _value=session.address['last_name'],
-                ),
-            ),
-        ),
+#             DIV(
+#                 INPUT(
+#                     _type='text', 
+#                     _name='last_name', 
+#                     _class='form-control',
+#                     _value=session.address['last_name'],
+#                 ),
+#             ),
+#         ),
 
-        DIV( 
-            LABEL( 'Street Address/ PO Box/ Etc.',),
+#         DIV( 
+#             LABEL( 'Street Address/ PO Box/ Etc.',),
             
-            DIV(
-                INPUT(
-                    _type='text', 
-                    _name='street_address_line_1', 
-                    _class='form-control',
-                    _value=session.address['street_address_line_1'],
-                ),
-            ),
-        ),
+#             DIV(
+#                 INPUT(
+#                     _type='text', 
+#                     _name='street_address_line_1', 
+#                     _class='form-control',
+#                     _value=session.address['street_address_line_1'],
+#                 ),
+#             ),
+#         ),
 
-        DIV( 
-            LABEL( 'Floor/ Suite/ Apt/ Etc.',),
+#         DIV( 
+#             LABEL( 'Floor/ Suite/ Apt/ Etc.',),
             
-            DIV(
-                INPUT(
-                    _type='text', 
-                    _name='street_address_line_2', 
-                    _class='form-control', 
-                    _value=session.address['street_address_line_2'],
-                ),
-            ),
-        ),
+#             DIV(
+#                 INPUT(
+#                     _type='text', 
+#                     _name='street_address_line_2', 
+#                     _class='form-control', 
+#                     _value=session.address['street_address_line_2'],
+#                 ),
+#             ),
+#         ),
 
-        DIV(
-            LABEL('Municipality',),
+#         DIV(
+#             LABEL('Municipality',),
             
-            DIV(
-                INPUT(
-                    _type='text', 
-                    _name='municipality', 
-                    _class='form-control', 
-                    _value=session.address['municipality'],
-                ),
-            ),
-        ),
+#             DIV(
+#                 INPUT(
+#                     _type='text', 
+#                     _name='municipality', 
+#                     _class='form-control', 
+#                     _value=session.address['municipality'],
+#                 ),
+#             ),
+#         ),
 
-        DIV(
-            LABEL('Administrative Area',),
+#         DIV(
+#             LABEL('Administrative Area',),
             
-            DIV(
-                INPUT(
-                    _type='text', 
-                    _name='administrative_area', 
-                    _class='form-control', 
-                    _value=session.address['administrative_area'],
-                ),
-            ),
-        ),
+#             DIV(
+#                 INPUT(
+#                     _type='text', 
+#                     _name='administrative_area', 
+#                     _class='form-control', 
+#                     _value=session.address['administrative_area'],
+#                 ),
+#             ),
+#         ),
 
-        DIV(
-            LABEL('Postal Code',),
+#         DIV(
+#             LABEL('Postal Code',),
             
-            DIV(
-                INPUT(
-                    _type='text', 
-                    _name='postal_code', 
-                    _class='form-control', 
-                    _value=session.address['postal_code'],
-                ),
-            ),
-        ),
+#             DIV(
+#                 INPUT(
+#                     _type='text', 
+#                     _name='postal_code', 
+#                     _class='form-control', 
+#                     _value=session.address['postal_code'],
+#                 ),
+#             ),
+#         ),
 
-        DIV(
-            LABEL('Country',),
+#         DIV(
+#             LABEL('Country',),
             
-            DIV(
-                INPUT(
-                    _type='text', 
-                    _name='country', 
-                    _class='form-control', 
-                    _value=session.address['country'],
-                ),
-            ),
-        ),
+#             DIV(
+#                 INPUT(
+#                     _type='text', 
+#                     _name='country', 
+#                     _class='form-control', 
+#                     _value=session.address['country'],
+#                 ),
+#             ),
+#         ),
    
-        INPUT(_type='submit', _class="btn btn-default form-submit-btn"),
+#         INPUT(_type='submit', _class="btn btn-default form-submit-btn"),
             
-    _class='form-horizontal',
-    _role='form').process()
+#     _class='form-horizontal',
+#     _role='form').process()
 
-    if edit_address_form.accepted:
+#     if edit_address_form.accepted:
 
-        if auth.is_logged_in():
-            pass
-            # db.addresses.insert(
-            #     user_id=auth.user_id,
-            #     street_address_line_1=add_address_form.vars.street_address_line_1,
-            #     street_address_line_2=add_address_form.vars.street_address_line_2,
-            #     municipality=add_address_form.vars.municipality,
-            #     administrative_area=add_address_form.vars.administrative_area,
-            #     postal_code=add_address_form.vars.postal_code,
-            #     country=add_address_form.vars.country,
-            # )
+#         if auth.is_logged_in():
+#             pass
+#             # db.addresses.insert(
+#             #     user_id=auth.user_id,
+#             #     street_address_line_1=add_address_form.vars.street_address_line_1,
+#             #     street_address_line_2=add_address_form.vars.street_address_line_2,
+#             #     municipality=add_address_form.vars.municipality,
+#             #     administrative_area=add_address_form.vars.administrative_area,
+#             #     postal_code=add_address_form.vars.postal_code,
+#             #     country=add_address_form.vars.country,
+#             # )
 
-        else:
-            session.address=dict(
-                first_name=edit_address_form.vars.first_name,
-                last_name=edit_address_form.vars.last_name,
-                street_address_line_1=edit_address_form.vars.street_address_line_1,
-                street_address_line_2=edit_address_form.vars.street_address_line_2,
-                municipality=edit_address_form.vars.municipality,
-                administrative_area=edit_address_form.vars.administrative_area,
-                postal_code=edit_address_form.vars.postal_code,
-                country=edit_address_form.vars.country,
-            )
+#         else:
+#             session.address=dict(
+#                 first_name=edit_address_form.vars.first_name,
+#                 last_name=edit_address_form.vars.last_name,
+#                 street_address_line_1=edit_address_form.vars.street_address_line_1,
+#                 street_address_line_2=edit_address_form.vars.street_address_line_2,
+#                 municipality=edit_address_form.vars.municipality,
+#                 administrative_area=edit_address_form.vars.administrative_area,
+#                 postal_code=edit_address_form.vars.postal_code,
+#                 country=edit_address_form.vars.country,
+#             )
 
-        redirect(URL('cart'))
+#         redirect(URL('cart'))
 
-    else:
+#     else:
         
-        return dict(edit_address_form=edit_address_form)
+#         return dict(edit_address_form=edit_address_form)
 
 
-#functions to edit things in db
+# #functions to edit things in db
 
-def edit_db_address():
+# def edit_db_address():
 
-    #if auth.is_logged_in:
+#     #if auth.is_logged_in:
 
-    address_row=db(db.addresses.id==request.vars['pri_key']).select()[0]
+#     address_row=db(db.addresses.id==request.vars['pri_key']).select()[0]
 
-    edit_address_form=FORM(
-        DIV( 
-            LABEL( 'Street Address/ PO Box/ Etc.',),
+#     edit_address_form=FORM(
+#         DIV( 
+#             LABEL( 'Street Address/ PO Box/ Etc.',),
             
-            DIV(
-                INPUT(
-                    _type='text', 
-                    _name='street_address_line_1', 
-                    _class='form-control',
-                    _value=address_row['street_address_line_1'],
-                ),
-            ),
-        ),
+#             DIV(
+#                 INPUT(
+#                     _type='text', 
+#                     _name='street_address_line_1', 
+#                     _class='form-control',
+#                     _value=address_row['street_address_line_1'],
+#                 ),
+#             ),
+#         ),
 
-        DIV( 
-            LABEL( 'Floor/ Suite/ Apt/ Etc.',),
+#         DIV( 
+#             LABEL( 'Floor/ Suite/ Apt/ Etc.',),
             
-            DIV(
-                INPUT(
-                    _type='text', 
-                    _name='street_address_line_2', 
-                    _class='form-control', 
-                    _value=address_row['street_address_line_2'],
-                ),
-            ),
-        ),
+#             DIV(
+#                 INPUT(
+#                     _type='text', 
+#                     _name='street_address_line_2', 
+#                     _class='form-control', 
+#                     _value=address_row['street_address_line_2'],
+#                 ),
+#             ),
+#         ),
 
-        DIV(
-            LABEL('Municipality',),
+#         DIV(
+#             LABEL('Municipality',),
             
-            DIV(
-                INPUT(
-                    _type='text', 
-                    _name='municipality', 
-                    _class='form-control', 
-                    _value=address_row['municipality'],
-                ),
-            ),
-        ),
+#             DIV(
+#                 INPUT(
+#                     _type='text', 
+#                     _name='municipality', 
+#                     _class='form-control', 
+#                     _value=address_row['municipality'],
+#                 ),
+#             ),
+#         ),
 
-        DIV(
-            LABEL('Administrative Area',),
+#         DIV(
+#             LABEL('Administrative Area',),
             
-            DIV(
-                INPUT(
-                    _type='text', 
-                    _name='administrative_area', 
-                    _class='form-control', 
-                    _value=address_row['administrative_area'],
-                ),
-            ),
-        ),
+#             DIV(
+#                 INPUT(
+#                     _type='text', 
+#                     _name='administrative_area', 
+#                     _class='form-control', 
+#                     _value=address_row['administrative_area'],
+#                 ),
+#             ),
+#         ),
 
-        DIV(
-            LABEL('Postal Code',),
+#         DIV(
+#             LABEL('Postal Code',),
             
-            DIV(
-                INPUT(
-                    _type='text', 
-                    _name='postal_code', 
-                    _class='form-control', 
-                    _value=address_row['postal_code'],
-                ),
-            ),
-        ),
+#             DIV(
+#                 INPUT(
+#                     _type='text', 
+#                     _name='postal_code', 
+#                     _class='form-control', 
+#                     _value=address_row['postal_code'],
+#                 ),
+#             ),
+#         ),
 
-        DIV(
-            LABEL('Country',),
+#         DIV(
+#             LABEL('Country',),
             
-            DIV(
-                INPUT(
-                    _type='text', 
-                    _name='country', 
-                    _class='form-control', 
-                    _value=address_row['country'],
-                ),
-            ),
-        ),
+#             DIV(
+#                 INPUT(
+#                     _type='text', 
+#                     _name='country', 
+#                     _class='form-control', 
+#                     _value=address_row['country'],
+#                 ),
+#             ),
+#         ),
    
-        INPUT(_type='submit', _class="btn btn-default"),
+#         INPUT(_type='submit', _class="btn btn-default"),
             
-    _class='form-horizontal',
-    _role='form').process()
+#     _class='form-horizontal',
+#     _role='form').process()
 
-    if edit_address_form.accepted:
+#     if edit_address_form.accepted:
 
-        if auth.is_logged_in():
-            db.addresses[request.vars['pri_key']]=dict(
-                street_address_line_1=edit_address_form.vars.street_address_line_1,
-                street_address_line_2=edit_address_form.vars.street_address_line_2,
-                municipality=edit_address_form.vars.municipality,
-                administrative_area=edit_address_form.vars.administrative_area,
-                postal_code=edit_address_form.vars.postal_code,
-                country=edit_address_form.vars.country,
-                )
-            # db.addresses.insert(
-            #     user_id=auth.user_id,
-            #     street_address_line_1=add_address_form.vars.street_address_line_1,
-            #     street_address_line_2=add_address_form.vars.street_address_line_2,
-            #     municipality=add_address_form.vars.municipality,
-            #     administrative_area=add_address_form.vars.administrative_area,
-            #     postal_code=add_address_form.vars.postal_code,
-            #     country=add_address_form.vars.country,
-            # )
+#         if auth.is_logged_in():
+#             db.addresses[request.vars['pri_key']]=dict(
+#                 street_address_line_1=edit_address_form.vars.street_address_line_1,
+#                 street_address_line_2=edit_address_form.vars.street_address_line_2,
+#                 municipality=edit_address_form.vars.municipality,
+#                 administrative_area=edit_address_form.vars.administrative_area,
+#                 postal_code=edit_address_form.vars.postal_code,
+#                 country=edit_address_form.vars.country,
+#                 )
+#             # db.addresses.insert(
+#             #     user_id=auth.user_id,
+#             #     street_address_line_1=add_address_form.vars.street_address_line_1,
+#             #     street_address_line_2=add_address_form.vars.street_address_line_2,
+#             #     municipality=add_address_form.vars.municipality,
+#             #     administrative_area=add_address_form.vars.administrative_area,
+#             #     postal_code=add_address_form.vars.postal_code,
+#             #     country=add_address_form.vars.country,
+#             # )
 
-        else:
-            pass
+#         else:
+#             pass
 
-        redirect(URL('cart'))
+#         redirect(URL('cart'))
 
-    else:
+#     else:
         
-        return dict(edit_address_form=edit_address_form)
+#         return dict(edit_address_form=edit_address_form)
 
 
 
-
+@auth.requires_login()
 def edit_address():
 
     from datetime import datetime
 
-    if auth.is_logged_in():
-        address_pre_changes_dict=db(db.addresses.id==request.vars['pri_key']).select()[0]
-        #address_row['street_address_line_1'],
+    # if auth.is_logged_in():
 
-    else:
-        address_pre_changes_dict=session.address
+    allowable_address_ids=[]
+    allowable_addresses=db(db.addresses.user_id==auth.user_id).select(db.addresses.id)
+    for address_row in allowable_addresses:
+        allowable_address_ids.append(str(address_row.id))
+
+    # print allowable_address_ids
+
+    if request.vars['pri_key'] not in allowable_address_ids:
+
+        response.flash="You aren't allowed to edit the address with that id"
+        session.flash=response.flash
+        redirect(URL('cart'))
+
+
+    address_pre_changes_dict=db(db.addresses.id==request.vars['pri_key']).select()[0]
+    #address_row['street_address_line_1'],
+
+    # else:
+    #     address_pre_changes_dict=session.address
         #session.address['first_name']
 
     edit_address_form=FORM(
@@ -3684,14 +2747,14 @@ def edit_address():
 
 
 
-def default_address_2():
-    session.test_var=request.vars.default_address_id
-    if auth.is_logged_in():
-        rows=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select()
-        for row in rows:
-            row.default_choice=False
-        db(db.addresses.id==request.vars.default_address_id).select()[0].default_address=True
-    return locals()
+# def default_address_2():
+#     session.test_var=request.vars.default_address_id
+#     if auth.is_logged_in():
+#         rows=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select()
+#         for row in rows:
+#             row.default_choice=False
+#         db(db.addresses.id==request.vars.default_address_id).select()[0].default_address=True
+#     return locals()
 
 
 
@@ -4167,97 +3230,24 @@ def default_card():
     else:
         session.payment_method='stripe'
 
-def one():
-    ajax_test=FORM(INPUT(_name='nametest', _onkeyup="ajax('echo', ['nametest'], ':eval')"))
-    return locals()
 
-def echo():
-    #return "jQuery(alert('msg')"
-    return "jQuery('#target').html(%s);" % repr(request.vars.nametest)
-    #return request.vars.name
+# def one():
+#     ajax_test=FORM(INPUT(_name='nametest', _onkeyup="ajax('echo', ['nametest'], ':eval')"))
+#     return locals()
 
-def two():
-    row = db(db.addresses==2)
-    #row.update(default_address=True)
-    #row.update_record()
-    return locals()
+# def echo():
+#     #return "jQuery(alert('msg')"
+#     return "jQuery('#target').html(%s);" % repr(request.vars.nametest)
+#     #return request.vars.name
+
+# def two():
+#     row = db(db.addresses==2)
+#     #row.update(default_address=True)
+#     #row.update_record()
+#     return locals()
             
 
-def easypost_test():
-    import easypost
 
-    from_address=easypost.Address.create(
-        company='threemusesglass',
-        street1='308 Clearcreek Rd',
-        city='Myrtle Beach',
-        state='SC',
-        zip='29572',
-    )
-
-    to_address_domestic=easypost.Address.create(
-        name='James McGlynn',
-        street1='363 Cranbury Rd',
-        street2='Apt D09',
-        city='East Brunswick',
-        state='NJ',
-        zip='08816',
-    )
-
-    to_address_international=easypost.Address.create(
-        name='James McGlynn',
-        street1='200 Broadway Av',
-        city='West Beach',
-        state='SA',
-        zipcode='5024',
-        country='AUSTRALIA'
-    )
-
-    parcel=easypost.Parcel.create(
-        length=4,
-        width=4,
-        height=2,
-        weight=4,
-    )
-
-    shipment_domestic=easypost.Shipment.create(
-        to_address = to_address_domestic,
-        from_address = from_address,
-        parcel=parcel,
-    )
-
-    customs_item1=easypost.CustomsItem.create(
-        description='eCig drip tip',
-        quantity=1,
-        value=40,
-        weight=6,
-        hs_tariff_number=700100,
-        origin_country='US',
-    )
-
-    customs_info=easypost.CustomsInfo.create(
-
-        customs_items=[customs_item1],
-        contents_type='merchandise',
-        #contents_explanation=None,
-        restriction_type='none',
-        #restriction_comments=None,
-        customs_certify=True,
-        customs_signer='James McGlynn',
-        non_delivery_option='return',
-        eel_pfc='NOEEI 30.37(a).',
-    )
-
-    shipment_international=easypost.Shipment.create(
-
-        to_address=to_address_international,
-        from_address=from_address,
-        parcel=parcel,
-        customs_info=customs_info,
-
-    )
-
-
-    return locals()
 
 
 def loading_data():
@@ -4269,8 +3259,6 @@ def loading_data():
 
     else:
         return "I'm doing something right now, hold on!"
-
-
 
 
 
@@ -4310,6 +3298,7 @@ def table_generation(grid_header_list, grid_row_lists, basename):
     return grid
 
 
+
 def add_shipping_choice_to_session():
     import json
 
@@ -4324,55 +3313,57 @@ def add_shipping_choice_to_session():
     return shipping_json
 
 
-def stripe_remove_session_users():
+
+# def stripe_remove_session_users():
     
-    ## set cursor_id to get through the while loop the first time
-    cursor_id=""
+#     ## set cursor_id to get through the while loop the first time
+#     cursor_id=""
 
-    ## set has_more to True to enter the while loop initially
-    has_more=True
+#     ## set has_more to True to enter the while loop initially
+#     has_more=True
 
-    ## While there are no more pages of users to go through
-    while has_more==True:
+#     ## While there are no more pages of users to go through
+#     while has_more==True:
 
-        ## If this is the first time calling for customers...
-        if cursor_id=="":
-            ## Get the first 10 stripe customers (make the call with no args)
-            stripe_customer_list=stripe.Customer.all()
-        ## If this is not the first time
-        else:
-            ## make the call by setting starting_after to the id of the customer ending the previous call.
-            stripe_customer_list=stripe.Customer.all(starting_after=cursor_id)
+#         ## If this is the first time calling for customers...
+#         if cursor_id=="":
+#             ## Get the first 10 stripe customers (make the call with no args)
+#             stripe_customer_list=stripe.Customer.all()
+#         ## If this is not the first time
+#         else:
+#             ## make the call by setting starting_after to the id of the customer ending the previous call.
+#             stripe_customer_list=stripe.Customer.all(starting_after=cursor_id)
 
-        ## Get the data portion of the dictionary returned.
-        stripe_customer_list_data=stripe_customer_list['data']
+#         ## Get the data portion of the dictionary returned.
+#         stripe_customer_list_data=stripe_customer_list['data']
 
-        ## Get the id of the final customer in the list for next iteration.
-        cursor_id=stripe_customer_list_data[-1]['id']
+#         ## Get the id of the final customer in the list for next iteration.
+#         cursor_id=stripe_customer_list_data[-1]['id']
 
-        ## Check to see if the email of the customer is in the threemuses user list. 
-        ## (I should be using stripe id not email for this)
-        for stripe_customer in stripe_customer_list_data:
-            three_muses_user=db(db.stripe_customers.stripe_id==stripe_customer['id']).select().first()
-            if not three_muses_user:
+#         ## Check to see if the email of the customer is in the threemuses user list. 
+#         ## (I should be using stripe id not email for this)
+#         for stripe_customer in stripe_customer_list_data:
+#             three_muses_user=db(db.stripe_customers.stripe_id==stripe_customer['id']).select().first()
+#             if not three_muses_user:
 
-                hours_since_creation=(time.time()-stripe_customer['created'])/3600
+#                 hours_since_creation=(time.time()-stripe_customer['created'])/3600
 
-                if hours_since_creation>=STRIPE_SESSION_RETIRE_HOURS:
+#                 if hours_since_creation>=STRIPE_SESSION_RETIRE_HOURS:
 
-                    scu=stripe.Customer.retrieve(stripe_customer['id'])
-                    dummy=scu.delete()
+#                     scu=stripe.Customer.retrieve(stripe_customer['id'])
+#                     dummy=scu.delete()
 
-                else:
-                    pass
-            else:
-                pass
+#                 else:
+#                     pass
+#             else:
+#                 pass
 
 
-        ## This will be false if no more customers to retrieve. True if there are. 
-        has_more=stripe_customer_list['has_more']
+#         ## This will be false if no more customers to retrieve. True if there are. 
+#         has_more=stripe_customer_list['has_more']
 
-    return dict(message="Done!")
+#     return dict(message="Done!")
+
 
 @auth.requires_login()
 def view_purchase_history():
@@ -4421,8 +3412,6 @@ def view_purchase_history():
                             ),
         )
 
-
-
     return dict(grid=grid)
 
 
@@ -4435,8 +3424,6 @@ def receipt_test():
         payment_icon_url="https://s3.amazonaws.com/threemusesglass/icons/PaymentIcon.png",
         summary_icon_url="https://s3.amazonaws.com/threemusesglass/icons/SummaryIcon.png",
         )
-
-
 
     receipt_context=dict(
         email_icons=email_icons,
@@ -4525,123 +3512,6 @@ def id_generator(size=16, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
 
 
-
-
-def paypal_test_checkout():
-    import paypalrestsdk
-    from aux import get_env_var
-    from aux import id_generator
-    from aux import paypal_create_payment_dict
-
-
-    PAYPAL_CLIENT_ID=get_env_var('paypal',PRODUCTION_STATUS,'PAYPAL_CLIENT_ID')
-    PAYPAL_CLIENT_SECRET=get_env_var('paypal',PRODUCTION_STATUS,'PAYPAL_CLIENT_SECRET')
-
-
-    paypalrestsdk.configure({
-        "mode": PAYPAL_MODE, # sandbox or live
-        "client_id": PAYPAL_CLIENT_ID,
-        "client_secret": PAYPAL_CLIENT_SECRET })
-
-
-    invoice_number=id_generator()
-
-    items_LOD=[
-
-    dict(
-        quantity="1",
-        name="eCig Drip Tip",
-        price="20.00",
-        currency="USD",
-        description="Description of item",
-        ),
-
-    dict(
-        quantity="1",
-        name="eCig Drip Tip Black",
-        price="20.00",
-        currency="USD",
-        description="Black eCig Drip Tip",
-        ),
-
-    ]
-
-    payment_dict=paypal_create_payment_dict(
-        intent='sale',
-        payment_method='paypal', 
-        redirect_urls=dict(
-            return_url="https://threemusesglass.herokuapp.com/paypal_webhooks",
-            cancel_url="https://threemusesglass.herokuapp.com"),
-        cost_dict=dict(
-            shipping_cost_USD=2.00, 
-            cart_cost_USD=40, 
-            total_cost_USD=42),
-        transaction_description='Purchase from ThreeMusesGlass',
-        invoice_number=invoice_number,
-        items_paypal_list_of_dicts=items_LOD,)
-
-
-    payment=paypalrestsdk.Payment(payment_dict)
-
-
-    if payment.create():
-        status="Created successfully"
-        approval_url=payment['links'][1]['href']
-        session.expect_paypal_webhook=True
-        #session.payment_id=payment
-    else:
-        status=payment.error
-        approval_url="payment not created, no url for you"
-
-    return dict(status=status, approval_url=approval_url)
-
-
-
-def paypal_webhooks():
-
-    ## Get the keys! and configure to send stuff
-    import paypalrestsdk
-       
-    PAYPAL_CLIENT_ID=get_env_var('paypal', PRODUCTION_STATUS,'PAYPAL_CLIENT_ID')
-    PAYPAL_CLIENT_SECRET=get_env_var('paypal', PRODUCTION_STATUS,'PAYPAL_CLIENT_SECRET')
-
-    paypalrestsdk.configure({
-        "mode": PAYPAL_MODE, # sandbox or live
-        "client_id": PAYPAL_CLIENT_ID,
-        "client_secret": PAYPAL_CLIENT_SECRET })
-
-
-    ## Make sure this person recently started the purchase process
-    if session.expect_paypal_webhook:
-
-    # session.paypal_vars=request.vars
-
-        payer_id=request.vars['PayerID']
-        payment_id=request.vars['paymentId']
-        
-        ## Use the paymentId (with a capital I :/) to retrieve payment object
-        payment=paypalrestsdk.Payment.find(payment_id)
-
-        ## Try to execute the payment with the payer_id
-        if payment.execute({"payer_id":payer_id}):
-
-            status="success"
-            session.expect_paypal_webhook=False
-
-        else:
-
-            status=payment.error
-            session.expect_paypal_webhook=False
-
-        return dict(status=status,payer_id=payer_id,payment_id=payment_id, payment=payment)
-
-    else:
-
-        return dict(
-            status="n/a",
-            payer_id=None, 
-            payment_id=None,
-            payment=None,)
 
 
 def paypal_confirmation():
@@ -4890,7 +3760,6 @@ def get_current_default_address_id():
 
 ## A Change
 
-
 def update_default_address():
 
     session.default_address_id=request.vars['default_address_id']
@@ -4909,31 +3778,30 @@ def update_default_address():
 def add_to_cart():
     return "dummy"
 
-def scratch():
-    
-    return dict()
+# def scratch():
+#     return dict()
 
-def scratch_ajax():
+# def scratch_ajax():
 
-    import json
-    new_choice=request.vars['new_choice']
-    if session.current_choice:
+#     import json
+#     new_choice=request.vars['new_choice']
+#     if session.current_choice:
 
-        ## If the new choice is the same as the current choice, mark down that there was no change
-        if session.current_choice==request.vars['new_choice']:
-            return json.dumps(dict(current_choice=session.current_choice,previous_choice=session.previous_choice,change=False))
+#         ## If the new choice is the same as the current choice, mark down that there was no change
+#         if session.current_choice==request.vars['new_choice']:
+#             return json.dumps(dict(current_choice=session.current_choice,previous_choice=session.previous_choice,change=False))
         
-        ## Otherwise, set old choice to current choice and current choice to new choice. 
-        else:
-            session.previous_choice=session.current_choice
-            session.current_choice=request.vars['new_choice']
-            return json.dumps(dict(current_choice=session.current_choice,previous_choice=session.previous_choice,change=True))
+#         ## Otherwise, set old choice to current choice and current choice to new choice. 
+#         else:
+#             session.previous_choice=session.current_choice
+#             session.current_choice=request.vars['new_choice']
+#             return json.dumps(dict(current_choice=session.current_choice,previous_choice=session.previous_choice,change=True))
 
-    ## If there was no current choice, then just make current choice new choice and previous choice None
-    else:
-        session.current_choice=request.vars['new_choice']
-        session.previous_choice=None
-        return json.dumps(dict(current_choice=session.current_choice,previous_choice=session.previous_choice,change=True))
+#     ## If there was no current choice, then just make current choice new choice and previous choice None
+#     else:
+#         session.current_choice=request.vars['new_choice']
+#         session.previous_choice=None
+#         return json.dumps(dict(current_choice=session.current_choice,previous_choice=session.previous_choice,change=True))
 
 
 
@@ -4963,112 +3831,6 @@ def create_gimp_user():
         return dict()
 
 
-def bootstrap_nav():
-    return dict()
-
-def shopping_cart():
-    return dict()
-
-
-
-def new_hotness():
-
-    if request.args(0) is not None:
-
-        redirect(URL('categories'))
-
-    else:
-
-        pass
-
-    category_rows=db(db.categories.is_active==True).select(orderby=db.categories.display_order)
-
-    return dict(
-        category_rows=category_rows,
-        )
-
-
-
-def drop_muses_cart_table():
-
-    db.muses_cart.drop()
-
-    return dict("The cart table is has been did dropped. ")
-
-
-def stripe():
-    return dict()
-
-def stripe_index():
-
-    return dict(key=stripe_keys['publishable_key'])
-
-def stripe_charge():
-
-    amount = 500
-
-    customer = stripe.Customer.create(
-        email='wantsomechocolate@gmail.com',
-        card=request.form['stripeToken']
-    )
-
-    charge = stripe.Charge.create(
-        customer=customer.id,
-        amount=amount,
-        currency='usd',
-        description='Flask Charge'
-    )
-
-    return dict(amount=amount)
-
-
-def web_stripe():
-    from gluon.contrib.stripe import StripeForm
-
-    form = StripeForm(
-        pk=stripe_keys['publishable_key'],
-        sk=stripe_keys['secret_key'],
-        amount=150, # $1.5 (amount is in cents)
-        description="Nothing").process()
-    if form.accepted:
-        payment_id = form.response['id']
-        redirect(URL('thank_you'))
-    elif form.errors:
-        redirect(URL('pay_error'))
-    return dict(form=form)
-
-
-def checkout_stripe():
-
-    return dict(pk=stripe_keys['publishable_key'])
-
-def checkout_stripe_2():
-
-    # Set your secret key: remember to change this to your live secret key in production
-    # See your keys here https://dashboard.stripe.com/account/apikeys
-    import stripe
-    import os
-    stripe.api_key = stripe_keys['secret_key']
-
-    # Get the credit card details submitted by the form
-    token = request.vars['stripeToken']
-
-    # Create the charge on Stripe's servers - this will charge the user's card
-    try:
-      charge = stripe.Charge.create(
-          amount=1000, # amount in cents, again
-          currency="usd",
-          source=token,
-          description="Example charge"
-      )
-
-      redirect(URL('stripe_test','default','success'))
-
-    except stripe.error.CardError, e:
-      # The card has been declined
-      redirect(URL('stripe_test','default','fail'))
-
-
 
 @auth.requires_login()
 def profile():
@@ -5078,7 +3840,6 @@ def profile():
         response.flash="Log in to access your profile"
         session.flash=response.flash
         redirect(URL('login', vars=dict(_next='profile')))
-
 
     else:
         pass
