@@ -220,7 +220,8 @@ For right now the user will manually type in an email address and I will change 
 
 
 
-
+Weird error that caused cart db rows with no associated user to put "in-cart" ribbons on products for non-users?
+It would say it was in the cart, the button to add/remove said remove, but clicking on the cart page didn't let the user in because they weren't a guest yet. 
 
 
 

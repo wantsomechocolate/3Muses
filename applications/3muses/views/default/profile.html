@@ -1,6 +1,6 @@
 {{extend 'layout.html'}}
 
-<div class="container-fluid style1 profile-container-fluid">
+<div class="container-fluid style1 tmg_auth-container-fluid">
 
 	<div class='container'>
 
@@ -21,7 +21,11 @@
 
 		</div>
 
-		<div>Put a link to the purchase history here</div>
+		<div class="row tmg-auth-button-row tmg-auth-purchase-history-button">
+			<div class="col-md-offset-4 col-md-4 tmg-auth-button-col">
+				<a href="{{ =URL('view_purchase_history') }}"><button class="btn btn-warning">Purchase History</button></a>
+			</div>
+		</div>
 
 
 		<div class="row tmg-auth-button-row">

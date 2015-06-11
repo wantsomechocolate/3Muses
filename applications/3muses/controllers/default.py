@@ -67,7 +67,9 @@ else:
 
 def index():
 
-    return dict()
+    category_rows=db(db.categories.is_active==True).select(orderby=db.categories.display_order)
+
+    return dict(category_rows=category_rows)
 
 
 
@@ -1068,10 +1070,12 @@ def checkout():
     ## I"m just keeping it here so I can tweak the web experience 
     ## everytime until I like it, then I will gray it out. 
     web_profile = paypalrestsdk.WebProfile({
-        "name": "ThreeMusesGlass03",
+        ## This has to be a unique name
+        "name": "ThreeMusesGlass04",
         "presentation": {
             "brand_name": "ThreeMusesGlass",
-            "logo_image": "http://s3-ec.buzzfed.com/static/2014-07/18/8/enhanced/webdr02/anigif_enhanced-buzz-21087-1405685585-12.gif",
+            #Reactivae when you have an image to use. 
+            # "logo_image": "http://s3-ec.buzzfed.com/static/2014-07/18/8/enhanced/webdr02/anigif_enhanced-buzz-21087-1405685585-12.gif",
             "locale_code": "US"
         },
         "input_fields": {
@@ -3382,18 +3386,19 @@ def view_purchase_history():
     query=(db.purchase_history_data.muses_id==auth.user_id)
 
     db.purchase_history_data.id.readable=db.purchase_history_data.id.writable=False
-    db.purchase_history_data.muses_name.readable=db.purchase_history_data.muses_name.writable=False
+    # db.purchase_history_data.muses_name.readable=db.purchase_history_data.muses_name.writable=False
     db.purchase_history_data.muses_id.readable=db.purchase_history_data.muses_id.writable=False
     db.purchase_history_data.muses_email_address.readable=db.purchase_history_data.muses_email_address.writable=False
-    db.purchase_history_data.session_id_3muses.readable=db.purchase_history_data.session_id_3muses.writable=False
-    db.purchase_history_data.session_db_table.readable=db.purchase_history_data.session_db_table.writable=False
+    # db.purchase_history_data.session_id_3muses.readable=db.purchase_history_data.session_id_3muses.writable=False
+    # db.purchase_history_data.session_db_table.readable=db.purchase_history_data.session_db_table.writable=False
     db.purchase_history_data.session_db_record_id.readable=db.purchase_history_data.session_db_record_id.writable=False
     db.purchase_history_data.easypost_rate_id.readable=db.purchase_history_data.easypost_rate_id.writable=False
     db.purchase_history_data.easypost_shipment_id.readable=db.purchase_history_data.easypost_shipment_id.writable=False
-    db.purchase_history_data.payment_service.readable=db.purchase_history_data.payment_service.writable=False
-    db.purchase_history_data.payment_stripe_user_id.readable=db.purchase_history_data.payment_stripe_user_id.writable=False
-    db.purchase_history_data.payment_stripe_card_id.readable=db.purchase_history_data.payment_stripe_card_id.writable=False
-    db.purchase_history_data.payment_stripe_transaction_id.readable=db.purchase_history_data.payment_stripe_transaction_id.writable=False
+    # db.purchase_history_data.payment_service.readable=db.purchase_history_data.payment_service.writable=False
+    db.purchase_history_data.payment_confirmation_id.readable=db.purchase_history_data.payment_service.writable=False
+    # db.purchase_history_data.payment_stripe_user_id.readable=db.purchase_history_data.payment_stripe_user_id.writable=False
+    # db.purchase_history_data.payment_stripe_card_id.readable=db.purchase_history_data.payment_stripe_card_id.writable=False
+    # db.purchase_history_data.payment_stripe_transaction_id.readable=db.purchase_history_data.payment_stripe_transaction_id.writable=False
 
     db.purchase_history_data.writable=False
 
