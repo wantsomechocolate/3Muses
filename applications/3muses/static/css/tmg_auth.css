@@ -972,3 +972,54 @@ body#request_reset_password .error{
 	display:none;
 }*/
 
+
+
+/* View Purchase History */
+.web2py_breadcrumbs ul li {
+	display: inline;
+	list-style-type: none;
+	padding-right: 20px;
+}
+
+.web2py_breadcrumbs ul{
+	padding-left:0;
+}
+
+.web2py_breadcrumbs a {
+	color:black;
+}
+
+.web2py_breadcrumbs {
+	/*margin-top:20px;*/
+}
+
+.web2py_grid{
+	background-color: #F1F0FF;
+	padding: 20px;
+	margin-top: 20px;
+	margin-bottom:20px;
+
+	overflow-x: scroll;
+}
+
+.web2py_table th a{
+	color:black;
+}
+
+.web2py_table th{
+	text-align: center;
+}
+
+.w2p_export_menu{
+	margin-top:20px;
+	text-align: right;
+}
+
+.web2py_grid .form_header{
+	margin-bottom: 20px;
+}
+
+
+.view-purchase-history-profile-button-row{
+	margin-bottom: 20px;
+}
