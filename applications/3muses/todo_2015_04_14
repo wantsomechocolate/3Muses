@@ -14,38 +14,32 @@ Category page
 Has Judy approval for now. 
 
 Display Page
-In mobile view the picture carousels collapse to 0 height if the page is scrolled after any carousel is invoked. 
-I have no idea how to solve this problem
+In mobile view the picture carousels collapse to 0 height if the page is scrolled after any (actually it might just be after the first) carousel is invoked. Consider adding a decoy carousel and just hiding it.
+Other than that, I have no idea how to solve this problem
 
 Product Page
 Fix image heights on non-default active images - LOW PRIORITY
 In mobile view the picture carousels collapse to 0 height if the page is scrolled after any carousel is invoked. 
-Make it more obvious when a user adds something to their cart!
 
 Cart Page
 
 	General
-	Add edit icon to all popovers
-	format contents of all popovers
-	Prices can't be more than 4 significant figures
 	Cancel button on add and edit pages
 
 	Shipping
-	Get dates in shipping options to format properly using moment.js - done
-	correctly calculate the shipping dates in the absence of an estimated shipping time
-	correctly account for business days
-	Remember shipping options after page refresh
+	correctly calculate the shipping dates in the absence of an estimated shipping time?
+	correctly account for business days?
 
-	payment
-	Add email to database while processing paypal purchase information - working on it
-	remember payment option after page refresh - done (for existing payment opitons)
-	Adding billing zip to card creation for stripe
-	get bitcoin working?
-
+	Proceeding to Checkout
+	User is able to click Proceed to Checkout button before selecting a shipping option. 
 
 Checkout page
-There is absolutely no formatting or cosmetics on this page at all right now. - there is some now
+Add modal that activates after succesful form submission when paying with stripe - this requires custom stripe integration. 
+Make sure that Bitcoin works in test mode. Have to check what goes in DB, confirmation email, and view_purchase_history
 
+Bitcoin payment method is not working.
+
+Consider wrapping entire stripe callback function in a try block that catches errors and redirects the user instead of just producing "Server Error"
 
 
 Confirmation page

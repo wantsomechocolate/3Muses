@@ -1258,6 +1258,8 @@ def pay_stripe():
         # print "The email:"
         # print stripe_email
 
+        print "BC - Before charge"
+
         charge = stripe.Charge.create(
             amount=int(float(total_cost_USD)*100), # amount in cents, again
             currency="usd",
@@ -1265,70 +1267,7 @@ def pay_stripe():
             description="Purchase from ThreeMusesGlass",
             )
 
-        # print charge
-
-        ## This is what a stripe charge looks like
-
-        # {
-        #   "amount": 4418, 
-        #   "amount_refunded": 0, 
-        #   "application_fee": null, 
-        #   "balance_transaction": "txn_169F6LBJewwJxtz7dWGPAux0", 
-        #   "captured": true, 
-        #   "created": 1433250401, 
-        #   "currency": "usd", 
-        #   "customer": null, 
-        #   "description": "Purchase from ThreeMusesGlass", 
-        #   "destination": null, 
-        #   "dispute": null, 
-        #   "failure_code": null, 
-        #   "failure_message": null, 
-        #   "fraud_details": {}, 
-        #   "id": "ch_169F6LBJewwJxtz7cmK1o7y4", 
-        #   "invoice": null, 
-        #   "livemode": false, 
-        #   "metadata": {}, 
-        #   "object": "charge", 
-        #   "paid": true, 
-        #   "receipt_email": null, 
-        #   "receipt_number": null, 
-        #   "refunded": false, 
-        #   "refunds": {
-        #     "data": [], 
-        #     "has_more": false, 
-        #     "object": "list", 
-        #     "total_count": 0, 
-        #     "url": "/v1/charges/ch_169F6LBJewwJxtz7cmK1o7y4/refunds"
-        #   }, 
-        #   "shipping": null, 
-        #   "source": {
-        #     "address_city": null, 
-        #     "address_country": null, 
-        #     "address_line1": null, 
-        #     "address_line1_check": null, 
-        #     "address_line2": null, 
-        #     "address_state": null, 
-        #     "address_zip": null, 
-        #     "address_zip_check": null, 
-        #     "brand": "Visa", 
-        #     "country": "US", 
-        #     "customer": null, 
-        #     "cvc_check": null, 
-        #     "dynamic_last4": null, 
-        #     "exp_month": 12, 
-        #     "exp_year": 2015, 
-        #     "fingerprint": "kCCBgxubKDsM9l5g", 
-        #     "funding": "credit", 
-        #     "id": "card_169F6FBJewwJxtz755zcGKcl", 
-        #     "last4": "4242", 
-        #     "metadata": {}, 
-        #     "name": "wantsomechocolate@gmail.com", 
-        #     "object": "card"
-        #   }, 
-        #   "statement_descriptor": null, 
-        #   "status": "succeeded"
-        # }
-
+        print charge
 
 
         ##################################################
@@ -1339,83 +1278,30 @@ def pay_stripe():
         user_data=db(db.auth_user.id==auth.user_id).select().first()
 
 
-        ## Decided against doing this for now
-
-        # ## If you get from paypal and the user isn't full flegged
-        # ## you have to add their email to the list of correspondence
-        # if auth.has_membership('gimp'):
-
-        #     #muses_email_address=payment['payer']['payer_info']['email']
-        #     # user_record=db(db.auth_user.id==auth.user_id).select().first()
-        #     # print (user_record)
-
-        #     ## Even though they are gimp user, check to see if the email they used for paypal exists in the db
-        #     existing_user=db(db.auth_user.email==stripe_email).select().first()
-
-        #     ## If the email does not exixt it means you can change the user's email to the one the used in paypal
-        #     if not existing_user:
-
-        #         user_data.update(email=stripe_email)
-        #         user_data.update_record()
-
-        #         ## This tries to get a list of emails from the db but I'm pretty sure it is failing and that is 
-        #         ## it still adds the email to the correspondence even though the logic is here to prevent that. 
-        #         emails=list(db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email))
-
-        #         if stripe_email in emails:
-        #             pass
-        #         else:
-        #             db.email_correspondence.insert(user_id=auth.user_id,email=stripe_email, is_active=True)
-
-        #     else:
-
-        #         emails=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email)
-
-        #         ## Same here as above comment. 
-        #         if stripe_email in emails:
-        #             pass
-        #         else:
-        #             db.email_correspondence.insert(user_id=auth.user_id,email=stripe_email, is_active=True)
-
-
-
-
-
+    
         ##################################################
         ################-----ADDRESS AND------############
         ################----SHIPPING INFO-----############
         ##################################################
         default_address=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select().first()
 
-        ## Fake payment
-        # from collections import namedtuple
-        # Test = namedtuple('Test', 'id foo bar')
-        # my_test = Test('af789d', 'foo_val', 'bar_val')
 
+
+        print "Creating the purchase history dict"
 
         purchase_history_dict=create_purchase_history_dict(
-
             ## This is probably really dangerous
             session_data=response,
-
             user_data=user_data,
-
             address_data=default_address,
-
-            ## Consider putting shipping response in session and passing them here?
-            # shipping_data=rates,
-            
             payment_service='stripe',
-
             payment_data=charge,
-
             payment_invoice_number=session.payment_information['information_LOD'][0]['invoice_number'],
-
             summary_data=session.summary_information,
-
             )
 
 
+        print "Putting purchase history info in the db"
 
         #################################################
         ########----PUT PURCHASE INFO IN THE DB------####
@@ -1428,14 +1314,14 @@ def pay_stripe():
         session.session_purchase_history_data_id=purchase_history_data_id
 
 
+        print "Preparing purchase history product info"
+
         #################################################
         ########----PUT PRODUCT INFO IN THE DB-------####
         #################################################
 
         ## For every item in the cart, insert a record with the id of the purchase history, the product id and the qty.
         purchase_history_products_LOD=[]
-
-        #cart=db(db.muses_cart.user_id==auth.user_id).select()
 
         cart=retrieve_cart_contents(auth,db)
         
@@ -1469,10 +1355,8 @@ def pay_stripe():
             ## Generate a list of dicts to use bulk insert
             purchase_history_products_LOD.append(purchase_history_product_dict)
 
-
             ## If you lowered the qty to 0 or less, make qty 0 and deactivate item
             if new_qty<=0:
-
                 product_record.update(qty_in_stock=0)
                 product_record.update_record()
                 product_record.update(is_active=False)
@@ -1483,9 +1367,13 @@ def pay_stripe():
                 product_record.update(qty_in_stock=new_qty)
                 product_record.update_record()
 
+
+        print "Putting purchase product info in the DB"
         ## Actually put everything in the db
         purchase_history_products_ids=db.purchase_history_products.bulk_insert(purchase_history_products_LOD)
 
+
+        print "Generating receipt context"
 
         #################################################
         ########----SENDING THE CONFIRMATION EMAIL---####
@@ -1504,6 +1392,7 @@ def pay_stripe():
         # email_address_query=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email).first()
         # email_address=list(email_address_query.as_dict().values())[0]
 
+        print "Sending the purchase email"
 
         from postmark import PMMail
         message = PMMail(api_key=POSTMARK_API_KEY,
@@ -1524,6 +1413,11 @@ def pay_stripe():
         redirect(URL('confirmation', args=(purchase_history_data_id)))
 
 
+
+
+        ## Add cathers for these errors:
+
+        ## KeyError
 
     except stripe.error.CardError, e:
       # The card has been declined
@@ -1849,12 +1743,20 @@ def confirmation():
                         ))
 
                 # payment_information=dict(error=False, error_message=None, information_LOD=payment_information_LOD)
+            elif payment_information_api['source']['object']=='bitcoin_receiver':
+
+                payment_information_LOD.append(
+                    dict(
+                        payment_service='stripe',
+                        email=payment_information_api['source']['email'],
+                        payment_object='Bitcoin',
+                        ))
 
             else:
                 payment_information_LOD.append(
                     dict(
                         payment_service='stripe',
-                        email=payment_information_api['source']['name'],
+                        email=payment_information_api['source']['email'],
                         payment_object='other',
                         ))
 

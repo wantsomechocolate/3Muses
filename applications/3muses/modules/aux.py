@@ -455,30 +455,50 @@ def generate_confirmation_email_receipt_context(
     ###########################################
     #########-----PAYMENT INFORMATION-----#####
     ###########################################
+    print "checking payment method"
     if purchase_history_data_row['payment_service']=='stripe':
 
+        print "retrieving payment info from stripe"
         payment_information=stripe.Charge.retrieve(purchase_history_data_row['payment_confirmation_id'])
 
-        ##Card Table
-        card_header_row=['Stripe Email', 'Brand-Last4', 'Expiration(mm/yyyy)']
+        print "checking to see if payment object is card"
+        if payment_information['source']['object']=='card':
+            card_header_row=['Stripe Email', 'Brand-Last4', 'Expiration(mm/yyyy)']
 
-        # card_table_row_LOL=[[
-        #     str(payment_information['card']['name']),
-        #     str(payment_information['card']['brand']) + " - " + str(payment_information['card']['last4']),
-        #     str(payment_information['card']['exp_month']) + " / " + str(payment_information['card']['exp_year']),
-        # ]]
+            card_table_row_LOL=[[
+                str(payment_information['source']['name']),
+                str(payment_information['source']['brand']) + " - " + str(payment_information['source']['last4']),
+                str(payment_information['source']['exp_month']) + " / " + str(payment_information['source']['exp_year']),
+            ]]
 
-        card_table_row_LOL=[[
-            str(payment_information['source']['name']),
-            str(payment_information['source']['brand']) + " - " + str(payment_information['source']['last4']),
-            str(payment_information['source']['exp_month']) + " / " + str(payment_information['source']['exp_year']),
-        ]]
 
-        # card_table_row_LOL=[[
-        #     'stripe name',
-        #     'stripe brand',
-        #     'stripe exp',
-        # ]]
+        elif payment_information['source']['object']=='bitcoin_receiver':
+
+            print "Checking to see if payment object is bitcoin_receiver"
+
+            card_header_row=['Stripe Email', 'Bitcoin Metric1', 'Bitcoin Metric2']
+
+            card_table_row_LOL=[[
+                str(payment_information['source']['email']), 
+                "Metric1", 
+                "Metric2",
+                #str(payment_information['source']['brand']),
+                #str(payment_information['source']['exp_month']),
+            ]]
+
+        else:
+
+            print "looks like it wasn't"
+
+            card_header_row=['Stripe Email', 'Bitcoin Metric1', 'Bitcoin Metric2']
+
+            card_table_row_LOL=[[
+                str(payment_information['source']['object']), 
+                "Metric1", 
+                "Metric2",
+                #str(payment_information['source']['brand']),
+                #str(payment_information['source']['exp_month']),
+            ]]
 
         confirmation_card_grid=table_generation(card_header_row,card_table_row_LOL,"confirmation_card")
 
