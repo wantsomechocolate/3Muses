@@ -646,3 +646,276 @@ def shipping_date_from_integer(number_of_days,shipping_method,shipping_company,s
 
 
 
+def bdays_to_days(bdays, handling_days=None, shipping_info=None, country=None):
+    from pandas.tseries.offsets import CustomBusinessDay
+    from pandas.tseries.holiday import USFederalHolidayCalendar
+    from datetime import datetime
+
+    ## Shipping response
+    
+    ##{
+    ##  "api_key": "DChuzFBRPfk6XEYgga3Iow", 
+    ##  "batch_message": null, 
+    ##  "batch_status": null, 
+    ##  "buyer_address": {
+    ##    "api_key": "DChuzFBRPfk6XEYgga3Iow", 
+    ##    "carrier_facility": null, 
+    ##    "city": "East Brunswick", 
+    ##    "company": null, 
+    ##    "country": "US", 
+    ##    "created_at": "2015-06-12T21:14:32Z", 
+    ##    "email": null, 
+    ##    "federal_tax_id": null, 
+    ##    "id": "adr_e7ccc1f1206e4792b98bec8c3bc88091", 
+    ##    "mode": "test", 
+    ##    "name": null, 
+    ##    "object": "Address", 
+    ##    "phone": null, 
+    ##    "residential": null, 
+    ##    "state": "NJ", 
+    ##    "street1": "363 Cranbury Rd", 
+    ##    "street2": "Apt D9", 
+    ##    "updated_at": "2015-06-12T21:14:32Z", 
+    ##    "zip": "08816"
+    ##  }, 
+    ##  "created_at": "2015-06-12T21:14:32Z", 
+    ##  "customs_info": null, 
+    ##  "fees": [], 
+    ##  "forms": [], 
+    ##  "from_address": {
+    ##    "api_key": "DChuzFBRPfk6XEYgga3Iow", 
+    ##    "carrier_facility": null, 
+    ##    "city": "Myrtle Beach", 
+    ##    "company": "threemusesglass", 
+    ##    "country": "US", 
+    ##    "created_at": "2015-06-12T21:14:31Z", 
+    ##    "email": null, 
+    ##    "federal_tax_id": null, 
+    ##    "id": "adr_f066f44b7cb042469ac32f247edf925b", 
+    ##    "mode": "test", 
+    ##    "name": null, 
+    ##    "object": "Address", 
+    ##    "phone": null, 
+    ##    "residential": null, 
+    ##    "state": "SC", 
+    ##    "street1": "308 Clearcreek Rd", 
+    ##    "street2": null, 
+    ##    "updated_at": "2015-06-12T21:14:31Z", 
+    ##    "zip": "29572"
+    ##  }, 
+    ##  "id": "shp_c0ba2ff4a25643c193af60804fabc396", 
+    ##  "insurance": null, 
+    ##  "is_return": false, 
+    ##  "messages": [], 
+    ##  "mode": "test", 
+    ##  "object": "Shipment", 
+    ##  "options": {
+    ##    "api_key": "DChuzFBRPfk6XEYgga3Iow", 
+    ##    "currency": "USD"
+    ##  }, 
+    ##  "parcel": {
+    ##    "api_key": "DChuzFBRPfk6XEYgga3Iow", 
+    ##    "created_at": "2015-06-12T21:14:31Z", 
+    ##    "height": 4.0, 
+    ##    "id": "prcl_bced04fe1e63440ebdfac1340140bfd4", 
+    ##    "length": 8.0, 
+    ##    "mode": "test", 
+    ##    "object": "Parcel", 
+    ##    "predefined_package": null, 
+    ##    "updated_at": "2015-06-12T21:14:31Z", 
+    ##    "weight": 6.0, 
+    ##    "width": 8.0
+    ##  }, 
+    ##  "postage_label": null, 
+    ##  "rates": [
+    ##    {
+    ##      "api_key": "DChuzFBRPfk6XEYgga3Iow", 
+    ##      "carrier": "USPS", 
+    ##      "carrier_account_id": "ca_GoMRV1fZ", 
+    ##      "created_at": "2015-06-12T21:14:32Z", 
+    ##      "currency": "USD", 
+    ##      "delivery_date": null, 
+    ##      "delivery_date_guaranteed": null, 
+    ##      "delivery_days": null, 
+    ##      "est_delivery_days": null, 
+    ##      "id": "rate_c816828ef84a4714bdbe47f6046012e5", 
+    ##      "mode": "test", 
+    ##      "object": "Rate", 
+    ##      "rate": "5.35", 
+    ##      "retail_currency": null, 
+    ##      "retail_rate": null, 
+    ##      "service": "Priority", 
+    ##      "shipment_id": "shp_c0ba2ff4a25643c193af60804fabc396", 
+    ##      "updated_at": "2015-06-12T21:14:32Z"
+    ##    }, 
+    ##    {
+    ##      "api_key": "DChuzFBRPfk6XEYgga3Iow", 
+    ##      "carrier": "USPS", 
+    ##      "carrier_account_id": "ca_GoMRV1fZ", 
+    ##      "created_at": "2015-06-12T21:14:32Z", 
+    ##      "currency": "USD", 
+    ##      "delivery_date": null, 
+    ##      "delivery_date_guaranteed": null, 
+    ##      "delivery_days": null, 
+    ##      "est_delivery_days": null, 
+    ##      "id": "rate_e96c82db1a9846b0a54eaff542e10865", 
+    ##      "mode": "test", 
+    ##      "object": "Rate", 
+    ##      "rate": "5.95", 
+    ##      "retail_currency": null, 
+    ##      "retail_rate": null, 
+    ##      "service": "ParcelSelect", 
+    ##      "shipment_id": "shp_c0ba2ff4a25643c193af60804fabc396", 
+    ##      "updated_at": "2015-06-12T21:14:32Z"
+    ##    }, 
+    ##    {
+    ##      "api_key": "DChuzFBRPfk6XEYgga3Iow", 
+    ##      "carrier": "USPS", 
+    ##      "carrier_account_id": "ca_GoMRV1fZ", 
+    ##      "created_at": "2015-06-12T21:14:32Z", 
+    ##      "currency": "USD", 
+    ##      "delivery_date": null, 
+    ##      "delivery_date_guaranteed": null, 
+    ##      "delivery_days": 0, 
+    ##      "est_delivery_days": 0, 
+    ##      "id": "rate_aad4935372b845a39142edb8a8b6e94e", 
+    ##      "mode": "test", 
+    ##      "object": "Rate", 
+    ##      "rate": "2.35", 
+    ##      "retail_currency": null, 
+    ##      "retail_rate": null, 
+    ##      "service": "First", 
+    ##      "shipment_id": "shp_c0ba2ff4a25643c193af60804fabc396", 
+    ##      "updated_at": "2015-06-12T21:14:32Z"
+    ##    }, 
+    ##    {
+    ##      "api_key": "DChuzFBRPfk6XEYgga3Iow", 
+    ##      "carrier": "USPS", 
+    ##      "carrier_account_id": "ca_GoMRV1fZ", 
+    ##      "created_at": "2015-06-12T21:14:32Z", 
+    ##      "currency": "USD", 
+    ##      "delivery_date": null, 
+    ##      "delivery_date_guaranteed": null, 
+    ##      "delivery_days": 2, 
+    ##      "est_delivery_days": 2, 
+    ##      "id": "rate_3f86a6f7bf78410d8f5b4afd5c02c38d", 
+    ##      "mode": "test", 
+    ##      "object": "Rate", 
+    ##      "rate": "20.42", 
+    ##      "retail_currency": null, 
+    ##      "retail_rate": null, 
+    ##      "service": "Express", 
+    ##      "shipment_id": "shp_c0ba2ff4a25643c193af60804fabc396", 
+    ##      "updated_at": "2015-06-12T21:14:32Z"
+    ##    }
+    ##  ], 
+    ##  "reference": null, 
+    ##  "refund_status": null, 
+    ##  "return_address": {
+    ##    "api_key": "DChuzFBRPfk6XEYgga3Iow", 
+    ##    "carrier_facility": null, 
+    ##    "city": "Myrtle Beach", 
+    ##    "company": "threemusesglass", 
+    ##    "country": "US", 
+    ##    "created_at": "2015-06-12T21:14:31Z", 
+    ##    "email": null, 
+    ##    "federal_tax_id": null, 
+    ##    "id": "adr_f066f44b7cb042469ac32f247edf925b", 
+    ##    "mode": "test", 
+    ##    "name": null, 
+    ##    "object": "Address", 
+    ##    "phone": null, 
+    ##    "residential": null, 
+    ##    "state": "SC", 
+    ##    "street1": "308 Clearcreek Rd", 
+    ##    "street2": null, 
+    ##    "updated_at": "2015-06-12T21:14:31Z", 
+    ##    "zip": "29572"
+    ##  }, 
+    ##  "scan_form": null, 
+    ##  "selected_rate": null, 
+    ##  "status": "unknown", 
+    ##  "to_address": {
+    ##    "api_key": "DChuzFBRPfk6XEYgga3Iow", 
+    ##    "carrier_facility": null, 
+    ##    "city": "East Brunswick", 
+    ##    "company": null, 
+    ##    "country": "US", 
+    ##    "created_at": "2015-06-12T21:14:32Z", 
+    ##    "email": null, 
+    ##    "federal_tax_id": null, 
+    ##    "id": "adr_e7ccc1f1206e4792b98bec8c3bc88091", 
+    ##    "mode": "test", 
+    ##    "name": null, 
+    ##    "object": "Address", 
+    ##    "phone": null, 
+    ##    "residential": null, 
+    ##    "state": "NJ", 
+    ##    "street1": "363 Cranbury Rd", 
+    ##    "street2": "Apt D9", 
+    ##    "updated_at": "2015-06-12T21:14:32Z", 
+    ##    "zip": "08816"
+    ##  }, 
+    ##  "tracker": null, 
+    ##  "tracking_code": null, 
+    ##  "updated_at": "2015-06-12T21:14:32Z", 
+    ##  "usps_zone": 4
+    ##}
+
+
+    ##    Domestic Shipping Types
+    ##    Priority
+    ##    ParcelSelect
+    ##    First
+    ##    Express
+
+    ##    International shipping types
+    ##    FirstClassPackageInternationalService
+    ##    PriorityMailInternational
+    ##    ExpressMailInternational
+    
+    ##
+    ##    shipping_api_response['to_address']['country']
+    ##
+    ##    These can be 0, null, and I haven't seen it yet, but I bet empty string
+    ##    shipping_api_response['rates'][i]['est_delivery_days']
+
+    shipping_days_dict=dict(
+        USPS=dict(
+            US=dict(
+                Priority=1,
+                ParcelSelect=2,
+                First=3,
+                Express=4,
+                ),
+            INT=dict(
+                FirstClassPackageInternationalService=1,
+                PriorityMailInternational=2,
+                ExpressMailInternational=3,
+                ),
+            ),
+        )
+    
+
+    ## bad_list=[None,0,""]
+
+
+    if isinstance(bdays,int) or isinstance(bdays,float):
+        
+        bdays=int(bdays)
+
+        if bdays<=0:
+            return 5
+
+        else:
+            bday_us = CustomBusinessDay(calendar=USFederalHolidayCalendar())
+            start_date=datetime.today()
+            end_date=start_date+bday_us*bdays
+            elapsed_days=(end_date-start_date).days
+
+            return elapsed_days
+
+    else:
+        return 5
+
+

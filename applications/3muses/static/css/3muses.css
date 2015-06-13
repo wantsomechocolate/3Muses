@@ -134,16 +134,28 @@ h2{
 }
 
 .jumbotron-tmg{
-	/*height:45vmin !important;*/
+	height:45vmin !important;
 }
 
-.jumbotron .container{
-
+.jumbotron > .container{
+	
 }
 
 .jumbotron .container .row{
 	/*height:100%;
 	position:relative;*/
+}
+
+.index-view-container-style1{
+	/*min-height:40vmin;*/
+}
+
+.index-view-shop-now-container{
+	padding-bottom:20px;
+}
+
+.index-view-shop-now-container img{
+	width:100%;
 }
 
 #welcome-header{
@@ -266,12 +278,28 @@ h2{
 	position: absolute;
 	right: 0px;
 	bottom: 0px;
-	margin: 5px;
-	margin-right: 10px;
+
+/*	margin: 5px;
+	margin-right: 10px;*/
+
 	font-size: 2em;
-	font-weight: bold;
 	z-index: 10;
+
+	font-weight: bold;
+
+	background-color: rgba(255,255,255,.5);
+	margin: 0;
+	padding: 5px;
+	margin-right: 2px;
+	border-top-left-radius: 20px 15px;
  }
+
+  
+
+
+	
+
+
 
 .display-view-header-fluid-container{
 	background: #C3C3E5;
@@ -342,6 +370,11 @@ h2{
 		text-align: center
 	}
 
+	.display-view-product-square{
+		padding-left: 0;
+		padding-right: 0;
+	}
+
 }
 
 
@@ -405,6 +438,11 @@ h2{
 
 	.product-view-btn{
 		width:100%;
+	}
+
+	.product-view-row{
+		padding-top: 0;
+  		padding-bottom: 0;
 	}
 
 }

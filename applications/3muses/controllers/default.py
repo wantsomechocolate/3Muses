@@ -63,6 +63,26 @@ else:
 ## Auth settings that need functions that are defined in this file
 #auth.settings.reset_password_onaccept = [reset_password_callback]
 
+
+
+## Maybe this info should go in a db table?
+## The mapping for postal service types to business days required
+
+
+
+
+
+
+
+## The postal service types to exclude in offerings. 
+
+
+
+
+
+
+
+
 ## The static views (index, categories, display, product, meet the artist.)
 
 def index():
@@ -2684,8 +2704,12 @@ def ajax_shipping_information():
     import json
     from aux import create_shipment
     from aux import retrieve_cart_contents
+    from aux import bdays_to_days
     from datetime import datetime
     from datetime import timedelta
+
+
+
 
     ## This is the address_id in the DB of the clicked address
     default_address_id=int(request.vars.new_choice)
@@ -2795,10 +2819,6 @@ def ajax_shipping_information():
 
 
 
-
-
-
-
     ## Get the time of when shit happened 
     easypost_last_retrieved_time=address.easypost_api_datetime
 
@@ -2841,16 +2861,13 @@ def ajax_shipping_information():
 
 
 
-
-
-
-
     ## Now we have the address that was chosen, the address info for the address that was chosen
     ## the cart info, and the combined weight of our package. Let's make a call
     try:
 
         ## Call to easypost
         shipment=create_shipment(address_info, cart_for_shipping_calculations)
+        print shipment
 
         # print ("------------")
         # print shipment
@@ -2906,14 +2923,20 @@ def ajax_shipping_information():
                         else:
                             selected_shipping_option=False
 
+
+
+                        ## BUSINESS DAYS ARE CALCULATED HERE!
+                        #shipping_days=bdays_to_days(shipment.rates[i].delivery_days)
+
                         shipping_option_dict=dict(
-                                carrier=shipment.rates[i].carrier,
-                                service=camelcaseToUnderscore(shipment.rates[i].service),
-                                rate=shipment.rates[i].rate,
-                                rate_id=shipment.rates[i].id,
-                                shipment_id=shipment.rates[i].shipment_id,
-                                delivery_days=shipment.rates[i].delivery_days,
-                                selected_shipping_option=selected_shipping_option,
+                            carrier=shipment.rates[i].carrier,
+                            service=camelcaseToUnderscore(shipment.rates[i].service),
+                            rate=shipment.rates[i].rate,
+                            rate_id=shipment.rates[i].id,
+                            shipment_id=shipment.rates[i].shipment_id,
+                            #delivery_days=shipping_days,
+                            delivery_days=shipment.rates[i].delivery_days,
+                            selected_shipping_option=selected_shipping_option,
                             )
 
                         shipping_options_LOD.append(shipping_option_dict)
@@ -3815,3 +3838,20 @@ def change_password():
         redirect(URL('categories'))
 
     return dict(form=auth.change_password(next=URL('profile')))
+
+
+
+
+# def bdays_to_days():
+#     from pandas.tseries.offsets import CustomBusinessDay
+#     from pandas.tseries.holiday import USFederalHolidayCalendar
+#     from datetime import datetime
+
+#     bday_us = CustomBusinessDay(calendar=USFederalHolidayCalendar())
+#     start_date=datetime.today()
+#     end_date=start_date+bday_us*3
+
+#     elapsed_days=(end_date-start_date).days
+
+
+#     return dict(days=elapsed_days)
