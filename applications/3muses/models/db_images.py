@@ -274,6 +274,27 @@ db.muses_cart.user_id.writable=db.muses_cart.user_id.readable=False
 db.muses_cart.product_id.writable=False
 
 
+
+
+
+
+
+
+## A Country codes table
+db.define_table('country_codes',
+	Field('country_name'),
+	Field('country_ISO_2'),
+	Field('country_ISO_3'),
+	Field('country_ISO_numeric'),
+	Field('is_active','boolean')
+	)
+
+db.country_codes.country_ISO_2.requires=IS_LENGTH(minsize=2, maxsize=2, error_message='Must be 2 characters')
+db.country_codes.country_ISO_3.requires=IS_LENGTH(minsize=3, maxsize=3, error_message='Must be 3 characters')
+
+
+
+
 # a cart will hold the amount of money to charge and the concatonated description of everything purchased?, nah, I need a plugin for this. 
 #db.define_table('cart')
 #create a view for this so that mom can add and remove images 
@@ -310,6 +331,10 @@ db.addresses.user_id.readable=False
 db.addresses.user_id.writable=False
 db.addresses.user_id.default=auth.user_id
 
+db.addresses.country.requires = IS_IN_DB(db(db.country_codes.is_active==True), 'country_codes.country_ISO_2', '%(country_name)s')
+
+
+
 
 db.define_table('email_correspondence',
 	Field('user_id', 'reference auth_user'),
@@ -322,17 +347,10 @@ db.email_correspondence.is_active.default=True
 
 
 
-## A Country codes table
-db.define_table('country_codes',
-	Field('country_name'),
-	Field('country_ISO_2'),
-	Field('country_ISO_3'),
-	Field('country_ISO_numeric'),
-	Field('is_active','boolean')
-	)
 
-db.country_codes.country_ISO_2.requires=IS_LENGTH(minsize=2, maxsize=2, error_message='Must be 2 characters')
-db.country_codes.country_ISO_3.requires=IS_LENGTH(minsize=3, maxsize=3, error_message='Must be 3 characters')
+
+
+
 
 
 

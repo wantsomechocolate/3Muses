@@ -160241,3 +160241,12 @@ CREATE TABLE country_codes(
     is_active CHAR(1)
 );
 success!
+success!
+timestamp: 2015-06-15T09:26:55.561087
+ALTER TABLE addresses ADD country__tmp VARCHAR(512);
+UPDATE addresses SET country__tmp=country;
+ALTER TABLE addresses DROP COLUMN country;
+ALTER TABLE addresses ADD country VARCHAR(512);
+UPDATE addresses SET country=country__tmp;
+ALTER TABLE addresses DROP COLUMN country__tmp;
+success!

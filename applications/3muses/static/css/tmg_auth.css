@@ -938,7 +938,9 @@ body#request_reset_password .error{
 
 
 
-
+body#edit_address{
+	background-color:#C3C3E5;
+}
 
 
 

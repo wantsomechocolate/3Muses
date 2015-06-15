@@ -410,7 +410,12 @@ def product():
 
 
 @auth.requires_login()
-def add_new_address(): #http://codepen.io/Angelfire/pen/dJhyr
+def add_new_address_2(): #http://codepen.io/Angelfire/pen/dJhyr
+
+    # db.addresses.country.requires = IS_IN_DB(db(db.country_codes.is_active==True), 'country_codes.country_name', '%(country_ISO_2)s')
+
+    countries=db(db.country_codes.is_active==True).select()
+    print countries
 
     from datetime import datetime
 
@@ -430,15 +435,18 @@ def add_new_address(): #http://codepen.io/Angelfire/pen/dJhyr
 
         DIV ( LABEL ( 'Postal Code',),DIV(INPUT(_type='text', _name='postal_code', _class='form-control', ),),),
 
-        DIV ( LABEL ( 'Country',),DIV(INPUT(_type='text', _name='country', _class='form-control', ),),),
+        DIV ( LABEL ( 'Country',),DIV(INPUT(_type='text', _name='country', _class='form-control', requires=IS_IN_DB(db(db.country_codes.is_active==True), 'country_codes.country_ISO_2', '%(country_name)s') ),),),
 
         INPUT(_type='submit', _class="btn btn-info form-submit-btn add-new-address-view-button"),
             
         _class='form-horizontal',
 
-        _role='form').process()
+        _role='form')
 
-    if add_address_form.accepted:
+    
+    # add_address_form.element('input[name=Country]')['requires'] = IS_IN_DB(db(db.country_codes.is_active==True), 'country_codes.country_name', '%(country_ISO_2)s')
+
+    if add_address_form.process().accepted:
 
         #if auth.is_logged_in():
         db.addresses.insert(
@@ -454,6 +462,45 @@ def add_new_address(): #http://codepen.io/Angelfire/pen/dJhyr
             default_address=True,
             last_modified=datetime.now(),
         )
+
+        redirect(URL('cart#address-information'))
+
+    else:
+        
+        return dict(add_address_form=add_address_form)
+
+
+@auth.requires_login()
+def add_new_address():
+
+    countries=db(db.country_codes.is_active==True).select()
+    print countries
+
+    from datetime import datetime
+
+    add_address_form=SQLFORM(db.addresses)
+
+    
+    # add_address_form.element('input[name=Country]')['requires'] = IS_IN_DB(db(db.country_codes.is_active==True), 'country_codes.country_name', '%(country_ISO_2)s')
+
+
+
+    if add_address_form.process().accepted:
+
+        # #if auth.is_logged_in():
+        # db.addresses.insert(
+        #     user_id=auth.user_id,
+        #     first_name=add_address_form.vars.first_name,
+        #     last_name=add_address_form.vars.last_name,
+        #     street_address_line_1=add_address_form.vars.street_address_line_1,
+        #     street_address_line_2=add_address_form.vars.street_address_line_2,
+        #     municipality=add_address_form.vars.municipality,
+        #     administrative_area=add_address_form.vars.administrative_area,
+        #     postal_code=add_address_form.vars.postal_code,
+        #     country=add_address_form.vars.country,
+        #     default_address=True,
+        #     last_modified=datetime.now(),
+        # )
 
         redirect(URL('cart#address-information'))
 
@@ -2536,7 +2583,7 @@ def delete_address():
 
 
 @auth.requires_login()
-def edit_address():
+def edit_address_2():
 
     from datetime import datetime
 
@@ -2700,6 +2747,47 @@ def edit_address():
     else:
         
         return dict(edit_address_form=edit_address_form)
+
+
+
+
+
+
+
+
+
+
+@auth.requires_login()
+def edit_address():
+
+    from datetime import datetime
+
+    allowable_address_ids=[]
+    allowable_addresses=db(db.addresses.user_id==auth.user_id).select(db.addresses.id)
+    for address_row in allowable_addresses:
+        allowable_address_ids.append(str(address_row.id))
+
+    if request.vars['pri_key'] not in allowable_address_ids:
+
+        response.flash="You aren't allowed to edit the address with that id"
+        session.flash=response.flash
+        redirect(URL('cart'))
+
+    address_pre_changes_dict=db(db.addresses.id==request.vars['pri_key']).select()[0]
+
+    edit_address_form=SQLFORM(db.addresses,record=request.vars['pri_key'], buttons=[TAG.button('Submit',_type="submit"), A("Cancel",_class='btn',_href=URL("cart"))])
+
+    if edit_address_form.process().accepted:
+
+        redirect(URL('cart#address-information'))
+
+    else:
+        
+        return dict(edit_address_form=edit_address_form)
+
+
+
+
 
 
 
