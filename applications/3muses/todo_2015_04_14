@@ -254,3 +254,17 @@ checkout with paypal
 
 
 
+
+
+
+TO GET SHIPPING BACK ON TRACK
+
+Change session shipping info items to have both the delivery days, the delivery date, the service name as it comes from easypost and the service name that was converted to a human readable form. 
+
+Change javascript so that it takes the delivery date and just puts where it goes, no error checking or formatting with js. If a delivery date can't be found server side, it will supply an N/A to put there instead. 
+
+Add delivery date to the things to save in the purchase history
+As well as the time of purchase. 
+Make sure it is added while using the postgres db. 
+
+If N/A is not desireable, it can be replaced later, or a tooltip can be added to it. 

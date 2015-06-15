@@ -322,6 +322,19 @@ db.email_correspondence.is_active.default=True
 
 
 
+## A Country codes table
+db.define_table('country_codes',
+	Field('country_name'),
+	Field('country_ISO_2'),
+	Field('country_ISO_3'),
+	Field('country_ISO_numeric'),
+	Field('is_active','boolean')
+	)
+
+db.country_codes.country_ISO_2.requires=IS_LENGTH(minsize=2, maxsize=2, error_message='Must be 2 characters')
+db.country_codes.country_ISO_3.requires=IS_LENGTH(minsize=3, maxsize=3, error_message='Must be 3 characters')
+
+
 
 
 

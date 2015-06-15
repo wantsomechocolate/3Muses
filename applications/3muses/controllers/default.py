@@ -265,148 +265,148 @@ def product():
 ## This needs to be shortened. Two long right now
 ## Consider bringing some of this crap to the view
 
-@auth.requires_login()
-def add_new_card():
+# @auth.requires_login()
+# def add_new_card():
 
-    stripe_form=FORM(
+#     stripe_form=FORM(
 
-        DIV( LABEL( 'Email Address',),DIV(INPUT(_type='text',_name='email', _class='form-control', ),),),
+#         DIV( LABEL( 'Email Address',),DIV(INPUT(_type='text',_name='email', _class='form-control', ),),),
 
-        DIV( LABEL( 'Name on the Card',),DIV(INPUT(_type='text', _name='name', _class='form-control', ),),),
+#         DIV( LABEL( 'Name on the Card',),DIV(INPUT(_type='text', _name='name', _class='form-control', ),),),
 
-        DIV( LABEL( 'Card Number',),DIV(INPUT(_type='integer', _name='number', _class='form-control', ),),),
+#         DIV( LABEL( 'Card Number',),DIV(INPUT(_type='integer', _name='number', _class='form-control', ),),),
 
-        DIV( LABEL('Card CVC Number',),DIV(INPUT(_type='integer', _name='cvc', _class='form-control', ),),),
+#         DIV( LABEL('Card CVC Number',),DIV(INPUT(_type='integer', _name='cvc', _class='form-control', ),),),
 
-        DIV( LABEL('Expiration Month',),DIV(INPUT(_type='integer', _name='exp_month', _class='form-control', ),),),
+#         DIV( LABEL('Expiration Month',),DIV(INPUT(_type='integer', _name='exp_month', _class='form-control', ),),),
 
-        DIV( LABEL('Expiration Year (YYYY)',),DIV(INPUT(_type='integer', _name='exp_year', _class='form-control', requires=IS_INT_IN_RANGE(2014,3000),),),),
+#         DIV( LABEL('Expiration Year (YYYY)',),DIV(INPUT(_type='integer', _name='exp_year', _class='form-control', requires=IS_INT_IN_RANGE(2014,3000),),),),
 
-        INPUT(_type='submit', _class="btn btn-info add-new-card-view-btn"),
+#         INPUT(_type='submit', _class="btn btn-info add-new-card-view-btn"),
 
-        _class='form-horizontal',
+#         _class='form-horizontal',
 
-        _role='form').process()
-
-
-    if stripe_form.accepted:
-        ## If there are no errors found in the form (which there shouldn't be because there are no
-        ## requirements yet), try to retrieve the customer token from the database
-        ## and create a new card. If the logged in user doesn't have a stripe customer token yet, 
-        ## it will be unable to find one and raise an index error. 
-
-        try:
-            ## If the user has already gone through this process, they already have some email associated with their account, so I can just proceed for now. 
-            stripe_customer_token=db(db.stripe_customers.muses_id==auth.user_id).select()[0].stripe_id
-
-            customer=stripe.Customer.retrieve(stripe_customer_token)
-
-            if customer==None:
-                pass
-            else:
-                default_card=customer.cards.create(
-                    card=dict(
-                        name=stripe_form.vars.name,
-                        number=stripe_form.vars.number,
-                        cvc=stripe_form.vars.cvc,
-                        exp_month=stripe_form.vars.exp_month,
-                        exp_year=stripe_form.vars.exp_year,     
-                    )
-                )
-
-            session.payment_method=default_card.id
+#         _role='form').process()
 
 
-        # if there is no stripe customer token for the current user, the there will be an index error
-        # this means that the user doesn't have a token in the database
-        except IndexError:
-            # if user doesn't have stripe association yet when trying to create card
-            # create customer and first card at the same time.
-            #if auth.is_logged_in():
+#     if stripe_form.accepted:
+#         ## If there are no errors found in the form (which there shouldn't be because there are no
+#         ## requirements yet), try to retrieve the customer token from the database
+#         ## and create a new card. If the logged in user doesn't have a stripe customer token yet, 
+#         ## it will be unable to find one and raise an index error. 
 
-            try:
+#         try:
+#             ## If the user has already gone through this process, they already have some email associated with their account, so I can just proceed for now. 
+#             stripe_customer_token=db(db.stripe_customers.muses_id==auth.user_id).select()[0].stripe_id
 
-                print ("Hello, we made it to the part where the user doesn't have any cards")
-                ## And if they are gimp, also means they have no email correspondence yet. 
+#             customer=stripe.Customer.retrieve(stripe_customer_token)
+
+#             if customer==None:
+#                 pass
+#             else:
+#                 default_card=customer.cards.create(
+#                     card=dict(
+#                         name=stripe_form.vars.name,
+#                         number=stripe_form.vars.number,
+#                         cvc=stripe_form.vars.cvc,
+#                         exp_month=stripe_form.vars.exp_month,
+#                         exp_year=stripe_form.vars.exp_year,     
+#                     )
+#                 )
+
+#             session.payment_method=default_card.id
 
 
+#         # if there is no stripe customer token for the current user, the there will be an index error
+#         # this means that the user doesn't have a token in the database
+#         except IndexError:
+#             # if user doesn't have stripe association yet when trying to create card
+#             # create customer and first card at the same time.
+#             #if auth.is_logged_in():
 
-                if auth.has_membership('gimp'):
+#             try:
+
+#                 print ("Hello, we made it to the part where the user doesn't have any cards")
+#                 ## And if they are gimp, also means they have no email correspondence yet. 
 
 
 
-
-                    email_from_user=stripe_form.vars.email
-
-                    existing_user=db(db.auth_user.email==email_from_user).select().first()
-
-                    if not existing_user:
-
-                        user_data.update(email=email_from_user)
-                        user_data.update_record()
-
-
-                        emails=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email)
-
-                        if email_from_user in emails:
-                            pass
-                        else:
-                            db.email_correspondence.insert(user_id=auth.user_id,email=email_from_user, is_active=True)
-
-                    else:
-
-                        emails=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email)
-
-                        if email_from_user in emails:
-                            pass
-                        else:
-                            db.email_correspondence.insert(user_id=auth.user_id,email=email_from_user, is_active=True)
+#                 if auth.has_membership('gimp'):
 
 
 
-                    # muses_email=stripe_form.vars.email
 
-                    # product_record=db(db.auth_user.id==auth.user_id).select().first()
+#                     email_from_user=stripe_form.vars.email
 
-                    # print (product_record)
+#                     existing_user=db(db.auth_user.email==email_from_user).select().first()
 
-                    # product_record.update(email=muses_email)
-                    # product_record.update_record()
+#                     if not existing_user:
+
+#                         user_data.update(email=email_from_user)
+#                         user_data.update_record()
 
 
-                customer = stripe.Customer.create(
-                    email=email_from_user,
-                    card=dict(
-                        name=stripe_form.vars.name,
-                        number=stripe_form.vars.number,
-                        cvc=stripe_form.vars.cvc,
-                        exp_month=stripe_form.vars.exp_month,
-                        exp_year=stripe_form.vars.exp_year,     
-                    )
-                )
+#                         emails=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email)
 
-                # print customer
+#                         if email_from_user in emails:
+#                             pass
+#                         else:
+#                             db.email_correspondence.insert(user_id=auth.user_id,email=email_from_user, is_active=True)
 
-                session.payment_method=customer.default_source
+#                     else:
 
-                # add the fact the current customer is now a stripe customer to the db. 
-                db.stripe_customers.insert(
-                    muses_id=auth.user_id,
-                    stripe_id=customer.id,
-                    ## might want to add some logic here to get a better email address when using a gimp user!
-                    stripeEmail=email_from_user,
-                    stripe_next_card_id=customer.default_source
-                )
+#                         emails=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email)
 
-            ## if there was a problem connecting to the stripe api
-            except stripe.error.APIConnectionError:
-                customer=None
+#                         if email_from_user in emails:
+#                             pass
+#                         else:
+#                             db.email_correspondence.insert(user_id=auth.user_id,email=email_from_user, is_active=True)
 
-        redirect(URL('checkout'))
 
-    else:
+
+#                     # muses_email=stripe_form.vars.email
+
+#                     # product_record=db(db.auth_user.id==auth.user_id).select().first()
+
+#                     # print (product_record)
+
+#                     # product_record.update(email=muses_email)
+#                     # product_record.update_record()
+
+
+#                 customer = stripe.Customer.create(
+#                     email=email_from_user,
+#                     card=dict(
+#                         name=stripe_form.vars.name,
+#                         number=stripe_form.vars.number,
+#                         cvc=stripe_form.vars.cvc,
+#                         exp_month=stripe_form.vars.exp_month,
+#                         exp_year=stripe_form.vars.exp_year,     
+#                     )
+#                 )
+
+#                 # print customer
+
+#                 session.payment_method=customer.default_source
+
+#                 # add the fact the current customer is now a stripe customer to the db. 
+#                 db.stripe_customers.insert(
+#                     muses_id=auth.user_id,
+#                     stripe_id=customer.id,
+#                     ## might want to add some logic here to get a better email address when using a gimp user!
+#                     stripeEmail=email_from_user,
+#                     stripe_next_card_id=customer.default_source
+#                 )
+
+#             ## if there was a problem connecting to the stripe api
+#             except stripe.error.APIConnectionError:
+#                 customer=None
+
+#         redirect(URL('checkout'))
+
+#     else:
         
-        return dict(stripe_form=stripe_form)
+#         return dict(stripe_form=stripe_form)
 
 
 @auth.requires_login()
@@ -744,6 +744,8 @@ def cart():
 ## if it works, I'll have all the info I need, if not I can decide what to do about it. 
 def checkout():
 
+    from datetime import datetime
+    from datetime import timedelta
 ## Currently checkout does, is logged in? then everything, then not logged in, and everything
 ## I figured out that I like the other method better. check for login on each thing you have to do.
 
@@ -932,7 +934,16 @@ def checkout():
 #############################################################################################
 
 
-    #shipment=json.loads(address.easypost_api_response)
+    ## This needs to be merged with the following try block. Its iterating one thing and then looking 
+    ## into this for the same information but formatted differently. 
+
+    shipping_rates_checkout=session.shipping_rates[address.id]
+
+    for item in shipping_rates_checkout:
+        if item['rate_id']==address.easypost_default_shipping_rate_id:
+            shipping_info_checkout=item
+
+
     try:
         shipment=easypost.Shipment.retrieve(address.easypost_shipping_id)
 
@@ -948,13 +959,16 @@ def checkout():
             if rate['id']==shipping_option_id:
 
                 #carrier=camelcaseToUnderscore(rate['carrier'])
-                carrier=rate['carrier']
+                carrier=shipping_info_checkout['carrier']
+                #delivery_days=shipping_info_checkout['delivery_days']
+                #delivery_date=(datetime.today()+timedelta(days=delivery_days)).strftime("%a %b %d")
+                # delivery_date=shipping_info_checkout['delivery_date_text']
 
                 shipping_information_LOD.append(dict(
                     carrier=carrier,
                     service=rate['service'],
                     cost=rate['rate'],
-                    delivery_date=rate['delivery_date'],
+                    delivery_date=shipping_info_checkout['delivery_date_text'],
                     ))
                 shipping_cost_USD=float(rate['rate'])
             else:
@@ -1689,14 +1703,20 @@ def confirmation():
 
         shipping_information_LOD=[]
 
-        # address_header_row=['Street Address Info', 'Local Address Info', 'Country']
+        # shipping_rates_confirmation=session.shipping_rates[address.id]
+
+        # for item in shipping_rates_confirmation:
+        #     if item['rate_id']==address.easypost_default_shipping_rate_id:
+        #         shipping_info_confirmation=item
+
+
 
         shipping_information_LOD.append(dict(
             carrier=purchase_history_data_row.easypost_shipping_carrier,
             service=purchase_history_data_row.easypost_shipping_service,
             cost=purchase_history_data_row.easypost_rate,
             #IF you want this you have to add it :/
-            delivery_date=None,
+            delivery_date=None, #shipping_info_confirmation['delivery_date_text'],
         ))
 
         shipping_information=dict( error=False, error_message=None, information_LOD=shipping_information_LOD )
@@ -1822,7 +1842,9 @@ def confirmation():
         if auth.has_membership('gimp'):
             email_address=payment_information['information_LOD'][0]['email']
         else:
-            email_address=auth.email
+            # email_address=auth_user.email
+
+            email_address = (db.auth_user(auth.user_id)).email
 
         confirmation_information_LOD.append(dict(
             email_address=email_address,
@@ -2705,16 +2727,33 @@ def ajax_shipping_information():
     from aux import create_shipment
     from aux import retrieve_cart_contents
     from aux import bdays_to_days
+    from aux import ordinal_indicator
     from datetime import datetime
     from datetime import timedelta
 
 
+    ## Don't know where I should put this, probably not here though. 
+    shipping_rates_ignore=dict(
+        USPS=dict(
+            US=[
+                'ParcelSelect',
+                ],
+            
+            INT=[
+                'FirstClassMailInternational',
+                'GlobalExpressGuaranteed'
+                ],
+
+            ),
+        )
 
 
     ## This is the address_id in the DB of the clicked address
     default_address_id=int(request.vars.new_choice)
 
-    
+    print "default_address_id"
+    print default_address_id
+
     ## Add to session for easy retrieval? - I don't think this is necessary anymore as I'm storing in db
     # session.default_address_id=default_address_id
     
@@ -2733,9 +2772,7 @@ def ajax_shipping_information():
     address.update(default_address=True)
     address.update_record()
 
-    # print address
-
-    ## We have the address from the DB so now we have prep if for inclusion in a call to easypost
+    ## We have the address from the DB so now we have to prep it for inclusion in a call to easypost
     address_info=dict(
         first_name=address.first_name,
         last_name=address.last_name,
@@ -2753,10 +2790,7 @@ def ajax_shipping_information():
 
 
     ## As part of the request to easypost we need to know the cart contents - get from the DB
-    #cart=db(db.muses_cart.user_id==auth.user_id).select()
-
     cart=retrieve_cart_contents(auth,db, is_active=True)
-
 
     ## If the cart is empty!
     if not cart:
@@ -2769,17 +2803,15 @@ def ajax_shipping_information():
     cart_weight_oz=0
     cart_cost_USD=0
 
-
+    ## For item in the cart
     for row in cart:
         product=db(db.product.id==row.product_id).select().first()
         cart_weight_oz+=float(product.weight_oz)*float(row.product_qty)
         cart_cost_USD+=float(product.cost_USD)*float(row.product_qty)
 
         # cart_last_modified_list.append(row.time_added)
-
         # if row.time_removed is not None:
         #     cart_last_modified_list.append(row.time_removed)
-
         # print cart_last_modified_list
 
         cart_for_shipping_calculations.append(dict(
@@ -2790,11 +2822,10 @@ def ajax_shipping_information():
             product_shipping_desc=product.shipping_description,
             ))
 
-    # print cart
 
+    ## Get a whole new cart to do the last modified time!?!?!??
     cart_last_modified_list=[]
     cart_for_last_modified_time=retrieve_cart_contents(auth,db,is_active=False)
-
 
     for row in cart_for_last_modified_time:
 
@@ -2806,7 +2837,7 @@ def ajax_shipping_information():
         # print cart_last_modified_list
 
 
-
+    ## Not sure why this is in this particular place yet
     shipping_options_LOD=[]
     error_status=False
     error_message=None
@@ -2818,7 +2849,7 @@ def ajax_shipping_information():
         )
 
 
-
+    ## The following tries to decide whether or not to make another call to easypost. 
     ## Get the time of when shit happened 
     easypost_last_retrieved_time=address.easypost_api_datetime
 
@@ -2826,6 +2857,8 @@ def ajax_shipping_information():
     cart_last_modified_time=max(cart_last_modified_list)
     threshold_time=datetime.now()-timedelta(hours=24)
 
+    ## Put all the times in a list (except the api time)
+    ## and remove any possible nones so that the max function works ok!
     time_list=[address_last_modified_time,cart_last_modified_time,threshold_time]
     time_list_no_none=[x for x in time_list if x is not None]
 
@@ -2839,45 +2872,59 @@ def ajax_shipping_information():
     # print "last modified time"
     # print master_last_modified_time
 
-    ## After getting the address from the db, check to see if the address id is already associated with a session variable for shipping rates
+    ## After getting the address from the db, check to see if the address id is 
+    ## already associated with a session variable for shipping rates
     # print session.shipping_rates
-    if session.shipping_rates:
-        if default_address_id in session.shipping_rates.keys():
-            if easypost_last_retrieved_time>master_last_modified_time:
 
+    ## Does session.shipping_rates exist?
+    if session.shipping_rates:
+        ## Is there a listing for the selected address?
+        if default_address_id in session.shipping_rates.keys():
+            ## Is the time that the shipping info was retrieved current enough?
+            if easypost_last_retrieved_time>master_last_modified_time:
+                ## If all that passes, just get the shipping_rates from session. 
                 shipping_rates=session.shipping_rates
 
+                ## For every rate in shipping_rates
                 for key,value in shipping_rates.iteritems():
 
+                    ## Set them all to false one by one, and then the default set to true
                     for rate in shipping_rates[key]:
                         rate['selected_shipping_option']=False
                         if rate['rate_id']==easypost_default_shipping_rate_id:
                             rate['selected_shipping_option']=True
 
+                ## Then reset session.shipping_rates to the new shipping_rates that you just made. 
                 session.shipping_rates=shipping_rates
 
+                ## Return that shit. This function is used for ajax
                 return json.dumps(dict(error_status=False, error_message=None, shipping_options_LOD=session.shipping_rates[default_address_id]))
 
 
 
+    ## If session.shipping_rates doesn't exist, 
+    ## the default_address_id is not one of the addresses that has shipping info
+    ## the shipping_info is not current enough,
+    ## Then we have to make a call to easypost to get new shit. 
 
     ## Now we have the address that was chosen, the address info for the address that was chosen
     ## the cart info, and the combined weight of our package. Let's make a call
     try:
 
-        ## Call to easypost
+        print "Creating a new shipment"
+
+        ## This function call takes these params and makes a call to easypost
+        ## and returns exactly what it gets back. 
         shipment=create_shipment(address_info, cart_for_shipping_calculations)
         print shipment
 
-        # print ("------------")
-        # print shipment
-
         ## Put shipment info in the session to get it later!
         ## PUT THIS IN THE DB INSTEAD? NO! Just put the ID
+        ## This is different than the session.shipping_rates
         session.shipment_info_from_easypost=shipment
 
-
-
+        ## At this point I've already put the clicked address info in the db
+        ## so now I'm just getting it back out!
         clicked_address = db(db.addresses.id==default_address_id).select().first()
         
         clicked_address.update(easypost_shipping_id=shipment.id)
@@ -2885,18 +2932,21 @@ def ajax_shipping_information():
 
         clicked_address.update_record()
 
-
+        ## If no rates were returned by the call
         if len(shipment.rates)==0:
             error_status=True
             error_message='No rates are being returned for the selected address'
             return json.dumps(dict(error_status=error_status, error_message=error_message, shipping_options_LOD=[]))
 
+        ## If there appear to be some rates that came back. 
         else:
             # Generate list of sorted rates
             shipping_rates_for_sorting=[]
             for i in range(len(shipment.rates)):
                 shipping_rates_for_sorting.append(float(shipment.rates[i].rate))
-            shipping_rates_for_sorting.sort()
+
+            #shipping_rates_for_sorting.sort()
+            shipping_rates_for_sorting=sorted(shipping_rates_for_sorting)
 
             
             # Build the shipping grid
@@ -2907,39 +2957,96 @@ def ajax_shipping_information():
 
                     if shipping_rates_for_sorting[j]==float(shipment.rates[i].rate):
 
-                        if shipment.rates[i].service==session.shipping_choice:
-                            radio_button=INPUT(_type='radio', _name='shipping', _checked='checked', _value=shipment.rates[i].service)
+
+                        ## This is to lazily exclude shipping options if they are in the exclude shipping options list
+                        include_option=True
+                        try:
+
+                            ## Convert Country Code to either US or INT
+                            country_io=shipment['to_address']['country']
+                            if country_io=='US':
+                                pass
+                            else:
+                                country_io='INT'
+
+                            ## If the shipping rate name is in the list, exclude it. 
+                            # print shipment.rates[i].service
+                            # print shipping_rates_ignore[shipment.rates[i].carrier][country_io]
+                            if shipment.rates[i].service in shipping_rates_ignore[shipment.rates[i].carrier][country_io]:
+                                include_option=False
+                            else:
+                                pass
+
+                        ## If you run into a key_error, don't exclude anything. 
+                        except:
+                            pass
+
+
+                        ## If the option makes into consideration
+                        if include_option:
+
+                            ## I don't think I need this anymore
+
+                            # if shipment.rates[i].service==session.shipping_choice:
+                            #     radio_button=INPUT(_type='radio', _name='shipping', _checked='checked', _value=shipment.rates[i].service)
+                            # else:
+                            #     radio_button=INPUT(_type='radio', _name='shipping', _value=shipment.rates[i].service)
+
+                            # print "shipment rate"
+                            # print shipment.rates[i].id
+                            # print "address db shipping rate id"
+                            # print address.easypost_default_shipping_rate_id
+
+                            ## If the brand new shipment that just came back has the same id as the default
+                            ## rate id somehow, then make that the selected shipping option? 
+                            if shipment.rates[i].id==address.easypost_default_shipping_rate_id:
+                                selected_shipping_option=True
+                                print "Does this ever turn out to be true?"
+                            else:
+                                selected_shipping_option=False
+
+                            ## BUSINESS DAYS ARE CALCULATED HERE!
+                            # print "# Days"
+                            # print shipment.rates[i].delivery_days
+                            # print "Country"
+                            # print shipment['to_address']['country']
+                            # print "Carrier"
+                            # print shipment.rates[i].carrier
+                            # print "Service"
+                            # print shipment.rates[i].service
+
+                            delivery_days=bdays_to_days(shipment.rates[i].delivery_days, country=shipment['to_address']['country'], carrier=shipment.rates[i].carrier, rate_name=shipment.rates[i].service)
+
+                            print delivery_days
+
+                            delivery_date=(datetime.today()+timedelta(days=delivery_days))
+
+                            print delivery_date
+
+                            delivery_date_text=delivery_date.strftime("%a %b %d")+ordinal_indicator(int(delivery_date.strftime("%d")))
+
+                            print delivery_date_text
+
+                            shipping_option_dict=dict(
+                                carrier=shipment.rates[i].carrier,
+                                service=camelcaseToUnderscore(shipment.rates[i].service),
+                                service_original=shipment.rates[i].service,
+                                rate=shipment.rates[i].rate,
+                                rate_id=shipment.rates[i].id,
+                                shipment_id=shipment.rates[i].shipment_id,
+                                delivery_days=delivery_days,
+                                delivery_date=delivery_date.isoformat(),
+                                delivery_date_text=delivery_date_text,
+                                selected_shipping_option=selected_shipping_option,
+                                )
+
+                            print "here"
+                            shipping_options_LOD.append(shipping_option_dict)
+
+                            print "here 2"
+
                         else:
-                            radio_button=INPUT(_type='radio', _name='shipping', _value=shipment.rates[i].service)
-
-
-                        # print "shipment rate"
-                        # print shipment.rates[i].id
-                        # print "address db shipping rate id"
-                        # print address.easypost_default_shipping_rate_id
-
-                        if shipment.rates[i].id==address.easypost_default_shipping_rate_id:
-                            selected_shipping_option=True
-                        else:
-                            selected_shipping_option=False
-
-
-
-                        ## BUSINESS DAYS ARE CALCULATED HERE!
-                        #shipping_days=bdays_to_days(shipment.rates[i].delivery_days)
-
-                        shipping_option_dict=dict(
-                            carrier=shipment.rates[i].carrier,
-                            service=camelcaseToUnderscore(shipment.rates[i].service),
-                            rate=shipment.rates[i].rate,
-                            rate_id=shipment.rates[i].id,
-                            shipment_id=shipment.rates[i].shipment_id,
-                            #delivery_days=shipping_days,
-                            delivery_days=shipment.rates[i].delivery_days,
-                            selected_shipping_option=selected_shipping_option,
-                            )
-
-                        shipping_options_LOD.append(shipping_option_dict)
+                            pass
 
             error_status=False
             error_message=None
@@ -3855,3 +3962,7 @@ def change_password():
 
 
 #     return dict(days=elapsed_days)
+
+
+def session_look():
+    return dict(session_vars=session)

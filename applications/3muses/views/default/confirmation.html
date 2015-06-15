@@ -42,6 +42,15 @@
 
 
 
+
+
+
+
+
+
+
+{{ if auth.has_membership('gimp'): }}
+
 <div class="container-fluid style1">
 
 	<div class='container'>
@@ -79,6 +88,10 @@
 	</div>
 
 </div>
+
+{{ else: }}
+
+{{ pass }}
 
 
 

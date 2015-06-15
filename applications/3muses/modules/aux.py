@@ -646,13 +646,13 @@ def shipping_date_from_integer(number_of_days,shipping_method,shipping_company,s
 
 
 
-def bdays_to_days(bdays, handling_days=None, shipping_info=None, country=None):
+def bdays_to_days(bdays, handling_days=1, rate_name=None, country=None, carrier=None):
     from pandas.tseries.offsets import CustomBusinessDay
     from pandas.tseries.holiday import USFederalHolidayCalendar
     from datetime import datetime
 
+
     ## Shipping response
-    
     ##{
     ##  "api_key": "DChuzFBRPfk6XEYgga3Iow", 
     ##  "batch_message": null, 
@@ -862,7 +862,6 @@ def bdays_to_days(bdays, handling_days=None, shipping_info=None, country=None):
     ##  "usps_zone": 4
     ##}
 
-
     ##    Domestic Shipping Types
     ##    Priority
     ##    ParcelSelect
@@ -880,42 +879,106 @@ def bdays_to_days(bdays, handling_days=None, shipping_info=None, country=None):
     ##    These can be 0, null, and I haven't seen it yet, but I bet empty string
     ##    shipping_api_response['rates'][i]['est_delivery_days']
 
-    shipping_days_dict=dict(
+
+    business_days_dict=dict(
         USPS=dict(
             US=dict(
-                Priority=1,
-                ParcelSelect=2,
+
+                PriorityMailExpress=1,
+                Express=1,
+
+                PriorityMail=3,
+                Priority=3,
+                
+                FirstClassMail=3,
+                FirstClass=3,
                 First=3,
-                Express=4,
+
+                ParcelSelect=8,
+
+                StandardPost=8,
+                Standard=8,
+
                 ),
+
             INT=dict(
-                FirstClassPackageInternationalService=1,
-                PriorityMailInternational=2,
-                ExpressMailInternational=3,
+
+                GlobalExpressGuaranteed=3,
+
+                ExpressMailInternational=5,
+                PriorityMailExpressInternational=5,
+
+                PriorityMailInternational=10,
+
+                FirstClassPackageInternationalService=20,
+                FirstClassMailInternational=20,
+
                 ),
+            ),
+        )
+
+    shipping_rates_ignore=dict(
+        USPS=dict(
+            US=[
+                'ParcelSelect',
+                ],
+            
+            INT=[
+                'FirstClassMailInternational',
+                'First-ClassMailInternational',
+                'GlobalExpressGuaranteed'
+                ],
+
             ),
         )
     
 
     ## bad_list=[None,0,""]
 
+    try:
+        bday_calc_method='easypost'
 
-    if isinstance(bdays,int) or isinstance(bdays,float):
-        
-        bdays=int(bdays)
+        if isinstance(bdays,int) or isinstance(bdays,float):
+            bdays=int(bdays)
 
-        if bdays<=0:
-            return 5
+            if bdays<=0:
+                bday_calc_method='custom'
 
         else:
-            bday_us = CustomBusinessDay(calendar=USFederalHolidayCalendar())
-            start_date=datetime.today()
-            end_date=start_date+bday_us*bdays
-            elapsed_days=(end_date-start_date).days
-
-            return elapsed_days
-
-    else:
-        return 5
+            bday_calc_method='custom'
 
 
+        if bday_calc_method=='custom':
+
+            if country=='US' or country==None:
+                country='US'
+
+            else:
+                country='INT'
+
+            business_days=business_days_dict[carrier][country][rate_name]
+
+        else:
+            business_days=bdays
+
+        bday_us = CustomBusinessDay(calendar=USFederalHolidayCalendar())
+        start_date=datetime.today()
+        end_date=start_date+bday_us*business_days
+        shipping_days=(end_date-start_date).days
+
+        print shipping_days
+
+        return shipping_days+handling_days
+
+    except KeyError:
+        print "there was a key error while calculating shipping costs"
+        return "N/A"
+
+    except:
+        print "There was a completely unexpected error while calculating shipping costs"
+        return "N/A"
+
+
+def ordinal_indicator(n):
+    # return str(n)+("th" if 4<=n%100<=20 else {1:"st",2:"nd",3:"rd"}.get(n%10, "th"))
+    return ("th" if 4<=n%100<=20 else {1:"st",2:"nd",3:"rd"}.get(n%10, "th"))

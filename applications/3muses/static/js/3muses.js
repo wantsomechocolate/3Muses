@@ -135,19 +135,18 @@ function update_target(click_class_name_or_all, selected_class_name, view_name, 
 
                     delivery_date = new Date();
 
-                    if (delivery_days==0){
+                    if (delivery_days>0){
                         // alert("delivery days were 0")
-                        delivery_date.setDate(delivery_date.getDate()+5);
-                    } else if(delivery_days>0){
-                        // alert("delivery days were greater than 0")
-                        delivery_date.setDate(delivery_date.getDate()+delivery_days+1);
+                        delivery_date.setDate(delivery_date.getDate()+delivery_days);
+                        formatted_date=moment(delivery_date).format('ddd MMM Do');
                     } else {
                         // alert("delivery days were something else, probably none")
-                        delivery_date.setDate(delivery_date.getDate()+5);
+                        // delivery_date.setDate(delivery_date.getDate()+5);
+                        formatted_date='N/A'
                     };
 
                     // alert(delivery_date);
-                    formatted_date=moment(delivery_date).format('ddd MMM Do')
+                    
                     // alert(formatted_date);
                     
 
