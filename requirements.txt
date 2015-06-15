@@ -10,7 +10,9 @@ ecdsa==0.11
 enum34==1.0.4
 fs==0.5.0
 gunicorn==19.1.0
+numpy==1.9.2
 oauthlib==0.7.2
+pandas==0.16.1
 paramiko==1.15.2
 paypalrestsdk==1.7.2
 psycopg2==2.5.4
@@ -22,9 +24,10 @@ python-dateutil==2.4.0
 python-openid==2.2.5
 python-postmark==0.4.4
 python-social-auth==0.2.7
-requests==2.4.0
+pytz==2015.4
+requests==2.7.0
 requests-oauthlib==0.4.2
 six==1.7.3
-stripe==1.19.0
+stripe==1.22.2
 web2py==2.1.1
 wsgiref==0.1.2
