@@ -38,7 +38,7 @@ function update_target(click_class_name_or_all, selected_class_name, view_name, 
             type:"POST",
             url:view_name,
             data:{new_choice: new_choice},
-            async:false,
+            async:true,
 
         }).done(function( shipping_information ){
             

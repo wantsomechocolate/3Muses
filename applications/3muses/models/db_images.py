@@ -329,9 +329,17 @@ db.define_table('addresses',
 db.addresses.id.readable=False
 db.addresses.user_id.readable=False
 db.addresses.user_id.writable=False
+
 db.addresses.user_id.default=auth.user_id
 
+db.addresses.default_address.readable=db.addresses.default_address.writable=False
+db.addresses.last_modified.readable=db.addresses.last_modified.writable=False
+db.addresses.easypost_shipping_id.readable=db.addresses.easypost_shipping_id.writable=False
+db.addresses.easypost_api_datetime.readable=db.addresses.easypost_api_datetime.writable=False
+db.addresses.easypost_default_shipping_rate_id.readable=db.addresses.easypost_default_shipping_rate_id.writable=False
+
 db.addresses.country.requires = IS_IN_DB(db(db.country_codes.is_active==True), 'country_codes.country_ISO_2', '%(country_name)s')
+
 
 
 

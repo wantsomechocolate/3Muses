@@ -175,10 +175,10 @@ move popover
 
 				<div class="col-md-8 col-md-offset-2 cart-view-row2 cart-view-address-row2">
 
-					{{ =A('X', _href=URL('delete_address', vars=dict(pri_key=address_information['address_information_LOD'][i]['id'],redirect_url=URL('cart'))), _class='btn btn-danger cart-view-item-remove cart-view-address-item-remove') }}
+					{{ =A('X', _href=URL('delete_address', vars=dict(pri_key=address_information['address_information_LOD'][i]['id'],redirect_url=URL('cart#address-information'))), _class='btn btn-danger cart-view-item-remove cart-view-address-item-remove') }}
 
 
-					{{ =A(SPAN('Edit',_class='glyphicon glyphicon-pencil'), _href=URL('edit_address', vars=dict(pri_key=address_information['address_information_LOD'][i]['id'])), _class='btn cart-view-item-edit cart-view-address-item-edit') }}
+					{{ =A(SPAN('Edit',_class='glyphicon glyphicon-pencil'), _href=URL('address', vars=dict(pri_key=address_information['address_information_LOD'][i]['id'])), _class='btn cart-view-item-edit cart-view-address-item-edit') }}
 
 
 					<div class="col-md-12 cart-view-address-info" id="{{ =address_information['address_information_LOD'][i]['id'] }}">
@@ -285,7 +285,7 @@ move popover
 
 							<div>
 
-								<form action="{{=URL('default','add_new_address')}}">
+								<form action="{{=URL('default','address')}}">
 
 								    <input type="submit" value="Add New Address" class="btn btn-info cart-view-btn">
 

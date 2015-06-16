@@ -480,27 +480,7 @@ def add_new_address():
 
     add_address_form=SQLFORM(db.addresses)
 
-    
-    # add_address_form.element('input[name=Country]')['requires'] = IS_IN_DB(db(db.country_codes.is_active==True), 'country_codes.country_name', '%(country_ISO_2)s')
-
-
-
     if add_address_form.process().accepted:
-
-        # #if auth.is_logged_in():
-        # db.addresses.insert(
-        #     user_id=auth.user_id,
-        #     first_name=add_address_form.vars.first_name,
-        #     last_name=add_address_form.vars.last_name,
-        #     street_address_line_1=add_address_form.vars.street_address_line_1,
-        #     street_address_line_2=add_address_form.vars.street_address_line_2,
-        #     municipality=add_address_form.vars.municipality,
-        #     administrative_area=add_address_form.vars.administrative_area,
-        #     postal_code=add_address_form.vars.postal_code,
-        #     country=add_address_form.vars.country,
-        #     default_address=True,
-        #     last_modified=datetime.now(),
-        # )
 
         redirect(URL('cart#address-information'))
 
@@ -2784,6 +2764,78 @@ def edit_address():
     else:
         
         return dict(edit_address_form=edit_address_form)
+
+
+
+
+
+
+
+@auth.requires_login()
+def address():
+
+    from datetime import datetime
+
+    db.addresses.default_address.value=True
+
+    if not request.vars['pri_key']:
+        address_id=None
+    else:
+
+
+        address_id=request.vars['pri_key']
+        allowable_address_ids=[]
+        allowable_addresses=db(db.addresses.user_id==auth.user_id).select(db.addresses.id)
+        for address_row in allowable_addresses:
+            allowable_address_ids.append(str(address_row.id))
+
+        if address_id not in allowable_address_ids:
+
+            response.flash="You aren't allowed to edit the address with that id"
+            session.flash=response.flash
+            redirect(URL('cart'))
+
+
+    address_form=SQLFORM(db.addresses,record=address_id, buttons=[TAG.button('Submit',_type="submit", _class="btn btn-info"), A("Cancel",_class='btn btn-danger',_href=URL("cart#address-information"))])
+
+    address_form.vars.default_address=True
+
+    # address_form.custom.widget.field_name['_class'] = 'bla bla'
+
+    for input_field in address_form.elements('input', _class='string'):
+        input_field['_class'] = 'form-control'
+
+
+    if address_form.process().accepted:
+
+        redirect(URL('cart#address-information'))
+
+    else:
+        
+        return dict(address_form=address_form)
+
+
+@auth.requires_login()
+def add_new_address():
+
+    countries=db(db.country_codes.is_active==True).select()
+    print countries
+
+    from datetime import datetime
+
+    add_address_form=SQLFORM(db.addresses)
+
+    if add_address_form.process().accepted:
+
+        redirect(URL('cart#address-information'))
+
+    else:
+        
+        return dict(add_address_form=add_address_form)
+
+
+
+
 
 
 
