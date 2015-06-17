@@ -2562,171 +2562,171 @@ def delete_address():
 
 
 
-@auth.requires_login()
-def edit_address_2():
+# @auth.requires_login()
+# def edit_address_2():
 
-    from datetime import datetime
+#     from datetime import datetime
 
-    # if auth.is_logged_in():
+#     # if auth.is_logged_in():
 
-    allowable_address_ids=[]
-    allowable_addresses=db(db.addresses.user_id==auth.user_id).select(db.addresses.id)
-    for address_row in allowable_addresses:
-        allowable_address_ids.append(str(address_row.id))
+#     allowable_address_ids=[]
+#     allowable_addresses=db(db.addresses.user_id==auth.user_id).select(db.addresses.id)
+#     for address_row in allowable_addresses:
+#         allowable_address_ids.append(str(address_row.id))
 
-    # print allowable_address_ids
+#     # print allowable_address_ids
 
-    if request.vars['pri_key'] not in allowable_address_ids:
+#     if request.vars['pri_key'] not in allowable_address_ids:
 
-        response.flash="You aren't allowed to edit the address with that id"
-        session.flash=response.flash
-        redirect(URL('cart'))
+#         response.flash="You aren't allowed to edit the address with that id"
+#         session.flash=response.flash
+#         redirect(URL('cart'))
 
 
-    address_pre_changes_dict=db(db.addresses.id==request.vars['pri_key']).select()[0]
-    #address_row['street_address_line_1'],
+#     address_pre_changes_dict=db(db.addresses.id==request.vars['pri_key']).select()[0]
+#     #address_row['street_address_line_1'],
 
-    # else:
-    #     address_pre_changes_dict=session.address
-        #session.address['first_name']
+#     # else:
+#     #     address_pre_changes_dict=session.address
+#         #session.address['first_name']
 
-    edit_address_form=FORM(
+#     edit_address_form=FORM(
 
-        DIV( 
-            LABEL( 'First Name',),
+#         DIV( 
+#             LABEL( 'First Name',),
             
-            DIV(
-                INPUT(
-                    _type='text', 
-                    _name='first_name', 
-                    _class='form-control',
-                    _value=address_pre_changes_dict['first_name'],
-                ),
-            ),
-        ),
+#             DIV(
+#                 INPUT(
+#                     _type='text', 
+#                     _name='first_name', 
+#                     _class='form-control',
+#                     _value=address_pre_changes_dict['first_name'],
+#                 ),
+#             ),
+#         ),
 
-        DIV( 
-            LABEL( 'Last Name',),
+#         DIV( 
+#             LABEL( 'Last Name',),
             
-            DIV(
-                INPUT(
-                    _type='text', 
-                    _name='last_name', 
-                    _class='form-control',
-                    _value=address_pre_changes_dict['last_name'],
-                ),
-            ),
-        ),
+#             DIV(
+#                 INPUT(
+#                     _type='text', 
+#                     _name='last_name', 
+#                     _class='form-control',
+#                     _value=address_pre_changes_dict['last_name'],
+#                 ),
+#             ),
+#         ),
 
-        DIV( 
-            LABEL( 'Street Address/ PO Box/ Etc.',),
+#         DIV( 
+#             LABEL( 'Street Address/ PO Box/ Etc.',),
             
-            DIV(
-                INPUT(
-                    _type='text', 
-                    _name='street_address_line_1', 
-                    _class='form-control',
-                    _value=address_pre_changes_dict['street_address_line_1'],
-                ),
-            ),
-        ),
+#             DIV(
+#                 INPUT(
+#                     _type='text', 
+#                     _name='street_address_line_1', 
+#                     _class='form-control',
+#                     _value=address_pre_changes_dict['street_address_line_1'],
+#                 ),
+#             ),
+#         ),
 
-        DIV( 
-            LABEL( 'Floor/ Suite/ Apt/ Etc.',),
+#         DIV( 
+#             LABEL( 'Floor/ Suite/ Apt/ Etc.',),
             
-            DIV(
-                INPUT(
-                    _type='text', 
-                    _name='street_address_line_2', 
-                    _class='form-control', 
-                    _value=address_pre_changes_dict['street_address_line_2'],
-                ),
-            ),
-        ),
+#             DIV(
+#                 INPUT(
+#                     _type='text', 
+#                     _name='street_address_line_2', 
+#                     _class='form-control', 
+#                     _value=address_pre_changes_dict['street_address_line_2'],
+#                 ),
+#             ),
+#         ),
 
-        DIV(
-            LABEL('Municipality',),
+#         DIV(
+#             LABEL('Municipality',),
             
-            DIV(
-                INPUT(
-                    _type='text', 
-                    _name='municipality', 
-                    _class='form-control', 
-                    _value=address_pre_changes_dict['municipality'],
-                ),
-            ),
-        ),
+#             DIV(
+#                 INPUT(
+#                     _type='text', 
+#                     _name='municipality', 
+#                     _class='form-control', 
+#                     _value=address_pre_changes_dict['municipality'],
+#                 ),
+#             ),
+#         ),
 
-        DIV(
-            LABEL('Administrative Area',),
+#         DIV(
+#             LABEL('Administrative Area',),
             
-            DIV(
-                INPUT(
-                    _type='text', 
-                    _name='administrative_area', 
-                    _class='form-control', 
-                    _value=address_pre_changes_dict['administrative_area'],
-                ),
-            ),
-        ),
+#             DIV(
+#                 INPUT(
+#                     _type='text', 
+#                     _name='administrative_area', 
+#                     _class='form-control', 
+#                     _value=address_pre_changes_dict['administrative_area'],
+#                 ),
+#             ),
+#         ),
 
-        DIV(
-            LABEL('Postal Code',),
+#         DIV(
+#             LABEL('Postal Code',),
             
-            DIV(
-                INPUT(
-                    _type='text', 
-                    _name='postal_code', 
-                    _class='form-control', 
-                    _value=address_pre_changes_dict['postal_code'],
-                ),
-            ),
-        ),
+#             DIV(
+#                 INPUT(
+#                     _type='text', 
+#                     _name='postal_code', 
+#                     _class='form-control', 
+#                     _value=address_pre_changes_dict['postal_code'],
+#                 ),
+#             ),
+#         ),
 
-        DIV(
-            LABEL('Country',),
+#         DIV(
+#             LABEL('Country',),
             
-            DIV(
-                INPUT(
-                    _type='text', 
-                    _name='country', 
-                    _class='form-control', 
-                    _value=address_pre_changes_dict['country'],
-                ),
-            ),
-        ),
+#             DIV(
+#                 INPUT(
+#                     _type='text', 
+#                     _name='country', 
+#                     _class='form-control', 
+#                     _value=address_pre_changes_dict['country'],
+#                 ),
+#             ),
+#         ),
    
-        INPUT(_type='submit', _class="btn btn-info form-submit-btn"),
+#         INPUT(_type='submit', _class="btn btn-info form-submit-btn"),
             
-    _class='form-horizontal',
-    _role='form').process()
+#     _class='form-horizontal',
+#     _role='form').process()
 
-    if edit_address_form.accepted:
+#     if edit_address_form.accepted:
 
-        address_post_changes_dict=dict(
-                first_name=edit_address_form.vars.first_name,
-                last_name=edit_address_form.vars.last_name,
-                street_address_line_1=edit_address_form.vars.street_address_line_1,
-                street_address_line_2=edit_address_form.vars.street_address_line_2,
-                municipality=edit_address_form.vars.municipality,
-                administrative_area=edit_address_form.vars.administrative_area,
-                postal_code=edit_address_form.vars.postal_code,
-                country=edit_address_form.vars.country,
-                default_address=True,
-                last_modified=datetime.now()
-                )
+#         address_post_changes_dict=dict(
+#                 first_name=edit_address_form.vars.first_name,
+#                 last_name=edit_address_form.vars.last_name,
+#                 street_address_line_1=edit_address_form.vars.street_address_line_1,
+#                 street_address_line_2=edit_address_form.vars.street_address_line_2,
+#                 municipality=edit_address_form.vars.municipality,
+#                 administrative_area=edit_address_form.vars.administrative_area,
+#                 postal_code=edit_address_form.vars.postal_code,
+#                 country=edit_address_form.vars.country,
+#                 default_address=True,
+#                 last_modified=datetime.now()
+#                 )
 
-        if auth.is_logged_in():
-            db.addresses[request.vars['pri_key']]=address_post_changes_dict
+#         if auth.is_logged_in():
+#             db.addresses[request.vars['pri_key']]=address_post_changes_dict
 
-        else:
-            session.address=address_post_changes_dict
+#         else:
+#             session.address=address_post_changes_dict
 
-        redirect(URL('cart#address-information'))
+#         redirect(URL('cart#address-information'))
 
-    else:
+#     else:
         
-        return dict(edit_address_form=edit_address_form)
+#         return dict(edit_address_form=edit_address_form)
 
 
 
@@ -2737,33 +2737,33 @@ def edit_address_2():
 
 
 
-@auth.requires_login()
-def edit_address():
+# @auth.requires_login()
+# def edit_address():
 
-    from datetime import datetime
+#     from datetime import datetime
 
-    allowable_address_ids=[]
-    allowable_addresses=db(db.addresses.user_id==auth.user_id).select(db.addresses.id)
-    for address_row in allowable_addresses:
-        allowable_address_ids.append(str(address_row.id))
+#     allowable_address_ids=[]
+#     allowable_addresses=db(db.addresses.user_id==auth.user_id).select(db.addresses.id)
+#     for address_row in allowable_addresses:
+#         allowable_address_ids.append(str(address_row.id))
 
-    if request.vars['pri_key'] not in allowable_address_ids:
+#     if request.vars['pri_key'] not in allowable_address_ids:
 
-        response.flash="You aren't allowed to edit the address with that id"
-        session.flash=response.flash
-        redirect(URL('cart'))
+#         response.flash="You aren't allowed to edit the address with that id"
+#         session.flash=response.flash
+#         redirect(URL('cart'))
 
-    address_pre_changes_dict=db(db.addresses.id==request.vars['pri_key']).select()[0]
+#     address_pre_changes_dict=db(db.addresses.id==request.vars['pri_key']).select()[0]
 
-    edit_address_form=SQLFORM(db.addresses,record=request.vars['pri_key'], buttons=[TAG.button('Submit',_type="submit"), A("Cancel",_class='btn',_href=URL("cart"))])
+#     edit_address_form=SQLFORM(db.addresses,record=request.vars['pri_key'], buttons=[TAG.button('Submit',_type="submit"), A("Cancel",_class='btn',_href=URL("cart"))])
 
-    if edit_address_form.process().accepted:
+#     if edit_address_form.process().accepted:
 
-        redirect(URL('cart#address-information'))
+#         redirect(URL('cart#address-information'))
 
-    else:
+#     else:
         
-        return dict(edit_address_form=edit_address_form)
+#         return dict(edit_address_form=edit_address_form)
 
 
 
@@ -2796,10 +2796,23 @@ def address():
             redirect(URL('cart'))
 
 
-    address_form=SQLFORM(db.addresses,record=address_id, buttons=[
+    address_form=SQLFORM(
+        db.addresses,
+        record=address_id, 
+        buttons=[
         A("Cancel",_class='btn btn-danger',_href=URL("cart#address-information")),
         TAG.button('Submit',_type="submit", _class="btn btn-info")
-        ]
+        ],
+        fields=['first_name','last_name','street_address_line_1','street_address_line_2','municipality','administrative_area','postal_code','country'],
+        labels={'first_name':'First Name',
+                'last_name':'Last Name',
+                'street_address_line_1':'Street Address Line 1',
+                'street_address_line_2':'Street Address Line 2',
+                'municipality': 'City/Town/Municipality',
+                'administrative_area':'State/Administrative Area',
+                'postal_code':'Zipcode/Postal Code',
+                'country':'Country',
+                },
     )
 
     address_form.vars.default_address=True
@@ -2822,23 +2835,23 @@ def address():
         return dict(address_form=address_form)
 
 
-@auth.requires_login()
-def add_new_address():
+# @auth.requires_login()
+# def add_new_address():
 
-    countries=db(db.country_codes.is_active==True).select()
-    print countries
+#     countries=db(db.country_codes.is_active==True).select()
+#     print countries
 
-    from datetime import datetime
+#     from datetime import datetime
 
-    add_address_form=SQLFORM(db.addresses)
+#     add_address_form=SQLFORM(db.addresses)
 
-    if add_address_form.process().accepted:
+#     if add_address_form.process().accepted:
 
-        redirect(URL('cart#address-information'))
+#         redirect(URL('cart#address-information'))
 
-    else:
+#     else:
         
-        return dict(add_address_form=add_address_form)
+#         return dict(add_address_form=add_address_form)
 
 
 

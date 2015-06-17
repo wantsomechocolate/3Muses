@@ -376,12 +376,22 @@ function update_payment_option(value_one_or_all, value_two){
 // }
 
 
+// function adjust_slider_heights(){
 
-function adjust_slider_heights(){
+//     var width=$('.display-carousel').width()*.9;
 
-    var width=$('.slider-size').width()*.9;
+    // if (width==0){
+        
+    //     var width=$('.display-carousel').width()*.9;
 
-    $('.slider-size').css({'height':width+"px"})
+    //     $('.slider-size').css({'height':width+"px !important"})
+
+    // } else {
+
+    // $('.slider-size').css({'height':width+"px"})
+
+    // };
+
 
 }
 
@@ -436,6 +446,22 @@ $(document).ready(function(){
 
     // $('.slider-size').css('height',width+"px")
 
+
+    var adjust_slider_heights = function (){
+
+        var width=$('.display-carousel').width()*.9;
+
+        // if (width==0){
+            
+        //     var width=$('.display-carousel').width()*.9;
+
+        //     $('.slider-size').css({'height':width+"px !important"})
+
+        // } else {
+
+        $('.slider-size').css({'height':width+"px"})
+
+        };
 
     $(window).on("resize", adjust_slider_heights);
     $(window).on("load", adjust_slider_heights);
