@@ -1029,3 +1029,181 @@ body#address{
 .view-purchase-history-profile-button-row{
 	margin-bottom: 20px;
 }
+
+
+
+
+
+
+
+/* address styles */
+
+/* General Auth Page Styles */
+.tmg_auth_form_container-address{
+	margin-bottom:40px;
+}
+
+.tmg-auth-form-container-row-header{ 
+	padding-bottom:0;
+}
+
+.tmg_auth_form_container-address form table tbody tr td input{
+	display: block;
+	width: 100%;
+	height: 34px;
+	padding: 6px 12px;
+	font-size: 14px;
+	line-height: 1.42857143;
+	color: #555;
+	background-color: #fff;
+	background-image: none;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+	box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+	-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+	-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+	transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+}
+
+.tmg_auth_form_container-address form table tbody tr td.w2p_fc{
+	display:none;
+}
+
+.tmg_auth_form_container-address form table tbody tr td.w2p_fl{
+	display:inline-block;
+}
+
+.tmg_auth_form_container-address form table tbody tr td.w2p_fw{
+	display: inline-block;
+	width: 100%;
+}
+
+/*.tmg_auth_form_container form table tbody tr td.w2p_fw input{
+
+	/* btn info class *//*
+	background-image: -webkit-linear-gradient(top,#5bc0de 0,#2aabd2 100%);
+	background-image: -o-linear-gradient(top,#5bc0de 0,#2aabd2 100%);
+	background-image: -webkit-gradient(linear,left top,left bottom,from(#5bc0de),to(#2aabd2));
+	background-image: linear-gradient(to bottom,#5bc0de 0,#2aabd2 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff5bc0de', endColorstr='#ff2aabd2', GradientType=0);
+	filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+	background-repeat: repeat-x;
+	border-color: #28a4c9;
+}*/
+
+.tmg_auth_form_container-row #web2py_user_form{
+	margin-bottom:3em;
+}
+
+.tmg_auth_form_container-view-purchase-history{
+	text-align: right;
+	text-decoration: none;
+}
+
+.tmg_auth_form_container-view-purchase-history a{
+	width: 100%;
+	display: inline-block;
+	height: 2em;
+	line-height: 2em;
+	text-align: center;
+}
+
+.tmg_auth_form_container form table tbody tr td label{
+	text-align: right;
+	width:100%;
+}
+
+.tmg_auth_form_container form table tbody tr td.w2p_fl{
+	padding-right:10px;
+}
+
+.tmg-auth-form-container-row form table{
+	width:100%;
+}
+
+.address-view-combo-box{
+	width:100%;
+	height:35px;
+}
+
+
+
+.tmg_auth_form_container .error{
+	height:2em;
+	line-height: 2em;
+
+	/* btn-danger */
+	background-image: -webkit-linear-gradient(top,#d9534f 0,#c12e2a 100%);
+	background-image: -o-linear-gradient(top,#d9534f 0,#c12e2a 100%);
+	background-image: -webkit-gradient(linear,left top,left bottom,from(#d9534f),to(#c12e2a));
+	background-image: linear-gradient(to bottom,#d9534f 0,#c12e2a 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffd9534f', endColorstr='#ffc12e2a', GradientType=0);
+	filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+	background-repeat: repeat-x;
+	border-color: #b92c28;
+}
+
+.tmg-auth-button-col a button{
+	width:100%;
+}
+
+.tmg-auth-form-container-row form table tr{
+	height:70px;
+}
+
+@media screen and (min-width: 992px) {
+
+	.tmg_auth_form_container-row div{
+
+	   padding-right: 0; 
+	   padding-left: 0; 
+
+	}
+
+	.tmg_auth_form_container-container-fluid{
+		padding-bottom:6em;
+	}
+
+	.tmg_auth_form_container form table tbody tr td.w2p_fw input{
+		position:absolute;
+	}
+
+	.tmg-auth-button-col{
+		padding-left: 0;
+		padding-right: 0;
+	}
+
+
+	.tmg-auth-form-container-row form table tr#submit_record__row .w2p_fw .btn{
+		width:50%;
+	}
+
+
+}
+
+@media screen and (max-width: 992px) {
+
+	.tmg_auth_form_container form table tbody tr td{
+		display:inline;
+	}
+
+	.tmg_auth_form_container form table tbody tr td label{
+		text-align: center;
+		width:100%;
+	}
+
+	.tmg_auth_form_container-container-fluid{
+		padding-bottom:6em;
+	}
+
+	.tmg_auth_form_container form table tbody tr td.w2p_fw input{
+		position:inherit;
+		margin-top:20px;
+	}
+
+	.tmg-auth-form-container-row form table tr#submit_record__row .w2p_fw .btn{
+		width:50%;
+	}
+
+}

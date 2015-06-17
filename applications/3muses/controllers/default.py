@@ -1132,7 +1132,7 @@ def checkout():
     ## everytime until I like it, then I will gray it out. 
     web_profile = paypalrestsdk.WebProfile({
         ## This has to be a unique name
-        "name": "ThreeMusesGlass04",
+        "name": "ThreeMusesGlass05",
         "presentation": {
             "brand_name": "ThreeMusesGlass",
             #Reactivae when you have an image to use. 
@@ -2796,7 +2796,11 @@ def address():
             redirect(URL('cart'))
 
 
-    address_form=SQLFORM(db.addresses,record=address_id, buttons=[TAG.button('Submit',_type="submit", _class="btn btn-info"), A("Cancel",_class='btn btn-danger',_href=URL("cart#address-information"))])
+    address_form=SQLFORM(db.addresses,record=address_id, buttons=[
+        A("Cancel",_class='btn btn-danger',_href=URL("cart#address-information")),
+        TAG.button('Submit',_type="submit", _class="btn btn-info")
+        ]
+    )
 
     address_form.vars.default_address=True
 
@@ -2804,6 +2808,9 @@ def address():
 
     for input_field in address_form.elements('input', _class='string'):
         input_field['_class'] = 'form-control'
+
+    for input_field in address_form.elements('select',_class='generic-widget'):
+        input_field['_class'] = 'generic-widget address-view-combo-box'
 
 
     if address_form.process().accepted:

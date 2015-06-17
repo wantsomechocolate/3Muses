@@ -274,3 +274,12 @@ If N/A is not desireable, it can be replaced later, or a tooltip can be added to
 async being set to false was starting to be unacceptable. I changed it to true, but now the address click for the default address is not getting clicked. I need to figure out a way to get around this without setting async false. 
 
 Also add loading things and what not. 
+
+
+Add a redirect to the sign up button that auto scrolls to the account pane. 
+
+change flash message from profile updated after sign up
+
+hide sign up pane after signup - use session variable
+
+Ajax isn't updating the total cost after a different address is chosen. like wtf man.
