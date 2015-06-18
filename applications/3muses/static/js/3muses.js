@@ -393,7 +393,80 @@ function update_payment_option(value_one_or_all, value_two){
     // };
 
 
-}
+// }
+
+
+
+
+function adjust_slider_heights(){
+
+    var width=$('.carousel').width()*.9;
+    // alert(width);
+    // if (width==0){  
+    //     var width=$('.display-carousel').width()*.9;
+    //     // $('.slider-size').css({'height':width+"px !important"});
+    //     adjust_slider_heights();
+    // } else {
+    $('.slider-size').css({'height':width+"px"})
+    // };
+};
+
+
+$(window).on("resize", adjust_slider_heights);
+$(window).on("load", adjust_slider_heights);
+$(window).on("orientationchange", adjust_slider_heights);
+
+
+
+function centerImageVertically() {
+    var imgframes = $('.image-container a img');
+    imgframes.each(function (i) {
+        // var imgVRelativeOffset = ($(this).height() - $(this).parent(".image-container").height()) / 2;
+        current_img_width=$(this).width();
+        current_img_height=$(this).height();
+
+        container_width=$(this).width(this).parent().parent().width();
+        container_height=$(this).height(this).parent().parent().height();
+
+        // $('#object').width($('#object').parent().width());
+
+        // alert(current_img_width);
+        // alert(current_img_height);
+        // alert(container_width);
+        // alert(container_height);
+        // alert("s");
+        img_ar=current_img_width/current_img_height;
+        container_ar=container_width/container_height;
+
+        // alert(img_ar);
+        // alert(container_ar);
+        // alert("1");
+        if (img_ar>container_ar){
+            // alert("2");
+            img_min_width_px=img_ar*container_height;
+
+        } else if (img_ar<container_ar) {
+            // alert("3");
+            img_min_width_px=container_width;
+
+        } else {
+            // alert("4");
+            img_min_width_px=current_img_width;
+
+        };
+        // alert(img_min_width_px);
+        $(this).css({
+            'min-width':img_min_width_px+'px'
+        });
+    });
+};
+
+
+// centerImageVertically();
+// $(window).resize(centerImageVertically);
+$(window).on("resize", centerImageVertically);
+$(window).on("load", centerImageVertically);
+$(window).on("orientationchange", centerImageVertically);
 
 
 //Let's get ready to rumble
@@ -447,25 +520,9 @@ $(document).ready(function(){
     // $('.slider-size').css('height',width+"px")
 
 
-    var adjust_slider_heights = function (){
 
-        var width=$('.display-carousel').width()*.9;
 
-        // if (width==0){
-            
-        //     var width=$('.display-carousel').width()*.9;
 
-        //     $('.slider-size').css({'height':width+"px !important"})
-
-        // } else {
-
-        $('.slider-size').css({'height':width+"px"})
-
-        };
-
-    $(window).on("resize", adjust_slider_heights);
-    $(window).on("load", adjust_slider_heights);
-    $(window).on("orientationchange", adjust_slider_heights);
 
 
 
@@ -476,54 +533,7 @@ $(document).ready(function(){
 // if the aspect ratio w/h of the img is lower than the container
 // The width expands to fill the container, and the vertically positioning needs to be adjusted so that the image is centered
 
-    var centerImageVertically = function () {
-        var imgframes = $('.image-container a img');
-        imgframes.each(function (i) {
-            // var imgVRelativeOffset = ($(this).height() - $(this).parent(".image-container").height()) / 2;
-            current_img_width=$(this).width();
-            current_img_height=$(this).height();
 
-            container_width=$(this).width(this).parent().parent().width();
-            container_height=$(this).height(this).parent().parent().height();
-
-            // $('#object').width($('#object').parent().width());
-
-            // alert(current_img_width);
-            // alert(current_img_height);
-            // alert(container_width);
-            // alert(container_height);
-            // alert("s");
-            img_ar=current_img_width/current_img_height;
-            container_ar=container_width/container_height;
-
-            // alert(img_ar);
-            // alert(container_ar);
-            // alert("1");
-            if (img_ar>container_ar){
-                // alert("2");
-                img_min_width_px=img_ar*container_height;
-
-            } else if (img_ar<container_ar) {
-                // alert("3");
-                img_min_width_px=container_width;
-
-            } else {
-                // alert("4");
-                img_min_width_px=current_img_width;
-
-            };
-            // alert(img_min_width_px);
-            $(this).css({
-                'min-width':img_min_width_px+'px'
-            });
-        });
-    };
-
-    centerImageVertically();
-    // $(window).resize(centerImageVertically);
-    $(window).on("resize", centerImageVertically);
-    $(window).on("load", centerImageVertically);
-    $(window).on("orientationchange", centerImageVertically);
 
     
 
