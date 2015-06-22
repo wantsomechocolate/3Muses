@@ -2354,7 +2354,7 @@ body#confirmation #order-summary .container{
 	}
 
 	.confirmation-email{
-		overflow-x: scroll;
+		overflow-x: auto;
 		font-weight: bolder;
 		padding-bottom: 7px;
 	}

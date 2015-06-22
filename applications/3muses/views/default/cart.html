@@ -1,5 +1,6 @@
 {{extend 'layout.html'}}
 
+
 <div class="container-fluid style1" id="cart-information">
 
 	<div class='container'>
@@ -181,11 +182,15 @@ move popover
 					{{ =A(SPAN('Edit',_class='glyphicon glyphicon-pencil'), _href=URL('address', vars=dict(pri_key=address_information['address_information_LOD'][i]['id'])), _class='btn cart-view-item-edit cart-view-address-item-edit') }}
 
 
-					<div class="col-md-12 cart-view-address-info" id="{{ =address_information['address_information_LOD'][i]['id'] }}">
+					<!-- <div class="col-md-12 cart-view-address-info" id="{{ =address_information['address_information_LOD'][i]['id'] }}"> -->
 
 				{{ if address_information['address_information_LOD'][i]['default_address']: }}
+
+					<div class="col-md-12 cart-view-address-info selected_address" id="{{ =address_information['address_information_LOD'][i]['id'] }}">
 						{{ =INPUT(_type='radio', _name='address', _value=address_information['address_information_LOD'][i]['id'], _checked='checked') }}
 				{{ else: }}
+
+					<div class="col-md-12 cart-view-address-info" id="{{ =address_information['address_information_LOD'][i]['id'] }}">
 						{{ =INPUT(_type='radio', _name='address', _value=address_information['address_information_LOD'][i]['id']) }}
 				{{ pass }}
 
@@ -209,9 +214,12 @@ move popover
 			          	{{ =address_information['address_information_LOD'][i]['country'] }}
 			          	</div>
 
-
+			    {{ if address_information['address_information_LOD'][i]['default_address']: }}
 				    </div> 
 				    <!-- Close the div that can be clicked to pick shipping address -->
+				{{ else: }}
+					</div>
+				{{ pass }}
 
 				    
 
@@ -361,7 +369,7 @@ move popover
 
 
 
-				<!--The Shipping Container-->
+				<!--The Summary Container-->
 
 				<div class="container-fluid style2" id="summary-information">
 				    <div class='container'>
@@ -448,7 +456,7 @@ move popover
 								<!--<a class="btn btn-sucess" href=" cbcb =URL('checkout') cbcb ">Checkout</a>-->
 
 								<form action="{{=URL('checkout')}}">
-								    <input type="submit" value="Proceed to Payment Options" class="btn btn-success cart-view-btn">
+								    <input type="submit" value="Proceed to Payment Options" id="cart-to-checkout" class="btn btn-success cart-view-btn" disabled>
 								</form>
 
 							</div>

@@ -681,7 +681,7 @@ def cart():
     elif address_list_is_empty:
         shipping_information=dict(error=True, error_message="Please add an address to continue", shipping_options_LOD=[])
     else:
-        shipping_information=dict(error=True, error_message="Generating shipping costs", shipping_options_LOD=[])
+        shipping_information=dict(error=True, error_message="Please select an address to continue", shipping_options_LOD=[])
 
 
 #############################################################################################
@@ -971,6 +971,10 @@ def checkout():
             shipping_info_checkout=item
 
 
+    print "shipping info checkout"
+    print shipping_info_checkout
+
+
     try:
         shipment=easypost.Shipment.retrieve(address.easypost_shipping_id)
 
@@ -986,13 +990,13 @@ def checkout():
             if rate['id']==shipping_option_id:
 
                 #carrier=camelcaseToUnderscore(rate['carrier'])
-                carrier=shipping_info_checkout['carrier']
+                # carrier=shipping_info_checkout['carrier']
                 #delivery_days=shipping_info_checkout['delivery_days']
                 #delivery_date=(datetime.today()+timedelta(days=delivery_days)).strftime("%a %b %d")
                 # delivery_date=shipping_info_checkout['delivery_date_text']
 
                 shipping_information_LOD.append(dict(
-                    carrier=carrier,
+                    carrier=shipping_info_checkout['carrier'],
                     service=rate['service'],
                     cost=rate['rate'],
                     delivery_date=shipping_info_checkout['delivery_date_text'],
@@ -1260,6 +1264,8 @@ def checkout():
 
 def pay_stripe():
 
+    # /pay_stripe?stripeToken=tok_16GUlyBJewwJxtz76FQUa91R&stripeEmail=wantsomechocolate@gmail.com
+
     ### This function is for paying with stripe only
 
     ## The purpose of this function is to populate the database table purchase history with all 
@@ -1313,6 +1319,8 @@ def pay_stripe():
 
         token = request.vars['stripeToken']
 
+        print token
+
         stripe_email=request.vars['stripeEmail']
         # print "The token:"
         # print token
@@ -1327,6 +1335,69 @@ def pay_stripe():
             source=token,
             description="Purchase from ThreeMusesGlass",
             )
+
+        print charge
+
+        # charge=json.loads("""{
+        #       "amount": 4204, 
+        #       "amount_refunded": 0, 
+        #       "application_fee": null, 
+        #       "balance_transaction": "txn_16GUrGBJewwJxtz7afwqINqy", 
+        #       "captured": true, 
+        #       "created": 1434979266, 
+        #       "currency": "usd", 
+        #       "customer": null, 
+        #       "description": "Purchase from ThreeMusesGlass", 
+        #       "destination": null, 
+        #       "dispute": null, 
+        #       "failure_code": null, 
+        #       "failure_message": null, 
+        #       "fraud_details": {}, 
+        #       "id": "ch_16GUrGBJewwJxtz76RdXJp6b", 
+        #       "invoice": null, 
+        #       "livemode": false, 
+        #       "metadata": {}, 
+        #       "object": "charge", 
+        #       "paid": true, 
+        #       "receipt_email": null, 
+        #       "receipt_number": null, 
+        #       "refunded": false, 
+        #       "refunds": {
+        #         "data": [], 
+        #         "has_more": false, 
+        #         "object": "list", 
+        #         "total_count": 0, 
+        #         "url": "/v1/charges/ch_16GUrGBJewwJxtz76RdXJp6b/refunds"
+        #       }, 
+        #       "shipping": null, 
+        #       "source": {
+        #         "address_city": null, 
+        #         "address_country": null, 
+        #         "address_line1": null, 
+        #         "address_line1_check": null, 
+        #         "address_line2": null, 
+        #         "address_state": null, 
+        #         "address_zip": "10018", 
+        #         "address_zip_check": "pass", 
+        #         "brand": "Visa", 
+        #         "country": "US", 
+        #         "customer": null, 
+        #         "cvc_check": null, 
+        #         "dynamic_last4": null, 
+        #         "exp_month": 12, 
+        #         "exp_year": 2020, 
+        #         "fingerprint": "kCCBgxubKDsM9l5g", 
+        #         "funding": "credit", 
+        #         "id": "card_16GUlyBJewwJxtz74A4RJ1yF", 
+        #         "last4": "4242", 
+        #         "metadata": {}, 
+        #         "name": "wantsomechocolate@gmail.com", 
+        #         "object": "card"
+        #       }, 
+        #       "statement_descriptor": null, 
+        #       "status": "succeeded"
+        #     }""")
+
 
         print charge
 
@@ -1348,6 +1419,13 @@ def pay_stripe():
 
 
 
+        shipping_rate_info=session.shipping_rates[default_address.id]
+        for item in shipping_rate_info:
+            if item['rate_id']==default_address.easypost_default_shipping_rate_id:
+                shipping_info=item
+
+
+
         print "Creating the purchase history dict"
 
         purchase_history_dict=create_purchase_history_dict(
@@ -1355,6 +1433,7 @@ def pay_stripe():
             session_data=response,
             user_data=user_data,
             address_data=default_address,
+            shipping_data=shipping_info,
             payment_service='stripe',
             payment_data=charge,
             payment_invoice_number=session.payment_information['information_LOD'][0]['invoice_number'],
@@ -1508,6 +1587,8 @@ def create_user_after_purchase_callback(form):
     from utils import web2py_uuid
     # print "We got called back!"
 
+    print "create user callback called"
+
     user = db.auth_user(auth.user_id)  
 
     max_time=time()+3600
@@ -1611,6 +1692,20 @@ def confirmation():
     #########################
     # try:
     ######################### 
+
+
+    # print auth.user_id
+
+    # user_id=auth.user_id
+
+    # user=db(db.auth_user.id==auth.user_id).select().first()
+
+    # print user.reset_password_key
+
+    # print (db(db.auth_user.id==auth.user_id).select().first()).reset_password_key
+
+    # reset_password_key=
+
 
     purchase_history_data_id=request.args[0]
     #Try to convert and compare the url arg with the session arg that the user is allowed to view. 
@@ -1743,7 +1838,7 @@ def confirmation():
             service=purchase_history_data_row.easypost_shipping_service,
             cost=purchase_history_data_row.easypost_rate,
             #IF you want this you have to add it :/
-            delivery_date=None, #shipping_info_confirmation['delivery_date_text'],
+            delivery_date=purchase_history_data_row.easypost_delivery_date_text, #shipping_info_confirmation['delivery_date_text'],
         ))
 
         shipping_information=dict( error=False, error_message=None, information_LOD=shipping_information_LOD )
@@ -1835,7 +1930,7 @@ def confirmation():
             payment_information_LOD.append(
                 dict(
                     payment_service='paypal',
-                    email=payment_information_api['email']
+                    email=payment_information_api['payer']['payer_info']['email']
                     ))
 
 
@@ -1882,23 +1977,12 @@ def confirmation():
 
 
 
-
-
         ##Create Account after purchase
-        form_profile=auth.profile(next=URL('confirmation',args=(request.args[0])))
-        # form_password_change=auth.change_password(next=URL('confirmation',args=(request.args[0])))
-
-        
-
-        #submit_button=form_profile.elements('input[type=submit]')[0]
-
-        # print submit_button
-
-        ## Editing Auth Items
-        form_profile.elements('input[type=submit]')[0]['_value']="Sign Up"
         auth.settings.profile_onaccept = [create_user_after_purchase_callback]
-
-
+        auth.messages.profile_updated = 'Check your email!'
+        form_profile=auth.profile(next=URL('confirmation',args=(request.args[0])))
+        form_profile.elements('input[type=submit]')[0]['_value']="Sign Up"
+        
 
         return dict(
             confirmation_information=confirmation_information,
@@ -1910,6 +1994,7 @@ def confirmation():
             summary_information=summary_information,
 
             form_profile=form_profile,
+            # reset_password_key=reset_password_key,
         )
 
     ## if not, they are trying to view something they don't have access to.
@@ -3812,6 +3897,12 @@ def paypal_confirmation():
             address_data=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select().first()
 
 
+            shipping_rate_info=session.shipping_rates[default_address.id]
+            for item in shipping_rate_info:
+                if item['rate_id']==default_address.easypost_default_shipping_rate_id:
+                    shipping_info=item
+
+
             purchase_history_dict=create_purchase_history_dict(
 
                 ## This is probably really dangerous
@@ -3822,7 +3913,7 @@ def paypal_confirmation():
                 address_data=address_data,
 
                 ## Consider putting shipping response in session and passing them here?
-                # shipping_data=rates,
+                shipping_data=shipping_info,
                 
                 payment_service='paypal',
 

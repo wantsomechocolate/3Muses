@@ -69,17 +69,17 @@ db.product.is_active.default=True
 ## except for quantity
 db.define_table('purchase_history_data',
 
-	## User Fields
+	## Muses Fields
 	Field('muses_id'),
 	Field('muses_email_address'),
+	Field('muses_transaction_datetime','datetime'),
 
-	## Session Fields
 	Field('session_db_record_id'),
 
+	
 	## Shipping Address Fields
 	Field('shipping_name_first'), ## Added new ## Probably don't need this field
 	Field('shipping_name_last'), ## Added new ## Probably don't need this field
-	# Field('shipping_name'),
 	Field('shipping_street_address_line_1'),
 	Field('shipping_street_address_line_2'),
 	Field('shipping_municipality'),
@@ -89,15 +89,21 @@ db.define_table('purchase_history_data',
 
 	## Shipping Fields
 	Field('easypost_shipping_service'), ## Probably don't need this field
+	Field('easypost_shipping_service_raw'), ## Added new
 	Field('easypost_shipping_carrier'), ## Probably don't need this field
 	Field('easypost_rate_id'),
 	Field('easypost_shipment_id'),
 	Field('easypost_rate'), ## Probably don't need this field
+
+	Field('easypost_delivery_days','integer'),
+	Field('easypost_delivery_date_text'),
+	Field('easypost_delivery_date','datetime'),
 	
 	## Payment Fields
 	Field('payment_service'),
 	Field('payment_confirmation_id'),
 	Field('payment_invoice_number'),
+	Field('payment_email_address'),
 
 	## Cart Summary Details
 	Field('cart_base_cost'), ## Probably don't need this field

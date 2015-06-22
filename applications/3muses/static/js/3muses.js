@@ -16,6 +16,12 @@ function update_target(click_class_name_or_all, selected_class_name, view_name, 
         click_class_name=click_class_name_or_all;
     };
 
+
+    // Give the user some sweet feedback
+    $("#"+target_div_id).html( '<div class="row cart-view-row cart-view-shipping-row"><div class="col-md-offset-2 col-md-8 align-hcenter cart-view-error-text-container"> Generating Shipping Costs... Please Wait <img src="static/img/bouncing_ball_0099CC.gif" style="width: 20px;"> </div></div>'
+    );
+
+
     // This will be the db id of the address in the db table
     var new_choice=$(this).attr('id');
     // alert(new_choice);
@@ -43,20 +49,6 @@ function update_target(click_class_name_or_all, selected_class_name, view_name, 
         }).done(function( shipping_information ){
             
             var obj=jQuery.parseJSON(shipping_information);
-
-            // alert(obj);
-
-            /*This is not page load*/
-            // if ( ($("#"+target_div_id).html()=="") || (obj.change==true) ) {
-
-            //     $("#"+target_div_id).html( target_div_text );
-
-            // }; 
-
-            // alert(obj['shipping_options_LOD']);
-            // alert(obj['error_status']);
-            // alert(obj['error_message']);
-
 
             var newHtml=[]
 
@@ -258,7 +250,8 @@ function update_shipping_option(value_one_or_all, value_two){
         value_one=value_one_or_all;
     };
 
-    // alert(value_two);
+    $("#cart-view-summary-shipping-cost-div").html( '<img src="static/img/squares_transparent.gif" style="width: 20px;">' );
+    $("#cart-view-summary-total-cost-div").html( '<img src="static/img/squares_transparent.gif" style="width: 20px;">' );
 
     $(".cart-view-shipping-row-wrapper").removeClass('cart-view-shipping-row-wrapper-selected');
     $(this).addClass("cart-view-shipping-row-wrapper-selected");
@@ -267,7 +260,7 @@ function update_shipping_option(value_one_or_all, value_two){
 
     // alert(shipping_choice_rate_id);
 
- // Call ajax to sort some stuff out!
+    // Call ajax to sort some stuff out!
     $.ajax({
 
             type:"POST",
@@ -282,7 +275,7 @@ function update_shipping_option(value_one_or_all, value_two){
             $("#cart-view-summary-shipping-cost-div").html( "$"+obj['shipping_cost_USD'] );
             $("#cart-view-summary-total-cost-div").html( "$"+obj['total_cost_USD'] );
 
-
+            $('#cart-to-checkout').prop('disabled', false);
             // alert( obj['msg'] );
 
         }).error( function (error_message) {
@@ -291,42 +284,39 @@ function update_shipping_option(value_one_or_all, value_two){
 };
 
 
-function update_payment_option(value_one_or_all, value_two){
+// function update_payment_option(value_one_or_all, value_two){
 
-    // Depending on how the function is called it handles the arguments differently, why!?
-    if (arguments.length==1) {
-        value_one=update_payment_option.arguments[0].data['value_one'];
-        value_two=update_payment_option.arguments[0].data['value_two'];
-    } else {
-        value_one=value_one_or_all;
-    };
+//     // Depending on how the function is called it handles the arguments differently, why!?
+//     if (arguments.length==1) {
+//         value_one=update_payment_option.arguments[0].data['value_one'];
+//         value_two=update_payment_option.arguments[0].data['value_two'];
+//     } else {
+//         value_one=value_one_or_all;
+//     };
 
-    // alert("a payment option has been clicked");
+//     // alert("a payment option has been clicked");
 
-    $(".cart-view-payment-option").removeClass("cart-view-payment-option-selected");
-    $(this).addClass("cart-view-payment-option-selected");
+//     $(".cart-view-payment-option").removeClass("cart-view-payment-option-selected");
+//     $(this).addClass("cart-view-payment-option-selected");
 
-    payment_method=$(this).attr('id');
+//     payment_method=$(this).attr('id');
 
-    $.ajax({
+//     $.ajax({
 
-            type:"POST",
-            url:"ajax_choose_payment_option.html",
-            data:{payment_method: payment_method},
+//             type:"POST",
+//             url:"ajax_choose_payment_option.html",
+//             data:{payment_method: payment_method},
 
-        }).done(function( obj_json ){
+//         }).done(function( obj_json ){
 
-            // var obj=jQuery.parseJSON( obj_json );
+//             // var obj=jQuery.parseJSON( obj_json );
+//             // alert( obj['msg'] );
+//             // alert("Success!");
 
-            // alert( obj['msg'] );
+//         }).error( function (error_message) {
+//             alert( "There was an error setting your shipping option in the db" )});
 
-            // alert("Success!");
-
-        }).error( function (error_message) {
-            alert( "There was an error setting your shipping option in the db" )});
-
-};
-
+// };
 
 
 
@@ -376,48 +366,23 @@ function update_payment_option(value_one_or_all, value_two){
 // }
 
 
-// function adjust_slider_heights(){
-
-//     var width=$('.display-carousel').width()*.9;
-
-    // if (width==0){
-        
-    //     var width=$('.display-carousel').width()*.9;
-
-    //     $('.slider-size').css({'height':width+"px !important"})
-
-    // } else {
-
-    // $('.slider-size').css({'height':width+"px"})
-
-    // };
-
-
-// }
-
-
-
-
 function adjust_slider_heights(){
 
-    var width=$('.carousel').width()*.9;
-    // alert(width);
-    // if (width==0){  
-    //     var width=$('.display-carousel').width()*.9;
-    //     // $('.slider-size').css({'height':width+"px !important"});
-    //     adjust_slider_heights();
-    // } else {
-    $('.slider-size').css({'height':width+"px"})
-    // };
+    page_name=window.location.pathname.split('/')[0]
+
+    if (page_name=="display"||page_name=='product'){
+
+        var width=$('.carousel').width()*.9;
+        $('.slider-size').css({'height':width+"px"})
+
+    }
+
+
 };
 
 
-$(window).on("resize", adjust_slider_heights);
-$(window).on("load", adjust_slider_heights);
-$(window).on("orientationchange", adjust_slider_heights);
 
-
-
+// http://stackoverflow.com/questions/17084246/make-image-fill-div-proportionally-and-center-image-vertically
 function centerImageVertically() {
     var imgframes = $('.image-container a img');
     imgframes.each(function (i) {
@@ -462,43 +427,49 @@ function centerImageVertically() {
 };
 
 
-// centerImageVertically();
-// $(window).resize(centerImageVertically);
-$(window).on("resize", centerImageVertically);
-$(window).on("load", centerImageVertically);
-$(window).on("orientationchange", centerImageVertically);
+
+
+
+// $(document).on("click",".cart-view-payment-option",{
+//     value_one:"value one",
+//     value_two:"value two",
+// }, update_payment_option );
 
 
 //Let's get ready to rumble
 $(document).ready(function(){
 
 
-    // alert(moment().format());
+
+    // Stuff I want to do on things
+
+    // resize images (not just in carousels though)
+    $(window).on("resize", adjust_slider_heights);
+    $(window).on("load", adjust_slider_heights);
+    $(window).on("orientationchange", adjust_slider_heights);
 
 
-    // var center_fill = function (){
-
-    //     var img_frames = $('.image-container a img');
-    //      img_frames.each(function(){
-
-    //         current_img_width=parseInt($(this).css('width'));
-    //         current_img_height=parseInt($(this).css('height'));
-
-
-
-
-
-
-
+    // center image vertically on these things and also one extra thing which is on carousel slide
+    $(window).on("resize", centerImageVertically);
+    $(window).on("load", centerImageVertically);
+    $(window).on("orientationchange", centerImageVertically);
+    $('.carousel').on('slide',centerImageVertically);
 
 
 
-    //      });
-    // };
+
+
+    // This is like my main function.
+    $(document).on("click",".cart-view-shipping-row-wrapper",{
+        value_one:"value one",
+        value_two:"value two",
+    }, update_shipping_option );
 
 
 
-// http://stackoverflow.com/questions/17084246/make-image-fill-div-proportionally-and-center-image-vertically
+
+    // To stop the carousels from sliding, only works on some pages for whatever reason
+    $(document).on('mouseleave', '.carousel', function() {$(this).carousel('pause');});
 
     //Enable swiping...
     $(".carousel-inner").swipe( {
@@ -514,36 +485,53 @@ $(document).ready(function(){
     });
 
 
-    // var width=$('.slider-size').width()*.9;
-    // // alert(width);
 
-    // $('.slider-size').css('height',width+"px")
+    // To enable popovers (but there aren't any to enable right now)
 
-
+    $('[data-toggle="popover"]').popover()
 
 
 
+    // To enable the flash messages without 
+    var flashBox = jQuery(".flash"), flashTimer;
+    flashBox.click(function(){
+        if (flashTimer) clearTimeout(flashTimer);
+        flashBox.fadeOut(400, function(){jQuery(".flash").html('')});
+    });
+    flashTimer = setTimeout(function(){flashBox.fadeOut(400, function(){jQuery(".flash").html('')});}, 3500);
 
 
 
 
-// find the height and width of each image and the height and width of each parent
-// if the aspect ratio w/h of the img is higher than the container
-// that means you will need to adjust the height and let the width overflow
-// if the aspect ratio w/h of the img is lower than the container
-// The width expands to fill the container, and the vertically positioning needs to be adjusted so that the image is centered
+    // for addresses in the cart
+    // $('input[type=radio]:checked').parent().addClass('selected_address');
+
+    var current_address_id=$('.selected_address').attr('id');
+
+    // var current_address_id=111;
+
+    $(".cart-view-address-info").on('click',{
+        click_class_name:"cart-view-address-info", 
+        selected_class_name:"selected_address", 
+        view_name:"ajax_shipping_information.html",
+        target_div_id:"shipping_target",
+    }, update_target );
+
+    $('#'+current_address_id).trigger('click');
 
 
 
+    // This probably needs to be put in the success of the ajax call from the address click. 
+    var current_shipping_div_id=$('.cart-view-shipping-row-wrapper-selected').attr('id');
     
+    $("#"+current_shipping_div_id).trigger('click');
 
 
 
-    // $(".frame img").centerImage();
+
 
 
     // Add classes to auth
-
     var current_page=window.location.pathname;
     // alert(current_page);
 
@@ -577,222 +565,26 @@ $(document).ready(function(){
 
 
 
-    // alert(current_page);
-
-    // if (current_page==='user/login'){
-
-    //     $("#auth_user_email").addClass("form-control");
-    //     $("#auth_user_password").addClass("form-control");
-    //     $("#auth_user_remember").addClass("display_inline_block_class");
-    //     $("input[value=Login]").addClass("form-control btn-success");
-    //     $("#auth_user_email__label").addClass("display_none_class");
-    //     $("#auth_user_password__label").addClass("display_none_class");
-
-    // };
-
-
-
-
-
-    // for addresses in the cart
-
-    $('input[type=radio]:checked').parent().addClass('selected_address');
-
-    var current_address_id=$('.selected_address').attr('id');
-    // alert(current_address_id);
-    // alert(current_address_id);
-
-    $(".cart-view-address-info").on('click',{
-        click_class_name:"cart-view-address-info", 
-        selected_class_name:"selected_address", 
-        view_name:"ajax_shipping_information.html",
-        target_div_id:"shipping_target",
-    }, update_target );
-
-    $('#'+current_address_id).trigger('click');
-
-
-
-
-// for shipping options in the cart
-
-    // $(".cart-view-shipping-row-wrapper").on('click',{
-    //     value_one:"value",
-    //     value_two:"value",
-    // }, update_shipping_option );
-
-    // $(document).on("click",".cart-view-shipping-row-wrapper",function(e){
-    //     alert("I've been clicked"); 
-    // });
-
-    $(document).on("click",".cart-view-shipping-row-wrapper",{
-        value_one:"value one",
-        value_two:"value two",
-    }, update_shipping_option );
-
-    // $('.cart-view-shipping-row-wrapper').on("click",{
-    //     value_one:"value one",
-    //     value_two:"value two",
-    // }, update_shipping_option );
-
-    var current_shipping_div_id=$('.cart-view-shipping-row-wrapper-selected').attr('id');
-    $("#"+current_shipping_div_id).trigger('click');
-
-
-
-
-    $(document).on("click",".cart-view-payment-option",{
-        value_one:"value one",
-        value_two:"value two",
-    }, update_payment_option );
-
-
-
-
-    // // I need to add to this function to grey out the checkout button
-    // // until this is finished running
-    // $("input[name='shipping']").click(function(){
-    //     //alert('clicked');
-    //     shipping_choice=$(this).attr('value');
-    //     //alert(shipping_choice);
-    //     $.ajax({
-    //         type: "POST",
-    //         url: "add_shipping_choice_to_session.html",
-    //         data: { shipping_choice: shipping_choice }
-    //     })
-    //         .done(function( result ){
-    //             //alert( "added to sesh" );
-    //             result=jQuery.parseJSON(result)
-    //             //alert( result.shipping_choice )
-    //         });
-    // });
-
-
-
-
-
-    $("input[name='card']").click(function(){
-        //alert($(this).attr('value'));
-        $.ajax({
-            type: "POST",
-            url: "default_card.html",
-            data: { stripe_next_card_id: $(this).attr('value')}
-        })
-            .done(function( msg ){
-                //alert( "Function Called");
-            });
-    });
-
-    //alert("2");
-
-    // To stop the carousels from sliding, only works on some pages for whatever reason
-    //$('.carousel').carousel({interval:false});
-    $(document).on('mouseleave', '.carousel', function() {$(this).carousel('pause');});
-    
-    //alert("3");
-
+    // Adding classes to auth
     $('.web2py_htmltable table').addClass('table-bordered');
     $('.web2py_htmltable table').addClass('manage-view-table');
-
-    //alert("4");
 
     $('.w2p_export_menu a').removeClass('btn-default');
     $('.w2p_export_menu a').addClass('btn-primary');
 
-    // alert("5");
-
     $(".cart_grid_table_cell:contains(is no longer available)").addClass("cart_item_removed")
 
-    //alert("6");
-
-    $(function () {
-      $('[data-toggle="popover"]').popover()
-    })
 
 
-    // $("#demo01").animatedModal();
-
-
-    // $(function() {
-    //     var pop = $('.popbtn');
-    //     // var pop = $('[data-toggle="popover"]')
-    //     // var row = $('.row:not(:first):not(:last)');
-    //     // var row = $('.cart-view-cart-row');
-
-    //     pop.popover({
-    //         trigger: 'manual',
-    //         html: true,
-    //         container: 'body',
-    //         placement: 'bottom',
-    //         animation: false,
-    //         content: function() {
-    //             return $('#popover').html();
-    //         }
-    //     });
-
-
-    //     pop.on('click', function(e) {
-    //         pop.popover('toggle');
-    //         pop.not(this).popover('hide');
-    //     });
-
-    //     $(window).on('resize', function() {
-    //         pop.popover('hide');
-    //     });
-
-    //     // row.on('touchend', function(e) {
-    //     //     $(this).find('.popbtn').popover('toggle');
-    //     //     row.not(this).find('.popbtn').popover('hide');
-    //     //     return false;
-    //     // });
-
-    // });
+    /*Make this conditional for the confirmation page*/
+    $("#confirmation input[name=old_password]").val("guestuser");
+    $("#confirmation input[name=email").val("");
+    $("#confirmation input[name=email]").attr("placeholder", "Enter Email");
 
 
 
-    // $(window).on("load resize orientationchange", carouselNormalization)
-
-    // carouselNormalization('display-carousel');
-
-
-    // $(document).on("ready resize orientationchange",".display-carousel",{
-
-    //     carousel_class:"display-carousel",
-        
-    // }, carouselNormalization );
-
-
-    // $("#display-carousel-0").swiperight(function() {  
-    //     $(this).carousel('prev');  
-    // });  
-
-    // $("#display-carousel-0").swipeleft(function() {  
-    //     $(this).carousel('next');  
-    // });  
 
 
 
-  var flashBox = jQuery(".flash"), flashTimer;
-  flashBox.click(function(){
-      if (flashTimer) clearTimeout(flashTimer);
-      flashBox.fadeOut(400, function(){jQuery(".flash").html('')});
-  });
-  flashTimer = setTimeout(function(){flashBox.fadeOut(400, function(){jQuery(".flash").html('')});}, 3500);
 
-
-/*Make this conditional for the confirmation page*/
-$("#confirmation input[name=old_password]").val("guestuser");
-
-// $("#confirmation input[name=first_name").val("");
-// $("#confirmation input[name=last_name").val("");
-$("#confirmation input[name=email").val("");
-
-
-// $("#confirmation input[name=first_name]").attr("placeholder", "Enter First Name");
-// $("#confirmation input[name=last_name]").attr("placeholder", "Enter Last Name");
-$("#confirmation input[name=email]").attr("placeholder", "Enter Email");
-
-// $("#confirmation input[name=new_password]").attr("placeholder", "Enter Password");
-// $("#confirmation input[name=new_password2]").attr("placeholder", "Verify Password");
-
-});
+}); // End document.ready()

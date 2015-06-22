@@ -2,94 +2,70 @@
 
 
 Main Page
-Add real text to the landing page
-Update background image to a relevant photo
-Ask mom about a powered by modal
-Figure out what else can go in the footer
+	Add real text to the landing page
+	Update background image to a relevant photo
+	Ask mom about a powered by modal
+
 
 Footer
-Populate footer with real text
+	Figure out what else can go in the footer
+	Populate footer with real text
 
 Category page
-Has Judy approval for now. 
+	Has Judy approval for now. 
 
 Display Page
-In mobile view the picture carousels collapse to 0 height if the page is scrolled after any (actually it might just be after the first) carousel is invoked. Consider adding a decoy carousel and just hiding it.
-Other than that, I have no idea how to solve this problem
+	Fine for now - consider adding header to category section
 
 Product Page
-Fix image heights on non-default active images - LOW PRIORITY
-In mobile view the picture carousels collapse to 0 height if the page is scrolled after any carousel is invoked. 
+	Add button to proceed to cart in the user has an item in their cart
 
 Cart Page
-
-	General
-	Cancel button on add and edit pages
-
-	Shipping
-	correctly calculate the shipping dates in the absence of an estimated shipping time?
-	correctly account for business days?
-
 	Proceeding to Checkout
 	User is able to click Proceed to Checkout button before selecting a shipping option. 
 
 Checkout page
-Add modal that activates after succesful form submission when paying with stripe - this requires custom stripe integration. 
-Make sure that Bitcoin works in test mode. Have to check what goes in DB, confirmation email, and view_purchase_history
+	Add modal that activates after succesful form submission when paying with stripe - this requires custom stripe integration. 
+	Make sure that Bitcoin works in test mode. Have to check what goes in DB, confirmation email, and view_purchase_history
 
-Bitcoin payment method is not working.
+	Bitcoin payment method is not working.
 
-Consider wrapping entire stripe callback function in a try block that catches errors and redirects the user instead of just producing "Server Error"
+	Consider wrapping entire stripe callback function in a try block that catches errors and redirects the user instead of just producing "Server Error"
 
 
 Confirmation page
-There is absolutely no formatting or cosmetics on thei page at all right now.
-DB changes need to be propegated to this page. - done?
+	Add session variable that dictates wether or not the user is shown the register pane on the confirmation screen
 
 
-Pay
-Stopped working due to some db changes.
-It's most likely related to the function I'm making to handle putting purchase info in the db. 
+Payments
 
-Add functionality to handle someone cancelling a paypal payment. ("I'm thinking I just bring them back to the cart page") - yes this is fine for now. I checked and it does go to the cart page - I'll add a message, should be easy because paypal sends users back with a token. So for now I'll just check if there is a var named token and flash something that says you cancelled your payment on paypal - or I can just add something at the top of the page?
+	Paypal
+
+		Cancelling payment
+
+			Add functionality to handle someone cancelling a paypal payment. ("I'm thinking I just bring them back to the cart page") - yes this is fine for now. I checked and it does go to the cart page - I'll add a message, should be easy because paypal sends users back with a token. So for now I'll just check if there is a var named token and flash something that says you cancelled your payment on paypal - or I can just add something at the top of the page?
 
 
 
 
 
 Login Page
-No error when incorrect credentials are entered. Just page refresh. - big priority
 
-When a gimp user is created, web2py allows me to change the email of the user to one that already exists in the database. This should not be allowed to happen. I need to put something in place that tells the user they need to choose a different email address. 
 
 View Purchase History Page
-This page no longer works because of db changes. 
-I want to keep the default bread crumb functionality so I will keep some api responses in here
-I'm thinking that the user can click on a link to see specific stripe, shipping, paypal information that opens up a modal. 
+
+	I'm thinking that the user can click on a link to see specific stripe, shipping, paypal information that opens up a modal. 
 
 
 Profile Page
-Does not reliably accept edits to information complaining that the email address is already in use.
+Test ability to edit profile info for users that register normally and users that signed up after purchase. 
 
 
-Misc.
-Make a function for adding purchase info to the database since it is done in two different controller functions - done I believe
 
 
 
 
 Checkout Flow
-
-Show the cart contents and total cart cost on one page
-User can enter minimum shipping information and choose a shipping method to get shipping costs and a total cost
-All on the cart page?
-
-A new page is used for checkout purposes
-If the user wants to pay with a card they must enter shipping information first, followed by billing information
-
-If they want to pay with paypal they don't have to enter any further information, but what happens if the minimum shipping info they entered earlier doesn't match the shipping address they picked in paypal? At that point I have already authorized the charge for a given amount. Maybe I just keep it the way it is for now.
-
-I GOT IT!
 
 At first the cart page only shows the cart, then there is a button to add shipping information
 Once an address is added, it becomes visible! more than one address can be added/selected?
@@ -98,124 +74,23 @@ Once an address is chosen, shipping information becomes visible, for a given add
 
 Once a shipping method is chosen, the true final amount is given and can then be charged.
 
-Two Choices
-Have the option to choose a payment method pop up, if they choose paypal, then they can complete checkout np,
-if they choose to pay with a card, they enter the information in a secure looking model letting them know that the info is not saved on threemusesglass.com servers. 
-
-How would this work on mobile?
-On mobile everything should be a new page?  :/
-
-
-
-
-
-For the shipping charges, if someone adds an address and then adds a new item, the shipping rate isn't retrieved again! So I need to check to see if the address last modified time OR the cart last modified time is more recent than the shipping rates time associated with the address. 
-
-I now have a time associated with adding an item to a cart. I also realized that I should not delete items from a cart, just deactivate them, so that later we can send customized emails to people that put something in their cart, but removed it. 
-
-so anyway....
-
-I have a time for each item in the cart
-I have a time for the last time the address was added or edited
-I have a time for the last time the shipping options were retrieved.
-
-Everytime the shipping info is being generated, I need to check that the time that the shipping info was requested is always newer than
-
-the most recent address time
-the newest addition to the cart
-24 hours before the current time
-
-
-
-
-
-Checkout is to be moved to a different page than the cart and shipping information. Do that. 
-
-
-
-
-Stripe is allowing two cards with the exact same credentials to be created.
-I'm also allowing it. I should not do that. 
-
-
-Deleting the last card on the checkout page doesn't put an error message :/
-
-
-Create a card, create card with same stuff, delete one of them, try to proceed to payment screen.
-
-
-Pressing back after entering card info brings you back to the payment info screen with data still entered. Change form to a modal popup and send data to stripe via ajax so the user can't press back and get to the screen. But still refresh afterwards because I can't handle so many ajax shit
-
-
-Entering a card doesn't auto select after coming back to checkout screen - fix that ish. 
-
-
 When session expires on the confirmation screen a refresh causes an error, because the session variable for the allowable confirmation page is gone. fix?
 
 
-When there are multiple addresses 
-
-
-
-
-Dealing with user uniqueness after a purchase
-
-I think I am going to add an email_for_correspondance type field. I can either extend auth_user and limit it to one address or I can make another table and reference the auth table so that a user can add multiple addresses for a purchase reciept to go to. 
-
-If that functionality is there, then when someone buys something with a certain email address, than I can add the email they use to the correspondance email for that user. Then whenever I send an email I use that address list instead of the email field in auth. This makes it easier to deal with a user putting in an email of an existing user when making a purchase. 
-
-I have to do this for stripe and paypal. The paypal one currently checks to see if the user exists already but then sends the confirmation email to the wrong auto-created email address. 
-
-
-Checkout flow:
-add items to cart
-Go to cart and add address and select shipping option. 
-Go to checkout and select payment option. 
-At this point if the user wanted to checkout using paypal they could theoretically be sent straight there. 
-
-Give ability for user to put a correspondence email. They will be emailed their reciepts at that email address/ addresses?
-The emails I get from paypal will be added
-
-
-
-pay_stripe
-Need to fix the hanging UX experience that happens when you pay with Stripe
 
 
 
 Registering at the end of purchase
 
-Scenario 1:
-
-Gimp user pays with paypal
-Take the email they used for paypal and make it the main email on the account.
-Add the paypal email to the email dictionary in the user profile. There will be one paypal and one stripe email in this dictionary. 
-
-
-Check to see if the previous main email on the account was a real email or not. 
-If it was not, do nothing.
-If it was, add that email to the list of correspondence emails and make it inactive. 
-
-General Conclusions
-I have to set up a function that can take a user ID and see if they have a real email setup. 
-When a user pays with one of the payment services, I want to save that email associated with that payment service, also the time the email was last modified.
-If a user pays with the same payment service but uses a different email address. I want to save those as well, but only use the newest email address. 
-Then I need a way of retrieving the most recent email for a given payment service.
-
-I don't ever need to change the user email until the user says they want an account and they get to choose their email. 
-
-On the confirmation page I can say, set up an account to access purchase history and get a 10% coupon for the next purchase. 
-For right now the user will manually type in an email address and I will change the users email to that email address. The only thing is that the email can not be in the database already. 
-
-
-1.) When a purchase is made, add the email associated with that purchase to the user profile dictionary? Maybe I can repurpose the correspondence email table for this. Only save the most recent email used for each payment type for a given user. This emails can be the same for a given user and they can be the same accross users. 
-
-2.) When a user indicates that they would like to sign up at the end of a purchase. They have to type an email, password, and password verification. This email address must be unique across TMG as a login email. It can be the same as email addresses for the various payment methods. If the email checks out. I need to verify that the password fields match. If everything is good, the username and email for the particular user are changed to match the entered values and the user is stripped of their gimp status. 
 
 
 
+
+
+Random Problems
 Weird error that caused cart db rows with no associated user to put "in-cart" ribbons on products for non-users?
 It would say it was in the cart, the button to add/remove said remove, but clicking on the cart page didn't let the user in because they weren't a guest yet. 
+
 
 
 
@@ -248,7 +123,7 @@ edit address
 choose shipping option
 
 Checkout page
-checkout with stripe cart
+checkout with stripe card
 checkout with stripe bitcoin
 checkout with paypal
 

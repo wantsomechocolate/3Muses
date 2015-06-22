@@ -1,4 +1,3 @@
-{{('message' in globals())}}
 {{extend 'layout.html'}}
 
 <div class="container-fluid style2">
@@ -51,6 +50,8 @@
 
 {{ if auth.has_membership('gimp'): }}
 
+	{{ if (db(db.auth_user.id==auth.user_id).select().first()).reset_password_key == '': }}
+
 <div class="container-fluid style1">
 
 	<div class='container'>
@@ -88,6 +89,10 @@
 	</div>
 
 </div>
+
+	{{ else: }}
+
+	{{ pass }}
 
 {{ else: }}
 
@@ -188,8 +193,6 @@
 					<div>
 
 						<div>
-
-							{{ print shipping_information }}
 							{{ =shipping_information['information_LOD'][0]['carrier'] }} 
 							{{ =shipping_information['information_LOD'][0]['service'] }}
 							Shipping (Est. {{ =shipping_information['information_LOD'][0]['delivery_date'] }}) To:
@@ -317,9 +320,9 @@
 
 								{{ pass }}
 
-							{{ else: }}
+							{{ elif payment_information['information_LOD'][0]['payment_service']=='paypal': }}
 
-								{ =payment_information['information_LOD'][0]['payment_service'] }}
+								Paypal
 
 							{{ pass }}
 							

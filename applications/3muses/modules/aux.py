@@ -277,6 +277,7 @@ def create_purchase_history_dict(
     session_data,
     user_data,
     address_data,
+    shipping_data,
     payment_service,
     payment_data,
     payment_invoice_number,
@@ -285,6 +286,7 @@ def create_purchase_history_dict(
 
     import json
     import easypost
+    from datetime import datetime
 
     ## easypost_response=json.loads(address_data['easypost_api_response'])
     easypost_response=easypost.Shipment.retrieve(address_data['easypost_shipping_id'])
@@ -308,6 +310,7 @@ def create_purchase_history_dict(
 
         muses_id=user_data.id,
         muses_email_address=user_data.email,
+        muses_transaction_datetime=datetime.now(),
         # muses_name=user_data.first_name,
 
         shipping_name_first=address_data['first_name'],
@@ -319,12 +322,15 @@ def create_purchase_history_dict(
         shipping_postal_code=address_data['postal_code'],
         shipping_country=address_data['country'],
 
-        easypost_shipping_service=rate_info['service'],
+        easypost_shipping_service=shipping_data['service'],
         easypost_shipping_carrier=rate_info['carrier'],
         easypost_shipment_id=rate_info['shipment_id'],
         easypost_rate_id=rate_info['id'],
         easypost_rate=rate_info['rate'],
         #easypost_api_response=address_data['easypost_api_response'],
+        easypost_delivery_days=shipping_data['delivery_days'],
+        easypost_delivery_date_text=shipping_data['delivery_date_text'],
+        easypost_delivery_date=shipping_data['delivery_date'],
 
         payment_service=payment_service,
         payment_confirmation_id=payment_data.id,
