@@ -150,10 +150,12 @@
 
 
 
+
 /* Specific to Change Password */
 body#change_password{
 	background-color: #0099CC;
 }
+
 
 
 
@@ -168,10 +170,12 @@ body#login .w2p_fl{
 
 
 
+
 /* Specific to Profile */
 body#profile{
 	background-color: #0099CC;
 }
+
 
 
 
@@ -186,19 +190,24 @@ body#register tr#auth_user_password_two__row .w2p_fc{
 }
 
 
+
 /* Specific to Reset Password */
-body#reset_passowrd{
+body#reset_password{
 	background-color: #0099CC;
 }
 
+
+
+/* Specific to Request Reset Password */
 body#request_reset_password{
 	background-color: #0099CC;
 }
 
 
+
 /*Specific to address form */
 body#address{
-	background-color:#C3C3E5;
+	background-color:#0099CC;
 }
 
 .address-view-combo-box{
@@ -211,6 +220,8 @@ body#address tr:last-child td .btn{
 }
 
 
+
+
 /* Specific to Confirmation Profile Form*/
 
 body#confirmation #auth_user_first_name__row{
@@ -219,4 +230,88 @@ body#confirmation #auth_user_first_name__row{
 
 body#confirmation #auth_user_last_name__row{
 	display:none;
+}
+
+
+
+
+
+
+
+/* View Purchase History */
+
+.web2py_breadcrumbs ul li {
+	display: inline;
+	list-style-type: none;
+	padding-right: 20px;
+}
+
+.web2py_breadcrumbs ul{
+	padding-left:0;
+}
+
+.web2py_breadcrumbs a {
+	color:black;
+}
+
+.web2py_breadcrumbs {
+	/*margin-top:20px;*/
+}
+
+.web2py_grid{
+	background-color: #F1F0FF;
+	padding: 20px;
+	margin-top: 20px;
+	margin-bottom:20px;
+
+	overflow-x: scroll;
+}
+
+.web2py_table th a{
+	color:black;
+}
+
+.web2py_table th{
+	text-align: center;
+}
+
+.w2p_export_menu{
+	margin-top:20px;
+	text-align: right;
+}
+
+.web2py_grid .form_header{
+	margin-bottom: 20px;
+}
+
+
+.view-purchase-history-profile-button-row{
+	margin-bottom: 20px;
+}
+
+body#view_purchase_history{
+	background-color: #8C489F;
+}
+
+body#view_purchase_history .web2py_table{
+	background-color:#F1F0FF;
+}
+
+body#view_purchase_history thead{
+	background-color:#0099CC;
+	color:black;
+}
+
+body#view_purchase_history th{
+	padding-top:3px;
+	padding-bottom:3px;
+	padding-right:10px;
+	padding-left:10px;
+}
+
+body#view_purchase_history td{
+	padding-top:3px;
+	padding-bottom:3px;
+	padding-right:10px;
+	padding-left:10px;
 }

@@ -368,15 +368,18 @@ function update_shipping_option(value_one_or_all, value_two){
 
 function adjust_slider_heights(){
 
-    page_name=window.location.pathname.split('/')[0]
+    page_name=window.location.pathname.split('/')[1];
 
     if (page_name=="display"||page_name=='product'){
 
-        var width=$('.carousel').width()*.9;
+        var width=$('.carousel').width()*0.85;
+        $('.slider-size').css({'height':width+"px"})
+
+    } else if (page_name=='categories'){
+        var width=$('.slider-size').width()*0.9;
         $('.slider-size').css({'height':width+"px"})
 
     }
-
 
 };
 

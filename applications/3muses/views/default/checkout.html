@@ -1,78 +1,6 @@
 {{extend 'layout.html'}}
 
-<!-- Top section for describing payment methods -->
-<div class="container-fluid style1">
-	<div class='container'>
 
-
-		<div class="row checkout-row">
-			<div class="col-md-offset-2 col-md-8 checkout-summary-payment-section-header">
-				<h1>Method of Secure Payment <span class="glyphicon glyphicon-lock"></span> </h1>
-			</div>
-		</div>
-
-
-		<div class="row checkout-row">
-
-			<div class="col-md-offset-2 col-md-8 checkout-summary-stripe-header">
-				<h3>Pay with Card</h3>
-			</div>
-
-			<div class="col-md-offset-2 col-md-8 checkout-summary-stripe-description">
-				We use <a href="https://stripe.com/about">Stripe</a> to accept credit card payments. Stripe is a <a href="https://www.pcisecuritystandards.org/">PCI</a> compliant payment service that relieves small businesses of the burden of dealing with sensitive credit card information. The payment details you enter are sent straight to Stripe and do not go to our servers. 
-			</div>
-
-			<div class="col-md-offset-2 col-md-8 checkout-summary-payment-button-line checkout-summary-payment-button-line-stripe-1">
-				<form enctype="multipart/form-data" action="{{=URL('pay_stripe')}}" method="post">
-				  {{ import os }}
-				  <script
-				    src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-				    data-key="{{=os.environ['STRIPE_PUBLISHABLE']}}"
-				    data-amount="{{ =int(session.summary_information['information_LOD'][0]['total_cost_USD']*100) }}"
-				    data-name="ThreeMusesGlass"
-				    data-description="Purchase Details from ThreeMusesGlass"
-				    data-bitcoin="true"
-				    data-label="Check out with Stripe"
-				    data-panel-label="Pay"
-				    data-zip-code='true'
-				    data-image="http://images.clipartpanda.com/smiley-face-png-1407-smiley-face.png">
-				  </script>
-				</form>
-
-				<!-- 
-				<button type="button" class="btn footer-modal-btn" data-toggle="modal" data-target="#please-wait-stripe">
-				Please Wait
-				</button>
-				 -->
-				
-			</div>
-
-		</div>
-
-
-		<div class="row checkout-row">
-
-			<div class="col-md-offset-2 col-md-8 checkout-summary-paypal-header">
-				<h3>Pay with Paypal</h3>
-			</div>
-
-			<div class="col-md-offset-2 col-md-8 checkout-summary-paypal-description">
-				We also support payments through paypal. Pressing the "Check out with Paypal" button will redirect you to paypal to complete the purchase process. You will be redirected back to our domain afterwards for confirmation purposes, but payment will be finalized on paypal.com
-			</div>
-
-			<div class="col-md-offset-2 col-md-8 checkout-summary-payment-button-line checkout-summary-payment-button-line-paypal-1">
-				<a class="checkout-view-payment-btn checkout-view-paypal-btn" href="{{=payment_information['information_LOD'][0]['paypal_approval_url']}}" target="_blank">
-					<div>
-						<img src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-large.png" alt="Check out with PayPal" />
-					</div>
-				</a>
-			</div>
-
-		</div>
-
-
-	</div> <!-- close container -->
-</div> <!-- close fluid container -->
 
 
 
@@ -87,7 +15,7 @@
 
 		<div class="row checkout-row">
 		  	<div class="col-md-offset-2 col-md-8 checkout-summary-header">
-		  		<h2>Order Details</h2>
+		  		<h1>Review Order Details</h1>
 		  	</div>
 		</div>
 
@@ -274,12 +202,40 @@
 </div> <!-- close order detail summary fluid container -->
 
 
-<!-- Another set of buttons to put at bottom of page -->
+
+
+
+
+
+
+
+
+
+
+
+<!-- Top section for describing payment methods -->
 <div class="container-fluid style1">
 	<div class='container'>
 
+
 		<div class="row checkout-row">
-			<div class="col-md-offset-2 col-md-8 checkout-summary-payment-button-line checkout-summary-payment-button-line-stripe">
+			<div class="col-md-offset-2 col-md-8 checkout-summary-payment-section-header">
+				<h1>Method of Secure Payment <span class="glyphicon glyphicon-lock"></span> </h1>
+			</div>
+		</div>
+
+
+		<div class="row checkout-row">
+
+			<div class="col-md-offset-2 col-md-8 checkout-summary-stripe-header">
+				<h3>Pay with Card</h3>
+			</div>
+
+			<div class="col-md-offset-2 col-md-8 checkout-summary-stripe-description">
+				We use <a href="https://stripe.com/about">Stripe</a> to accept credit card payments. Stripe is a <a href="https://www.pcisecuritystandards.org/">PCI</a> compliant payment service that relieves small businesses of the burden of dealing with sensitive credit card information. The payment details you enter are sent straight to Stripe and do not go to our servers. 
+			</div>
+
+			<div class="col-md-offset-2 col-md-8 checkout-summary-payment-button-line checkout-summary-payment-button-line-stripe-1">
 				<form enctype="multipart/form-data" action="{{=URL('pay_stripe')}}" method="post">
 				  {{ import os }}
 				  <script
@@ -295,21 +251,53 @@
 				    data-image="http://images.clipartpanda.com/smiley-face-png-1407-smiley-face.png">
 				  </script>
 				</form>
+
+				<!-- 
+				<button type="button" class="btn footer-modal-btn" data-toggle="modal" data-target="#please-wait-stripe">
+				Please Wait
+				</button>
+				 -->
+				
 			</div>
+
 		</div>
 
+
 		<div class="row checkout-row">
-			<div class="col-md-offset-2 col-md-8 checkout-summary-payment-button-line checkout-summary-paypal-button-line">
+
+			<div class="col-md-offset-2 col-md-8 checkout-summary-paypal-header">
+				<h3>Pay with Paypal</h3>
+			</div>
+
+			<div class="col-md-offset-2 col-md-8 checkout-summary-paypal-description">
+				We also support payments through paypal. Pressing the "Check out with Paypal" button will redirect you to paypal to complete the purchase process. You will be redirected back to our domain afterwards for confirmation purposes, but payment will be finalized on paypal.com
+			</div>
+
+			<div class="col-md-offset-2 col-md-8 checkout-summary-payment-button-line checkout-summary-payment-button-line-paypal-1">
 				<a class="checkout-view-payment-btn checkout-view-paypal-btn" href="{{=payment_information['information_LOD'][0]['paypal_approval_url']}}" target="_blank">
 					<div>
 						<img src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-large.png" alt="Check out with PayPal" />
 					</div>
 				</a>
 			</div>
+
 		</div>
+
 
 	</div> <!-- close container -->
 </div> <!-- close fluid container -->
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

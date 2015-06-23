@@ -1136,7 +1136,7 @@ def checkout():
     ## everytime until I like it, then I will gray it out. 
     web_profile = paypalrestsdk.WebProfile({
         ## This has to be a unique name
-        "name": "ThreeMusesGlass05",
+        "name": "ThreeMusesGlass06",
         "presentation": {
             "brand_name": "ThreeMusesGlass",
             #Reactivae when you have an image to use. 
@@ -1158,7 +1158,9 @@ def checkout():
         print "Profile was created" 
         print web_profile.id
     else:
-        experience_profile_id='XP-SLXS-5VPC-DL2F-VE9X'
+        # experience_profile_id='XP-SLXS-5VPC-DL2F-VE9X'
+        experience_profile_id='XP-2GPD-TN78-784C-A28C'
+
         print "There was an error creating the profile - see below."
         print web_profile.error
 
@@ -3704,6 +3706,45 @@ def view_purchase_history():
                             tsv=False,
                             xml=False,
                             ),
+        fields=[
+            db.purchase_history_data.muses_transaction_datetime,
+            db.purchase_history_data.payment_invoice_number,
+            db.purchase_history_data.payment_service,
+            db.purchase_history_data.cart_base_cost,
+            db.purchase_history_data.cart_shipping_cost,
+            db.purchase_history_data.cart_total_cost,
+            db.purchase_history_data.shipping_name_first,
+            db.purchase_history_data.shipping_name_last,
+            db.purchase_history_data.shipping_street_address_line_1,
+            db.purchase_history_data.shipping_street_address_line_2,
+            db.purchase_history_data.shipping_municipality,
+            db.purchase_history_data.shipping_administrative_area,
+            db.purchase_history_data.shipping_postal_code,
+            db.purchase_history_data.shipping_country,
+            db.purchase_history_data.easypost_shipping_carrier,
+            db.purchase_history_data.easypost_shipping_service,
+            db.purchase_history_data.easypost_delivery_date,
+            ],
+
+        headers={
+            'purchase_history_data.muses_transaction_datetime':'Purchase Date',
+            'purchase_history_data.payment_invoice_number':'Confirmation #',
+            'purchase_history_data.payment_service':'Payment Method',
+            'purchase_history_data.cart_base_cost':'Subtotal',
+            'purchase_history_data.cart_shipping_cost':'Shipping Cost',
+            'purchase_history_data.cart_total_cost':'Total Cost',
+            'purchase_history_data.shipping_name_first':'First Name',
+            'purchase_history_data.shipping_name_last':'Last Name',
+            'purchase_history_data.shipping_street_address_line_1':'Address L1',
+            'purchase_history_data.shipping_street_address_line_2':'Address L2',
+            'purchase_history_data.shipping_municipality':'City/ Town',
+            'purchase_history_data.shipping_administrative_area':'State/ Admin Area',
+            'purchase_history_data.shipping_postal_code':'Postal Code',
+            'purchase_history_data.shipping_country':'Country',
+            'purchase_history_data.easypost_shipping_carrier':'Carrier',
+            'purchase_history_data.easypost_shipping_service':'Service',
+            'purchase_history_data.easypost_delivery_date':'Estimated Delivery Date',
+            },
         )
 
     return dict(grid=grid)
@@ -3897,9 +3938,9 @@ def paypal_confirmation():
             address_data=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select().first()
 
 
-            shipping_rate_info=session.shipping_rates[default_address.id]
+            shipping_rate_info=session.shipping_rates[address_data.id]
             for item in shipping_rate_info:
-                if item['rate_id']==default_address.easypost_default_shipping_rate_id:
+                if item['rate_id']==address_data.easypost_default_shipping_rate_id:
                     shipping_info=item
 
 

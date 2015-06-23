@@ -132,29 +132,67 @@ checkout with paypal
 
 
 
-TO GET SHIPPING BACK ON TRACK
+Purchase History
 
-Change session shipping info items to have both the delivery days, the delivery date, the service name as it comes from easypost and the service name that was converted to a human readable form. 
+Add shipping service raw name and the payment email (I mean, I can get that from the api, but I think I should just save it)
 
-Change javascript so that it takes the delivery date and just puts where it goes, no error checking or formatting with js. If a delivery date can't be found server side, it will supply an N/A to put there instead. 
-
-Add delivery date to the things to save in the purchase history
-As well as the time of purchase. 
-Make sure it is added while using the postgres db. 
-
-If N/A is not desireable, it can be replaced later, or a tooltip can be added to it. 
+Change javascript so that it takes the delivery date and just puts where it goes, no error checking or formatting with js. If a delivery date can't be found server side, it will supply an N/A to put there instead. If N/A is not desireable, it can be replaced later, or a tooltip can be added to it. 
 
 
 
-async being set to false was starting to be unacceptable. I changed it to true, but now the address click for the default address is not getting clicked. I need to figure out a way to get around this without setting async false. 
+Mobile Specific
+Flash message on mobile, Change css so that flash message hugs right side of screen on mobile. Also, try setting max width equal to the screen viewport.
 
-Also add loading things and what not. 
+Swipe to navigate carousel isn't working. 
+
+Make sure that other javascript is working on mobile (placeholder text; for blanking, etc)
 
 
-Add a redirect to the sign up button that auto scrolls to the account pane. 
 
-change flash message from profile updated after sign up
+Reset Password
+This function logs you in? Why? the user can then click away and not reset their password
 
-hide sign up pane after signup - use session variable
 
-Ajax isn't updating the total cost after a different address is chosen. like wtf man.
+
+
+
+
+
+
+
+<!-- Another set of buttons to put at bottom of page -->
+<div class="container-fluid style1">
+	<div class='container'>
+
+		<div class="row checkout-row">
+			<div class="col-md-offset-2 col-md-8 checkout-summary-payment-button-line checkout-summary-payment-button-line-stripe">
+				<form enctype="multipart/form-data" action="{{=URL('pay_stripe')}}" method="post">
+				  {{ import os }}
+				  <script
+				    src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+				    data-key="{{=os.environ['STRIPE_PUBLISHABLE']}}"
+				    data-amount="{{ =int(session.summary_information['information_LOD'][0]['total_cost_USD']*100) }}"
+				    data-name="ThreeMusesGlass"
+				    data-description="Purchase Details from ThreeMusesGlass"
+				    data-bitcoin="true"
+				    data-label="Check out with Stripe"
+				    data-panel-label="Pay"
+				    data-zip-code='true'
+				    data-image="http://images.clipartpanda.com/smiley-face-png-1407-smiley-face.png">
+				  </script>
+				</form>
+			</div>
+		</div>
+
+		<div class="row checkout-row">
+			<div class="col-md-offset-2 col-md-8 checkout-summary-payment-button-line checkout-summary-paypal-button-line">
+				<a class="checkout-view-payment-btn checkout-view-paypal-btn" href="{{=payment_information['information_LOD'][0]['paypal_approval_url']}}" target="_blank">
+					<div>
+						<img src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-large.png" alt="Check out with PayPal" />
+					</div>
+				</a>
+			</div>
+		</div>
+
+	</div> <!-- close container -->
+</div> <!-- close fluid container -->

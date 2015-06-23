@@ -215,20 +215,7 @@ Bahama Blue  #006699
 Pacific Blue  #0099CC
 */
 
-/* View Purchase History Styles */
 
-body#view_purchase_history{
-	background-color: #8C489F;
-}
-
-body#view_purchase_history .web2py_table{
-	background-color:#F1F0FF;
-}
-
-body#view_purchase_history thead{
-	background-color:#0099CC;
-	color:black;
-}
 
 
 
