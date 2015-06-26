@@ -1,0 +1,27 @@
+{{('message' in globals())}}
+{{extend 'layout.html'}}
+
+<div id="main" class="wrapper style4">
+
+	<div id='content' class='container'>
+
+		Thank you for shopping at 3MusesGlass!
+		<br/>
+		Your card has been successfully charged for {{=total_cost_USD}}.
+		<br/>
+		You should recieve a confirmation email shortly at {{=muses_email_address}}
+		<br/>
+		Please allow one day for processing. If you have any questions about your order, email James@3musesglass.com
+		<br/>
+		Your order confirmation number is {{=charge['id']}}
+		<br/>
+		Below are the details of your order:
+		<br/>
+
+		{{=purchase_history_dict}}
+
+		{{=purchase_history_products_LOD}}
+
+	</div>
+
+</div>

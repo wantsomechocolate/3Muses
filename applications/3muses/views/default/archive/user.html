@@ -1,0 +1,76 @@
+{{extend 'layout.html'}}
+
+<div class="container-fluid style1 {{=request.args(0)}}-container-fluid">
+
+	<div class='container'>
+
+		<h2 class="align-hcenter">{{=T( request.args(0).replace('_',' ').capitalize() )}}</h2>
+
+
+
+		<div class="row {{=request.args(0)}}-row">
+
+			<div class="col-md-offset-4 col-md-4">
+
+				<div id="web2py_user_form" class="{{=request.args(0)}}">
+
+					{{
+					if request.args(0)=='login':
+					    if not 'register' in auth.settings.actions_disabled:
+					        form.add_button(T('Register'),URL(args='register', vars={'_next': request.vars._next} if request.vars._next else None),_class='btn btn-primary pull-left user-view-button-width-50-percent')
+					    pass
+					    if not 'request_reset_password' in auth.settings.actions_disabled:
+					        form.add_button(T('Lost Password'),URL(args='request_reset_password'),_class='btn btn-danger pull-right user-view-button-width-50-percent')
+					    pass
+
+					pass
+
+					=form
+					
+					}}
+
+					{{if response.flash == auth.messages.invalid_login:}}
+					<div class="login-error-message">
+					Login Attempt Failed!
+					</div>
+					{{ pass }}
+
+				</div>
+
+				{{if request.args(0)=='profile':}}
+				    
+				    {{ =DIV(A("View Purchase History",_href=URL('view_purchase_history'), _class="btn-default"),_class="profile-view-purchase-history") }}
+
+				{{pass}}
+
+
+				<br>
+
+				<div>
+				{{if request.args(0)=='profile':}}
+
+				    {{ =auth.change_password(next=URL('user', 'profile')) }}
+
+				{{pass}}
+				</div>
+
+				
+
+			</div>
+
+		</div>
+
+	</div>
+	
+</div>
+
+
+<script language="javascript"><!--
+jQuery("#web2py_user_form input:visible:enabled:first").focus();
+{{if request.args(0)=='register':}}
+    web2py_validate_entropy(jQuery('#auth_user_password'),100);
+{{elif request.args(0)=='change_password':}}
+    web2py_validate_entropy(jQuery('#no_table_new_password'),100);
+{{pass}}
+//--></script>
+

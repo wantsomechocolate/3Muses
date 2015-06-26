@@ -76,10 +76,15 @@ else:
 
 ## The postal service types to exclude in offerings. 
 
+## exploring request
+# for item in request:
+#     print "----------------------------"
+#     print item
+#     print request[item]
+#     print "----------------------------"
 
-
-
-request.requires_https()
+if request.env.http_host[:9]!='localhost':
+    request.requires_https()
 
 
 
@@ -1338,8 +1343,6 @@ def pay_stripe():
             description="Purchase from ThreeMusesGlass",
             )
 
-        print charge
-
         # charge=json.loads("""{
         #       "amount": 4204, 
         #       "amount_refunded": 0, 
@@ -1438,6 +1441,7 @@ def pay_stripe():
             shipping_data=shipping_info,
             payment_service='stripe',
             payment_data=charge,
+            payment_email=stripe_email,
             payment_invoice_number=session.payment_information['information_LOD'][0]['invoice_number'],
             summary_data=session.summary_information,
             )
@@ -3945,25 +3949,16 @@ def paypal_confirmation():
 
 
             purchase_history_dict=create_purchase_history_dict(
-
                 ## This is probably really dangerous
                 session_data=response,
-
                 user_data=user_data,
-
                 address_data=address_data,
-
-                ## Consider putting shipping response in session and passing them here?
                 shipping_data=shipping_info,
-                
                 payment_service='paypal',
-
                 payment_data=payment,
-
+                payment_email=email_address,
                 payment_invoice_number=session.payment_information['information_LOD'][0]['invoice_number'],
-
                 summary_data=session.summary_information,
-
                 )
 
             ## place data in the database. 

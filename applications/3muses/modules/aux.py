@@ -280,6 +280,7 @@ def create_purchase_history_dict(
     shipping_data,
     payment_service,
     payment_data,
+    payment_email,
     payment_invoice_number,
     summary_data,
     ):
@@ -300,6 +301,14 @@ def create_purchase_history_dict(
     for rate in rates:
         if rate['id']==default_rate:
             rate_info=rate
+
+
+    # if payment_service=='stripe':
+    #     do this
+    # elif payment_service=='paypal':
+    #     payment_email_address=payment_data['payer']['payer_info']['email']
+    # else:
+    #     payment_email_address="method@not.supported"
 
 
     purchase_history_data_dict=dict(
@@ -335,6 +344,7 @@ def create_purchase_history_dict(
         payment_service=payment_service,
         payment_confirmation_id=payment_data.id,
         payment_invoice_number=payment_invoice_number,
+        payment_email_address=payment_email,
 
         cart_base_cost=summary_data['information_LOD'][0]['cart_cost_USD'],
         cart_shipping_cost=summary_data['information_LOD'][0]['shipping_cost_USD'],

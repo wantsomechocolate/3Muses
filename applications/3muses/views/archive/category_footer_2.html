@@ -1,0 +1,47 @@
+
+{{if len(category_rows)==0:}}
+
+{{else:}}
+
+
+	<div class="container-fliud style1">
+		<div class="container">
+			<div class="row product-view-row">
+
+	{{for j in range(len(category_rows)):}}
+
+		{{if sqlite_tf:}}
+			{{srcattr=URL('download',category_rows[j].s3_url)}}
+		{{else:}}
+			{{srcattr='https://s3.amazonaws.com/threemusesglass/site_images/'+category_rows[j].s3_url}}
+		{{pass}}
+
+			<div class = "col-md-4 category-footer-image-container">
+
+				<div class = 'category-header'>{{=category_rows[j].category_name}}</div>
+
+			  {{ onErrorAttr = "this.onerror=null;this.src='"+URL('static','img/no_category_img.png')+"'" }}
+
+				<a href="{{ =URL('display', args=[category_rows[j].category_name.replace(' ','_')]) }}">
+
+					<div class="frame slider-size">
+
+						<img src="{{ =srcattr }}", class="img-responsive", alt="Image not found", onError="{{ =onErrorAttr }}">
+
+						<!-- ocbocb =A( IMG( _src=srcattr, _class="img-responsive", _alt="Category Image Not Found", _onError="this.onerror=null;this.src='"+onErrorAttr+"'" ),_href=URL('display', args=[category_rows[j].category_name.replace(" ","_")])) ccbccb -->
+
+					</div>
+
+				</a>
+
+			</div>
+
+
+	{{pass}}
+
+			</div>
+		</div>
+	</div>
+
+
+{{pass}}

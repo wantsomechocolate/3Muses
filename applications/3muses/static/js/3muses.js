@@ -442,7 +442,18 @@ function centerImageVertically() {
 //Let's get ready to rumble
 $(document).ready(function(){
 
-
+    //Enable swiping...
+    $(".carousel-inner").swipe( {
+        //Generic swipe handler for all directions
+        swipeLeft:function(event, direction, distance, duration, fingerCount) {
+            $(this).parent().carousel('next'); 
+        },
+        swipeRight: function() {
+            $(this).parent().carousel('prev'); 
+        },
+        //Default is 75px, set to 0 for demo so any distance triggers swipe
+        threshold:0;
+    });
 
     // Stuff I want to do on things
 
@@ -474,18 +485,7 @@ $(document).ready(function(){
     // To stop the carousels from sliding, only works on some pages for whatever reason
     $(document).on('mouseleave', '.carousel', function() {$(this).carousel('pause');});
 
-    //Enable swiping...
-    $(".carousel-inner").swipe( {
-        //Generic swipe handler for all directions
-        swipeLeft:function(event, direction, distance, duration, fingerCount) {
-            $(this).parent().carousel('next'); 
-        },
-        swipeRight: function() {
-            $(this).parent().carousel('prev'); 
-        },
-        //Default is 75px, set to 0 for demo so any distance triggers swipe
-        threshold:10
-    });
+
 
 
 
