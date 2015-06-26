@@ -1268,6 +1268,13 @@ def checkout():
 
 
 
+def stripe_custom():
+
+
+
+    
+    return dict()
+
 
 def pay_stripe():
 

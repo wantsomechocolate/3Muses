@@ -439,8 +439,83 @@ function centerImageVertically() {
 // }, update_payment_option );
 
 
+var $form = $('#payment-form');
+
+var handler = StripeCheckout.configure({
+    key: 'pk_test_pDkBiVWtEb6hIErKE13J9Ohr',
+    // image: '/img/documentation/checkout/marketplace.png',
+    // do this when a token is generated
+    token: function(token) {
+
+
+    isTokenCreated = true;
+
+     // pop up with token id and email
+     // alert("Token ID: "+token.id+" Email:"+token.email);
+     // add token and email address to the form
+     $form.append($('<input type="hidden" name="stripeToken" />').val(token.id));
+     $form.append($('<input type="hidden" name="stripeEmail" />').val(token.email));
+     
+     // submit form, uncomment to make this happen
+     $form.get(0).submit();
+    },
+    // do this when the window is opened
+    opened:function() {
+        // alert("You opened the checkout window");
+    },
+    // do this when the window is closed
+    closed: function() {
+
+         // alert("You closed the checkout window");
+
+        // set timeout ensures that token can fire first on mobile
+         setTimeout(function() {  
+       
+         if(isTokenCreated) {
+           // alert("Checkout completed successfully!");
+           isTokenCreated = false; // reset so you can checkout again?
+           $('#please-wait-stripe-btn').click();
+         } else {
+           // alert("Didn't finish Checkout!");
+           // $('#please-wait-stripe-btn').click();                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+         }
+         },100);
+
+
+      }
+  });                                                                                                                                          
+
+
+
 //Let's get ready to rumble
 $(document).ready(function(){
+
+
+
+  $('#customButton').on('click', function(e) {
+    // Open Checkout with further options
+    isTokenCreated=false;
+    handler.open({
+      name: '3MusesGlass',
+      description: '2 widgets',
+      zipCode: true,
+      amount: 2000,
+      // image:"http://images.clipartpanda.com/smiley-face-png-1407-smiley-face.png",
+    });
+    e.preventDefault();
+  });
+
+    // 
+ //Close Checkout on page navigation
+  $(window).on('popstate', function() {
+    handler.close();
+  });
+
+
+
+
+
+
 
     //Enable swiping...
     $(".carousel-inner").swipe( {
@@ -452,7 +527,7 @@ $(document).ready(function(){
             $(this).parent().carousel('prev'); 
         },
         //Default is 75px, set to 0 for demo so any distance triggers swipe
-        threshold:0;
+        threshold:0
     });
 
     // Stuff I want to do on things
