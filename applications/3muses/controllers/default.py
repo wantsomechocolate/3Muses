@@ -1278,310 +1278,335 @@ def stripe_custom():
 
 def pay_stripe():
 
-    # /pay_stripe?stripeToken=tok_16GUlyBJewwJxtz76FQUa91R&stripeEmail=wantsomechocolate@gmail.com
+    ## This is used as the action to an html form. If it it does not either redirect or return a well formatted http response
+    ## the user just sees "server error"
 
-    ### This function is for paying with stripe only
-
-    ## The purpose of this function is to populate the database table purchase history with all 
-    ## of the info about the purchase and send an email using postmark. 
-    ## Presenting the confirmation screen is done later using the database
-    import json
-    from aux import create_purchase_history_dict
-    from aux import generate_confirmation_email_receipt_context
-    from aux import retrieve_cart_contents
-
-    import stripe
-
-    stripe_keys = {
-        'secret_key': os.environ['STRIPE_SECRET'],
-        'publishable_key': os.environ['STRIPE_PUBLISHABLE']
-    }
-
-    stripe.api_key = stripe_keys['secret_key']
-
-
-
+    ## So I'm wrapping the whole thing in a try block
     # try:
+    if True:
 
-    ## Get customer_id from stripe data in db. They should have one, if they don't at this point
-    ## something went wrong.
+        # /pay_stripe?stripeToken=tok_16GUlyBJewwJxtz76FQUa91R&stripeEmail=wantsomechocolate@gmail.com
 
-    ## Not True anymore
-    # customer_id=db(db.stripe_customers.muses_id==auth.user_id).select().first().stripe_id
+        ### This function is for paying with stripe only
 
-    ## From Session ##
-    total_cost_USD=session.summary_information['information_LOD'][0]['total_cost_USD']
+        ## The purpose of this function is to populate the database table purchase history with all 
+        ## of the info about the purchase and send an email using postmark. 
+        ## Presenting the confirmation screen is done later using the database
+        import json
+        from aux import create_purchase_history_dict
+        from aux import generate_confirmation_email_receipt_context
+        from aux import retrieve_cart_contents
 
+        import stripe
 
-    ## To try and charge the card with the stripe id (defualt card should already be set within stripe)
-    ## Otherwise something else went wrong
-    ## TODO: Add description back in?
-    ## TODO: What if the charge fails or the user cancels?
+        stripe_keys = {
+            'secret_key': os.environ['STRIPE_SECRET'],
+            'publishable_key': os.environ['STRIPE_PUBLISHABLE']
+        }
 
-    # charge=stripe.Charge.create(
-    #     amount=int(float(total_cost_USD)*100),
-    #     currency='usd',
-    #     customer=customer_id,
-    #     #description='test purchase',
-    # )
-
-    # Get the credit card details submitted by the form
+        stripe.api_key = stripe_keys['secret_key']
 
 
-    # Create the charge on Stripe's servers - this will charge the user's card
-    try:
 
-        token = request.vars['stripeToken']
+        # try:
 
-        print token
+        ## Get customer_id from stripe data in db. They should have one, if they don't at this point
+        ## something went wrong.
 
-        stripe_email=request.vars['stripeEmail']
-        # print "The token:"
-        # print token
-        # print "The email:"
-        # print stripe_email
+        ## Not True anymore
+        # customer_id=db(db.stripe_customers.muses_id==auth.user_id).select().first().stripe_id
 
-        print "BC - Before charge"
-
-        charge = stripe.Charge.create(
-            amount=int(float(total_cost_USD)*100), # amount in cents, again
-            currency="usd",
-            source=token,
-            description="Purchase from ThreeMusesGlass",
-            )
-
-        # charge=json.loads("""{
-        #       "amount": 4204, 
-        #       "amount_refunded": 0, 
-        #       "application_fee": null, 
-        #       "balance_transaction": "txn_16GUrGBJewwJxtz7afwqINqy", 
-        #       "captured": true, 
-        #       "created": 1434979266, 
-        #       "currency": "usd", 
-        #       "customer": null, 
-        #       "description": "Purchase from ThreeMusesGlass", 
-        #       "destination": null, 
-        #       "dispute": null, 
-        #       "failure_code": null, 
-        #       "failure_message": null, 
-        #       "fraud_details": {}, 
-        #       "id": "ch_16GUrGBJewwJxtz76RdXJp6b", 
-        #       "invoice": null, 
-        #       "livemode": false, 
-        #       "metadata": {}, 
-        #       "object": "charge", 
-        #       "paid": true, 
-        #       "receipt_email": null, 
-        #       "receipt_number": null, 
-        #       "refunded": false, 
-        #       "refunds": {
-        #         "data": [], 
-        #         "has_more": false, 
-        #         "object": "list", 
-        #         "total_count": 0, 
-        #         "url": "/v1/charges/ch_16GUrGBJewwJxtz76RdXJp6b/refunds"
-        #       }, 
-        #       "shipping": null, 
-        #       "source": {
-        #         "address_city": null, 
-        #         "address_country": null, 
-        #         "address_line1": null, 
-        #         "address_line1_check": null, 
-        #         "address_line2": null, 
-        #         "address_state": null, 
-        #         "address_zip": "10018", 
-        #         "address_zip_check": "pass", 
-        #         "brand": "Visa", 
-        #         "country": "US", 
-        #         "customer": null, 
-        #         "cvc_check": null, 
-        #         "dynamic_last4": null, 
-        #         "exp_month": 12, 
-        #         "exp_year": 2020, 
-        #         "fingerprint": "kCCBgxubKDsM9l5g", 
-        #         "funding": "credit", 
-        #         "id": "card_16GUlyBJewwJxtz74A4RJ1yF", 
-        #         "last4": "4242", 
-        #         "metadata": {}, 
-        #         "name": "wantsomechocolate@gmail.com", 
-        #         "object": "card"
-        #       }, 
-        #       "statement_descriptor": null, 
-        #       "status": "succeeded"
-        #     }""")
+        ## From Session ##
+        total_cost_USD=session.summary_information['information_LOD'][0]['total_cost_USD']
 
 
-        print charge
+        ## To try and charge the card with the stripe id (defualt card should already be set within stripe)
+        ## Otherwise something else went wrong
+        ## TODO: Add description back in?
+        ## TODO: What if the charge fails or the user cancels?
+
+        # charge=stripe.Charge.create(
+        #     amount=int(float(total_cost_USD)*100),
+        #     currency='usd',
+        #     customer=customer_id,
+        #     #description='test purchase',
+        # )
+
+        # Get the credit card details submitted by the form
 
 
-        ##################################################
-        ################------USER INFO-------############
-        ##################################################
+        # Create the charge on Stripe's servers - this will charge the user's card
+        try:
 
-        ## Get the information from the db about the user
-        user_data=db(db.auth_user.id==auth.user_id).select().first()
+            token = request.vars['stripeToken']
 
+            print token
+
+            stripe_email=request.vars['stripeEmail']
+            # print "The token:"
+            # print token
+            print "The email:"
+            print stripe_email
+
+            
+            print "BC - Before charge"
+
+            charge = stripe.Charge.create(
+                amount=int(float(total_cost_USD)*100), # amount in cents, again
+                currency="usd",
+                source=token,
+                description="Purchase from ThreeMusesGlass",
+                )
+
+            # charge=json.loads("""{
+            #       "amount": 4204, 
+            #       "amount_refunded": 0, 
+            #       "application_fee": null, 
+            #       "balance_transaction": "txn_16GUrGBJewwJxtz7afwqINqy", 
+            #       "captured": true, 
+            #       "created": 1434979266, 
+            #       "currency": "usd", 
+            #       "customer": null, 
+            #       "description": "Purchase from ThreeMusesGlass", 
+            #       "destination": null, 
+            #       "dispute": null, 
+            #       "failure_code": null, 
+            #       "failure_message": null, 
+            #       "fraud_details": {}, 
+            #       "id": "ch_16GUrGBJewwJxtz76RdXJp6b", 
+            #       "invoice": null, 
+            #       "livemode": false, 
+            #       "metadata": {}, 
+            #       "object": "charge", 
+            #       "paid": true, 
+            #       "receipt_email": null, 
+            #       "receipt_number": null, 
+            #       "refunded": false, 
+            #       "refunds": {
+            #         "data": [], 
+            #         "has_more": false, 
+            #         "object": "list", 
+            #         "total_count": 0, 
+            #         "url": "/v1/charges/ch_16GUrGBJewwJxtz76RdXJp6b/refunds"
+            #       }, 
+            #       "shipping": null, 
+            #       "source": {
+            #         "address_city": null, 
+            #         "address_country": null, 
+            #         "address_line1": null, 
+            #         "address_line1_check": null, 
+            #         "address_line2": null, 
+            #         "address_state": null, 
+            #         "address_zip": "10018", 
+            #         "address_zip_check": "pass", 
+            #         "brand": "Visa", 
+            #         "country": "US", 
+            #         "customer": null, 
+            #         "cvc_check": null, 
+            #         "dynamic_last4": null, 
+            #         "exp_month": 12, 
+            #         "exp_year": 2020, 
+            #         "fingerprint": "kCCBgxubKDsM9l5g", 
+            #         "funding": "credit", 
+            #         "id": "card_16GUlyBJewwJxtz74A4RJ1yF", 
+            #         "last4": "4242", 
+            #         "metadata": {}, 
+            #         "name": "wantsomechocolate@gmail.com", 
+            #         "object": "card"
+            #       }, 
+            #       "statement_descriptor": null, 
+            #       "status": "succeeded"
+            #     }""")
 
     
-        ##################################################
-        ################-----ADDRESS AND------############
-        ################----SHIPPING INFO-----############
-        ##################################################
-        default_address=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select().first()
+            print 'charge'
+            print charge
+            print 'charge'
+            print charge['id']
 
 
+            ##################################################
+            ################------USER INFO-------############
+            ##################################################
 
-        shipping_rate_info=session.shipping_rates[default_address.id]
-        for item in shipping_rate_info:
-            if item['rate_id']==default_address.easypost_default_shipping_rate_id:
-                shipping_info=item
-
-
-
-        print "Creating the purchase history dict"
-
-        purchase_history_dict=create_purchase_history_dict(
-            ## This is probably really dangerous
-            session_data=response,
-            user_data=user_data,
-            address_data=default_address,
-            shipping_data=shipping_info,
-            payment_service='stripe',
-            payment_data=charge,
-            payment_email=stripe_email,
-            payment_invoice_number=session.payment_information['information_LOD'][0]['invoice_number'],
-            summary_data=session.summary_information,
-            )
+            ## Get the information from the db about the user
+            user_data=db(db.auth_user.id==auth.user_id).select().first()
 
 
-        print "Putting purchase history info in the db"
-
-        #################################################
-        ########----PUT PURCHASE INFO IN THE DB------####
-        #################################################
-
-        ## place data in the database. 
-        purchase_history_data_id=db.purchase_history_data.bulk_insert([purchase_history_dict])[0]
-
-        ## Add id of most recent purchase to the session for viewing purposes.
-        session.session_purchase_history_data_id=purchase_history_data_id
-
-
-        print "Preparing purchase history product info"
-
-        #################################################
-        ########----PUT PRODUCT INFO IN THE DB-------####
-        #################################################
-
-        ## For every item in the cart, insert a record with the id of the purchase history, the product id and the qty.
-        purchase_history_products_LOD=[]
-
-        cart=retrieve_cart_contents(auth,db)
         
-        ## For item in cart, add id from record above with product and qty and all info about the product,
-        ## then deal with inventory by removing the item from the cart.
-        for row in cart:
-            product_record=db(db.product.id==row.product_id).select().first()
-            current_qty=int(product_record.qty_in_stock)
-            qty_purchased=int(row.product_qty)
-            new_qty=current_qty-qty_purchased
+            ##################################################
+            ################-----ADDRESS AND------############
+            ################----SHIPPING INFO-----############
+            ##################################################
+            default_address=db((db.addresses.user_id==auth.user_id)&(db.addresses.default_address==True)).select().first()
 
-            ## Remove item from the cart
-            db(db.muses_cart.product_id==product_record.id).delete()
 
-            ## Prepare dict for bulk insert
-            purchase_history_product_dict=dict(
-                purchase_history_data_id=purchase_history_data_id,
-                product_id=product_record.id,
-                product_qty=int(row.product_qty),
-                category_name=product_record.category_name,
-                product_name=product_record.product_name,
-                description=product_record.description,
-                cost_USD=product_record.cost_USD,
-                qty_in_stock=new_qty,
-                is_active=product_record.is_active,
-                display_order=product_record.display_order,
-                shipping_description=product_record.shipping_description,
-                weight_oz=product_record.weight_oz,
+
+            shipping_rate_info=session.shipping_rates[default_address.id]
+            for item in shipping_rate_info:
+                if item['rate_id']==default_address.easypost_default_shipping_rate_id:
+                    shipping_info=item
+
+
+            # payment_data_uniform=dict(
+            #     payment_email=stripe_email,
+
+            #     )
+
+
+            print "Creating the purchase history dict"
+
+            purchase_history_dict=create_purchase_history_dict(
+                ## This is probably really dangerous
+                session_data=response,
+                user_data=user_data,
+                address_data=default_address,
+                shipping_data=shipping_info,
+                payment_service='stripe',
+                payment_data=charge,
+                payment_email=stripe_email,
+                payment_invoice_number=session.payment_information['information_LOD'][0]['invoice_number'],
+                payment_id=charge['id'],
+                summary_data=session.summary_information,
+                )
+
+
+            print "Putting purchase history info in the db"
+
+            #################################################
+            ########----PUT PURCHASE INFO IN THE DB------####
+            #################################################
+
+            ## place data in the database. 
+            purchase_history_data_id=db.purchase_history_data.bulk_insert([purchase_history_dict])[0]
+
+            ## Add id of most recent purchase to the session for viewing purposes.
+            session.session_purchase_history_data_id=purchase_history_data_id
+
+
+            print "Preparing purchase history product info"
+
+            #################################################
+            ########----PUT PRODUCT INFO IN THE DB-------####
+            #################################################
+
+            ## For every item in the cart, insert a record with the id of the purchase history, the product id and the qty.
+            purchase_history_products_LOD=[]
+
+            cart=retrieve_cart_contents(auth,db)
+            
+            ## For item in cart, add id from record above with product and qty and all info about the product,
+            ## then deal with inventory by removing the item from the cart.
+            for row in cart:
+                product_record=db(db.product.id==row.product_id).select().first()
+                current_qty=int(product_record.qty_in_stock)
+                qty_purchased=int(row.product_qty)
+                new_qty=current_qty-qty_purchased
+
+                ## Remove item from the cart
+                db(db.muses_cart.product_id==product_record.id).delete()
+
+                ## Prepare dict for bulk insert
+                purchase_history_product_dict=dict(
+                    purchase_history_data_id=purchase_history_data_id,
+                    product_id=product_record.id,
+                    product_qty=int(row.product_qty),
+                    category_name=product_record.category_name,
+                    product_name=product_record.product_name,
+                    description=product_record.description,
+                    cost_USD=product_record.cost_USD,
+                    qty_in_stock=new_qty,
+                    is_active=product_record.is_active,
+                    display_order=product_record.display_order,
+                    shipping_description=product_record.shipping_description,
+                    weight_oz=product_record.weight_oz,
+                )
+
+                ## Generate a list of dicts to use bulk insert
+                purchase_history_products_LOD.append(purchase_history_product_dict)
+
+                ## If you lowered the qty to 0 or less, make qty 0 and deactivate item
+                if new_qty<=0:
+                    product_record.update(qty_in_stock=0)
+                    product_record.update_record()
+                    product_record.update(is_active=False)
+                    product_record.update_record()
+
+                ## If not, just lower the qty
+                else:
+                    product_record.update(qty_in_stock=new_qty)
+                    product_record.update_record()
+
+
+            print "Putting purchase product info in the DB"
+            ## Actually put everything in the db
+            purchase_history_products_ids=db.purchase_history_products.bulk_insert(purchase_history_products_LOD)
+
+
+            print "Generating receipt context"
+
+            #################################################
+            ########----SENDING THE CONFIRMATION EMAIL---####
+            #################################################
+
+            receipt_context=generate_confirmation_email_receipt_context(
+                muses_email_address=stripe_email, 
+                purchase_history_data_row=db(db.purchase_history_data.id==purchase_history_data_id).select().first(),
+                purchase_history_products_rows=db(db.purchase_history_products.purchase_history_data_id==purchase_history_data_id).select(),
             )
 
-            ## Generate a list of dicts to use bulk insert
-            purchase_history_products_LOD.append(purchase_history_product_dict)
-
-            ## If you lowered the qty to 0 or less, make qty 0 and deactivate item
-            if new_qty<=0:
-                product_record.update(qty_in_stock=0)
-                product_record.update_record()
-                product_record.update(is_active=False)
-                product_record.update_record()
-
-            ## If not, just lower the qty
-            else:
-                product_record.update(qty_in_stock=new_qty)
-                product_record.update_record()
-
-
-        print "Putting purchase product info in the DB"
-        ## Actually put everything in the db
-        purchase_history_products_ids=db.purchase_history_products.bulk_insert(purchase_history_products_LOD)
-
-
-        print "Generating receipt context"
-
-        #################################################
-        ########----SENDING THE CONFIRMATION EMAIL---####
-        #################################################
-
-        receipt_context=generate_confirmation_email_receipt_context(
-            muses_email_address=stripe_email, 
-            purchase_history_data_row=db(db.purchase_history_data.id==purchase_history_data_id).select().first(),
-            purchase_history_products_rows=db(db.purchase_history_products.purchase_history_data_id==purchase_history_data_id).select(),
-        )
-
-        receipt_message_html = response.render('default/receipt.html', receipt_context)
+            receipt_message_html = response.render('default/receipt.html', receipt_context)
 
 
 
-        # email_address_query=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email).first()
-        # email_address=list(email_address_query.as_dict().values())[0]
+            # email_address_query=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email).first()
+            # email_address=list(email_address_query.as_dict().values())[0]
 
-        print "Sending the purchase email"
+            print "Sending the purchase email"
 
-        from postmark import PMMail
-        message = PMMail(api_key=POSTMARK_API_KEY,
-            subject="Order Confirmation",
-            sender="confirmation@threemuses.glass",
-            # to=user_data.email,
-            # to=email_address,
-            to=stripe_email,
-            #html_body=final_div_html,
-            html_body=receipt_message_html,
-            tag="confirmation")
-        message.send()
+            print 'stripe email'
+            print stripe_email
 
-
-        #################################################
-        ########----SEND TO CONFIMATION SCREEN-------####
-        #################################################
-        redirect(URL('confirmation', args=(purchase_history_data_id)))
+            from postmark import PMMail
+            message = PMMail(api_key=POSTMARK_API_KEY,
+                subject="Order Confirmation",
+                sender="confirmation@threemuses.glass",
+                # to=user_data.email,
+                # to=email_address,
+                to=stripe_email,
+                #html_body=final_div_html,
+                html_body=receipt_message_html,
+                tag="confirmation")
+            message.send()
 
 
+            #################################################
+            ########----SEND TO CONFIMATION SCREEN-------####
+            #################################################
+            redirect(URL('confirmation', args=(purchase_history_data_id)))
 
 
-        ## Add cathers for these errors:
 
-        ## KeyError
+            ## Add catchers for these errors:
 
-    except stripe.error.CardError, e:
-      # The card has been declined
-      ## redirect to checkout, eventually add in the fact that card was declined. 
-      
-      redirect(URL('checkout'))
+            ## KeyError
 
+        except stripe.error.CardError, e:
+            # The card has been declined
+            ## redirect to checkout, eventually add in the fact that card was declined. 
+          
+            #ToDo: Add flash message to redirect
+            redirect(URL('checkout'))
 
     # except Exception, error:
     #     print "An exception was thrown"
     #     print  str(error)
+    #     #ToDo: Add flash message to redirect
+
+    #     response.flash="Something Went Wrong - Contact Us"
+    #     session.flash=response.flash
+
+    #     redirect(URL('default','index'))
 
     # else:
     #     print "Everything looks great!"
@@ -3965,6 +3990,7 @@ def paypal_confirmation():
                 payment_data=payment,
                 payment_email=email_address,
                 payment_invoice_number=session.payment_information['information_LOD'][0]['invoice_number'],
+                payment_id=payment_id,
                 summary_data=session.summary_information,
                 )
 

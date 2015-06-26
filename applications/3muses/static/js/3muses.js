@@ -451,7 +451,7 @@ var handler = StripeCheckout.configure({
     isTokenCreated = true;
 
      // pop up with token id and email
-     // alert("Token ID: "+token.id+" Email:"+token.email);
+     // prompt("Copy to clip board control c enter","?stripeToken="+token.id+"&stripeEmail="+token.email);
      // add token and email address to the form
      $form.append($('<input type="hidden" name="stripeToken" />').val(token.id));
      $form.append($('<input type="hidden" name="stripeEmail" />').val(token.email));
@@ -477,39 +477,44 @@ var handler = StripeCheckout.configure({
            $('#please-wait-stripe-btn').click();
          } else {
            // alert("Didn't finish Checkout!");
-           // $('#please-wait-stripe-btn').click();                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+            $('#please-wait-stripe-btn').click();                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
          }
          },100);
 
-
       }
-  });                                                                                                                                          
-
+  });
 
 
 //Let's get ready to rumble
 $(document).ready(function(){
 
+    $('#customButton').on('click', function(e) {
+        // Open Checkout with further options
+        isTokenCreated=false;
+        handler.open({
 
+            name: 'ThreeMusesGlass',
+            description: 'Purchase Details from ThreeMusesGlass',
+            bitcoin:"true",
+            zipCode: true,
+            amount: 1018,
+            // label:"Check out with Stripe",
+            panelLabel:"Pay",
+            image:"http://images.clipartpanda.com/smiley-face-png-1407-smiley-face.png",
 
-  $('#customButton').on('click', function(e) {
-    // Open Checkout with further options
-    isTokenCreated=false;
-    handler.open({
-      name: '3MusesGlass',
-      description: '2 widgets',
-      zipCode: true,
-      amount: 2000,
-      // image:"http://images.clipartpanda.com/smiley-face-png-1407-smiley-face.png",
-    });
-    e.preventDefault();
-  });
+        });
 
-    // 
- //Close Checkout on page navigation
-  $(window).on('popstate', function() {
-    handler.close();
-  });
+        e.preventDefault();
+
+      });
+
+        // 
+     //Close Checkout on page navigation
+      $(window).on('popstate', function() {
+
+        handler.close();
+
+      });
 
 
 
@@ -559,7 +564,6 @@ $(document).ready(function(){
 
     // To stop the carousels from sliding, only works on some pages for whatever reason
     $(document).on('mouseleave', '.carousel', function() {$(this).carousel('pause');});
-
 
 
 

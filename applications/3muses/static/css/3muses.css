@@ -115,6 +115,27 @@ h2{
 
 
 
+.stripe-button-styles{
+	background: #1275ff;
+	background-image: -webkit-linear-gradient(#7dc5ee,#008cdd 85%,#30a2e4);
+	background-image: -moz-linear-gradient(#7dc5ee,#008cdd 85%,#30a2e4);
+	background-image: -ms-linear-gradient(#7dc5ee,#008cdd 85%,#30a2e4);
+	background-image: -o-linear-gradient(#7dc5ee,#008cdd 85%,#30a2e4);
+	background-image: -webkit-linear-gradient(#7dc5ee,#008cdd 85%,#30a2e4);
+	background-image: -moz-linear-gradient(#7dc5ee,#008cdd 85%,#30a2e4);
+	background-image: -ms-linear-gradient(#7dc5ee,#008cdd 85%,#30a2e4);
+	background-image: -o-linear-gradient(#7dc5ee,#008cdd 85%,#30a2e4);
+	background-image: linear-gradient(#7dc5ee,#008cdd 85%,#30a2e4);
+}
+
+
+
+
+
+
+
+
+
 /* Bootstrap overrides */
 .carousel-caption{
 	color: black;
@@ -838,6 +859,38 @@ body#register{
 
 .checkout-view-paypal-btn{
 
+}
+
+
+.modal-dialog-please-wait{
+	margin-top:5em;
+}
+
+.modal-content-please-wait{
+	background-color: rgba(0, 0, 0, 0.7);
+}
+
+.modal-header-please-wait{
+	border-bottom:none;
+}
+
+.modal-body-header-please-wait{
+  font-size: 24px;
+  /*background-color: rgba(40, 0, 51, 0.77);*/
+  text-align: center;
+  padding-bottom: 10px;
+  padding-top: 10px;
+  font-weight: bolder;
+  text-transform: uppercase;
+  color: rgb(160, 160, 160);
+}
+
+.modal-footer-please-wait{
+	border-top:none;
+}
+
+#please-wait-stripe-btn{
+	display:none;
 }
 
 @media screen and (min-width: 992px) {

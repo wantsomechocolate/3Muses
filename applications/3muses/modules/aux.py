@@ -282,6 +282,7 @@ def create_purchase_history_dict(
     payment_data,
     payment_email,
     payment_invoice_number,
+    payment_id,
     summary_data,
     ):
 
@@ -342,7 +343,7 @@ def create_purchase_history_dict(
         easypost_delivery_date=shipping_data['delivery_date'],
 
         payment_service=payment_service,
-        payment_confirmation_id=payment_data.id,
+        payment_confirmation_id=payment_id,
         payment_invoice_number=payment_invoice_number,
         payment_email_address=payment_email,
 
@@ -475,7 +476,15 @@ def generate_confirmation_email_receipt_context(
     if purchase_history_data_row['payment_service']=='stripe':
 
         print "retrieving payment info from stripe"
+
+        print "using:"
+        
+        print purchase_history_data_row['payment_confirmation_id']
+
         payment_information=stripe.Charge.retrieve(purchase_history_data_row['payment_confirmation_id'])
+
+        print 'payment_info_from_stripe'
+        print payment_information
 
         print "checking to see if payment object is card"
         if payment_information['source']['object']=='card':

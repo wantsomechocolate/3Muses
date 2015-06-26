@@ -13,6 +13,7 @@ Footer
 
 Category page
 	Has Judy approval for now. 
+	When there are no more items of a given type, the images in the category footer fucking collapse GODAMMET WHEKJSDKFJALSDKFJA
 
 Display Page
 	Fine for now - consider adding header to category section
@@ -68,7 +69,7 @@ Checkout Flow
 
 When session expires on the confirmation screen a refresh causes an error, because the session variable for the allowable confirmation page is gone. fix?
 
-
+Add a potential error message for each stage of the pay_stripe function.
 
 
 
@@ -144,6 +145,7 @@ Make sure that other javascript is working on mobile (placeholder text; for blan
 Confirmation Email
 
 Needs revamping. Add purchase id, take away the weight info, match color scheme
+
 
 
 
