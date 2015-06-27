@@ -368,18 +368,18 @@ function update_shipping_option(value_one_or_all, value_two){
 
 function adjust_slider_heights(){
 
-    page_name=window.location.pathname.split('/')[1];
+    $('.carousel').each(function() {
+        // alert($( this ).width());
+        var height=$( this ).width()*0.85;
+        $(this).find('.slider-size').css({'height':height+"px"})
 
-    if (page_name=="display"||page_name=='product'){
+    });
 
-        var width=$('.carousel').width()*0.85;
-        $('.slider-size').css({'height':width+"px"})
-
-    } else if (page_name=='categories'){
-        var width=$('.slider-size').width()*0.9;
-        $('.slider-size').css({'height':width+"px"})
-
-    }
+    $('.category-footer-image-container').each(function(){
+        // alert($( this ).width());
+        var height=$( this ).width()*0.85;
+        $(this).find('.slider-size').css({'height':height+"px"})
+    });
 
 };
 
@@ -397,18 +397,17 @@ function centerImageVertically() {
         container_height=$(this).height(this).parent().parent().height();
 
         // $('#object').width($('#object').parent().width());
-
         // alert(current_img_width);
         // alert(current_img_height);
         // alert(container_width);
         // alert(container_height);
-        // alert("s");
+
         img_ar=current_img_width/current_img_height;
         container_ar=container_width/container_height;
 
         // alert(img_ar);
         // alert(container_ar);
-        // alert("1");
+
         if (img_ar>container_ar){
             // alert("2");
             img_min_width_px=img_ar*container_height;
@@ -432,93 +431,8 @@ function centerImageVertically() {
 
 
 
-
-// $(document).on("click",".cart-view-payment-option",{
-//     value_one:"value one",
-//     value_two:"value two",
-// }, update_payment_option );
-
-
-var $form = $('#payment-form');
-
-var handler = StripeCheckout.configure({
-    key: 'pk_test_pDkBiVWtEb6hIErKE13J9Ohr',
-    // image: '/img/documentation/checkout/marketplace.png',
-    // do this when a token is generated
-    token: function(token) {
-
-
-    isTokenCreated = true;
-
-     // pop up with token id and email
-     // prompt("Copy to clip board control c enter","?stripeToken="+token.id+"&stripeEmail="+token.email);
-     // add token and email address to the form
-     $form.append($('<input type="hidden" name="stripeToken" />').val(token.id));
-     $form.append($('<input type="hidden" name="stripeEmail" />').val(token.email));
-     
-     // submit form, uncomment to make this happen
-     $form.get(0).submit();
-    },
-    // do this when the window is opened
-    opened:function() {
-        // alert("You opened the checkout window");
-    },
-    // do this when the window is closed
-    closed: function() {
-
-         // alert("You closed the checkout window");
-
-        // set timeout ensures that token can fire first on mobile
-         setTimeout(function() {  
-       
-         if(isTokenCreated) {
-           // alert("Checkout completed successfully!");
-           isTokenCreated = false; // reset so you can checkout again?
-           $('#please-wait-stripe-btn').click();
-         } else {
-           // alert("Didn't finish Checkout!");
-            $('#please-wait-stripe-btn').click();                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-         }
-         },100);
-
-      }
-  });
-
-
 //Let's get ready to rumble
 $(document).ready(function(){
-
-    $('#customButton').on('click', function(e) {
-        // Open Checkout with further options
-        isTokenCreated=false;
-        handler.open({
-
-            name: 'ThreeMusesGlass',
-            description: 'Purchase Details from ThreeMusesGlass',
-            bitcoin:"true",
-            zipCode: true,
-            amount: 1018,
-            // label:"Check out with Stripe",
-            panelLabel:"Pay",
-            image:"http://images.clipartpanda.com/smiley-face-png-1407-smiley-face.png",
-
-        });
-
-        e.preventDefault();
-
-      });
-
-        // 
-     //Close Checkout on page navigation
-      $(window).on('popstate', function() {
-
-        handler.close();
-
-      });
-
-
-
-
 
 
 

@@ -1,11 +1,6 @@
 {{extend 'layout.html'}}
 
 
-
-
-
-
-
 <!-- An order summary so customer can see while they pay -->
 <div class="container-fluid style2" id="order-summary">
 	<div class='container'>
@@ -237,29 +232,122 @@
 
 			<div class="col-md-offset-2 col-md-8 checkout-summary-payment-button-line checkout-summary-payment-button-line-stripe-1">
 
-				<!-- 				
-				<form enctype="multipart/form-data" action="{{=URL('pay_stripe')}}" method="post">
-				  {{ import os }}
-				  <script
-				    src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-				    data-key="{{=os.environ['STRIPE_PUBLISHABLE']}}"
-				    data-amount="{{ =int(session.summary_information['information_LOD'][0]['total_cost_USD']*100) }}"
-				    data-name="ThreeMusesGlass"
-				    data-description="Purchase Details from ThreeMusesGlass"
-				    data-bitcoin="true"
-				    data-label="Check out with Stripe"
-				    data-panel-label="Pay"
-				    data-zip-code='true'
-				    data-image="http://images.clipartpanda.com/smiley-face-png-1407-smiley-face.png">
-				  </script>
-				</form> 
-				-->
+
+
+
+			<!-- Custom stripe integration - trying to make this pure javascript so I don't have to include jq libraries before page load -->
+
+				<!-- 
+		        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+		        
+		        <script>window.jQuery || document.write('<script src=static/js/vendor/jquery-1.11.2.min.js><\/script>')</script>
+ 				-->
+
+				<script src="https://checkout.stripe.com/checkout.js"></script>
 
 				<form enctype="multipart/form-data" action="{{=URL('pay_stripe')}}" method="post" id="payment-form">
 				    <button id="customButton" class="stripe-button-el stripe-button-styles">Checkout With Stripe</button>
 				</form>
 
-				
+				<script type="text/javascript">
+
+					// var $form = $('#payment-form');
+					var $form = document.getElementById('payment-form');
+
+					var handler = StripeCheckout.configure({
+
+						{{ import os }}
+
+					    key: "{{ =os.environ['STRIPE_PUBLISHABLE'] }}",
+
+					    // do this when a token is generated
+					    token: function(token) {
+
+							isTokenCreated = true;
+
+							// add token and email address to the form
+
+							// $form.append($('<input type="hidden" name="stripeToken" />').val(token.id));
+							var input_token = document.createElement("input");
+							input_token.setAttribute("type", "hidden");
+							input_token.setAttribute("name", "stripeToken");
+							input_token.setAttribute("value", token.id);
+							$form.appendChild(input_token);
+
+							// $form.append($('<input type="hidden" name="stripeEmail" />').val(token.email));
+							var input_email = document.createElement("input");
+							input_email.setAttribute("type", "hidden");
+							input_email.setAttribute("name", "stripeEmail");
+							input_email.setAttribute("value", token.email);
+							$form.appendChild(input_email);
+
+							// $form.get(0).submit();
+							$form.submit();
+					    },
+
+					    // do this when the window is opened
+					    opened:function() {
+					        // alert("You opened the checkout window");
+					    },
+					    // do this when the window is closed
+					    closed: function() {
+							// alert("You closed the checkout window");
+
+							// set timeout ensures that token can fire first on mobile
+							setTimeout(function() {  
+
+								if(isTokenCreated) {
+
+									// alert("Checkout completed successfully!");
+									isTokenCreated = false; // reset so you can checkout again?
+
+									// $('#please-wait-stripe-btn').click();
+									document.getElementById('please-wait-stripe-btn').click();
+
+								} else {
+								// alert("Didn't finish Checkout!");
+								// $('#please-wait-stripe-btn').click();
+								}
+							},100);
+
+						}
+					});
+
+
+
+					document.getElementById("customButton").onclick = function(e) {
+
+					// $('#customButton').on('click', function(e) {
+
+						// Open Checkout with further options
+						isTokenCreated=false;
+						handler.open({
+						    name: 'ThreeMusesGlass',
+						    description: 'Purchase Details from ThreeMusesGlass',
+						    bitcoin:"true",
+						    zipCode: true,
+						    amount: {{ =int(session.summary_information['information_LOD'][0]['total_cost_USD']*100) }},
+						    panelLabel:"Pay",
+						    image:"http://images.clipartpanda.com/smiley-face-png-1407-smiley-face.png",
+						});
+						e.preventDefault();
+					// });
+					};
+
+					// $(window).on('popstate', function() {
+					// 	handler.close();
+					// });
+
+					window.onpopstate = function() {
+						handler.close();
+					}
+
+				</script>
+
+ 			<!-- End Strip custom integration -->
+
+
+
 			</div>
 
 		</div>

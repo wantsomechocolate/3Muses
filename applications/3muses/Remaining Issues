@@ -24,13 +24,11 @@ Product Page
 Cart Page
 	Proceeding to Checkout
 
-Checkout page
-	Add modal that activates after succesful form submission when paying with stripe - this requires custom stripe integration. 
+Checkout page 
 	Make sure that Bitcoin works in test mode. Have to check what goes in DB, confirmation email, and view_purchase_history
 
 	Bitcoin payment method is not working.
 
-	Consider wrapping entire stripe callback function in a try block that catches errors and redirects the user instead of just producing "Server Error"
 
 
 Confirmation page
@@ -48,7 +46,6 @@ Payments
 
 
 
-
 Login Page
 
 
@@ -58,7 +55,7 @@ View Purchase History Page
 
 
 Profile Page
-Test ability to edit profile info for users that register normally and users that signed up after purchase. 
+	Test ability to edit profile info for users that register normally and users that signed up after purchase. 
 
 
 
@@ -191,3 +188,59 @@ Needs revamping. Add purchase id, take away the weight info, match color scheme
 
 	</div> <!-- close container -->
 </div> <!-- close fluid container -->
+
+
+easy way
+				<!-- 				
+				<form enctype="multipart/form-data" action="{{=URL('pay_stripe')}}" method="post">
+				  {{ import os }}
+				  <script
+				    src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+				    data-key="{{=os.environ['STRIPE_PUBLISHABLE']}}"
+				    data-amount="{{ =int(session.summary_information['information_LOD'][0]['total_cost_USD']*100) }}"
+				    data-name="ThreeMusesGlass"
+				    data-description="Purchase Details from ThreeMusesGlass"
+				    data-bitcoin="true"
+				    data-label="Check out with Stripe"
+				    data-panel-label="Pay"
+				    data-zip-code='true'
+				    data-image="http://images.clipartpanda.com/smiley-face-png-1407-smiley-face.png">
+				  </script>
+				</form> 
+				-->
+
+harder way
+
+<!--
+<script src="https://checkout.stripe.com/checkout.js"></script>
+
+<button id="customButton">Purchase</button>
+
+<script type="text/javascript">
+
+  var handler = StripeCheckout.configure({
+    key: 'pk_test_pDkBiVWtEb6hIErKE13J9Ohr',
+    // image: '/img/documentation/checkout/marketplace.png',
+    token: function(token) {
+      // Use the token to create the charge with a server-side script.
+      // You can access the token ID with `token.id`
+    }
+  });
+
+  $('#customButton').on('click', function(e) {
+    // Open Checkout with further options
+    handler.open({
+      name: '3MusesGlass',
+      description: '2 widgets',
+      zipCode: true,
+      amount: 2000
+    });
+    e.preventDefault();
+  });
+
+  // Close Checkout on page navigation
+  $(window).on('popstate', function() {
+    handler.close();
+  });
+</script>
+-->
