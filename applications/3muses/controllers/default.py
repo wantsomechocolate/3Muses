@@ -1000,9 +1000,12 @@ def checkout():
                 #delivery_date=(datetime.today()+timedelta(days=delivery_days)).strftime("%a %b %d")
                 # delivery_date=shipping_info_checkout['delivery_date_text']
 
+                # camelcaseToUnderscore(shipment.rates[i].service)
+
                 shipping_information_LOD.append(dict(
                     carrier=shipping_info_checkout['carrier'],
                     service=rate['service'],
+                    service_display=camelcaseToUnderscore(rate['service']),
                     cost=rate['rate'],
                     delivery_date=shipping_info_checkout['delivery_date_text'],
                     ))
