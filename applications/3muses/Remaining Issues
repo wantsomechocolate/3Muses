@@ -144,6 +144,10 @@ Confirmation Email
 Needs revamping. Add purchase id, take away the weight info, match color scheme
 
 
+Reset Password
+	Consider changing "RESET PASSWORD" to "CREATE PASSWORD" for this scenario
+	The page redirects to login, it should redirect to the profile page. 
+	Change defualt username to New instead of Guest
 
 
 
