@@ -455,9 +455,17 @@ move popover
 
 								<!--<a class="btn btn-sucess" href=" cbcb =URL('checkout') cbcb ">Checkout</a>-->
 
-								<form action="{{=URL('checkout')}}">
+<!-- 								<form action="{{ =URL('checkout', vars=dict(var=None) ) }}">
 								    <input type="submit" value="Proceed to Payment Options" id="cart-to-checkout" class="btn btn-success cart-view-btn" disabled>
-								</form>
+								</form> -->
+
+								<a href="{{ =URL('checkout') }}">
+									<button type="submit" value="Proceed to Payment Options" id="cart-to-checkout" class="btn btn-success cart-view-btn" disabled>
+										Proceed to Payment Options
+									</button>
+								</a>
+
+
 
 							</div>
 

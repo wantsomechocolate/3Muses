@@ -435,6 +435,9 @@ function centerImageVertically() {
 $(document).ready(function(){
 
 
+    $('#cart-to-checkout').on('click',function(){
+        this.disabled=true;
+    });
 
     //Enable swiping...
     $(".carousel-inner").swipe( {

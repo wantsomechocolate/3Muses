@@ -75,7 +75,8 @@ table.body-wrap {
 	padding: 20px;
 }
 table.body-wrap .container {
-	border: 1px solid #f0f0f0;
+	border: 1px solid #443266;
+/*	background-color: #F1F0FF;*/
 }
 /* -------------------------------------
 		FOOTER
@@ -148,20 +149,25 @@ ul li, ol li {
 	width: 100%;
 }
 
+
+
+
+
+
 .summary_table {
 
 }
 
 .summary_table tr:nth-child(odd){
-	background-color:#FAD4FA;
+	background-color:#006699;
 }
 
 .summary_table tr:nth-child(even){
-	background-color:#FAE3FA;
+	background-color:#C3C3E5;
 }
 
 .summary_table tr:first-child{
-	background-color:#F7A3F7;
+	background-color:#0099CC;
 }
 
 .summary_table td{
@@ -169,7 +175,7 @@ ul li, ol li {
 }
 
 .summary_table tr>*{
-	width:33%;
+	/*width:33%;*/
 	padding-top:10px;
 	padding-bottom:0px;
 }
@@ -198,6 +204,8 @@ ul li, ol li {
 
 <body bgcolor="#f6f6f6">
 
+
+
 <!-- body -->
 <table class="body-wrap">
 	<tr>
@@ -209,198 +217,130 @@ ul li, ol li {
 			<table>
 				<tr>
 					<td>
-						<h2>Thank you for shopping with ThreeMusesGlass</h2>
-						<h5>Below are the details of your order:</h5>
-						
+						<h2>Thank you for shopping with <a href="https://www.threemuses.glass">ThreeMusesGlass</a></h2>
 
-						<h3 class = "header_text">
-
-							<img class="header_icon" src="https://s3.amazonaws.com/threemusesglass/icons/ProductIcon.png">
-
-							Product Details
-
-						</h3>
-
+						<h3 class="confirmation-orderid">Your Order # is: <strong>HDFKJ39840934DJ</strong></h3>
 
 
 						<table class="summary_table">
+
 							<tr>
-								<th class="padding">
-									<h4>Product</h4>
-								</th>
-								<th class="padding">
-									<h4>Total Weight (oz)</h4>
-								</th>
-								<th class="padding">
-									<h4>Total Cost ($)</h4>
-								</th>
-							</tr>
-							<tr>
-								<td class="padding">
-									<p>Product Name</p>
-								</td>
-								<td class="padding">
-									<p>3</p>
-								</td>
-								<td class="padding">
-									<p>$25.00</p>
-								</td>
-							</tr>
-							<tr>
-								<td class="padding">
-									<p>Total</p>
-								</td>
-								<td class="padding">
-									<p>3</p>
-								</td>
-								<td class="padding">
-									<p>$25.00</p>
-								</td>
-							</tr>
-						</table>
 
+								<td>
+									<img class="header_icon" src="https://s3.amazonaws.com/threemusesglass/icons/AddressIcon.png" />
+								</td>
 
-						<h3 class = "header_text">
+								<td rowspan="2">
+									Shipping 
+									<br>
+									To
+								</td>
 
-							<img class="header_icon" src="https://s3.amazonaws.com/threemusesglass/icons/AddressIcon.png" />
-
-							Address Details
-
-						</h3>
-
-						<table class="summary_table">
-							<tr>
-								<th class="padding">
-									<h4>Street Address Info</h4>
-								</th>
-								<th class="padding">
-									<h4>Local Address Info</h4>
-								</th>
-								<th class="padding">
-									<h4>Country</h4>
-								</th>
-							</tr>
-							<tr>
-								<td class="padding">
+								<td colspan="3" class="padding">
 									<p>123 Street Apt F12</p>
-								</td>
-								<td class="padding">
 									<p>Croton Falls, NY 09813</p>
-								</td>
-								<td class="padding">
 									<p>United States</p>
 								</td>
+
+
 							</tr>
 						</table>
-						
 
-						<h3 class = "header_text">
+						<br>
 
-							<img class="header_icon" src="https://s3.amazonaws.com/threemusesglass/icons/ShippingIcon.png" />
-
-							Shipping Details
-
-						</h3>
-
-						
 						<table class="summary_table">
+
 							<tr>
-								<th class="padding">
-									<h4>Carrier-Rate</h4>
-								</th>
-								<th class="padding">
-									<h4>Shipping Weight (Oz)</h4>
-								</th>
-								<th class="padding">
-									<h4>Estimated Shipping Cost</h4>
-								</th>
-							</tr>
-							<tr>
-								<td class="padding">
-									<p>USPS - First</p>
+								<td>
+									<img class="header_icon" src="https://s3.amazonaws.com/threemusesglass/icons/ProductIcon.png">
 								</td>
-								<td class="padding">
-									<p>3</p>
+
+								<td rowspan="2">
+									Product
+									<br>
+									Details
 								</td>
-								<td class="padding">
-									<p>1.93</p>
+
+								<td colspan="3" class="padding">
+									<p>Product1......$25.00</p>
+									<p>Product1......$25.00</p>
+									<p>Product1......$25.00</p>
+									<p>SubTotal......$75.00</p>
 								</td>
 							</tr>
+
 						</table>
-						
-						
 
+						<br>
 
-
-						<h3 class = "header_text">
-
-							<img class="header_icon" src="https://s3.amazonaws.com/threemusesglass/icons/PaymentIcon.png" />
-
-							Payment Details
-
-						</h3>
-
-
-						
 						<table class="summary_table">
+
 							<tr>
-								<th class="padding">
-									<h4>Name</h4>
-								</th>
-								<th class="padding">
-									<h4>Brand-Last4 (Oz)</h4>
-								</th>
-								<th class="padding">
-									<h4>Expiration (MM/YYYY)</h4>
-								</th>
-							</tr>
-							<tr>
-								<td class="padding">
-									<p>Mr. John Doe</p>
+								<td>
+									<img class="header_icon" src="https://s3.amazonaws.com/threemusesglass/icons/ShippingIcon.png" />
 								</td>
-								<td class="padding">
-									<p>Visa - 4242</p>
+
+								<td rowspan="2">
+									Shipping 
+									<br>
+									Details
 								</td>
-								<td class="padding">
-									<p>12 / 2020</p>
+
+								<td colspan="3" class="padding">
+									<p>Carrier: USPS - First</p>
+									<p>Estimated Arrival: Wednesday July 2nd 2015</p>
 								</td>
 							</tr>
+
 						</table>
-						
-						<h3 class = "header_text">
 
-							<img class="header_icon" src="https://s3.amazonaws.com/threemusesglass/icons/SummaryIcon.png" />
+						<br>
 
-							Summary
-
-						</h3>
-						
 						<table class="summary_table">
+
 							<tr>
-								<th class="padding">
-									<h4>Shipping Cost</h4>
-								</th>
-								<th class="padding">
-									<h4>Product Cost</h4>
-								</th>
-								<th class="padding">
-									<h4>Total Cost</h4>
-								</th>
-							</tr>
-							<tr>
-								<td class="padding">
-									<p>1.93</p>
+								<td>
+									<img class="header_icon" src="https://s3.amazonaws.com/threemusesglass/icons/PaymentIcon.png" />
 								</td>
-								<td class="padding">
-									<p>40</p>
+
+								<td rowspan="2">
+									Payment
+									<br>
+									Details
 								</td>
-								<td class="padding">
-									<p>41.93</p>
+
+								<td colspan="3" class="padding">
+									<p>You paid with bitcoin via Stripe !</p>
+									<p>what info do I have here</p>
+									<p>Not sure</p>
 								</td>
 							</tr>
+
 						</table>
 
-						<p> </p>
+						<br>
+
+						<table class="summary_table">
+
+							<tr>
+								<td>
+									<img class="header_icon" src="https://s3.amazonaws.com/threemusesglass/icons/SummaryIcon.png" />
+								</td>
+
+								<td rowspan="2">
+									Summary
+								</td>
+
+								<td colspan="3" class="padding">
+									<p>Shipping Cost - $2.00</p>
+									<p>Product Cost - $40.00</p>
+									<p>Total Cost - $42.00</p>
+								</td>
+							</tr>
+
+						</table>
+
+						<br>
 
 						<p>Thanks, have a lovely day. Come back soon!</p>
 					</td>
@@ -426,7 +366,7 @@ ul li, ol li {
 				<table>
 					<tr>
 						<td align="center">
-							<p>You have recieved this email because a purchase was made at ThreeMusesGlass with this email address. If you think this email was sent in error: <a href="#"><unsubscribe>Click Here</unsubscribe></a>.
+							<p>You have recieved this email because a purchase was made at ThreeMusesGlass with this email address. If you think this email was sent in error please email Admin@threemuses.glass.
 							</p>
 						</td>
 					</tr>
