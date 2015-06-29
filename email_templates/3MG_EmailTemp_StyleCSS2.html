@@ -8,29 +8,35 @@
 /* -------------------------------------
 		GLOBAL
 ------------------------------------- */
+
 * {
 	margin: 0;
 	padding: 0;
 	font-family: "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;
 	font-size: 100%;
-	line-height: 1.6;
+	/*line-height: 1.6;*/
 }
+
 img {
 	max-width: 100%;
 }
+
 body {
 	-webkit-font-smoothing: antialiased;
 	-webkit-text-size-adjust: none;
 	width: 100%!important;
 	height: 100%;
 }
+
 /* -------------------------------------
 		ELEMENTS
 ------------------------------------- */
 a {
-	color: #348eda;
+	/*color: #555;*/
+	text-decoration: none;
 }
-.btn-primary {
+
+/*.btn-primary {
 	text-decoration: none;
 	color: #FFF;
 	background-color: #348eda;
@@ -57,93 +63,119 @@ a {
 	cursor: pointer;
 	display: inline-block;
 	border-radius: 25px;
-}
+}*/
+
 .last {
 	margin-bottom: 0;
 }
+
 .first {
 	margin-top: 0;
 }
-.padding {
+
+.padding-top-bottom {
 	padding: 10px 0;
 }
+
 /* -------------------------------------
 		BODY
 ------------------------------------- */
 table.body-wrap {
 	width: 100%;
 	padding: 20px;
+	/*border: 1px solid black;*/
 }
 table.body-wrap .container {
 	border: 1px solid #443266;
+	padding-left: 20px;
+	padding-right:20px;
+	padding-top:5px;
+	padding-bottom:5px;
 /*	background-color: #F1F0FF;*/
 }
+
 /* -------------------------------------
 		FOOTER
 ------------------------------------- */
+
 table.footer-wrap {
 	width: 100%;	
 	clear: both!important;
+	/*border: 1px solid black;*/
 }
-.footer-wrap .container p {
+
+table.footer-wrap .container{
+	padding-left: 20px;
+	padding-right:20px;
+	padding-top:5px;
+	padding-bottom:5px;
+	/*border: 1px solid black;*/
+}
+
+table.footer-wrap .container p {
 	font-size: 12px;
 	color: #666;
-	
 }
+
 table.footer-wrap a {
 	color: #999;
 }
+
 /* -------------------------------------
 		TYPOGRAPHY
 ------------------------------------- */
+
 h1, h2, h3 {
 	font-family: "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-	line-height: 1.1;
+
+	margin-top:15px;
 	margin-bottom: 15px;
 	color: #000;
-	margin: 40px 0 10px;
-	line-height: 1.2;
 	font-weight: 200;
 }
+
 h1 {
 	font-size: 36px;
 }
+
 h2 {
 	font-size: 28px;
 }
+
 h3 {
 	font-size: 22px;
 }
+
 p, ul, ol {
-	margin-bottom: 10px;
 	font-weight: normal;
 	font-size: 14px;
 }
+
 ul li, ol li {
 	margin-left: 5px;
 	list-style-position: inside;
 }
+
 /* ---------------------------------------------------
 		RESPONSIVENESS
 		Nuke it from orbit. It's the only way to be sure.
 ------------------------------------------------------ */
+
 /* Set a max-width, and make it display as block so it will automatically stretch to that width, but will also shrink down on a phone or something */
 .container {
 	display: block!important;
 	max-width: 600px!important;
-	margin: 0 auto!important; /* makes it centered */
+	margin: 0 auto!important;
 	clear: both!important;
 }
-/* Set the padding on the td rather than the div for Outlook compatibility */
-.body-wrap .container {
-	padding: 20px;
-}
+
 /* This should also be a block element, so that it will fill 100% of the .container */
 .content {
 	max-width: 600px;
 	margin: 0 auto;
 	display: block;
 }
+
 /* Let's make sure tables in the content area are 100% wide */
 .content table {
 	width: 100%;
@@ -151,23 +183,16 @@ ul li, ol li {
 
 
 
+/* ---------------------------------------------------
+		OTHER CUSTOMIZATIONS
+------------------------------------------------------ */
 
-
+.halign{
+	text-align: center;
+}
 
 .summary_table {
 
-}
-
-.summary_table tr:nth-child(odd){
-	background-color:#006699;
-}
-
-.summary_table tr:nth-child(even){
-	background-color:#C3C3E5;
-}
-
-.summary_table tr:first-child{
-	background-color:#0099CC;
 }
 
 .summary_table td{
@@ -186,7 +211,7 @@ ul li, ol li {
 }
 
 .summary_table{
-	border-top-style: solid;
+	/*border-top-style: solid;*/
 }
 
 .header_icon{
@@ -194,7 +219,83 @@ ul li, ol li {
 	height:30px;
 }
 
-.header_text{
+.confirmation-orderid{
+	/*background-color: rgba(0,0,0,.3);*/
+	background-color: #C3C3E5;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	border-radius: 10px;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+.td-summary-pane{
+
+}
+
+.td-summary-pane img{
+	position: absolute;
+	top: -15px;
+	right: -15px;
+	z-index: 10;
+}
+
+.td-summary-pane > div{
+	margin: 10px;
+	position: relative;
+	border: 1px solid #C3C3E5;
+	/*box-shadow: 5px 2px 2px #555;*/
+	text-align: center;
+	padding-bottom:5px;
+	/*background-color: #F1F0FF;*/
+}
+
+.td-summary-pane h3{
+	border-bottom: 1px solid #C3C3E5;
+	padding-bottom: 5px;
+	margin: 0;
+	padding-top: 5px;
+	margin-bottom: 5px;
+}
+
+
+.brand-link{
+	color:#0099CC;
+}
+
+.main-table{
+	padding-bottom: 0 !important;
+}
+
+.summary-pane-img-background{
+	position:absolute;
+	top:-15px;
+	right:-15px;
+	height:30px;
+	width:30px;
+	background-color:#FFFFFF;
+}
+
+
+@media screen and (min-width: 700px) {
+
+
+
+}
+
+@media screen and (max-width: 700px) {
+
+	.td-summary-pane{
+		display:block;
+	}
+
+	tr div:first-child{
+		margin-bottom:20px;
+	}
+
+	.summary-pane-margin-bottom-mobile{
+		margin-bottom:0 !important;
+	}
 
 }
 
@@ -207,145 +308,171 @@ ul li, ol li {
 
 
 <!-- body -->
-<table class="body-wrap">
+<table class="body-wrap main-table">
 	<tr>
 		<td></td>
 		<td class="container" bgcolor="#FFFFFF">
 
 			<!-- content -->
 			<div class="content">
-			<table>
-				<tr>
-					<td>
-						<h2>Thank you for shopping with <a href="https://www.threemuses.glass">ThreeMusesGlass</a></h2>
 
-						<h3 class="confirmation-orderid">Your Order # is: <strong>HDFKJ39840934DJ</strong></h3>
+				<table>
 
+					<tr>
 
-						<table class="summary_table">
+						<td>
 
-							<tr>
+							<h2 class="halign">Thank you for shopping with <a class="brand-link" href="https://www.threemuses.glass">ThreeMusesGlass</a></h2>
 
-								<td>
-									<img class="header_icon" src="https://s3.amazonaws.com/threemusesglass/icons/AddressIcon.png" />
-								</td>
-
-								<td rowspan="2">
-									Shipping 
-									<br>
-									To
-								</td>
-
-								<td colspan="3" class="padding">
-									<p>123 Street Apt F12</p>
-									<p>Croton Falls, NY 09813</p>
-									<p>United States</p>
-								</td>
+							<h3 class="halign confirmation-orderid">Your Order # is: <strong>HDFKJ39840934DJ</strong></h3>
 
 
-							</tr>
-						</table>
 
-						<br>
+							<table>
 
-						<table class="summary_table">
+								<tr>
 
-							<tr>
-								<td>
-									<img class="header_icon" src="https://s3.amazonaws.com/threemusesglass/icons/ProductIcon.png">
-								</td>
+									<td class="td-summary-pane">
 
-								<td rowspan="2">
-									Product
-									<br>
-									Details
-								</td>
+										<div>
+											<img class="header_icon" src="https://s3.amazonaws.com/threemusesglass/icons/AddressIcon.png" />
 
-								<td colspan="3" class="padding">
-									<p>Product1......$25.00</p>
-									<p>Product1......$25.00</p>
-									<p>Product1......$25.00</p>
-									<p>SubTotal......$75.00</p>
-								</td>
-							</tr>
+											<div class="summary-pane-img-background">
+											</div>
 
-						</table>
+											<h3>Shipping To</h3>
 
-						<br>
+											123 Street Apt F12
+											<br>
+											Croton Falls, NY 09813
+											<br>
+											United States
+										</div>
 
-						<table class="summary_table">
+									</td>
+									<td class="td-summary-pane">
 
-							<tr>
-								<td>
-									<img class="header_icon" src="https://s3.amazonaws.com/threemusesglass/icons/ShippingIcon.png" />
-								</td>
+										<div class="summary-pane-margin-bottom-mobile">
 
-								<td rowspan="2">
-									Shipping 
-									<br>
-									Details
-								</td>
+											<img class="header_icon" src="https://s3.amazonaws.com/threemusesglass/icons/ShippingIcon.png" />
 
-								<td colspan="3" class="padding">
-									<p>Carrier: USPS - First</p>
-									<p>Estimated Arrival: Wednesday July 2nd 2015</p>
-								</td>
-							</tr>
+											<div class="summary-pane-img-background">
+											</div>
 
-						</table>
+											<h3>Shipping Details</h3>
 
-						<br>
+											Carrier: USPS - First
+											<br>
+											Estimated Arrival Date: 
+											<br>
+											Wednesday July 2nd 2015
+										</div>
 
-						<table class="summary_table">
+									</td>
+								</tr>
 
-							<tr>
-								<td>
-									<img class="header_icon" src="https://s3.amazonaws.com/threemusesglass/icons/PaymentIcon.png" />
-								</td>
+								<tr>
+									<td class="td-summary-pane">
 
-								<td rowspan="2">
-									Payment
-									<br>
-									Details
-								</td>
+										<div>
 
-								<td colspan="3" class="padding">
-									<p>You paid with bitcoin via Stripe !</p>
-									<p>what info do I have here</p>
-									<p>Not sure</p>
-								</td>
-							</tr>
+											<img class="header_icon" src="https://s3.amazonaws.com/threemusesglass/icons/PaymentIcon.png" />
 
-						</table>
+											<div class="summary-pane-img-background">
+											</div>
 
-						<br>
+											<h3>Payment Method</h3>
+											
+											Bitcoin Via Stripe
+											<br>
+											Wallet ID:
+											<br>
+											flksjdlfkj2093232lkj
+										</div>
 
-						<table class="summary_table">
+									</td>
+									<td class="td-summary-pane">
 
-							<tr>
-								<td>
-									<img class="header_icon" src="https://s3.amazonaws.com/threemusesglass/icons/SummaryIcon.png" />
-								</td>
+										<div class="summary-pane-margin-bottom-mobile"
+											<img class="header_icon" src="https://s3.amazonaws.com/threemusesglass/icons/SummaryIcon.png" />
 
-								<td rowspan="2">
-									Summary
-								</td>
+											<div class="summary-pane-img-background">
+											</div>
 
-								<td colspan="3" class="padding">
-									<p>Shipping Cost - $2.00</p>
-									<p>Product Cost - $40.00</p>
-									<p>Total Cost - $42.00</p>
-								</td>
-							</tr>
+											<h3>Cost Summary</h3>
+											
+											Product Subtotal: $50.00
+											<br>
+											Shipping Cost: $3.00
+											<br>
+											Total Amount: $53.00
+										</div>
 
-						</table>
+									</td>
+								</tr>
 
-						<br>
+							</table>
 
-						<p>Thanks, have a lovely day. Come back soon!</p>
-					</td>
-				</tr>
-			</table>
+							<table>
+
+								<tr>
+
+
+									<td class="td-summary-pane">
+
+										<div>
+
+											<h3>
+												<img class="header_icon" src="https://s3.amazonaws.com/threemusesglass/icons/ProductIcon.png">
+												Items Purchased
+											</h3>
+
+											<table>
+												<tr>
+													<td>
+														Product1
+													</td>
+													<td>
+														$25.00
+													</td>
+												</tr>
+												<tr>
+													<td>
+														Product2
+													</td>
+													<td>
+														$25.00
+													</td>
+												</tr>
+												<tr>
+													<td>
+														Product3
+													</td>
+													<td>
+														$25.00
+													</td>
+												</tr>
+
+											</table>
+
+										</div>
+
+									</td>
+
+								</tr>
+
+							</table>
+
+							<br>
+
+							<p class="halign">Have a fantastic day. Come back soon!</p>
+
+						</td>
+
+					</tr>
+
+				</table>
+
 			</div>
 			<!-- /content -->
 			
@@ -366,7 +493,8 @@ ul li, ol li {
 				<table>
 					<tr>
 						<td align="center">
-							<p>You have recieved this email because a purchase was made at ThreeMusesGlass with this email address. If you think this email was sent in error please email Admin@threemuses.glass.
+							<p>
+								You have recieved this email because a purchase was made at ThreeMusesGlass with this email address. If you think this email was sent in error or you have any questions/concerns please email Admin@threemuses.glass. 
 							</p>
 						</td>
 					</tr>
