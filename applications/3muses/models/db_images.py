@@ -104,6 +104,7 @@ db.define_table('purchase_history_data',
 	Field('payment_confirmation_id'),
 	Field('payment_invoice_number'),
 	Field('payment_email_address'),
+	Field('payment_minimal_confirmation_info'),
 
 	## Cart Summary Details
 	Field('cart_base_cost'), ## Probably don't need this field

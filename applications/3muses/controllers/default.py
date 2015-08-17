@@ -1343,23 +1343,28 @@ def pay_stripe():
 
             token = request.vars['stripeToken']
 
+            print 'Token'
             print token
 
             stripe_email=request.vars['stripeEmail']
-            # print "The token:"
-            # print token
-            print "The email:"
+
+            print "Email:"
             print stripe_email
 
             
             print "BC - Before charge"
 
-            charge = stripe.Charge.create(
-                amount=int(float(total_cost_USD)*100), # amount in cents, again
-                currency="usd",
-                source=token,
-                description="Purchase from ThreeMusesGlass",
-                )
+            ## Usual process
+            # charge = stripe.Charge.create(
+            #     amount=int(float(total_cost_USD)*100), # amount in cents, again
+            #     currency="usd",
+            #     source=token,
+            #     description="Purchase from ThreeMusesGlass",
+            #     )
+
+            ## For debugging
+            charge = stripe.Charge.retrieve('ch_16JNSKBJewwJxtz72EQeStZU')
+            stripe_email='wantsomechocolate@gmail.com'
 
             # charge=json.loads("""{
             #       "amount": 4204, 
@@ -1552,11 +1557,16 @@ def pay_stripe():
             ########----SENDING THE CONFIRMATION EMAIL---####
             #################################################
 
-            receipt_context=generate_confirmation_email_receipt_context(
-                muses_email_address=stripe_email, 
+            # receipt_context=generate_confirmation_email_receipt_context(
+            #     muses_email_address=stripe_email, 
+            #     purchase_history_data_row=db(db.purchase_history_data.id==purchase_history_data_id).select().first(),
+            #     purchase_history_products_rows=db(db.purchase_history_products.purchase_history_data_id==purchase_history_data_id).select(),
+            # )
+
+            receipt_context=dict(
                 purchase_history_data_row=db(db.purchase_history_data.id==purchase_history_data_id).select().first(),
                 purchase_history_products_rows=db(db.purchase_history_products.purchase_history_data_id==purchase_history_data_id).select(),
-            )
+                )
 
             receipt_message_html = response.render('default/receipt.html', receipt_context)
 
@@ -2187,6 +2197,62 @@ def reset_inventory():
 #     session.session_purchase_history_data_id=request.args[0]
 
 #     return dict(message="Done!")
+
+
+
+
+
+
+@auth.requires_membership('admin')
+def manage_products_new():
+    ## Get all the products in a category
+    category_name=request.args[0]
+
+    category_name=category_name.replace('_', ' ')
+
+    category_id = db(db.categories.category_name==category_name).select().first().id
+
+    products = db(db.product.category_name==category_id).select()
+
+    product_images_LOD=[]
+
+    product_LOD=[]
+
+    for product in products:
+        images = db(db.image.product_name==product.id).select()
+        images_dict={
+            product.product_name:images,
+        }
+        product_images_LOD.append(images_dict)
+
+        product_dict=product.as_dict()
+
+        img_urls=[]
+
+        for image in images:
+            img_urls.append(image.s3_url)
+
+        product_dict['images']=img_urls
+
+        product_LOD.append(product_dict)
+
+    return dict(product_LOD = product_LOD)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -3791,17 +3857,22 @@ def view_purchase_history():
 
 def receipt_test():
 
-    email_icons=dict(
-        products_icon_url="https://s3.amazonaws.com/threemusesglass/icons/ProductIcon.png",
-        address_icon_url="https://s3.amazonaws.com/threemusesglass/icons/AddressIcon.png",
-        shipping_icon_url="https://s3.amazonaws.com/threemusesglass/icons/ShippingIcon.png",
-        payment_icon_url="https://s3.amazonaws.com/threemusesglass/icons/PaymentIcon.png",
-        summary_icon_url="https://s3.amazonaws.com/threemusesglass/icons/SummaryIcon.png",
-        )
+    # email_icons=dict(
+    #     products_icon_url="https://s3.amazonaws.com/threemusesglass/icons/ProductIcon.png",
+    #     address_icon_url="https://s3.amazonaws.com/threemusesglass/icons/AddressIcon.png",
+    #     shipping_icon_url="https://s3.amazonaws.com/threemusesglass/icons/ShippingIcon.png",
+    #     payment_icon_url="https://s3.amazonaws.com/threemusesglass/icons/PaymentIcon.png",
+    #     summary_icon_url="https://s3.amazonaws.com/threemusesglass/icons/SummaryIcon.png",
+    #     )
 
     receipt_context=dict(
-        email_icons=email_icons,
+        purchase_history_data_row=db(db.purchase_history_data.id==200).select().first(),
+        purchase_history_products_rows=db(db.purchase_history_products.purchase_history_data_id==200).select(),
         )
+
+    # receipt_context=dict(
+    #     email_icons=email_icons,
+    #     )
 
     receipt_message_html = response.render('default/receipt.html', receipt_context)
 
@@ -3878,6 +3949,9 @@ def receipt_test():
 
 #     return dict(error_message=error_message, error_url=request.vars['request_url'])
 
+
+def receipt():
+    return dict()
 
 
 import string

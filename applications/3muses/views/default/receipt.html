@@ -1,322 +1,297 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/xhtml" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; margin: 0; padding: 0;">
-  <head>
-    <meta name="viewport" content="width=device-width" />
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>ThreeMusesGlass</title>
-  </head>
-  <body bgcolor="#f6f6f6" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; width: 100% !important; height: 100%; margin: 0; padding: 0;">&#13;
-&#13;
-<!-- body -->&#13;
-<table class="body-wrap" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; width: 100%; margin: 0; padding: 20px;">
+{{extend 'layout.html'}}
 
-	<tr style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; margin: 0; padding: 0;">
+<div class="container-fluid style2">
 
-		<td style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; margin: 0; padding: 0;"></td>&#13;
+	<div class='container'>
 
-		<td class="container" bgcolor="#FFFFFF" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; display: block !important; max-width: 600px !important; clear: both !important; margin: 0 auto; padding: 20px; border: 1px solid #f0f0f0;">&#13;
-&#13;
-			<!-- content -->&#13;
-			<div class="content" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; max-width: 600px; display: block; margin: 0 auto; padding: 0;">&#13;
+		<div class="row confirmation-row">
 
-			<table style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; width: 100%; margin: 0; padding: 0;">
+			<div class="col-md-offset-2 col-md-8 confirmation-col confirmation-col-main">
 
-				<tr style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; margin: 0; padding: 0;">
+				<h1 class="confirmation-thankyou">Thank you for shopping at <br>ThreeMusesGlass!</h1>
 
-					<td style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; margin: 0; padding: 0;">&#13;
+				<h3 class="confirmation-orderid">Your Order # is: <strong>{{ =purchase_history_data_row.payment_invoice_number }}</strong></h3>
+			
+			</div>
 
-						<h2 style="font-family: 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif; font-size: 28px; line-height: 1.2; color: #000; font-weight: 200; margin: 40px 0 10px; padding: 0;">Thank you for shopping with ThreeMusesGlass</h2>&#13;
 
-						<h5 style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; margin: 0; padding: 0;">Below are the details of your order:</h5>&#13;
-						&#13;
-&#13;
-						<h3 class="header_text" style="font-family: 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif; font-size: 22px; line-height: 1.2; color: #000; font-weight: 200; margin: 40px 0 10px; padding: 0;">&#13;
-&#13;
-							<img class="header_icon" src="{{=email_icons['products_icon_url']}}" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; max-width: 100%; width: 30px; height: 30px; margin: 0; padding: 0;" />&#13;
-&#13;
-							Product Details&#13;
-&#13;
-						</h3>&#13;
-&#13;
-&#13;
-&#13;
-						<table class="summary_table" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; width: 100%; border-top-style: solid; margin: 0; padding: 0;">
 
-							<tr style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; background-color: #F7A3F7; margin: 0; padding: 0;" bgcolor="#F7A3F7">
+<!-- 			<div class="col-md-offset-2 col-md-8 confirmation-col">
+				
+				<h3 class="confirmation-finalmsg">Below are the details of your order:</h3>
 
-								<th class="padding" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; width: 33%; margin: 0; padding: 10px 0;">&#13;
-									<h4 style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; margin: 0; padding: 0;">Product</h4>&#13;
-								</th>&#13;
-								<th class="padding" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; width: 33%; margin: 0; padding: 10px 0;">&#13;
-									<h4 style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; margin: 0; padding: 0;">Total Weight (oz)</h4>&#13;
-								</th>&#13;
-								<th class="padding" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; width: 33%; margin: 0; padding: 10px 0;">&#13;
-									<h4 style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; margin: 0; padding: 0;">Total Cost ($)</h4>&#13;
-								</th>&#13;
-							</tr>
+			</div> -->
 
-						{{for row in product_info:}}
+		</div>
 
-							<tr style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; background-color: #FAE3FA; margin: 0; padding: 0;" bgcolor="#FAE3FA">
+	</div>
 
-							{{for cell in row:}}
+</div>
 
-								<td class="padding" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; text-align: center; width: 33%; margin: 0; padding: 10px 0 0px;" align="center">&#13;
-									<p style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; font-weight: normal; margin: 0 0 10px; padding: 0;">{{=cell}}</p>&#13;
-								</td>&#13;
 
-							{{pass}}
 
-							</tr>
 
-						{{pass}}
 
-						</table>
 
 
 
 
-						<h3 class="header_text" style="font-family: 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif; font-size: 22px; line-height: 1.2; color: #000; font-weight: 200; margin: 40px 0 10px; padding: 0;">&#13;
-&#13;
-							<img class="header_icon" src="{{=email_icons['address_icon_url']}}" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; max-width: 100%; width: 30px; height: 30px; margin: 0; padding: 0;" />&#13;
-&#13;
-							Address Details&#13;
-&#13;
-						</h3>&#13;
-&#13;
 
-						<table class="summary_table" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; width: 100%; border-top-style: solid; margin: 0; padding: 0;">
 
-							<tr style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; background-color: #F7A3F7; margin: 0; padding: 0;" bgcolor="#F7A3F7">
 
-								<th class="padding" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; width: 33%; margin: 0; padding: 10px 0;">&#13;
-										<h4 style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; margin: 0; padding: 0;">Street Address Info</h4>&#13;
-								</th>&#13;
 
-								<th class="padding" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; width: 33%; margin: 0; padding: 10px 0;">&#13;
-									<h4 style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; margin: 0; padding: 0;">Local Address Info</h4>&#13;
-								</th>&#13;
 
-								<th class="padding" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; width: 33%; margin: 0; padding: 10px 0;">&#13;
-									<h4 style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; margin: 0; padding: 0;">Country</h4>&#13;
-								</th>&#13;
 
-							</tr>
 
+<!-- An order summary so customer can see while they pay -->
+<div class="container-fluid style1" id="order-summary">
+	<div class='container'>
 
-						{{for row in address_info:}}
+<!-- If there is no error in the cart then proceed (Otherwise show pretty much nothing here) -->
+{{ if False==False: }}
 
-							<tr style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; background-color: #FAE3FA; margin: 0; padding: 0;" bgcolor="#FAE3FA">
+		<div class="row checkout-row">
+		  	<div class="col-md-offset-2 col-md-8 checkout-summary-header">
+		  		<h2>Order Details</h2>
+		  	</div>
+		</div>
 
-							{{ for cell in row:}}
+	<!-- For each item in the cart -->
+	{{ for i in range(len(purchase_history_products_rows)): }}
+				
+		<div class="row checkout-row">
+		  	<div class="col-md-offset-2 col-md-8 checkout-summary-line-item-container checkout-summary-product-container" >
 
-								<td class="padding" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; text-align: center; width: 33%; margin: 0; padding: 10px 0 0px;" align="center">&#13;
-									<p style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; font-weight: normal; margin: 0 0 10px; padding: 0;">{{=cell}}</p>&#13;
-								</td>&#13;
+			  	<hr class="checkout-horizontal-dotted-line">
 
-							{{pass}}
+				<div class="col-md-8 checkout-summary-item checkout-summary-left checkout-summary-left-tier-3">
+					<div > <!-- For vertically centering -->
+						<div> <!-- for background color -->
+							{{ =purchase_history_products_rows[i].product_name }}
+						</div>
+					</div>
+				</div>
 
-							</tr>
+				<div class="col-md-offset-2 col-md-2 checkout-summary-item checkout-summary-cost checkout-summary-cost-tier-3">
+					<div > <!-- For vertically centering -->
+						<div>
+							${{ ="%.2f" % purchase_history_products_rows[i].cost_USD }}
+						</div>
+					</div>
+				</div>
 
-						{{pass}}
+		  	</div>
+		</div>
 
-						</table>
+	{{pass}} <!-- For the cart for loop -->
 
+		<!-- The cart subtotal row is next -->
+		<div class="row checkout-row">
+		  	<div class="col-md-offset-2 col-md-8 checkout-summary-line-item-container checkout-summary-subtotal-container" >
 
-						<h3 class="header_text" style="font-family: 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif; font-size: 22px; line-height: 1.2; color: #000; font-weight: 200; margin: 40px 0 10px; padding: 0;">&#13;
-&#13;
-							<img class="header_icon" src="{{=email_icons['shipping_icon_url']}}" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; max-width: 100%; width: 30px; height: 30px; margin: 0; padding: 0;" />&#13;
-&#13;
-							Shipping Details&#13;
-&#13;
-						</h3>&#13;
-&#13;
-						&#13;
+			  	<hr class="checkout-horizontal-dotted-line">
 
-						<table class="summary_table" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; width: 100%; border-top-style: solid; margin: 0; padding: 0;">
+				<div class="col-md-8 checkout-summary-item checkout-summary-left checkout-summary-left-tier-2">
+					<div>
+						<div>
+							Item Subtotal
+						</div>
+					</div>
+				</div>
 
+				<div class="col-md-offset-2 col-md-2 checkout-summary-item checkout-summary-cost checkout-summary-cost-tier-2">
 
-							<tr style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; background-color: #F7A3F7; margin: 0; padding: 0;" bgcolor="#F7A3F7">
+					<div>
+						<div>
+							${{ =purchase_history_data_row.cart_base_cost }}
+						</div>
+					</div>
+				</div>
 
-								<th class="padding" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; width: 33%; margin: 0; padding: 10px 0;">&#13;
+		  	</div>
+		</div>
 
-									<h4 style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; margin: 0; padding: 0;">Carrier-Rate</h4>&#13;
 
-								</th>&#13;
 
-								<th class="padding" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; width: 33%; margin: 0; padding: 10px 0;">&#13;
+		<!-- This begins the mammouth shipping row -->
+		<div class="row checkout-row">
+		  <div class="col-md-offset-2 col-md-8 checkout-summary-line-item-container checkout-summary-subtotal-container" >
 
-									<h4 style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; margin: 0; padding: 0;">Shipping Weight (Oz)</h4>&#13;
+	<!-- If there is not a problem with the shipping info -->				
+	{{ if False==False: }}
 
-								</th>&#13;
+		<!-- Also not a problem with the address info, then proceed -->
+		{{ if False==False: }}
 
-								<th class="padding" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; width: 33%; margin: 0; padding: 10px 0;">&#13;
+		  	<hr class="checkout-horizontal-dotted-line checkout-horizontal-dotted-line-shipping">
 
-									<h4 style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; margin: 0; padding: 0;">Estimated Shipping Cost</h4>&#13;
+			<div class="col-md-8 checkout-summary-item checkout-summary-left checkout-summary-left-tier-2">
+				<div>
+					<div>
 
-								</th>&#13;
+						<div>
+							{{ =purchase_history_data_row.easypost_shipping_carrier }} 
+							{{ =purchase_history_data_row.easypost_shipping_service }}
+							Shipping (Est. {{ =purchase_history_data_row.easypost_delivery_date_text }}) To:
+						</div>
 
-							</tr>
 
-						{{for row in shipping_info:}}
 
-							<tr style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; background-color: #FAE3FA; margin: 0; padding: 0;" bgcolor="#FAE3FA">
 
-							{{for cell in row:}}
+						<div class="checkout-summary-address-container">
+							<div >
 
-								<td class="padding" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; text-align: center; width: 33%; margin: 0; padding: 10px 0 0px;" align="center">&#13;
-									<p style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; font-weight: normal; margin: 0 0 10px; padding: 0;">{{=cell}}</p>&#13;
-								</td>&#13;
+					  			<div >
+						          	{{ =purchase_history_data_row.shipping_name_first }}
+						          	{{ =purchase_history_data_row.shipping_name_last }}
+					          	</div>
+									          	
+					          	<div >
+						          	{{ =purchase_history_data_row.shipping_street_address_line_1 }}
+						          	{{ =purchase_history_data_row.shipping_street_address_line_2 }}
+					          	</div>
 
-							{{pass}}
+					          	<div >
+						          	{{ =purchase_history_data_row.shipping_municipality }},
+						          	{{ =purchase_history_data_row.shipping_administrative_area }}
+						          	{{ =purchase_history_data_row.shipping_postal_code }}
+					          	</div>
 
-							</tr>
+					          	<div >
+					          		{{ =purchase_history_data_row.shipping_country }}
+					          	</div>
 
-						{{pass}}
+					        </div>
+					    </div>	
+					
 
-						</table>
 
-						<h3 class="header_text" style="font-family: 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif; font-size: 22px; line-height: 1.2; color: #000; font-weight: 200; margin: 40px 0 10px; padding: 0;">&#13;
-&#13;
-							<img class="header_icon" src="{{=email_icons['payment_icon_url']}}" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; max-width: 100%; width: 30px; height: 30px; margin: 0; padding: 0;" />&#13;
-&#13;
-							Payment Details&#13;
-&#13;
-						</h3>&#13;
-&#13;
-&#13;
-						&#13;
-						<table class="summary_table" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; width: 100%; border-top-style: solid; margin: 0; padding: 0;">
 
-							<tr style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; background-color: #F7A3F7; margin: 0; padding: 0;" bgcolor="#F7A3F7">
+					</div>
+				</div>
+			</div>
 
-								<th class="padding" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; width: 33%; margin: 0; padding: 10px 0;">&#13;
-									<h4 style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; margin: 0; padding: 0;">Name</h4>&#13;
-								</th>&#13;
-								<th class="padding" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; width: 33%; margin: 0; padding: 10px 0;">&#13;
-									<h4 style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; margin: 0; padding: 0;">Brand-Last4 (Oz)</h4>&#13;
-								</th>&#13;
-								<th class="padding" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; width: 33%; margin: 0; padding: 10px 0;">&#13;
-									<h4 style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; margin: 0; padding: 0;">Expiration (MM/YYYY)</h4>&#13;
-								</th>&#13;
-							</tr>
+			<div class="col-md-offset-2 col-md-2 checkout-summary-item checkout-summary-cost checkout-summary-cost-tier-2 checkout-summary-shipping-cost">
+				<div>
+					<div>
+						${{ =purchase_history_data_row.cart_shipping_cost }}
+					</div>
+				</div>
+			</div>
 
-						{{for row in card_info:}}
 
-							<tr style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; background-color: #FAE3FA; margin: 0; padding: 0;" bgcolor="#FAE3FA">
 
-							{{for cell in row:}}
+		{{ else: }} <!-- For the address error if -->
+			<div >
+				No address info found
+			</div>
+		{{ pass }} <!-- For the address error if -->
 
-								<td class="padding" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; text-align: center; width: 33%; margin: 0; padding: 10px 0 0px;" align="center">&#13;
-									<p style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; font-weight: normal; margin: 0 0 10px; padding: 0;">{{=cell}}</p>&#13;
-								</td>&#13;
 
-							{{pass}}
+	{{ else: }} <!-- For the shipping error if -->
+			<div >
+				No shipping info found
+			</div>
+	{{ pass }} <!-- For the shipping error if -->
 
-							</tr>
 
-						{{pass}}
+		  </div>
+		</div> <!-- This ends the mammouth shipping row -->
 
-						</table>
 
-						<h3 class="header_text" style="font-family: 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif; font-size: 22px; line-height: 1.2; color: #000; font-weight: 200; margin: 40px 0 10px; padding: 0;">&#13;
-&#13;
-							<img class="header_icon" src="{{=email_icons['summary_icon_url']}}" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; max-width: 100%; width: 30px; height: 30px; margin: 0; padding: 0;" />&#13;
-&#13;
-							Summary&#13;
-&#13;
-						</h3>&#13;
-						&#13;
 
-						<table class="summary_table" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; width: 100%; border-top-style: solid; margin: 0; padding: 0;">
+		<!-- Start the grand total row -->
+		<div class="row checkout-row">
+		  <div class="col-md-offset-2 col-md-8 checkout-summary-line-item-container checkout-summary-subtotal-container" >
 
-							<tr style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; background-color: #F7A3F7; margin: 0; padding: 0;" bgcolor="#F7A3F7">
+			  	<hr class="checkout-horizontal-dotted-line checkout-horizontal-dotted-line-total">
 
-								<th class="padding" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; width: 33%; margin: 0; padding: 10px 0;">&#13;
-									<h4 style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; margin: 0; padding: 0;">Shipping Cost</h4>&#13;
-								</th>&#13;
-								<th class="padding" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; width: 33%; margin: 0; padding: 10px 0;">&#13;
-									<h4 style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; margin: 0; padding: 0;">Product Cost</h4>&#13;
-								</th>&#13;
-								<th class="padding" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; width: 33%; margin: 0; padding: 10px 0;">&#13;
-									<h4 style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; margin: 0; padding: 0;">Total Cost</h4>&#13;
-								</th>&#13;
-							</tr>
+				<div class="col-md-8 checkout-summary-item checkout-summary-left checkout-summary-left-tier-1">
+					<div>
+						<div>
+							Total Cost
+						</div>
+					</div>
+				</div>
 
-						{{for row in summary_info:}}
+				<div class="col-md-offset-2 col-md-2 checkout-summary-item checkout-summary-cost checkout-summary-cost-tier-1 checkout-summary-total-cost">
+					<div>
+						<div>
+							${{ =purchase_history_data_row.cart_total_cost }}
+						</div>
+					</div>
+				</div>
 
-							<tr style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; background-color: #FAE3FA; margin: 0; padding: 0;" bgcolor="#FAE3FA">
+		  </div>
+		</div> <!-- Close the total row -->
 
-							{{for cell in row:}}
 
-								<td class="padding" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; text-align: center; width: 33%; margin: 0; padding: 10px 0 0px;" align="center">&#13;
-									<p style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; font-weight: normal; margin: 0 0 10px; padding: 0;">{{=cell}}</p>&#13;
-								</td>&#13;
 
-							{{pass}}
+		<!-- Start the payment method row -->
+		<div class="row checkout-row">
+		  <div class="col-md-offset-2 col-md-8 checkout-summary-line-item-container checkout-summary-subtotal-container" >
 
-							</tr>
+			  	<hr class="checkout-horizontal-dotted-line checkout-horizontal-dotted-line-total">
 
-						{{pass}}
+				<div class="col-md-8 checkout-summary-item checkout-summary-left checkout-summary-left-tier-1">
+					<div>
+						<div>
+							Payment Source
+						</div>
+					</div>
+				</div>
 
-						</table>
+				<div class="col-md-offset-2 col-md-2 checkout-summary-item checkout-summary-cost checkout-summary-cost-tier-1 checkout-summary-total-cost">
+					<div>
+						<div>
+							
+						{{ import json }}
+						
+						{{ minimal_confirmation_info=json.loads(purchase_history_data_row.payment_minimal_confirmation_info)}}
 
-						<p style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; font-weight: normal; margin: 0 0 10px; padding: 0;"> </p>&#13;
-&#13;
-						<p style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; font-weight: normal; margin: 0 0 10px; padding: 0;">Thanks, have a lovely day. Come back soon!</p>&#13;
+							{{ if purchase_history_data_row.payment_service=='stripe': }}
 
-					</td>&#13;
-				</tr>
+								{{ if minimal_confirmation_info['source_object']=='card': }}
 
-			</table>
+									{{ =minimal_confirmation_info['brand'] }}
+									-
+									{{ =minimal_confirmation_info['last4'] }}
 
-		</div>&#13;
-			<!-- /content -->&#13;
-			&#13;
-		</td>&#13;
+								{{ elif minimal_confirmation_info['source_object']=='bitcoin_reciever': }}
 
-		<td style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; margin: 0; padding: 0;"></td>&#13;
+									{{ =minimal_confirmation_info['bitcoin_id'] }}
 
-	</tr>
+								{{ else: }}
 
-</table><!-- /body --><!-- footer -->
+									N/A
 
-<table class="footer-wrap" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; width: 100%; clear: both !important; margin: 0; padding: 0;">
+								{{ pass }}
 
-	<tr style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; margin: 0; padding: 0;">
+							{{ elif purchase_history_data_row.payment_service=='paypal': }}
 
-		<td style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; margin: 0; padding: 0;"></td>&#13;
+								Paypal
 
-		<td class="container" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; display: block !important; max-width: 600px !important; clear: both !important; margin: 0 auto; padding: 0;">&#13;
-			&#13;
-			<!-- content -->&#13;
-			<div class="content" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; max-width: 600px; display: block; margin: 0 auto; padding: 0;">&#13;
+							{{ pass }}
 
-				<table style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; width: 100%; margin: 0; padding: 0;">
+							
+							
+						</div>
+					</div>
+				</div>
 
-					<tr style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; margin: 0; padding: 0;">
+		  </div>
+		</div> <!-- Close the payment method row -->
 
-						<td align="center" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; margin: 0; padding: 0;">&#13;
-							<p style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 1.6; color: #666; font-weight: normal; margin: 0 0 10px; padding: 0;">You have recieved this email because a purchase was made at ThreeMusesGlass with this email address. If you think this email was sent in error: <a href="#" style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; color: #999; margin: 0; padding: 0;"><unsubscribe style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; margin: 0; padding: 0;">Click Here</unsubscribe></a>.&#13;
-							</p>&#13;
 
-						</td>&#13;
 
-					</tr>
+{{ else: }}
+		<div class="row checkout-row">
+		  	<div class="col-md-offset-2 col-md-8 checkout-summary-error">
+				No cart information found. 
+			</div>					
+		</div>
+{{ pass }}
 
-				</table>
+	</div> <!-- close container -->
+</div> <!-- close order detail summary fluid container -->
 
-			</div>&#13;
-			<!-- /content -->&#13;
-			&#13;
-		</td>&#13;
-
-		<td style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; margin: 0; padding: 0;"></td>&#13;
-
-	</tr>
-
-</table><!-- /footer -->
-
-</body>
-
-</html>

@@ -311,6 +311,34 @@ def create_purchase_history_dict(
     # else:
     #     payment_email_address="method@not.supported"
 
+    if payment_service=='stripe':
+        if payment_data['source']['object']=='card':
+            minimal_confirmation_info=dict(
+                source_object=payment_data['source']['object'],
+                brand=payment_data['source']['brand'],
+                last4=payment_data['source']['last4'],
+                )
+
+        elif payment_data['source']['object']=='bitcoin':
+
+            minimal_confirmation_info=dict(
+                source_object=payment_data['source']['object'],
+                bitcoin_id='test_data',
+                )
+
+        else:
+            minimal_confirmation_info=dict(
+                source_object=payment_data['source']['object'],
+                field1="No Info",
+                )
+
+    elif payment_service=='paypal':
+        minimal_confirmation_info=dict(
+            field1="Paypal",
+            )
+
+    minimal_confirmation_info=json.dumps(minimal_confirmation_info)
+
 
     purchase_history_data_dict=dict(
 
@@ -333,6 +361,7 @@ def create_purchase_history_dict(
         shipping_country=address_data['country'],
 
         easypost_shipping_service=shipping_data['service'],
+        easypost_shipping_service_raw=shipping_data['service_original'],
         easypost_shipping_carrier=rate_info['carrier'],
         easypost_shipment_id=rate_info['shipment_id'],
         easypost_rate_id=rate_info['id'],
@@ -346,6 +375,7 @@ def create_purchase_history_dict(
         payment_confirmation_id=payment_id,
         payment_invoice_number=payment_invoice_number,
         payment_email_address=payment_email,
+        payment_minimal_confirmation_info=json.dumps(minimal_confirmation_info),
 
         cart_base_cost=summary_data['information_LOD'][0]['cart_cost_USD'],
         cart_shipping_cost=summary_data['information_LOD'][0]['shipping_cost_USD'],
@@ -396,6 +426,208 @@ def table_generation(grid_header_list, grid_row_lists, basename):
 
 
 def generate_confirmation_email_receipt_context(
+    muses_email_address=None, 
+    purchase_history_data_row=None,
+    purchase_history_products_rows=None,
+    ):
+
+    import stripe
+    import paypalrestsdk
+
+
+    ###########################################
+    #########-----PRODUCT INFORMATION-----#####
+    ###########################################
+
+    product_table_row_LOL=[]
+    product_total_cost=0
+
+    for row in purchase_history_products_rows:
+
+        line_item_cost_usd=int(row.product_qty)*int(row.cost_USD)
+
+        product_table_row_dict=dict(
+            product_name=row.product_name,
+            product_cost_USD=line_item_cost_usd,
+        )
+
+        products_info_LOD.append(product_table_row_dict)
+
+
+    ###########################################
+    #########-----ADDRESS INFORMATION-----#####
+    ###########################################
+
+    address_info_dict=dict(
+        shipping_address_line_1=purchase_history_data_row.shipping_street_address_line_1,
+        shipping_address_line_2=purchase_history_data_row.shipping_street_address_line_2,
+        shipping_municipality=purchase_history_data_row.shipping_municipality,
+        shipping_administrative_area=purchase_history_data_row.shipping_administrative_area,
+        shipping_postal_code=purchase_history_data_row.shipping_postal_code,
+        shipping_country=purchase_history_data_row.shipping_country,
+        )
+
+
+    ###########################################
+    #########-----SHIPPING INFORMATION----#####
+    ###########################################
+
+    shipping_info_dict=dict(
+        easypost_shipping_carrier=purchase_history_data_row.easypost_shipping_carrier,
+        easypost_shipping_service=purchase_history_data_row.easypost_shipping_service,
+        easypost_delivery_date_text=purchase_history_data_row.easypost_delivery_date_text,
+        )
+
+
+    ###########################################
+    #########-----PAYMENT INFORMATION-----#####
+    ###########################################
+    print "checking payment method"
+    if purchase_history_data_row['payment_service']=='stripe':
+
+        print "retrieving payment info from stripe"
+
+        print "using:"
+        
+        print purchase_history_data_row['payment_confirmation_id']
+
+        payment_information=stripe.Charge.retrieve(purchase_history_data_row['payment_confirmation_id'])
+
+        print 'payment_info_from_stripe'
+        print payment_information
+
+        print "checking to see if payment object is card"
+        if payment_information['source']['object']=='card':
+            card_header_row=['Stripe Email', 'Brand-Last4', 'Expiration(mm/yyyy)']
+
+            card_table_row_LOL=[[
+                str(payment_information['source']['name']),
+                str(payment_information['source']['brand']) + " - " + str(payment_information['source']['last4']),
+                str(payment_information['source']['exp_month']) + " / " + str(payment_information['source']['exp_year']),
+            ]]
+
+
+        elif payment_information['source']['object']=='bitcoin_receiver':
+
+            print "Checking to see if payment object is bitcoin_receiver"
+
+            card_header_row=['Stripe Email', 'Bitcoin Metric1', 'Bitcoin Metric2']
+
+            card_table_row_LOL=[[
+                str(payment_information['source']['email']), 
+                "Metric1", 
+                "Metric2",
+                #str(payment_information['source']['brand']),
+                #str(payment_information['source']['exp_month']),
+            ]]
+
+        else:
+
+            print "looks like it wasn't"
+
+            card_header_row=['Stripe Email', 'Bitcoin Metric1', 'Bitcoin Metric2']
+
+            card_table_row_LOL=[[
+                str(payment_information['source']['object']), 
+                "Metric1", 
+                "Metric2",
+                #str(payment_information['source']['brand']),
+                #str(payment_information['source']['exp_month']),
+            ]]
+
+        confirmation_card_grid=table_generation(card_header_row,card_table_row_LOL,"confirmation_card")
+
+
+
+    elif purchase_history_data_row['payment_service']=='paypal':
+
+        payment_information=paypalrestsdk.Payment.find(purchase_history_data_row.payment_confirmation_id)
+
+        ##Paypal Info
+        card_header_row=['Paypal Name', 'Paypal Email', 'Paypal Invoice Number']
+        card_table_row_LOL=[[
+            payment_information['payer']['payer_info']['first_name']+payment_information['payer']['payer_info']['last_name'],
+            payment_information['payer']['payer_info']['email'],
+            'invoice_number',
+        ]]
+
+        confirmation_card_grid=table_generation(card_header_row,card_table_row_LOL,"confirmation_card")
+
+
+
+    ###########################################
+    #########-----SUMMARY INFORMATION-----#####
+    ###########################################
+    summary_header_row=['Shipping Cost ($)', 'Product Cost ($)', 'Total Cost ($)']
+    summary_table_row_LOL=[[
+        purchase_history_data_row.easypost_rate,
+        product_total_cost,
+        float(purchase_history_data_row.easypost_rate)+product_total_cost,
+    ]]
+
+    confirmation_summary_grid=table_generation(summary_header_row,summary_table_row_LOL,"confirmation_summary")
+
+
+    ###########################################
+    #########-------HTML GENERATION-------#####
+    ###########################################
+    # final_div=DIV(_class="muses_pay")
+    # final_div.append(DIV("Product Details",_class="confirmation_heading"))
+    # final_div.append(confirmation_product_grid)
+    # final_div.append(DIV("Address Details",_class="confirmation_heading"))
+    # final_div.append(confirmation_address_grid)
+    # final_div.append(DIV("Shipping Details",_class="confirmation_heading"))
+    # final_div.append(confirmation_shipping_grid)
+    # final_div.append(DIV("Payment Details",_class="confirmation_heading"))
+    # final_div.append(confirmation_card_grid)
+    # final_div.append(DIV("Summary",_class="confirmation_heading"))
+    # final_div.append(confirmation_summary_grid)
+
+
+    # final_div_html=final_div.xml()
+
+
+    email_icons=dict(
+        products_icon_url="https://s3.amazonaws.com/threemusesglass/icons/ProductIcon.png",
+        address_icon_url="https://s3.amazonaws.com/threemusesglass/icons/AddressIcon.png",
+        shipping_icon_url="https://s3.amazonaws.com/threemusesglass/icons/ShippingIcon.png",
+        payment_icon_url="https://s3.amazonaws.com/threemusesglass/icons/PaymentIcon.png",
+        summary_icon_url="https://s3.amazonaws.com/threemusesglass/icons/SummaryIcon.png",
+        )
+
+    #purchase_history_dict
+    #purchase_history_products_LOD
+
+    ## Try to overwrite the date with a string and convert back later using dateutil if necessary
+
+    receipt_context=dict(
+        email_icons=email_icons,
+        #purchase_details=purchase_history_dict,
+        #product_details=purchase_history_products_LOD,
+        product_info=product_table_row_LOL,
+        address_info=address_table_row_LOL,
+        shipping_info=shipping_table_row_LOL,
+        card_info=card_table_row_LOL,
+        summary_info=summary_table_row_LOL,
+        )
+
+    #receipt_message_html = response.render('receipt.html', receipt_context)
+    #receipt_message_html = response.render('default/receipt.html', receipt_context)
+
+
+    #return receipt_message_html
+    return receipt_context
+
+
+
+
+
+
+
+
+
+
+def generate_confirmation_email_receipt_context_rev1(
     muses_email_address=None, 
     purchase_history_data_row=None,
     purchase_history_products_rows=None,
@@ -607,6 +839,17 @@ def generate_confirmation_email_receipt_context(
 
     #return receipt_message_html
     return receipt_context
+
+
+
+
+
+
+
+
+
+
+
 
 
 def retrieve_cart_contents(auth,db,is_active=True):

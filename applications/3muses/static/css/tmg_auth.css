@@ -315,3 +315,12 @@ body#view_purchase_history td{
 	padding-right:10px;
 	padding-left:10px;
 }
+
+
+
+
+
+body#manage_products_new img{
+	width:200px;
+	display: inline;
+}

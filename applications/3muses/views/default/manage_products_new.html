@@ -1,0 +1,56 @@
+
+{{ extend 'layout.html' }}
+
+	<div class="container-fliud style2">
+		<div class="container">
+			<div class="row product-view-row">
+
+		{{ for product_dict in product_LOD: }}
+
+			<!--{-{ =product_dict }-} -->
+
+			<br>
+			<br>
+
+			{{ =product_dict['product_name'] }}
+			<br>
+
+			{{ =product_dict['description'] }}
+			<br>
+
+			IsActive
+			{{ =product_dict['is_active'] }}
+
+			Shipping Description
+			{{ =product_dict['shipping_description'] }}
+
+			Quantity (should only be one at the moment)
+			{{ =product_dict['qty_in_stock'] }}
+
+			Cost in USD
+			{{ =product_dict['cost_USD'] }}
+
+			Category ID
+			{{ =product_dict['category_name'] }}
+
+			<br>
+			<br>
+
+			<div>The Images Associated with this Product</div>
+
+			<div>
+			{{ for image_url in product_dict['images']: }}
+
+				{{srcattr=URL('download',image_url)}}
+				<img src="{{ =srcattr }}" class="img-responsive" alt="product_image">
+					
+			{{ pass }}
+			</div>
+
+				<br>
+
+		{{ pass }}
+
+			</div>
+		</div>
+	</div>
