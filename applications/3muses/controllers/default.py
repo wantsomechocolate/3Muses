@@ -2206,13 +2206,69 @@ def reset_inventory():
 @auth.requires_membership('admin')
 def manage_products_new():
     ## Get all the products in a category
-    category_name=request.args[0]
+    
+    # try:
+    #     category_name=request.args[0]
 
-    category_name=category_name.replace('_', ' ')
+    #     category_name=category_name.replace('_', ' ')
 
-    category_id = db(db.categories.category_name==category_name).select().first().id
+    #     category_id = db(db.categories.category_name==category_name).select().first().id
 
-    products = db(db.product.category_name==category_id).select()
+    #     products = db(db.product.category_name==category_id).select()
+
+    # except IndexError:
+
+    #     products = db(db.product.id>0).select()
+
+
+
+
+    # product_images_LOD=[]
+
+    # product_LOD=[]
+
+    # for product in products:
+    #     images = db(db.image.product_name==product.id).select()
+    #     images_dict={
+    #         product.product_name:images,
+    #     }
+    #     product_images_LOD.append(images_dict)
+
+    #     product_dict=product.as_dict()
+
+    #     img_urls=[]
+
+    #     for image in images:
+    #         img_urls.append(image.as_dict())
+
+    #     product_dict['images']=img_urls
+
+    #     product_LOD.append(product_dict)
+
+    # return dict(product_LOD = product_LOD)
+
+    return dict()
+
+
+def ajax_manage_products_new():
+
+    import json
+
+    ## Get all the products in a category
+    
+    try:
+        category_name=request.args[0]
+
+        category_name=category_name.replace('_', ' ')
+
+        category_id = db(db.categories.category_name==category_name).select().first().id
+
+        products = db(db.product.category_name==category_id).select()
+
+    except IndexError:
+
+        products = db(db.product.id>0).select()
+
 
     product_images_LOD=[]
 
@@ -2227,19 +2283,190 @@ def manage_products_new():
 
         product_dict=product.as_dict()
 
-        img_urls=[]
+        image_data=[]
 
         for image in images:
-            img_urls.append(image.s3_url)
+            image_dict=image.as_dict()
+            s3_url_info=image_dict['s3_url']
 
-        product_dict['images']=img_urls
+
+            if sqlite_tf:
+                full_url=URL('download', s3_url_info)
+            else:
+                full_url='https://s3.amazonaws.com/threemusesglass/site_images/'+str(s3_url_info)
+
+            image_dict['s3_url']=full_url
+
+            image_delete_url=A('X',_href=URL('delete_product_image', args=[image_dict['id']])).xml()
+
+            image_dict['image_delete_url']=image_delete_url
+
+
+
+            image_data.append(image_dict)
+
+
+        #print image_data
+
+
+
+        product_dict['images']=image_data
 
         product_LOD.append(product_dict)
 
-    return dict(product_LOD = product_LOD)
 
 
 
+
+
+        core_columns=[
+
+            dict(
+                className='details-control',
+                orderable=False,
+                data=None,
+                defaultContent='',
+                width='50px',
+                ),
+            
+            dict(
+                table_name='Bracelets',
+                core=True,
+
+                data='product_name',
+                defaultContent='',
+                title='Product Name',
+
+                width='200px',
+                ),
+
+            dict(
+                table_name='Bracelets',
+                core=True,
+
+                data='description',
+                defaultContent='',
+                title='Description',
+                width='400px',
+                ),
+
+            dict(
+                table_name='Bracelets',
+                core=True,
+
+                data='cost_USD',
+                defaultContent='',
+                title='Cost ($)',
+                ),
+
+            dict(
+                table_name='Bracelets',
+                core=True,
+
+                data='weight_oz',
+                defaultContent='',
+                title='Weight (oz)',
+                ),
+
+            dict(
+                table_name='Bracelets',
+                core=True,
+
+                data='is_active',
+                defaultContent='',
+                title='Is Active',
+                ),
+
+            dict(
+                table_name='Bracelets',
+                core=True,
+
+                data='shipping_description',
+                defaultContent='',
+                title='Shipping Description',
+                ),
+
+            dict(
+                table_name='Bracelets',
+                core=True,
+
+                data='qty_in_stock',
+                defaultContent='',
+                title='Quantity in Stock',
+                ),
+
+            dict(
+                table_name='Bracelets',
+                core=True,
+
+                data='id',
+                defaultContent='',
+                title='DB ID',
+                ),
+
+            dict(
+                table_name='Bracelets',
+                core=True,
+
+                data='category_name',
+                defaultContent='',
+                title='Category Name',
+                ),
+
+            dict(
+                table_name='Bracelets',
+                core=True,
+
+                data='display_order',
+                defaultContent='',
+                title='Display Order',
+                ),
+
+            ]
+
+
+        # collapse_expand=dict(
+        #     className='details-control',
+        #     orderable=False,
+        #     data=None,
+        #     defaultContent='',
+        #     )
+
+
+        json_data={
+            'data':product_LOD,
+            'columns':core_columns,
+            }
+
+
+
+
+
+
+    return json.dumps(json_data)
+
+
+
+
+
+
+
+
+@auth.requires_membership('admin')
+def remove_image_association_from_product():
+    return dict()
+
+@auth.requires_membership('admin')
+def add_image_to_product():
+    return dict()
+
+@auth.requires_membership('admin')
+def remove_image_association_from_product():
+    return dict()
+
+@auth.requires_membership('admin')
+def remove_image_association_from_product():
+    return dict()
 
 
 
@@ -2426,6 +2653,37 @@ def delete_address():
     else:
         dummy=session.pop('address')
     redirect(request.vars['redirect_url'])
+
+
+
+def delete_product_image():
+
+    # try:
+    image_id = request.args[0]
+
+    db(db.image.id == image_id).delete()
+
+    response.flash="Sucessfully Deleted"
+    session.flash=response.flash
+    redirect(URL('manage_products_new'))
+    
+        # return True
+
+    # except:
+
+        # response.flash="There was a problem"
+        # session.flash=response.flash
+        # redirect(URL('manage_products_new'))
+        # return False
+
+
+
+
+
+
+
+
+
 
 
 # def delete_card():
@@ -2956,6 +3214,9 @@ def delete_address():
 #     else:
         
 #         return dict(edit_address_form=edit_address_form)
+
+
+
 
 
 
