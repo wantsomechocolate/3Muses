@@ -86,7 +86,7 @@ body {
 
 /* This makes images that are too small for certain viewports fill the space, but still only fill thier container otherwise */
 img{
-	width:100vw;
+	/*width:100vw;*/
 }
 
 h2{

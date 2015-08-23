@@ -434,6 +434,13 @@ function centerImageVertically() {
 //Let's get ready to rumble
 $(document).ready(function(){
 
+    // Dropzone.autoDiscover = false;
+    // $("div.dropzone_div").dropzone({ 
+    //     url: "/dropzone_upload",
+    //     addRemoveLinks:true,
+    //     acceptedFiles:'image/*',
+    // });
+
 
     $('#cart-to-checkout').on('click',function(){
         this.disabled=true;

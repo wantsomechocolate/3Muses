@@ -2666,7 +2666,7 @@ def delete_product_image():
     response.flash="Sucessfully Deleted"
     session.flash=response.flash
     redirect(URL('manage_products_new'))
-    
+
         # return True
 
     # except:
@@ -2677,10 +2677,89 @@ def delete_product_image():
         # return False
 
 
+#def add_product_image():
+
+
+
+def dropzone_sample():
+    return dict()
 
 
 
 
+
+def dropzone_upload():
+    #print request.vars
+
+
+    field_storage_object=request.vars['file']
+
+    # print field_storage_object.name
+
+    # print dir(field_storage_object)
+
+    file_name = field_storage_object.filename
+    category_id=1
+    product_id=1
+
+    db_id=db.image.insert(
+        category_name = category_id,
+        product_name = product_id,
+        title = file_name,
+        s3_url = field_storage_object,
+        )
+
+    return db_id
+
+
+def dropzone_delete():
+    db_id=request.vars.id
+    db(db.image.id==str(db_id)).delete()
+    print "haldskjf"
+    return "SUCCESS"
+
+
+def prepopulate_dropzone():
+    import json
+
+    product_id=1
+
+    product_images = db(db.image.product_name==product_id).select()
+
+    #product_images_dict = product_images.as_dict()
+
+
+    image_data=[]
+
+    for image in product_images:
+        image_dict=image.as_dict()
+        s3_url_info=image_dict['s3_url']
+
+
+        if sqlite_tf:
+            full_url=URL('download', s3_url_info)
+        else:
+            full_url='https://s3.amazonaws.com/threemusesglass/site_images/'+str(s3_url_info)
+
+        print full_url
+
+        image_dict['s3_url']=full_url
+
+
+
+
+
+
+
+
+
+
+
+        image_data.append(image_dict)
+
+
+
+    return json.dumps(image_data)
 
 
 
