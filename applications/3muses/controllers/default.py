@@ -2750,11 +2750,6 @@ def prepopulate_dropzone():
 
 
 
-
-
-
-
-
         image_data.append(image_dict)
 
 
