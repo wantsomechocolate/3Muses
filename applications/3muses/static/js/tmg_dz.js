@@ -13,7 +13,10 @@
 
 // TODO
 // Add filesize to db when uploading a file so that it can be retrieved for dropzone
-// Make sure the dropzone sample still works with the remote db
+// Make sure the dropzone sample still works with the remote db (of course it doesn't)
+// Use boto to set content type of freshly uploaded files - super not efficient, but whatever.
+// Stupid pyfilesystem doesn't support setting the content type
+// Actually, ask this question on stack overflow soon. And maybe the other one I never got an answer to. 
 // Try adding dropzone to datables...
 
 
@@ -75,6 +78,7 @@ $(document).ready(function(){
 					// Ma-man, ITSolution. Coming up big with createThumbnailFromUrl
 					// Without this, I would have had to create my own thumbnail!
 					myDropzone.createThumbnailFromUrl(mockFile, image_list[index]['s3_url']);
+					// myDropzone.emit('thumbnail',mockFile, image_list[index]['s3_url']);
 
 					// Remove the loading bar
 					myDropzone.emit("complete", mockFile);
