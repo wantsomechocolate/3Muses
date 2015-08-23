@@ -232,6 +232,7 @@ db.define_table('image',
 	Field('product_name', 'reference product'),
 	Field('title'),
 	Field('s3_url', 'upload'),
+	Field('filesize'),
 	)
 
 db.image.title.requires=IS_NOT_IN_DB(db,db.image.title)

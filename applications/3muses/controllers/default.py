@@ -2269,6 +2269,13 @@ def ajax_manage_products_new():
 
         products = db(db.product.id>0).select()
 
+    except AttributeError:
+
+        products = db(db.product.id>0).select()
+
+        response.flash="There are no products associated with that category. Showing all products"
+        # session.flash=response.flash
+
 
     product_images_LOD=[]
 
@@ -2293,7 +2300,7 @@ def ajax_manage_products_new():
             if sqlite_tf:
                 full_url=URL('download', s3_url_info)
             else:
-                full_url='https://s3.amazonaws.com/threemusesglass/site_images/'+str(s3_url_info)
+                full_url='https://s3.amazonaws.com/threemusesglass/site_images/'+s3_url_info
 
             image_dict['s3_url']=full_url
 
@@ -2690,7 +2697,7 @@ def dropzone_sample():
 
 def dropzone_upload():
     #print request.vars
-
+    import io
 
     field_storage_object=request.vars['file']
 
@@ -2698,15 +2705,32 @@ def dropzone_upload():
 
     # print dir(field_storage_object)
 
-    file_name = field_storage_object.filename
-    category_id=1
-    product_id=1
+    filename = field_storage_object.filename
+    # filesize = field_storage_object.length
+
+
+    # file_handle=gzip.GzipFile(fileobj=io.BytesIO(field_storage_object.value), mode='r')
+    # file_handle=io.BytesIO(field_storage_object.value)
+
+    # filesize = len(io.BytesIO(field_storage_object.value))
+
+
+    # fh = field_storage_object.file
+
+    filesize = request.vars['filesize']
+
+    print filesize
+    #category_id=1
+    product_id=request.args[0]
+
+    category_id = db(db.product.id == product_id ).select().first().category_name
 
     db_id=db.image.insert(
         category_name = category_id,
         product_name = product_id,
-        title = file_name,
+        title = filename,
         s3_url = field_storage_object,
+        filesize = filesize,
         )
 
     return db_id
@@ -2722,7 +2746,7 @@ def dropzone_delete():
 def prepopulate_dropzone():
     import json
 
-    product_id=1
+    product_id=request.args[0]
 
     product_images = db(db.image.product_name==product_id).select()
 

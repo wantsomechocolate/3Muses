@@ -2471,3 +2471,20 @@ body#confirmation #order-summary .container{
 	}
 
 }
+
+
+
+
+/* dropzone */
+.dz-image img{
+	/*width:100%;*/
+}
+
+.dz-image {
+	width:auto !important;
+	height:auto !important;
+}
+
+.dropzone {
+	width:80vw;
+}
