@@ -1,0 +1,43 @@
+/*######################################################*/
+/* #########       DROPZONE STYLES         ############ */
+/*######################################################*/
+
+/* Center the image horizontally and vertically */
+.dz-image img{
+	transform: translate(-50%,-50%);
+	width: 250px !important;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+}
+
+	/* Dropzone uses the transform in their hover so I had to include 
+	logic here to keep image centered on hover*/
+    .dropzone .dz-preview:hover .dz-image img {
+			/*-webkit-transform: scale(1.05, 1.05);
+			-moz-transform: scale(1.05, 1.05);
+			-ms-transform: scale(1.05, 1.05);
+			-o-transform: scale(1.05, 1.05);
+			transform: scale(1.05, 1.05);*/
+	    transform: translate(-50%,-50%) scale(1.05, 1.05) !important;
+			/*-webkit-filter: blur(8px);
+			filter: blur(8px); */
+  	}
+
+/* Over ride the dropzone default thumbnail container width and height
+By making this 200x200px and the image 250px wide it allows for the image to be fill the space
+unless of course the image is much taller than it is wide, but then I would need JS*/
+.dz-image {
+	position: relative;
+		/*width:auto !important;
+		height:auto !important;*/
+	width:200px !important;
+	height:200px !important;
+}
+
+/* The datatables has overflow set so using percentages with 
+the table as the parent causes really wide dropzones. 
+I just make it a litter more presentable here */
+.dropzone {
+	width:80vw;
+}
