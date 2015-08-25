@@ -2304,18 +2304,12 @@ def ajax_manage_products_new():
 
             image_dict['s3_url']=full_url
 
-            image_delete_url=A('X',_href=URL('delete_product_image', args=[image_dict['id']])).xml()
-
-            image_dict['image_delete_url']=image_delete_url
-
-
+            # image_delete_url=A('X',_href=URL('delete_product_image', args=[image_dict['id']])).xml()
+            # image_dict['image_delete_url']=image_delete_url
 
             image_data.append(image_dict)
 
-
         #print image_data
-
-
 
         product_dict['images']=image_data
 

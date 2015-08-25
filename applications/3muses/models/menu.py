@@ -39,36 +39,37 @@ def _():
     ctr = request.controller
     # useful links to internal and external resources
 
-    categories=db(db.categories.is_active==True).select()
-    category_names=[]
-    category_names.append((T('All Categories'),False,URL('categories')))
-    for row in categories:
-      category_names.append((T(row.category_name),False,URL('display/'+str(row.category_name.replace(" ","_")))))
+    # categories=db(db.categories.is_active==True).select()
+    # category_names=[]
+    # category_names.append((T('All Categories'),False,URL('categories')))
+    # for row in categories:
+    #   category_names.append((T(row.category_name),False,URL('display/'+str(row.category_name.replace(" ","_")))))
 
-    admin_pages_li=[
-    (T('Manage Products'),False,URL('manage_products')),
-    (T('Manage Product Images'),False,URL('manage_product_images')),
-    (T('Manage Categories'),False,URL('manage_categories')),
-    (T('Manage Landing Page'),False,URL('manage_landing_page_images')),
-    (T('Manage Purchase Data'),False,URL('manage_purchase_history_data')),
-    (T('Manage Purchased Products'),False,URL('manage_purchase_history_products')),
-    (T('Reset Inventory'),False,URL('reset_inventory')),
-    ]
+    # admin_pages_li=[
+    # (T('Manage Products'),False,URL('manage_products')),
+    # (T('Manage Product Images'),False,URL('manage_products_new')),
+    # # (T('Manage Product Images'),False,URL('manage_product_images')),
+    # (T('Manage Categories'),False,URL('manage_categories')),
+    # # (T('Manage Landing Page'),False,URL('manage_landing_page_images')),
+    # (T('Manage Purchase Data'),False,URL('manage_purchase_history_data')),
+    # (T('Manage Purchased Products'),False,URL('manage_purchase_history_products')),
+    # # (T('Reset Inventory'),False,URL('reset_inventory')),
+    # ]
 
-    response.menu += [
-      (SPAN("Navigation"), False, '', [
-        (T('Product Lines'), False, None, category_names),
-        (T('3Muses on Etsy'), False, 'https://www.etsy.com/shop/3MusesGlass', None),
-        (T('Meet The Artist'),False, URL('artist')),
-        ],
-      )]
+    # response.menu += [
+    #   (SPAN("Navigation"), False, '', [
+    #     (T('Product Lines'), False, None, category_names),
+    #     (T('3Muses on Etsy'), False, 'https://www.etsy.com/shop/3MusesGlass', None),
+    #     (T('Meet The Artist'),False, URL('artist')),
+    #     ],
+    #   )]
 
-    if auth.has_membership('admin'):
-      response.menu += [
-        (SPAN("Admin Pages"), False, None, admin_pages_li),
-        ]
-    else:
-      pass
+    # if auth.has_membership('admin'):
+    #   response.menu += [
+    #     (SPAN("Admin Pages"), False, None, admin_pages_li),
+    #     ]
+    # else:
+    #   pass
 
 
 if DEVELOPMENT_MENU: _()

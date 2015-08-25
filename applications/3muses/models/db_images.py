@@ -364,14 +364,6 @@ db.email_correspondence.is_active.default=True
 
 
 
-
-
-
-
-
-
-
-
 ## Keeping track of purchases:
 ## Purchase table
 ## Store everything about the purchase except product and qty
@@ -391,3 +383,18 @@ db.email_correspondence.is_active.default=True
 ## I also want to try to store things as dictionaries, so the tables don't have to have
 ## 1000 columns. It also helps with having seperate columns for different source of similar info. 
 ## like stripe vs paypal. 
+
+
+
+
+
+db.define_table('core_columns',
+	Field('table_name'),
+	Field('core','boolean'),
+	# Field('equipment_type'),
+	Field('data_ref'),
+	Field('defaultContent'),
+	Field('title'),
+	Field('column_order','integer'),
+	Field('width'),
+	)

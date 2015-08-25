@@ -5,7 +5,7 @@
 /* Center the image horizontally and vertically */
 .dz-image img{
 	transform: translate(-50%,-50%);
-	width: 250px !important;
+	width: 125px !important;
 	position: absolute;
 	left: 50%;
 	top: 50%;
@@ -31,8 +31,8 @@ unless of course the image is much taller than it is wide, but then I would need
 	position: relative;
 		/*width:auto !important;
 		height:auto !important;*/
-	width:200px !important;
-	height:200px !important;
+	width:100px !important;
+	height:100px !important;
 }
 
 /* The datatables has overflow set so using percentages with 
