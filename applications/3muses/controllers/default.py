@@ -2316,128 +2316,140 @@ def ajax_manage_products_new():
         product_LOD.append(product_dict)
 
 
+    core_columns=db((db.core_columns.table_name=='manage_products_new')&(db.core_columns.core==True)).select(orderby=db.core_columns.column_order).as_list()
+
+
+    for item in core_columns:
+        item['data']=item['data_ref']
+
+
+    collapse_expand=dict(
+        className='details-control',
+        orderable=False,
+        data=None,
+        defaultContent='',
+        # width='50px',
+        )
+
+
+    columns_LOD=core_columns
+
+    columns_LOD.insert(0,collapse_expand)
+
+    print core_columns
 
 
 
+    # core_columns=[
 
-        core_columns=[
+    #     dict(
+    #         className='details-control',
+    #         orderable=False,
+    #         data=None,
+    #         defaultContent='',
+    #         width='50px',
+    #         ),
+        
+    #     dict(
+    #         table_name='Bracelets',
+    #         core=True,
 
-            dict(
-                className='details-control',
-                orderable=False,
-                data=None,
-                defaultContent='',
-                width='50px',
-                ),
-            
-            dict(
-                table_name='Bracelets',
-                core=True,
+    #         data='product_name',
+    #         defaultContent='',
+    #         title='Product Name',
 
-                data='product_name',
-                defaultContent='',
-                title='Product Name',
+    #         width='200px',
+    #         ),
 
-                width='200px',
-                ),
+    #     dict(
+    #         table_name='Bracelets',
+    #         core=True,
 
-            dict(
-                table_name='Bracelets',
-                core=True,
+    #         data='description',
+    #         defaultContent='',
+    #         title='Description',
+    #         width='400px',
+    #         ),
 
-                data='description',
-                defaultContent='',
-                title='Description',
-                width='400px',
-                ),
+    #     dict(
+    #         table_name='Bracelets',
+    #         core=True,
 
-            dict(
-                table_name='Bracelets',
-                core=True,
+    #         data='cost_USD',
+    #         defaultContent='',
+    #         title='Cost ($)',
+    #         ),
 
-                data='cost_USD',
-                defaultContent='',
-                title='Cost ($)',
-                ),
+    #     dict(
+    #         table_name='Bracelets',
+    #         core=True,
 
-            dict(
-                table_name='Bracelets',
-                core=True,
+    #         data='weight_oz',
+    #         defaultContent='',
+    #         title='Weight (oz)',
+    #         ),
 
-                data='weight_oz',
-                defaultContent='',
-                title='Weight (oz)',
-                ),
+    #     dict(
+    #         table_name='Bracelets',
+    #         core=True,
 
-            dict(
-                table_name='Bracelets',
-                core=True,
+    #         data='is_active',
+    #         defaultContent='',
+    #         title='Is Active',
+    #         ),
 
-                data='is_active',
-                defaultContent='',
-                title='Is Active',
-                ),
+    #     dict(
+    #         table_name='Bracelets',
+    #         core=True,
 
-            dict(
-                table_name='Bracelets',
-                core=True,
+    #         data='shipping_description',
+    #         defaultContent='',
+    #         title='Shipping Description',
+    #         ),
 
-                data='shipping_description',
-                defaultContent='',
-                title='Shipping Description',
-                ),
+    #     dict(
+    #         table_name='Bracelets',
+    #         core=True,
 
-            dict(
-                table_name='Bracelets',
-                core=True,
+    #         data='qty_in_stock',
+    #         defaultContent='',
+    #         title='Quantity in Stock',
+    #         ),
 
-                data='qty_in_stock',
-                defaultContent='',
-                title='Quantity in Stock',
-                ),
+    #     dict(
+    #         table_name='Bracelets',
+    #         core=True,
 
-            dict(
-                table_name='Bracelets',
-                core=True,
+    #         data='id',
+    #         defaultContent='',
+    #         title='DB ID',
+    #         ),
 
-                data='id',
-                defaultContent='',
-                title='DB ID',
-                ),
+    #     dict(
+    #         table_name='Bracelets',
+    #         core=True,
 
-            dict(
-                table_name='Bracelets',
-                core=True,
+    #         data='category_name',
+    #         defaultContent='',
+    #         title='Category Name',
+    #         ),
 
-                data='category_name',
-                defaultContent='',
-                title='Category Name',
-                ),
+    #     dict(
+    #         table_name='Bracelets',
+    #         core=True,
 
-            dict(
-                table_name='Bracelets',
-                core=True,
+    #         data='display_order',
+    #         defaultContent='',
+    #         title='Display Order',
+    #         ),
 
-                data='display_order',
-                defaultContent='',
-                title='Display Order',
-                ),
-
-            ]
-
-
-        # collapse_expand=dict(
-        #     className='details-control',
-        #     orderable=False,
-        #     data=None,
-        #     defaultContent='',
-        #     )
+    #     ]
 
 
-        json_data={
-            'data':product_LOD,
-            'columns':core_columns,
-            }
+    json_data={
+        'data':product_LOD,
+        'columns':core_columns,
+        }
 
 
 
