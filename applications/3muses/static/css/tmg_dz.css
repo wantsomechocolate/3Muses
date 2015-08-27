@@ -39,5 +39,12 @@ unless of course the image is much taller than it is wide, but then I would need
 the table as the parent causes really wide dropzones. 
 I just make it a litter more presentable here */
 .dropzone {
-	width:45%;
+	width:40%;
+}
+
+
+.additional-info{
+	width:58%;
+	float: right;
+	border:1px solid #333;
 }

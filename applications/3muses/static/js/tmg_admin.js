@@ -47,32 +47,33 @@ function format ( d, columns ) {
     // Keeping this around because I may want to use it at some point
      // Begin making the html to show the extra information
      // I still might use this to have both additional info and the images in the coex
-	child_rows='<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'
-	child_rows+='<tr>'
+    child_rows='<div class="additional-info">'
+		child_rows+='<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'
+			child_rows+='<tr>'
 
-	 // for each property in the record being clicked
-	for (property in d){
+			 // for each property in the record being clicked
+			for (property in d){
 
-		// if the property is not a core field, aka if the property can not be found in the list of core fields
-		// (indexOf returns -1 if no match is found)
-		if (core_fields.indexOf(property)===-1){
+				// if the property is not a core field, aka if the property can not be found in the list of core fields
+				// (indexOf returns -1 if no match is found)
+				if (core_fields.indexOf(property)===-1){
 
-			// for (index in d[property]){
+					// for (index in d[property]){
 
-				child_rows+='<tr>'+'<td>'+property+':</td>'+'<td>'+d[property]+'</td>'+'</tr>'
-				
-					// child_rows+='<td>'
-					// child_rows+='<img src='+d[property][index]['s3_url']+'/>'
-					// child_rows+=d[property][index]['image_delete_url']
-					// child_rows+='</td>'
-			// }
-		}
-	}
+						child_rows+='<tr>'+'<td>'+property+':</td>'+'<td>'+d[property]+'</td>'+'</tr>'
+						
+							// child_rows+='<td>'
+							// child_rows+='<img src='+d[property][index]['s3_url']+'/>'
+							// child_rows+=d[property][index]['image_delete_url']
+							// child_rows+='</td>'
+					// }
+				}
+			}
 
-	child_rows+='</tr>'
-	// complete the table for additional information
-	child_rows+='</table>';
-	child_rows+='</br>'
+			child_rows+='</tr>'
+		// complete the table for additional information
+		child_rows+='</table>';
+	child_rows+='</div>'
 
 
 

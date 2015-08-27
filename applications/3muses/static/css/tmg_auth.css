@@ -324,3 +324,18 @@ body#manage_products_new img{
 	width:200px;
 	display: inline;
 }
+
+
+.tmg-admin-header{
+	text-align: center;
+}
+
+
+table#db_admin tbody tr:not([role=row]) td{
+	position: relative;
+}
+
+.dropzone_div{
+	position: absolute;
+	height: 95%;
+}
