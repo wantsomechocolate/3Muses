@@ -60,6 +60,12 @@ function format ( d, columns ) {
 
 					// for (index in d[property]){
 
+					  // alert($.isPlainObject(d[property]));
+					  var typeofvar = typeof d[property]
+					  // alert(typeof d[property]);
+
+					  if (typeofvar!=='object'){
+
 						child_rows+='<tr>'+'<td>'+property+':</td>'+'<td>'+d[property]+'</td>'+'</tr>'
 						
 							// child_rows+='<td>'
@@ -67,6 +73,8 @@ function format ( d, columns ) {
 							// child_rows+=d[property][index]['image_delete_url']
 							// child_rows+='</td>'
 					// }
+
+					  }
 				}
 			}
 
@@ -76,6 +84,7 @@ function format ( d, columns ) {
 	child_rows+='</div>'
 
 
+	child_rows+='</br>'
 
 
 	// At the moment, only create a dropzone with the appropriate id based on the id of the product in that row. 

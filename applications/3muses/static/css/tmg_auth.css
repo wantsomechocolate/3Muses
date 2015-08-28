@@ -318,6 +318,9 @@ body#view_purchase_history td{
 
 
 
+body#manage_products_new{
+	background: #F1F0FF;
+}
 
 
 body#manage_products_new img{
@@ -331,11 +334,16 @@ body#manage_products_new img{
 }
 
 
-table#db_admin tbody tr:not([role=row]) td{
+/*This is the coolest selector I have ever written*/
+/*table#db_admin tbody tr:not([role=row]) td{
 	position: relative;
-}
+}*/
 
-.dropzone_div{
+/*.dropzone_div{
 	position: absolute;
 	height: 95%;
+}*/
+
+div.additional-info table{
+	width:100%;
 }
