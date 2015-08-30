@@ -183652,3 +183652,156 @@ success!
 success!
 success!
 success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+timestamp: 2015-08-30T02:50:38.512355
+CREATE TABLE core_columns(
+    id SERIAL PRIMARY KEY,
+    table_name VARCHAR(512),
+    core CHAR(1),
+    data_ref VARCHAR(512),
+    defaultContent VARCHAR(512),
+    title VARCHAR(512),
+    column_order INTEGER,
+    width VARCHAR(512)
+);
+timestamp: 2015-08-30T02:50:39.255646
+CREATE TABLE core_columns(
+    id SERIAL PRIMARY KEY,
+    table_name VARCHAR(512),
+    core CHAR(1),
+    data_ref VARCHAR(512),
+    defaultContent VARCHAR(512),
+    title VARCHAR(512),
+    column_order INTEGER,
+    width VARCHAR(512)
+);
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+timestamp: 2015-08-30T03:16:38.182371
+CREATE TABLE core_columns(
+    id SERIAL PRIMARY KEY,
+    table_name VARCHAR(512),
+    core CHAR(1),
+    data_ref VARCHAR(512),
+    defaultContent VARCHAR(512),
+    title VARCHAR(512),
+    column_order INTEGER,
+    width VARCHAR(512)
+);
+timestamp: 2015-08-30T03:16:38.610796
+CREATE TABLE core_columns(
+    id SERIAL PRIMARY KEY,
+    table_name VARCHAR(512),
+    core CHAR(1),
+    data_ref VARCHAR(512),
+    defaultContent VARCHAR(512),
+    title VARCHAR(512),
+    column_order INTEGER,
+    width VARCHAR(512)
+);
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+timestamp: 2015-08-30T03:16:57.741395
+CREATE TABLE core_columns(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    table_name CHAR(512),
+    core CHAR(1),
+    data_ref CHAR(512),
+    defaultContent CHAR(512),
+    title CHAR(512),
+    column_order INTEGER,
+    width CHAR(512)
+);
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+timestamp: 2015-08-30T03:16:58.230518
+CREATE TABLE core_columns(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    table_name CHAR(512),
+    core CHAR(1),
+    data_ref CHAR(512),
+    defaultContent CHAR(512),
+    title CHAR(512),
+    column_order INTEGER,
+    width CHAR(512)
+);
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+timestamp: 2015-08-30T03:19:04.831207
+CREATE TABLE core_columns_2(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    table_name CHAR(512),
+    core CHAR(1),
+    data_ref CHAR(512),
+    defaultContent CHAR(512),
+    title CHAR(512),
+    column_order INTEGER,
+    width CHAR(512)
+);
+success!
+timestamp: 2015-08-30T03:22:34.171725
+CREATE TABLE core_columns_2(
+    id SERIAL PRIMARY KEY,
+    table_name VARCHAR(512),
+    core CHAR(1),
+    data_ref VARCHAR(512),
+    defaultContent VARCHAR(512),
+    title VARCHAR(512),
+    column_order INTEGER,
+    width VARCHAR(512)
+);
+success!
