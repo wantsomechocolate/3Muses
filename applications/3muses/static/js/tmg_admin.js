@@ -159,6 +159,17 @@ Dropzone.autoDiscover = false;
 $(document).ready(function() {
 
 
+
+
+
+
+
+
+
+
+
+
+
 	// in order to check if we are on the correct page!
     var url_list=window.location.pathname.split('/')
 	    // var device_id=url_list[url_list.length-1]
@@ -194,6 +205,10 @@ $(document).ready(function() {
 			        order: [[1, 'asc']],
 			        stateSave:true,
 			    } );
+
+			    $('td').on('click',function(){
+					alert('hey')
+				});
 
 			    // Add event listener for opening and closing details
 			    $('#db_admin').on('click', 'td.details-control', function () {

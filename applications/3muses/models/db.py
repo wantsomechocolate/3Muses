@@ -9,8 +9,9 @@ import os,ast
 ## be redirected to HTTPS, uncomment the line below:
 # request.requires_https()
 
+from gluon.contrib.heroku import get_db
 
-sqlite_tf=False
+sqlite_tf=True
 
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
@@ -23,7 +24,8 @@ if not request.env.web2py_runtime_gae:
         sqlite_tf=False
 
         ## connect to db
-        db = DAL(os.environ['DATABASE_URL'], pool_size=10)
+        #db = DAL(os.environ['DATABASE_URL'], pool_size=10)
+        db = get_db(name=os.environ['DATABASE_URL'], pool_size=10)
 
     ## You are running locally
     else:
@@ -34,7 +36,8 @@ if not request.env.web2py_runtime_gae:
 
         ## if not, connect to remote db
         else:
-            db = DAL(os.environ['DATABASE_URL'], pool_size=10)
+            #db = DAL(os.environ['DATABASE_URL'], pool_size=10)
+            db = get_db(name=os.environ['DATABASE_URL'], pool_size=10)
         
         # ## a Key error means you are not running on heroku (hopefully), so try to get the db location locally
         # except (KeyError):

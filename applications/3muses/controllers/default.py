@@ -2290,6 +2290,14 @@ def ajax_manage_products_new():
 
         product_dict=product.as_dict()
 
+        category_id=product_dict['category_name']
+
+        category_name=db(db.categories.id==category_id).select().first().category_name
+
+        print category_name
+
+        product_dict['category_name']=category_name
+
         image_data=[]
 
         for image in images:
