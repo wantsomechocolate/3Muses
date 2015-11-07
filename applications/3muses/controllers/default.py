@@ -1355,16 +1355,16 @@ def pay_stripe():
             print "BC - Before charge"
 
             ## Usual process
-            # charge = stripe.Charge.create(
-            #     amount=int(float(total_cost_USD)*100), # amount in cents, again
-            #     currency="usd",
-            #     source=token,
-            #     description="Purchase from ThreeMusesGlass",
-            #     )
+            charge = stripe.Charge.create(
+                amount=int(float(total_cost_USD)*100), # amount in cents, again
+                currency="usd",
+                source=token,
+                description="Purchase from ThreeMusesGlass",
+                )
 
             ## For debugging
-            charge = stripe.Charge.retrieve('ch_16JNSKBJewwJxtz72EQeStZU')
-            stripe_email='wantsomechocolate@gmail.com'
+            # charge = stripe.Charge.retrieve('ch_16JNSKBJewwJxtz72EQeStZU')
+            # stripe_email='wantsomechocolate@gmail.com'
 
             # charge=json.loads("""{
             #       "amount": 4204, 
@@ -1426,11 +1426,13 @@ def pay_stripe():
             #       "status": "succeeded"
             #     }""")
 
-    
+            print ""
             print 'charge'
             print charge
-            print 'charge'
+            print ""
+            print 'charge id'
             print charge['id']
+            print ""
 
 
             ##################################################
@@ -1568,7 +1570,7 @@ def pay_stripe():
                 purchase_history_products_rows=db(db.purchase_history_products.purchase_history_data_id==purchase_history_data_id).select(),
                 )
 
-            receipt_message_html = response.render('default/receipt.html', receipt_context)
+            receipt_message_html = response.render('default/receipt_rev3_premailer.html', receipt_context)
 
 
 
@@ -4230,24 +4232,25 @@ def view_purchase_history():
 
 def receipt_test():
 
-    # email_icons=dict(
-    #     products_icon_url="https://s3.amazonaws.com/threemusesglass/icons/ProductIcon.png",
-    #     address_icon_url="https://s3.amazonaws.com/threemusesglass/icons/AddressIcon.png",
-    #     shipping_icon_url="https://s3.amazonaws.com/threemusesglass/icons/ShippingIcon.png",
-    #     payment_icon_url="https://s3.amazonaws.com/threemusesglass/icons/PaymentIcon.png",
-    #     summary_icon_url="https://s3.amazonaws.com/threemusesglass/icons/SummaryIcon.png",
-    #     )
+    email_icons=dict(
+        products_icon_url="https://s3.amazonaws.com/threemusesglass/icons/ProductIcon.png",
+        address_icon_url="https://s3.amazonaws.com/threemusesglass/icons/AddressIcon.png",
+        shipping_icon_url="https://s3.amazonaws.com/threemusesglass/icons/ShippingIcon.png",
+        payment_icon_url="https://s3.amazonaws.com/threemusesglass/icons/PaymentIcon.png",
+        summary_icon_url="https://s3.amazonaws.com/threemusesglass/icons/SummaryIcon.png",
+        )
 
     receipt_context=dict(
-        purchase_history_data_row=db(db.purchase_history_data.id==200).select().first(),
-        purchase_history_products_rows=db(db.purchase_history_products.purchase_history_data_id==200).select(),
+        email_icons=email_icons,
+        purchase_history_data_row=db(db.purchase_history_data.id==214).select().first(),
+        purchase_history_products_rows=db(db.purchase_history_products.purchase_history_data_id==214).select(),
         )
 
     # receipt_context=dict(
     #     email_icons=email_icons,
     #     )
 
-    receipt_message_html = response.render('default/receipt.html', receipt_context)
+    receipt_message_html = response.render('default/receipt_rev3.html', receipt_context)
 
     return receipt_message_html
 
@@ -4324,6 +4327,9 @@ def receipt_test():
 
 
 def receipt():
+    return dict()
+
+def receipt_rev1():
     return dict()
 
 
@@ -4516,7 +4522,7 @@ def paypal_confirmation():
 
 
             #receipt_message_html = response.render('receipt.html', receipt_context)
-            receipt_message_html = response.render('default/receipt.html', receipt_context)
+            receipt_message_html = response.render('default/receipt_rev3_premailer.html', receipt_context)
 
             # email_address_query=db(db.email_correspondence.user_id==auth.user_id).select(db.email_correspondence.email).first()
             # email_address=list(email_address_query.as_dict().values())[0]
@@ -4736,3 +4742,80 @@ def change_password():
 
 def session_look():
     return dict(session_vars=session)
+
+
+def get_modal_edit_form():
+
+    import json
+
+    item_id=request.args[0]
+
+    item_form=SQLFORM(
+        db.product,
+        record=item_id,
+        # action=URL('process_modal_edit_form'),
+        # buttons=[
+        # A("Cancel",_class='btn btn-danger',_href=URL("cart#address-information")),
+        # TAG.button('Submit',_type="submit", _class="btn btn-info")
+        # ],
+        # fields=['first_name','last_name','street_address_line_1','street_address_line_2','municipality','administrative_area','postal_code','country'],
+        # labels={'first_name':'First Name',
+        #         'last_name':'Last Name',
+        #         'street_address_line_1':'Street Address Line 1',
+        #         'street_address_line_2':'Street Address Line 2',
+        #         'municipality': 'City/Town/Municipality',
+        #         'administrative_area':'State/Administrative Area',
+        #         'postal_code':'Zipcode/Postal Code',
+        #         'country':'Country',
+        #         },
+    )
+
+    #item_form['']
+
+    # print "\n"
+    # print "\n"
+    # print item_form
+    item_form['_action']="process_modal_edit_form"
+    # print "\n"
+    # print item_form
+
+
+    return json.dumps(item_form.xml())
+    #return dict(form=item_form)
+
+    # address_form.vars.default_address=True
+
+    # address_form.custom.widget.field_name['_class'] = 'bla bla'
+
+    # for input_field in address_form.elements('input', _class='string'):
+    #     input_field['_class'] = 'form-control'
+
+    # for input_field in address_form.elements('select',_class='generic-widget'):
+    #     input_field['_class'] = 'generic-widget address-view-combo-box'
+
+
+def process_modal_edit_form():
+
+
+    print "hey"
+
+    print request.vars
+
+    item_id=request.vars.id
+
+    print item_id
+
+    db.product.update_or_insert(db.product.id==item_id,**request.vars)
+
+    #form = request.vars.form
+
+    #form.process()
+
+    redirect(URL('manage_products_new'))
+
+    #return dict()
+
+
+
+def test_form():
+    return dict()

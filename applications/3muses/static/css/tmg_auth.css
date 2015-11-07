@@ -347,3 +347,8 @@ body#manage_products_new img{
 div.additional-info table{
 	width:100%;
 }
+
+.modal-body input, .modal-body select{
+	width:100%;
+}
+

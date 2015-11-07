@@ -337,7 +337,7 @@ def create_purchase_history_dict(
             field1="Paypal",
             )
 
-    minimal_confirmation_info=json.dumps(minimal_confirmation_info)
+    #minimal_confirmation_info=json.dumps(minimal_confirmation_info)
 
 
     purchase_history_data_dict=dict(
@@ -382,6 +382,11 @@ def create_purchase_history_dict(
         cart_total_cost=summary_data['information_LOD'][0]['total_cost_USD'],
 
     )
+    
+    print ""
+    print "purchase history data dict"
+    print purchase_history_data_dict
+    print ""
 
     return purchase_history_data_dict
 
@@ -441,6 +446,7 @@ def generate_confirmation_email_receipt_context(
 
     product_table_row_LOL=[]
     product_total_cost=0
+    products_info_LOD=[]
 
     for row in purchase_history_products_rows:
 

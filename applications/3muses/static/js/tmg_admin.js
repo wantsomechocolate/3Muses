@@ -91,7 +91,6 @@ function format ( d, columns ) {
 	child_rows+="<div class='dropzone_div dropzone' id='dropzone_div_"+ d['id'] +"'></div>"
 
     return child_rows
-
 } // Close function format
 
 
@@ -144,7 +143,7 @@ function show_remaining_data ( d, columns ) {
 	child_rows+='</table>';
 
     return child_rows
-}
+} // end function show_remaining_data
 
 
 /*######################################################*/
@@ -156,29 +155,37 @@ function show_remaining_data ( d, columns ) {
 Dropzone.autoDiscover = false;
 
 
+
+
+
+
+
 $(document).ready(function() {
-
-
-
-
-
-
-
-
-
 
 
 
 
 	// in order to check if we are on the correct page!
     var url_list=window.location.pathname.split('/')
-	    // var device_id=url_list[url_list.length-1]
-	    // alert(url_list[url_list.length-1]);
 
 	if (url_list[1]==='manage_products_new') {
 
-		var category_name=url_list[2];
+		// For state saving the datatable including expand and collapse
+		var ex_co_ss_check = localStorage.getItem("ex_co_ss");
+		if (ex_co_ss_check===null){
+			var ex_co_ss = [];
+			localStorage.setItem("ex_co_ss", JSON.stringify(ex_co_ss));
+		} else {
+			var ex_co_ss = $.parseJSON(ex_co_ss_check)
+			// The line below is for testing purposes. 
+			// localStorage.setItem("ex_co_ss", JSON.stringify([]));
+		}
+		console.log('initial state of ex_co_ss')
+		console.log(ex_co_ss)
 
+
+		// Setting up URL to make ajax call depending on current url args
+		var category_name=url_list[2];
 		if (category_name==null) {
 			dest = '/ajax_manage_products_new/';
 		} else {
@@ -204,11 +211,71 @@ $(document).ready(function() {
 			        // scrollX: true,
 			        order: [[1, 'asc']],
 			        stateSave:true,
-			    } );
+			    } ); // Define the datatable 
 
-			    $('td').on('click',function(){
-					alert('hey')
-				});
+
+			    /* bring up modal to edit row when the row is clicked */
+				    // $('td').not('.details-control').on('click',function(){
+				    // $("#db_admin tbody").on("click", ".details-control", function () { return false; })
+				// The table was just defined, so you should be able to click on its elements
+			    $('#db_admin tbody').on('click', 'tr', function(e){
+
+			    	// console.log(e.target)
+
+			    	if ($(e.target).is(".details-control")){
+
+			    		console.log("A tr element of the body was clicked, but it was the details-control td so don't do anything");
+
+			    	// End if for clicked item is .details-control
+
+			    	// If the clicked element is not .details-control
+			    	} else {
+
+				    	var tr = $(this).closest('tr');
+					    var row = table.row( tr );
+					    var item_id=row.data()['id']
+
+					    // console.log(json['data']);
+					    // console.log(json['data'][0]['id'])
+					    // console.log(item_id)
+
+					    for (index in json['data']){
+
+					    	// console.log(item);
+					    	if (json['data'][index]['id']===item_id){
+					    		item_oi=json['data'][index];
+					    		console.log(item_oi)
+					    	}
+
+					    } // End for getting the contents of the clicked row out
+
+					    // Rejected modal stuff
+					    	// $('#edit-entry-modal .modal-header h2').html(json['data'][item_id]['product_name']);
+					    	// $('#edit-entry-modal .modal-header h2').html(item_oi['id']);
+					    	// $('#edit-entry-modal .modal-body').html(JSON.stringify(json));
+
+					   	// Show the modal for the clicked element
+						$('#edit-entry-modal').modal('show');
+
+						// Get the data to populate the modal with
+						$.ajax({
+							url:'/get_modal_edit_form/'+item_oi['id'],
+							dataType:'json',
+						})
+
+							.done( function ( form_html ){
+
+								// form_html=jQuery.parseJSON(form_json);
+								$('#edit-entry-modal .modal-body').html(form_html);
+
+							});
+
+					}; // end else
+
+				}); // End on click event for #db_admin tbody
+
+
+
 
 			    // Add event listener for opening and closing details
 			    $('#db_admin').on('click', 'td.details-control', function () {
@@ -216,12 +283,66 @@ $(document).ready(function() {
 			        var row = table.row( tr );
 			 
 			        if ( row.child.isShown() ) {
+
+			        	console.log('row was closed')
+
+			        	var ex_co_ss_string = localStorage.getItem("ex_co_ss");
+			        	var ex_co_ss = $.parseJSON(ex_co_ss_string)
+
+			        	ex_co_ss_id=$.inArray(row.data()['id'], ex_co_ss)
+
+			        	// console.log('index in the array of the row ids')
+			        	// console.log(ex_co_ss_id)
+			        	// console.log('the actual row id?')
+			        	// console.log(row.data()['id'])
+
+			        	if (ex_co_ss_id!==-1){
+			        		ex_co_ss.splice(ex_co_ss_id,1)
+			        		localStorage.setItem("ex_co_ss", JSON.stringify(ex_co_ss));
+			        	}
+
+			        	console.log('current state of ex_co_ss')
+			        	console.log(ex_co_ss)
+
+
+			        	// console.log(ex_co_ss)
+			        	// var test = localStorage.getItem("ex_co_ss")
+			        	// console.log(test)
+
+
 			            // This row is already open - close it
 			            row.child.hide();
 			            tr.removeClass('shown');
+
+
+
 			        }
 
 			        else {
+
+			        	console.log('row was opened')
+
+			        	var ex_co_ss_string = localStorage.getItem("ex_co_ss");
+			        	var ex_co_ss = $.parseJSON(ex_co_ss_string)
+
+
+			        	if ( $.inArray( row.data()['id'] , ex_co_ss ) === -1 ) {
+
+			        		ex_co_ss.push(row.data()['id'])
+
+			        	} else {
+
+			        	}
+
+			        	localStorage.setItem("ex_co_ss", JSON.stringify(ex_co_ss));
+
+			        	console.log('current state of ex_co_ss')
+
+			        	console.log(ex_co_ss)
+
+
+			        	// console.log(ex_co_ss)
+
 			            // Open this row
 			            // This calls format with the row data and the column information
 			            // The format function should know what to do with the info not in the table
@@ -390,9 +511,62 @@ $(document).ready(function() {
 
 			    } ); // end on event for collapse controls
 
-			}); // end done section for ajax call to setup table
 
+
+			var ex_co_ss_string=localStorage.getItem("ex_co_ss");
+
+			var ex_co_ss_array = ex_co_ss_string.split(",");
+
+			var ex_co_ss=$.parseJSON(ex_co_ss_string)
+
+			$.each(ex_co_ss,function(index, value){
+
+				console.log(value)
+
+			})
+
+
+			console.log('Pre-opening Rows')
+			$.each(table.rows()[0],function(index, value){
+				
+				row_id=value+1
+				console.log('Currently on row id')
+				console.log(row_id)
+				if ($.inArray(row_id,ex_co_ss)!==-1){
+					
+					// console.log(row_id)
+
+					// var theRow=table.rows(index)
+
+					var theRow = table
+					    .rows( function ( idx, data, node ) {
+
+					    	console.log('Selecting row')
+					    	console.log(data.id)
+					        return data.id === row_id ?
+					            true : false;
+					    } );
+
+
+					// console.log('the row id')
+					// console.log(theRow.id)
+					console.log('clicking the row based on the id')
+					console.log(row_id)
+					// $('.details-control').trigger('click')
+
+					// $('td').on('click','.details-control',function(){
+					// 	console.log('I WAS CLICKED');
+					// })
+
+					$('#db_admin').find('td.details-control').eq(index).trigger('click');
+
+				}
+
+			})
+					
+
+
+			}); // end done section for ajax call to setup table
 	} // End check to see if url is manage_products_new
 	
-
 } ); // End document ready

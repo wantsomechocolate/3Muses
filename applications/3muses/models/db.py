@@ -11,7 +11,7 @@ import os,ast
 
 from gluon.contrib.heroku import get_db
 
-sqlite_tf=True
+sqlite_tf=False
 
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
@@ -37,8 +37,9 @@ if not request.env.web2py_runtime_gae:
         ## if not, connect to remote db
         else:
             #db = DAL(os.environ['DATABASE_URL'], pool_size=10)
-            db = get_db(name=os.environ['DATABASE_URL'], pool_size=10)
-        
+            db = get_db(name='DATABASE_URL', pool_size=10)
+
+
         # ## a Key error means you are not running on heroku (hopefully), so try to get the db location locally
         # except (KeyError):
 
