@@ -25,7 +25,9 @@ if not request.env.web2py_runtime_gae:
 
         ## connect to db
         #db = DAL(os.environ['DATABASE_URL'], pool_size=10)
-        db = get_db(name=os.environ['DATABASE_URL'], pool_size=10)
+        #db = get_db(name=os.environ['DATABASE_URL'], pool_size=10)
+        db = get_db(name='DATABASE_URL', pool_size=10)
+
 
     ## You are running locally
     else:
