@@ -13,9 +13,21 @@ import os, ast, time
 
 STRIPE_SESSION_RETIRE_HOURS=26 #(1/20.0)
 SERVER_SESSION_RETIRE_HOURS=26 #(1/20.0)
-PRODUCTION_STATUS='test'
-PAYPAL_MODE='sandbox' #sandbox or live
-S3_BUCKET_PREFIX='https://s3.amazonaws.com/threemusesglass/site_images/'
+
+try:
+    PRODUCTION_STATUS=os.environ['PRODUCTION_STATUS']
+except KeyError:
+    PRODUCTION_STATUS='test'
+
+try:
+    PAYPAL_MODE=os.environ['PAYPAL_MODE'] #sandbox or live
+except KeyError:
+    PAYPAL_MODE='sandbox'
+
+try:
+    S3_BUCKET_PREFIX=os.environ['S3_BUCKET_PREFIX']
+except KeyError:
+    S3_BUCKET_PREFIX='https://s3.amazonaws.com/threemusesglass/site_images/'
 
 auth.settings.expiration = 999999999
 
@@ -1173,14 +1185,25 @@ def checkout():
         print web_profile.error
 
 
+
+    try:
+        return_url=os.environ['PAYPAL_RETURN_URL']
+    except KeyError:
+        return_url="https://threemusesglass.herokuapp.com/paypal_confirmation"
+
+    try:
+        cancel_url=os.environ['PAYPAL_CANCEL_URL']
+    except KeyError:
+        cancel_url="https://threemusesglass.herokuapp.com/cart"
+
     ## cart_for_paypal_LOD is from the cart logic section
     payment_dict=paypal_create_payment_dict(
         intent='sale',
         payment_method='paypal', 
         experience_profile_id=experience_profile_id,
         redirect_urls=dict(
-            return_url="https://threemusesglass.herokuapp.com/paypal_confirmation",
-            cancel_url="https://threemusesglass.herokuapp.com/cart"),
+            return_url=return_url,
+            cancel_url=cancel_url),
         cost_dict=dict(
             shipping_cost_USD=shipping_cost_USD,
             cart_cost_USD=cart_cost_USD,
@@ -4514,11 +4537,17 @@ def paypal_confirmation():
             purchase_history_products_ids=db.purchase_history_products.bulk_insert(purchase_history_products_LOD)
 
 
-            receipt_context=generate_confirmation_email_receipt_context(
-                muses_email_address=email_address, 
+            # receipt_context=generate_confirmation_email_receipt_context(
+            #     muses_email_address=email_address, 
+            #     purchase_history_data_row=db(db.purchase_history_data.id==purchase_history_data_id).select().first(),
+            #     purchase_history_products_rows=db(db.purchase_history_products.purchase_history_data_id==purchase_history_data_id).select(),
+            # )
+
+
+            receipt_context=dict(
                 purchase_history_data_row=db(db.purchase_history_data.id==purchase_history_data_id).select().first(),
                 purchase_history_products_rows=db(db.purchase_history_products.purchase_history_data_id==purchase_history_data_id).select(),
-            )
+                )
 
 
             #receipt_message_html = response.render('receipt.html', receipt_context)
