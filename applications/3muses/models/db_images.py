@@ -222,8 +222,8 @@ db.define_table('purchase_history_products',
 	Field('display_order','integer'),
 	Field('shipping_description'),
 	Field('weight_oz'),
-	singular=T("Purchase History Product"),
-	plural=T("Purchase History Products"),
+	singular=T("Purchased Product "),
+	plural=T("Pruchased Products "),
 	)
 
 

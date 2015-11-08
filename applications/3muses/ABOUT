@@ -1,12 +1,27 @@
-Write something about this app.
-Developed with web2py.
+
+
+
+11/08/15
+If a user pays with paypal, the create user function isn't working
+The payment information needs to look better in the receipt
+My mom requested the ability to have groups within groups. So like a jewelry group and then within that, a bracelet group and a necklace group
+
+
+11/07/15
+If a user pays with paypal, the create user function isn't working
+The payment information needs to look better in the receipt
+The product info table in the user profile is not lodaing any columns
+My mom requested the ability to have groups within groups. So like a jewelry group and then within that, a bracelet group and a necklace group
+
 
 12/22/14
 There is a problem with stripe and creating a new card
 I need to get that working and also paypal. 
-
 also, I'm in the middle of adding css to the email reciepts
-
 AND I'm in the middle of adding purchase history to the user profile. 
-
 This is a disaster!
+
+
+1/1/2014
+Write something about this app.
+Developed with web2py.

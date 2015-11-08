@@ -4194,6 +4194,8 @@ def view_purchase_history():
     db.purchase_history_products.display_order.readable=db.purchase_history_products.display_order.writable=False
     db.purchase_history_products.shipping_description.readable=db.purchase_history_products.shipping_description.writable=False
 
+    # db.purchase_history_products.description.maxtextlength=200
+
 
     grid=SQLFORM.smartgrid(db.purchase_history_data, 
         constraints=dict(purchase_history_data=query),
@@ -4227,6 +4229,11 @@ def view_purchase_history():
             db.purchase_history_data.easypost_shipping_carrier,
             db.purchase_history_data.easypost_shipping_service,
             db.purchase_history_data.easypost_delivery_date,
+            db.purchase_history_products.product_qty,
+            db.purchase_history_products.product_name,
+            db.purchase_history_products.description,
+            db.purchase_history_products.cost_USD,
+            db.purchase_history_products.weight_oz,
             ],
 
         headers={
@@ -4247,6 +4254,11 @@ def view_purchase_history():
             'purchase_history_data.easypost_shipping_carrier':'Carrier',
             'purchase_history_data.easypost_shipping_service':'Service',
             'purchase_history_data.easypost_delivery_date':'Estimated Delivery Date',
+            'purchase_history_products.product_qty':'Quantity',
+            'purchase_history_products.product_name':'Name',
+            'purchase_history_products.description':'Description',
+            'purchase_history_products.cost_USD':'Cost (USD)',
+            'purchase_history_products.weight_oz':'Weight (OZ)',
             },
         )
 
