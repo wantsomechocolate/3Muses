@@ -53,7 +53,7 @@ EASYPOST_KEY=get_env_var('easypost',PRODUCTION_STATUS,'EASYPOST_KEY')
 easypost.api_key=EASYPOST_KEY
 
 
-POSTMARK_API_KEY=get_env_var('postmark',PRODUCTION_STATUS,'POSTMARK_API_KEY')
+#POSTMARK_API_KEY=get_env_var('postmark',PRODUCTION_STATUS,'POSTMARK_API_KEY')
 
 
 ## Set Cookies to expire at time designated by Server Session Retire Hours 
