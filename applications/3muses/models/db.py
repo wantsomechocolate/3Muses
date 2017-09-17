@@ -11,22 +11,23 @@ import os,ast
 
 from gluon.contrib.heroku import get_db
 
-sqlite_tf=False
+sqlite_tf=True
+
 
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
 
 
     ## If you are running remotely
-    if os.environ['ON_HEROKU']=='TRUE':
-
+    #if os.environ['ON_HEROKU']=='TRUE':
+    if False:
         ## set sqlite_tf to false to avoid problems in other files
         sqlite_tf=False
 
         ## connect to db
         #db = DAL(os.environ['DATABASE_URL'], pool_size=10)
         #db = get_db(name=os.environ['DATABASE_URL'], pool_size=10)
-        db = get_db(name='DATABASE_URL', pool_size=10)
+        db = get_db(name='DATABASE_URL', pool_size=10, migrate=True, fake_migrate_all=True)
 
 
     ## You are running locally
